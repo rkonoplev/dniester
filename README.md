@@ -1,6 +1,5 @@
 [![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)
 
-
 # News Platform
 
 **Monorepo for a news publishing platform**  
