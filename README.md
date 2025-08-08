@@ -8,14 +8,16 @@
 ---
 
 ## 📂 Project Structure
-news-platform/
-├── backend/ # Spring Boot app (Java 21)
-│ ├── src/
-│ └── build.gradle
-├── frontend/ # Gatsby app (planned)
-│ ├── src/
-│ └── package.json
-└── docs/ # Future documentation
+
+| Directory              | Description                        |
+|------------------------|------------------------------------|
+| `news-platform/`       | Root directory of the project      |
+| `├── backend/`         | Spring Boot app (Java 21)          |
+| `│   ├── src/`         | Source code for the backend        |
+| `├── frontend/`        | Gatsby app (planned)               |
+| `│   ├── src/`         | Source code for the frontend       |
+| `│   └── package.json` | Package configuration for frontend |
+| `└── docs/`            | Future documentation               |
 
 
 ---
