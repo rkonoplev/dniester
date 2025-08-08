@@ -9,6 +9,8 @@
 *.tar.gz
 *.rar
 
+!/gradle/wrapper/gradle-wrapper.jar
+
 # Gradle build output
 /build/
 /.gradle/
