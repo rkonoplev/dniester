@@ -1,6 +1,8 @@
-package com.example.news;
+package com.example.newsplatform.controller;
 
 import org.springframework.web.bind.annotation.*;
+import com.example.newsplatform.model.News;
+import com.example.newsplatform.repository.NewsRepository;
 
 import java.util.List;
 

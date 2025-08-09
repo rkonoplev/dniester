@@ -7,7 +7,13 @@
 🛠 Frontend: Gatsby + JavaScript 
 📚 Docs: Coming soon
 
----
+## 🛠 Technology Stack
+- Java 21
+- Spring Boot
+- Gradle
+- MariaDB
+- Spring Security
+- React (frontend)
 
 ## 📂 Project Structure
 
@@ -26,9 +32,7 @@
 
 ## 🚀 Backend Quick Start
 
-## 📂 Project Structure
-
-**Directory layout:**
+**Backend structure:**
 
 - **controller** — REST controllers
 - **service** — Business logic
@@ -48,6 +52,12 @@ cd backend
 ```
 🌐 Access: http://localhost:8080
 
+## 📌 Planned Features
+
+- **MariaDB integration as the primary database**
+- **Authentication & Authorization with Spring Security (JWT or OAuth2)**
+- **CI/CD Pipeline with GitHub Actions**
+
 🌐 Frontend Stack
 
 Gatsby (React-based framework)
@@ -59,12 +69,6 @@ Commands:
 cd frontend
 npm install
 npm run develop
-
-## 📌 Planned Features
-
-- **MariaDB integration as the primary database**
-- **Authentication & Authorization with Spring Security (JWT or OAuth2)**
-- **CI/CD Pipeline with GitHub Actions**
 
 📖 Documentation
 Project documentation and technical requirements are stored in the [docs/](docs/) folder.

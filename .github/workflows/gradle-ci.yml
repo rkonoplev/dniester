@@ -7,8 +7,13 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  ci:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
 
     steps:
       - name: Checkout repository
@@ -33,14 +38,59 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x backend/gradlew
 
-      - name: Build with Gradle
+
+      - name: Build and Run Tests
         run: cd backend && ./gradlew build --no-daemon
 
-      - name: Run tests
-        run: cd backend && ./gradlew test --no-daemon
 
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: backend/build/reports/tests/test
+          if-no-files-found: warn
+
+
+      # Qodana Scan for Backend (JVM)
+      - name: Qodana Backend (JVM)
+        uses: JetBrains/qodana-action@latest
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+        with:
+          # Use JVM community linter for backend code analysis
+          linter: jetbrains/qodana-jvm-community:2025.1.2
+          # Specify backend directory as project root for this scan
+          project-dir: backend
+          # Use the root qodana.yml config file
+          config: ../qodana.yml
+          # Path to baseline file for backend
+          baseline: backend/qodana/baseline.xml
+          baseline-absentees: false
+          pr-mode: true
+          use-caches: true
+          post-pr-comment: true
+          use-annotations: true
+          upload-result: false
+          push-fixes: 'none'
+
+      # Qodana Scan for Frontend (JavaScript/TypeScript)
+      - name: Qodana Frontend (JS)
+        uses: JetBrains/qodana-action@latest
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+        with:
+          # Use JavaScript linter for frontend code analysis
+          linter: jetbrains/qodana-js:2025.1.2
+          # Specify frontend directory as project root for this scan
+          project-dir: frontend
+          # Use the root qodana.yml config file
+          config: ../qodana.yml
+          # Path to baseline file for frontend (if exists)
+          baseline: frontend/qodana/baseline.xml
+          baseline-absentees: false
+          pr-mode: true
+          use-caches: true
+          post-pr-comment: true
+          use-annotations: true
+          upload-result: false
+          push-fixes: 'none'

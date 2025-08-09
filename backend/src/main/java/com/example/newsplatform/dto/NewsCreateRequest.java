@@ -1,45 +1,36 @@
-package com.example.newsplatform.model;
+package com.example.newsplatform.dto;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
 
-@Entity
-@Table(name = "news")
-public class News {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class NewsCreateRequest {
 
-    @Column(nullable = false, length = 255)
+    // Fields required to create a new news record
+    @NotBlank
+    @Size(max = 255)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @NotBlank
     private String teaser;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @NotBlank
     private String content;
 
-    @Column(nullable = false)
-    private LocalDateTime publishedAt;
-
-    // Example: to store category name or relation in future
-    @Column(length = 100)
+    @Size(max = 100)
     private String category;
 
-    @Column(nullable = false)
+    @NotNull
+    private LocalDateTime publishedAt;
+
     private boolean published;
 
-    public News() {
+    public NewsCreateRequest() {
     }
 
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
     public String getTitle() {
         return title;
     }
@@ -58,17 +49,17 @@ public class News {
     public void setContent(String content) {
         this.content = content;
     }
-    public LocalDateTime getPublishedAt() {
-        return publishedAt;
-    }
-    public void setPublishedAt(LocalDateTime publishedAt) {
-        this.publishedAt = publishedAt;
-    }
     public String getCategory() {
         return category;
     }
     public void setCategory(String category) {
         this.category = category;
+    }
+    public LocalDateTime getPublishedAt() {
+        return publishedAt;
+    }
+    public void setPublishedAt(LocalDateTime publishedAt) {
+        this.publishedAt = publishedAt;
     }
     public boolean isPublished() {
         return published;
