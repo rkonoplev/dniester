@@ -3,8 +3,8 @@
 # News Platform
 
 **Monorepo for a news publishing platform**  
-✅ Backend: Spring Boot (ready)  
-🛠 Frontend: Gatsby + JavaScript (planned)  
+✅ Backend: Spring Boot  
+🛠 Frontend: Gatsby + JavaScript 
 📚 Docs: Coming soon
 
 ---
@@ -28,20 +28,14 @@
 
 ## 📂 Project Structure
 
+**Directory layout:**
+
 - **controller** — REST controllers
 - **service** — Business logic
 - **repository** — Data access layer (database interaction)
 - **dto** — Data Transfer Objects
 - **mapper** — Entity mappers (conversion between entities and DTOs)
 - **model** — JPA entities
-
----
-
-## 📌 Planned Features
-
-- **MariaDB integration** — Connect and configure MariaDB as the primary database
-- **Authentication & Authorization** — Implement user security with Spring Security (JWT or OAuth2)
-- **CI/CD Pipeline** — Automate testing and deployment using GitHub Actions
 
 **Requirements:**
 - JDK 21+
@@ -54,20 +48,28 @@ cd backend
 ```
 🌐 Access: http://localhost:8080
 
-🌐 Frontend (Planned)
-Stack:
+🌐 Frontend Stack
 
 Gatsby (React-based framework)
 JavaScript
-GraphQL (for content querying)
+GraphQL (content querying)
 CSS-in-JS / Responsive Design
 
-Planned commands:
+Commands:
 cd frontend
 npm install
 npm run develop
 
+## 📌 Planned Features
+
+- **MariaDB integration as the primary database**
+- **Authentication & Authorization with Spring Security (JWT or OAuth2)**
+- **CI/CD Pipeline with GitHub Actions**
+
+📖 Documentation
+Project documentation and technical requirements are stored in the [docs/](docs/) folder.
+
 📜 License
-MIT License. See LICENSE for details.
+MIT License. See [LICENSE](LICENSE) for details.
 
 
