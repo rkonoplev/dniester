@@ -1,4 +1,4 @@
-package com.example.news;
+package com.example.newsplatform;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
