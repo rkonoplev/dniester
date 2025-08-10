@@ -1,3 +1,5 @@
+# Workflow for Java CI with Gradle and Qodana Cloud
+# This workflow runs on every push to 'main' branch and every pull request to 'main'
 name: Java CI with Gradle and Qodana Cloud
 
 on:
@@ -6,27 +8,36 @@ on:
   pull_request:
     branches: [ "main" ]
 
+# Define the job 'ci'
 jobs:
   ci:
+    # Run on the latest Ubuntu runner
     runs-on: ubuntu-latest
+    # Set a timeout for the job (30 minutes)
     timeout-minutes: 30
+    # Grant necessary permissions for the job
     permissions:
       contents: write
       pull-requests: write
       checks: write
 
+    # Define the sequence of steps for the job
     steps:
+      # Step 1: Checkout the repository code
+      # 'fetch-depth: 0' is needed for Qodana to analyze the full git history
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      # Step 2: Setup JDK 21 environment
       - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
 
+      # Step 3: Cache Gradle dependencies to speed up subsequent builds
       - name: Cache Gradle packages
         uses: actions/cache@v4
         with:
@@ -37,70 +48,68 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      # Step 4: Make the Gradle wrapper executable
       - name: Grant execute permission for Gradle
         run: chmod +x backend/gradlew
 
+      # Step 5: Build the project and run tests with JaCoCo coverage
+      # '--no-daemon' is used to ensure the Gradle daemon stops after the build
+      # '--warning-mode all' helps identify deprecated features early
       - name: Build and Run Tests with Coverage
-        run: cd backend && ./gradlew build jacocoTestReport --no-daemon
+        run: cd backend && ./gradlew build jacocoTestReport --no-daemon --warning-mode all
 
+      # Step 6: Upload JUnit test reports as artifacts
+      # This allows viewing test results even if the build fails later
       - name: Upload test reports
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: backend/build/reports/tests/test
-          if-no-files-found: warn
+          if-no-files-found: warn # Warn if no files are found, but don't fail the step
 
+      # Step 7: Upload JaCoCo code coverage reports as artifacts
+      # These can be downloaded and viewed locally
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
           path: backend/build/reports/jacoco/test/
-          if-no-files-found: warn
+          if-no-files-found: warn # Warn if no files are found, but don't fail the step
 
-      # Qodana Scan for Backend (JVM)
-      # Added 'upload-result: true' and 'cache: true' to ensure baseline.xml is handled
-      - name: Qodana Backend (JVM)
+      # Step 8: Run Qodana analysis for the Backend (JVM) code
+      # Qodana runs in the cloud; results are uploaded to Qodana Cloud
+      # Baseline files are managed within Qodana Cloud, not as GitHub artifacts
+      - name: Qodana Backend (JVM) Scan
         uses: JetBrains/qodana-action@v2025.1
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # Qodana Cloud token for authentication
         with:
-          linter: jetbrains/qodana-jvm-community:2025.1
-          project-dir: backend
-          # baseline: backend/qodana/baseline.xml # Remove or comment out initially
-          post-pr-comment: true
-          use-annotations: true
-          upload-result: true # Upload results to Qodana Cloud (might help with baseline)
-          cache: true # Use cache (might help with baseline persistence)
+          linter: jetbrains/qodana-jvm-community:2025.1 # Specify the Qodana linter to use
+          project-dir: backend # Specify the directory to analyze
+          post-pr-comment: true # Post a comment on the Pull Request with results
+          use-annotations: true # Add annotations to the code in the PR
+          upload-result: true # Upload the full analysis results to Qodana Cloud
+          cache: true # Use cache to speed up analysis
 
-      # Upload Qodana Backend baseline file if it was generated
-      # Note: baseline.xml is typically generated automatically by Qodana on first run
-      - name: Upload Qodana Backend baseline
-        uses: actions/upload-artifact@v4
-        with:
-          name: qodana-backend-baseline
-          path: backend/qodana/baseline.xml
-          if-no-files-found: ignore # Use 'ignore' since file may not exist on first run
-
-      # Qodana Scan for Frontend (JavaScript/TypeScript)
-      # Added 'upload-result: true' and 'cache: true' to ensure baseline.xml is handled
-      - name: Qodana Frontend (JS)
+      # Step 9: Run Qodana analysis for the Frontend (JavaScript/TypeScript) code
+      # Qodana runs in the cloud; results are uploaded to Qodana Cloud
+      # Baseline files are managed within Qodana Cloud, not as GitHub artifacts
+      - name: Qodana Frontend (JS) Scan
         uses: JetBrains/qodana-action@v2025.1
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # Qodana Cloud token for authentication
         with:
-          linter: jetbrains/qodana-js:2025.1
-          project-dir: frontend
-          # baseline: frontend/qodana/baseline.xml # Remove or comment out initially
-          post-pr-comment: true
-          use-annotations: true
-          upload-result: true # Upload results to Qodana Cloud (might help with baseline)
-          cache: true # Use cache (might help with baseline persistence)
+          linter: jetbrains/qodana-js:2025.1 # Specify the Qodana linter to use
+          project-dir: frontend # Specify the directory to analyze
+          post-pr-comment: true # Post a comment on the Pull Request with results
+          use-annotations: true # Add annotations to the code in the PR
+          upload-result: true # Upload the full analysis results to Qodana Cloud
+          cache: true # Use cache to speed up analysis
 
-      # Upload Qodana Frontend baseline file if it was generated
-      # Note: baseline.xml is typically generated automatically by Qodana on first run
-      - name: Upload Qodana Frontend baseline
-        uses: actions/upload-artifact@v4
-        with:
-          name: qodana-frontend-baseline
-          path: frontend/qodana/baseline.xml
-          if-no-files-found: ignore # Use 'ignore' since file may not exist on first run
+      # Note on Baseline Files:
+      # Qodana Cloud manages baseline files internally.
+      # The 'baseline.xml' files are not generated locally or uploaded as GitHub artifacts.
+      # To manage baselines:
+      # 1. View and configure baselines in the Qodana Cloud UI.
+      # 2. Download baseline files manually from Qodana Cloud if needed locally.
+      # 3. Commit baseline files to the repository only if required for local Qodana runs.
