@@ -58,6 +58,7 @@ jobs:
           if-no-files-found: warn
 
       # Qodana Scan for Backend (JVM)
+      # Added 'upload-result: true' and 'cache: true' to ensure baseline.xml is handled
       - name: Qodana Backend (JVM)
         uses: JetBrains/qodana-action@v2025.1
         env:
@@ -65,8 +66,11 @@ jobs:
         with:
           linter: jetbrains/qodana-jvm-community:2025.1
           project-dir: backend
+          # baseline: backend/qodana/baseline.xml # Remove or comment out initially
           post-pr-comment: true
           use-annotations: true
+          upload-result: true # Upload results to Qodana Cloud (might help with baseline)
+          cache: true # Use cache (might help with baseline persistence)
 
       # Upload Qodana Backend baseline file if it was generated
       # Note: baseline.xml is typically generated automatically by Qodana on first run
@@ -78,6 +82,7 @@ jobs:
           if-no-files-found: ignore # Use 'ignore' since file may not exist on first run
 
       # Qodana Scan for Frontend (JavaScript/TypeScript)
+      # Added 'upload-result: true' and 'cache: true' to ensure baseline.xml is handled
       - name: Qodana Frontend (JS)
         uses: JetBrains/qodana-action@v2025.1
         env:
@@ -85,8 +90,11 @@ jobs:
         with:
           linter: jetbrains/qodana-js:2025.1
           project-dir: frontend
+          # baseline: frontend/qodana/baseline.xml # Remove or comment out initially
           post-pr-comment: true
           use-annotations: true
+          upload-result: true # Upload results to Qodana Cloud (might help with baseline)
+          cache: true # Use cache (might help with baseline persistence)
 
       # Upload Qodana Frontend baseline file if it was generated
       # Note: baseline.xml is typically generated automatically by Qodana on first run
