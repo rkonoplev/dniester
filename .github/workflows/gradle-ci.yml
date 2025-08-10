@@ -63,7 +63,8 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
-          args: --linter jetbrains/qodana-jvm-community:2025.1 --project-dir backend --baseline backend/qodana/baseline.xml
+          linter: jetbrains/qodana-jvm-community:2025.1
+          project-dir: backend
           post-pr-comment: true
           use-annotations: true
 
@@ -73,6 +74,7 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
-          args: --linter jetbrains/qodana-js:2025.1 --project-dir frontend --baseline frontend/qodana/baseline.xml
+          linter: jetbrains/qodana-js:2025.1
+          project-dir: frontend
           post-pr-comment: true
           use-annotations: true
