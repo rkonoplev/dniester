@@ -5,10 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
@@ -17,29 +15,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable() // for simplicity, enable later
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, enable in production
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
-                .httpBasic();
+                .httpBasic(httpBasic -> {}); // Updated syntax for httpBasic authentication
 
         return http.build();
     }
 
     @Bean
-    public UserDetailsService users() {
-        var user = User.withUsername("admin")
-                .password("admin123")
-                .roles("ADMIN")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Bean
-    public static NoOpPasswordEncoder passwordEncoder() {
-        // Plain text encoder for demo only, replace with BCryptPasswordEncoder in prod
-        return (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();
+    public PasswordEncoder passwordEncoder() {
+        // BCrypt is recommended for production use
+        return new BCryptPasswordEncoder();
     }
 }
