@@ -1,4 +1,6 @@
 [![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)
+[![codecov](https://codecov.io/gh/rkonoplev/news-platform/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/rkonoplev/news-platform)
+![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
 # News Platform
 
@@ -69,6 +71,12 @@ Commands:
 cd frontend
 npm install
 npm run develop
+
+### Configuration
+Create `application.properties` file in `backend/src/main/resources/` directory:
+```bash
+cp backend/src/main/resources/application.properties.template backend/src/main/resources/application.properties
+```
 
 📖 Documentation
 Project documentation and technical requirements are stored in the [docs/](docs/) folder.
