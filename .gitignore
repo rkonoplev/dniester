@@ -14,7 +14,6 @@
 # Gradle build output
 /build/
 /.gradle/
-!gradle/wrapper/gradle-wrapper.jar
 
 # Maven build output
 /target/
@@ -25,6 +24,21 @@
 *.ipr
 *.iws
 /out/
+
+# IntelliJ IDEA specific files (safe to ignore)
+.idea/artifacts/
+.idea/compiler.xml
+.idea/libraries/
+.idea/modules.xml
+.idea/workspace.xml
+.idea/misc.xml
+.idea/vcs.xml
+.idea/uiDesigner.xml
+.idea/dictionaries/
+.idea/tasks.xml
+.idea/gradle.xml
+.idea/assetWizardSettings.xml
+.idea/httpRequests/
 
 # Logs and temp files
 *.log
@@ -50,3 +64,22 @@ replay_pid*
 
 # J2ME
 .mtj.tmp/
+
+# -------------------------------
+# Project specific additions
+# -------------------------------
+
+# Configuration files with secrets
+application.properties
+*.properties
+!application.properties.template
+
+# Environment files
+.env
+.env.*
+
+# Reports
+backend/build/reports/
+
+# GitHub Actions
+.github/workflows/
