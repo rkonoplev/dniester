@@ -68,6 +68,15 @@ jobs:
           post-pr-comment: true
           use-annotations: true
 
+      # Upload Qodana Backend baseline file if it was generated
+      # Note: baseline.xml is typically generated automatically by Qodana on first run
+      - name: Upload Qodana Backend baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: qodana-backend-baseline
+          path: backend/qodana/baseline.xml
+          if-no-files-found: ignore # Use 'ignore' since file may not exist on first run
+
       # Qodana Scan for Frontend (JavaScript/TypeScript)
       - name: Qodana Frontend (JS)
         uses: JetBrains/qodana-action@v2025.1
@@ -78,3 +87,12 @@ jobs:
           project-dir: frontend
           post-pr-comment: true
           use-annotations: true
+
+      # Upload Qodana Frontend baseline file if it was generated
+      # Note: baseline.xml is typically generated automatically by Qodana on first run
+      - name: Upload Qodana Frontend baseline
+        uses: actions/upload-artifact@v4
+        with:
+          name: qodana-frontend-baseline
+          path: frontend/qodana/baseline.xml
+          if-no-files-found: ignore # Use 'ignore' since file may not exist on first run
