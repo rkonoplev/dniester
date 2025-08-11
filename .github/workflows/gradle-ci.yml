@@ -1,10 +1,10 @@
-# Workflow for Java CI with Gradle and Qodana Cloud
+# Workflow for Java CI with Gradle, Qodana Cloud and GitLeaks
 # This workflow runs on every push to 'main' branch and every pull request to 'main'
-name: Java CI with Gradle and Qodana Cloud
+name: Java CI with Gradle, Qodana Cloud and GitLeaks
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "develop", "master" ]
   pull_request:
     branches: [ "main" ]
 
@@ -13,8 +13,8 @@ jobs:
   ci:
     # Run on the latest Ubuntu runner
     runs-on: ubuntu-latest
-    # Set a timeout for the job (30 minutes)
-    timeout-minutes: 30
+    # Set a timeout for the job (35 minutes to accommodate all steps)
+    timeout-minutes: 35
     # Grant necessary permissions for the job
     permissions:
       contents: write
@@ -24,7 +24,7 @@ jobs:
     # Define the sequence of steps for the job
     steps:
       # Step 1: Checkout the repository code
-      # 'fetch-depth: 0' is needed for Qodana to analyze the full git history
+      # 'fetch-depth: 0' is needed for Qodana and GitLeaks to analyze the full git history
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -54,13 +54,25 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x backend/gradlew
 
-      # Step 5: Build the project and run tests with JaCoCo coverage
+      # Step 5: Run GitLeaks secret detection (early security check)
+      - name: Install and Run GitLeaks scan
+        run: |
+          echo "Installing GitLeaks..."
+          wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+          tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
+          sudo install gitleaks /usr/bin/gitleaks
+          echo "GitLeaks installed successfully!"
+          
+          echo "Running GitLeaks secret detection..."
+          gitleaks detect --source . --verbose --redact
+
+      # Step 6: Build the project and run tests with JaCoCo coverage
       # '--no-daemon' is used to ensure the Gradle daemon stops after the build
       # '--warning-mode all' helps identify deprecated features early
       - name: Build and Run Tests with Coverage
         run: cd backend && ./gradlew build jacocoTestReport --no-daemon --warning-mode all
 
-      # Step 6: Upload JUnit test reports as artifacts
+      # Step 7: Upload JUnit test reports as artifacts
       # This allows viewing test results even if the build fails later
       - name: Upload test reports
         uses: actions/upload-artifact@v4
@@ -69,7 +81,7 @@ jobs:
           path: backend/build/reports/tests/test
           if-no-files-found: warn # Warn if no files are found, but don't fail the step
 
-      # Step 7: Upload JaCoCo code coverage reports as artifacts
+      # Step 8: Upload JaCoCo code coverage reports as artifacts
       # These can be downloaded and viewed locally
       - name: Upload JaCoCo coverage report
         uses: actions/upload-artifact@v4
@@ -80,14 +92,13 @@ jobs:
 
       # --- Qodana Scans ---
 
-      # Step 8: Run Qodana analysis for the Backend (JVM) code
+      # Step 9: Run Qodana analysis for the Backend (JVM) code
       # Uses Pro linter and requires QODANA_TOKEN for Qodana Cloud connection.
       # The '--project-dir' argument specifies the directory to analyze.
       - name: Qodana Backend (JVM) Scan
         uses: JetBrains/qodana-action@v2025.1
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }} # Ensure this secret exists and holds the correct Project Token from Qodana Cloud
-          # QODANA_ENDPOINT is not needed for standard Qodana Cloud
         with:
           # Use 'args' to pass command-line arguments to the qodana CLI, like '--project-dir'
           args: --project-dir,backend
@@ -95,31 +106,11 @@ jobs:
           post-pr-comment: true # Post a comment on the Pull Request with results
           use-annotations: true # Add annotations to the code in the PR
           upload-result: true   # Upload the full analysis results to Qodana Cloud
-          # Removed 'linter:', 'project-dir:', 'cache:' as they are not valid 'with:' inputs for this action version
-          # Caching is enabled by default in recent action versions, or can be controlled via 'use-caches'
 
-      # Step 9: Run Qodana analysis for the Frontend (JS/TS) code
-      # Uses Pro linter and requires QODANA_TOKEN for Qodana Cloud connection.
-      # The '--project-dir' argument specifies the directory to analyze.
-#      - name: Qodana Frontend (JS) Scan
-#        uses: JetBrains/qodana-action@v2025.1
-#        env:
-#          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }} # Ensure this secret exists and holds the correct Project Token from Qodana Cloud
-#          # QODANA_ENDPOINT is not needed for standard Qodana Cloud
-#        with:
-#          # Use 'args' to pass command-line arguments to the qodana CLI, like '--project-dir'
-#          args: --project-dir,frontend
-#          # Use supported parameters for GitHub integration
-#          post-pr-comment: true # Post a comment on the Pull Request with results
-#          use-annotations: true # Add annotations to the code in the PR
-#          upload-result: true   # Upload the full analysis results to Qodana Cloud
-          # Removed 'linter:', 'project-dir:', 'cache:' as they are not valid 'with:' inputs for this action version
-          # Caching is enabled by default in recent action versions, or can be controlled via 'use-caches'
-
-      # Note on Baseline Files:
-      # Qodana Cloud manages baseline files internally.
-      # The 'baseline.xml' files are not generated locally or uploaded as GitHub artifacts.
-      # To manage baselines:
-      # 1. View and configure baselines in the Qodana Cloud UI.
-      # 2. Download baseline files manually from Qodana Cloud if needed locally.
-      # 3. Commit baseline files to the repository only if required for local Qodana runs.
+      # Step 10: Optional - Upload GitLeaks results as artifact (only on failure)
+      - name: Upload GitLeaks scan results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: gitleaks-results
+          path: .gitleaks-report.json
