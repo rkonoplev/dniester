@@ -65,7 +65,7 @@ check.dependsOn jacocoTestCoverageVerification
 // Checkstyle configuration
 checkstyle {
     toolVersion = '10.12.1'  // Latest stable version
-    configFile = file("config/checkstyle/checkstyle.xml")
+    configFile = file("../config/checkstyle/checkstyle.xml")
     // Fail build on checkstyle violations
     maxWarnings = 0
     maxErrors = 0
