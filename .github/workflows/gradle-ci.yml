@@ -110,7 +110,7 @@ jobs:
       # Step 10: Optional - Upload GitLeaks results as artifact (only on failure)
       - name: Upload GitLeaks scan results
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: gitleaks-results
           path: .gitleaks-report.json
