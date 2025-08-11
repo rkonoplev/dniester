@@ -1,0 +1,44 @@
+# GitLeaks Security Scan
+# Runs secret detection in CI/CD pipeline
+# Does not affect local machine performance
+
+name: GitLeaks Security Scan
+
+on:
+  push:
+    branches: [ main, develop, master ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  gitleaks-scan:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout code with full history
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Install GitLeaks tool
+      - name: Install GitLeaks
+        run: |
+          echo "Installing GitLeaks..."
+          wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+          tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
+          sudo install gitleaks /usr/bin/gitleaks
+          echo "GitLeaks installed successfully!"
+
+      # Run secret detection
+      - name: Run GitLeaks scan
+        run: |
+          echo "Running GitLeaks secret detection..."
+          gitleaks detect --source . --verbose --redact
+
+      # Optional: Upload results as artifact
+      - name: Upload scan results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: gitleaks-results
+          path: .gitleaks-report.json

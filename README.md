@@ -54,6 +54,42 @@ cd backend
 ```
 🌐 Access: http://localhost:8080
 
+## Code Quality Tools
+
+This project uses several code quality tools to ensure code consistency and prevent bugs:
+
+### Local Analysis Tools
+- **Checkstyle** - Code style verification (runs locally during build)
+    - Configuration: `config/checkstyle/checkstyle.xml`
+    - Run: `./gradlew checkstyleMain checkstyleTest`
+
+- **JaCoCo** - Test coverage reporting
+    - Run: `./gradlew test` (coverage report generated automatically)
+    - Reports: `build/reports/jacoco/test/html/index.html`
+
+### Cloud Analysis Tools
+- **Qodana** - Comprehensive code quality analysis in cloud
+    - Automated CI/CD integration
+    - Detailed reports available in JetBrains Qodana Cloud
+
+### Security Tools
+- **GitLeaks** - Secret detection (pre-commit hook / CI)
+    - Run: `gitleaks detect --source .`
+
+🚀 Development Commands
+
+# Run all checks (tests + coverage + code style)
+./gradlew check
+
+# Run only code style checks
+./gradlew checkstyleMain checkstyleTest
+
+# Run tests with coverage
+./gradlew test
+
+# Check for secrets
+gitleaks detect --source .
+
 ## 📌 Planned Features
 
 - **MariaDB integration as the primary database**

@@ -1,0 +1,21 @@
+# GitLeaks configuration - Ignore test data and config files
+title = "GitLeaks Config"
+
+[allowlist]
+description = "Allowlisted files and patterns"
+
+# Ignore files that may contain false positives
+paths = [
+    '''\.gitleaks\.toml''',
+    '''config/checkstyle/checkstyle.xml''',
+    '''gradle/wrapper/gradle-wrapper.properties''',
+    '''\.idea/''',
+    '''\.git/'''
+]
+
+# Ignore dummy/test values that look like secrets
+regexes = [
+    '''password\s*=\s*["']test["']''',
+    '''secret\s*=\s*["']dummy["']''',
+    '''token\s*=\s*["']example["']'''
+]
