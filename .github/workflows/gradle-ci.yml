@@ -28,6 +28,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
+          # For pull requests, check out the actual pull request commit, not the merge commit
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       # Step 2: Setup JDK 21 environment
@@ -76,35 +78,43 @@ jobs:
           path: backend/build/reports/jacoco/test/
           if-no-files-found: warn # Warn if no files are found, but don't fail the step
 
+      # --- Qodana Scans ---
+
       # Step 8: Run Qodana analysis for the Backend (JVM) code
-      # Qodana runs in the cloud; results are uploaded to Qodana Cloud
-      # Baseline files are managed within Qodana Cloud, not as GitHub artifacts
+      # Uses Pro linter and requires QODANA_TOKEN for Qodana Cloud connection.
+      # The '--project-dir' argument specifies the directory to analyze.
       - name: Qodana Backend (JVM) Scan
         uses: JetBrains/qodana-action@v2025.1
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # Qodana Cloud token for authentication
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }} # Ensure this secret exists and holds the correct Project Token from Qodana Cloud
+          # QODANA_ENDPOINT is not needed for standard Qodana Cloud
         with:
-          linter: jetbrains/qodana-jvm-community:2025.1 # Specify the Qodana linter to use
-          project-dir: backend # Specify the directory to analyze
+          # Use 'args' to pass command-line arguments to the qodana CLI, like '--project-dir'
+          args: --project-dir,backend
+          # Use supported parameters for GitHub integration
           post-pr-comment: true # Post a comment on the Pull Request with results
           use-annotations: true # Add annotations to the code in the PR
-          upload-result: true # Upload the full analysis results to Qodana Cloud
-          cache: true # Use cache to speed up analysis
+          upload-result: true   # Upload the full analysis results to Qodana Cloud
+          # Removed 'linter:', 'project-dir:', 'cache:' as they are not valid 'with:' inputs for this action version
+          # Caching is enabled by default in recent action versions, or can be controlled via 'use-caches'
 
-      # Step 9: Run Qodana analysis for the Frontend (JavaScript/TypeScript) code
-      # Qodana runs in the cloud; results are uploaded to Qodana Cloud
-      # Baseline files are managed within Qodana Cloud, not as GitHub artifacts
+      # Step 9: Run Qodana analysis for the Frontend (JS/TS) code
+      # Uses Pro linter and requires QODANA_TOKEN for Qodana Cloud connection.
+      # The '--project-dir' argument specifies the directory to analyze.
       - name: Qodana Frontend (JS) Scan
         uses: JetBrains/qodana-action@v2025.1
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }} # Qodana Cloud token for authentication
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }} # Ensure this secret exists and holds the correct Project Token from Qodana Cloud
+          # QODANA_ENDPOINT is not needed for standard Qodana Cloud
         with:
-          linter: jetbrains/qodana-js:2025.1 # Specify the Qodana linter to use
-          project-dir: frontend # Specify the directory to analyze
+          # Use 'args' to pass command-line arguments to the qodana CLI, like '--project-dir'
+          args: --project-dir,frontend
+          # Use supported parameters for GitHub integration
           post-pr-comment: true # Post a comment on the Pull Request with results
           use-annotations: true # Add annotations to the code in the PR
-          upload-result: true # Upload the full analysis results to Qodana Cloud
-          cache: true # Use cache to speed up analysis
+          upload-result: true   # Upload the full analysis results to Qodana Cloud
+          # Removed 'linter:', 'project-dir:', 'cache:' as they are not valid 'with:' inputs for this action version
+          # Caching is enabled by default in recent action versions, or can be controlled via 'use-caches'
 
       # Note on Baseline Files:
       # Qodana Cloud manages baseline files internally.
