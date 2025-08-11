@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.newsplatform.ExampleTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-08-10T18:07:00" hostname="Romans-MacBook-Air.local" time="0.051">
+<testsuite name="com.example.newsplatform.ExampleTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2025-08-10T19:40:06" hostname="Romans-MacBook-Air.local" time="0.059">
   <properties/>
-  <testcase name="testSomething()" classname="com.example.newsplatform.ExampleTest" time="0.051"/>
+  <testcase name="testSomething()" classname="com.example.newsplatform.ExampleTest" time="0.059"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
