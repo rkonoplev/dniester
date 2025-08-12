@@ -1,15 +1,18 @@
 plugins {
     id 'java'
+    id 'checkstyle'
+    id 'jacoco'
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
-    id 'jacoco'  // Add JaCoCo plugin
-    id 'checkstyle'  // Add Checkstyle plugin for code style verification
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
+
 java {
-    sourceCompatibility = '21'
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 repositories {
@@ -25,91 +28,32 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
-test {
-    useJUnitPlatform()
-    finalizedBy jacocoTestReport  // Generate report after tests run
-}
-
-// JaCoCo configuration
-jacoco {
-    toolVersion = "0.8.11"  // Latest stable version
-}
-
-jacocoTestReport {
-    dependsOn test  // Tests are required to run before generating the report
-
-    reports {
-        xml.required = true    // Enable XML report for CI/CD tools
-        html.required = true   // Enable HTML report for local viewing
-        csv.required = false   // Disable CSV report (optional)
-    }
-
-    // Optional: Configure report location
-    // reports.html.outputLocation = layout.buildDirectory.dir('jacocoHtml')
-}
-
-// Optional: Add coverage verification rules
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            limit {
-                minimum = 0.00  // Require 80% coverage
-            }
-        }
-    }
-}
-
-// Make sure tests run before verification
-check.dependsOn jacocoTestCoverageVerification
-
-// Checkstyle configuration
 checkstyle {
-    toolVersion = '10.12.1'  // Latest stable version
-    configFile = file("../config/checkstyle/checkstyle.xml")
-    // Fail build on checkstyle violations
+    toolVersion = '10.12.1'
+    configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
     maxWarnings = 0
     maxErrors = 0
 }
 
-checkstyleMain {
+tasks.withType(Checkstyle) {
+    reports {
+        xml.required = false
+        html.required = true
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+tasks.jacocoTestReport {
+    dependsOn test
     reports {
         xml.required = true
         html.required = true
     }
 }
 
-checkstyleTest {
-    reports {
-        xml.required = true
-        html.required = true
-    }
+test {
+    useJUnitPlatform()
 }
-
-// Make checkstyle run as part of the check task
-check.dependsOn checkstyleMain, checkstyleTest
-
-// GitLeaks security scan task
-// Run manually when needed: ./gradlew gitleaks
-task gitleaks(type: Exec) {
-    description = 'Run GitLeaks secret detection scan'
-    group = 'verification'
-
-    // Command to execute
-    commandLine 'gitleaks', 'detect', '--source', '.', '--verbose'
-
-    // Don't fail build if gitleaks is not installed
-    ignoreExitValue = true
-
-    // Show start message
-    doFirst {
-        println "🔍 Starting GitLeaks secret detection scan..."
-    }
-
-    // Show completion message
-    doLast {
-        println "✅ GitLeaks scan completed"
-    }
-}
-
-// Optional: Add to check task
-// check.dependsOn gitleaks
