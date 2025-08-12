@@ -1,66 +1,96 @@
-name: Auto Merge PRs
+name: Auto Merge PR
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
   check_suite:
     types: [completed]
 
 jobs:
-  auto-merge:
+  automerge:
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.check_suite.conclusion == 'success'
 
     steps:
-      - name: Check PR target branch
-        if: github.event.pull_request.base.ref != 'main'
-        run: |
-          echo "PR target branch is not 'main'. Skipping auto-merge."
-          exit 0
-
-      - name: Auto-merge if all checks pass
+      - name: Auto-merge PR if all checks pass, branch matches, and PR is ready
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const pr = github.context.payload.pull_request;
             let prNumber;
-            if (context.eventName === 'pull_request') {
-              prNumber = context.issue.number;
-            } else if (context.eventName === 'check_suite') {
-              const { data: prs } = await github.rest.search.issuesAndPullRequests({
-                q: `repo:${context.repo.owner}/${context.repo.repo} is:pr is:open sha:${context.payload.check_suite.head_sha}`
-              });
-              if (prs.items.length > 0) {
-                prNumber = prs.items[0].number;
+            let headBranch;
+            let prTitle;
+            let prBody;
+            let isDraft = false;
+
+            if (pr) {
+              prNumber = pr.number;
+              headBranch = pr.head.ref;
+              prTitle = pr.title;
+              prBody = pr.body || "";
+              isDraft = pr.draft;
+            } else if (github.context.eventName === 'check_suite') {
+              const checkSuite = github.context.payload.check_suite;
+              const prs = checkSuite.pull_requests;
+              if (prs.length > 0) {
+                prNumber = prs[0].number;
+                headBranch = prs[0].head.ref;
+                prTitle = prs[0].title;
+                prBody = prs[0].body || "";
+                isDraft = prs[0].draft;
               }
             }
 
-            if (!prNumber) {
-              console.log("No open PR found for this commit. Skipping.");
+            if (!prNumber || !headBranch) {
+              console.log("No pull request or branch found. Skipping auto-merge.");
               return;
             }
 
-            const { data: checks } = await github.rest.checks.listForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: context.payload.check_suite?.head_sha || context.payload.pull_request?.head.sha
-            });
-
-            const allChecksPassed = checks.check_runs.every(check =>
-              check.status === 'completed' && check.conclusion === 'success'
-            );
-
-            if (!allChecksPassed) {
-              console.log("Not all checks passed. Skipping auto-merge.");
+            // ❌ Skip if PR is Draft
+            if (isDraft) {
+              console.log(`PR #${prNumber} is in Draft mode. Skipping auto-merge.`);
               return;
             }
 
-            await github.rest.pulls.merge({
+            // ✅ Filter: only feature/* → main
+            if (!headBranch.startsWith("feature/")) {
+              console.log(`Branch "${headBranch}" does not match "feature/*" pattern. Skipping auto-merge.`);
+              return;
+            }
+
+            // Get all checks status
+            const { data: combinedStatus } = await github.rest.repos.getCombinedStatusForRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: prNumber,
-              merge_method: 'squash'
+              ref: pr ? pr.head.sha : github.context.payload.check_suite.head_sha
             });
 
-            console.log(`PR #${prNumber} merged successfully.`);
+            const allChecksPassed = combinedStatus.state === "success";
+
+            if (allChecksPassed) {
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                merge_method: "squash",
+                commit_title: prTitle,
+                commit_message: prBody
+              });
+              console.log(`✅ PR #${prNumber} from branch "${headBranch}" successfully merged with title "${prTitle}".`);
+
+              // 🗑 Auto-delete branch only if it starts with "feature/"
+              if (headBranch.startsWith("feature/")) {
+                await github.rest.git.deleteRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: `heads/${headBranch}`
+                });
+                console.log(`🗑 Deleted branch "${headBranch}" after merge.`);
+              } else {
+                console.log(`Branch "${headBranch}" does not start with "feature/". Skipping branch deletion.`);
+              }
+            } else {
+              console.log(`❌ PR #${prNumber} has failing checks. Skipping merge.`);
+            }
