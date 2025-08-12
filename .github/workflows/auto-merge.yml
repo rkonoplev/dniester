@@ -74,23 +74,11 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 pull_number: prNumber,
-                merge_method: "squash",
+                merge_method: "rebase", // Используйте rebase
                 commit_title: prTitle,
                 commit_message: prBody
               });
               console.log(`✅ PR #${prNumber} from branch "${headBranch}" successfully merged with title "${prTitle}".`);
-
-              // 🗑 Auto-delete branch only if it starts with "feature/"
-              if (headBranch.startsWith("feature/")) {
-                await github.rest.git.deleteRef({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  ref: `heads/${headBranch}`
-                });
-                console.log(`🗑 Deleted branch "${headBranch}" after merge.`);
-              } else {
-                console.log(`Branch "${headBranch}" does not start with "feature/". Skipping branch deletion.`);
-              }
             } else {
               console.log(`❌ PR #${prNumber} has failing checks. Skipping merge.`);
             }
