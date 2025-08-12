@@ -11,4 +11,3 @@ public class HomeController {
         return "✅ Server is running!";
     }
 }
-
