@@ -1,0 +1,17 @@
+# CODEOWNERS file for rkonoplev's repository
+# This file defines code owners for different parts of the repository
+# Format: <pattern> <owners>
+
+# Default owner for entire repository (you are the owner of everything)
+* @rkonoplev
+
+# You can specify different owners for specific directories if needed
+# Examples:
+# /backend/ @rkonoplev
+# /frontend/ @rkonoplev
+# /docs/ @rkonoplev
+# /tests/ @rkonoplev
+
+# Specific file types
+# *.md @rkonoplev
+# *.yml @rkonoplev
