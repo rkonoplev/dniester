@@ -5,98 +5,22 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
-  check_suite:
-    types: [completed]
 
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request' || github.event.check_suite.conclusion == 'success'
+    if: github.event_name == 'pull_request'
 
     steps:
-      - name: Auto-merge PR if all checks pass, branch matches, and PR is ready
+      - name: Auto-merge PR
         uses: actions/github-script@v7
         with:
           script: |
-            // Debug log to verify script execution starts
-            console.log("🚀 Starting auto-merge script execution...");
-            
+            console.log("Debug: Script started");
             const pr = context.payload.pull_request;
-            let prNumber;
-            let headBranch;
-            let prTitle;
-            let prBody;
-            let isDraft = false;
-
-            // Handle pull_request event
-            if (pr) {
-              console.log("📋 Processing pull_request event");
-              prNumber = pr.number;
-              headBranch = pr.head.ref;
-              prTitle = pr.title;
-              prBody = pr.body || "";
-              isDraft = pr.draft;
-              console.log(`📊 PR #${prNumber} from branch: ${headBranch}, isDraft: ${isDraft}`);
-            } 
-            // Handle check_suite event
-            else if (context.eventName === 'check_suite') {
-              console.log("📋 Processing check_suite event");
-              const checkSuite = context.payload.check_suite;
-              const prs = checkSuite.pull_requests;
-              if (prs.length > 0) {
-                prNumber = prs[0].number;
-                headBranch = prs[0].head.ref;
-                prTitle = prs[0].title;
-                prBody = prs[0].body || "";
-                isDraft = prs[0].draft;
-                console.log(`📊 PR #${prNumber} from branch: ${headBranch}, isDraft: ${isDraft}`);
-              }
-            }
-
-            // Early exit if no PR or branch found
-            if (!prNumber || !headBranch) {
-              console.log("❌ No pull request or branch found. Skipping auto-merge.");
+            if (!pr) {
+              console.log("No PR found");
               return;
             }
-
-            // Skip if PR is Draft
-            if (isDraft) {
-              console.log(`📝 PR #${prNumber} is in Draft mode. Skipping auto-merge.`);
-              return;
-            }
-
-            // Filter: only feature/* → main
-            if (!headBranch.startsWith("feature/")) {
-              console.log(`🏷 Branch "${headBranch}" does not match "feature/*" pattern. Skipping auto-merge.`);
-              return;
-            }
-
-            console.log(`🔍 Checking status for PR #${prNumber}...`);
             
-            // Get all checks status
-            const { data: combinedStatus } = await github.rest.repos.getCombinedStatusForRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: pr ? pr.head.sha : context.payload.check_suite.head_sha
-            });
-
-            console.log(`📊 Status check result: ${combinedStatus.state}`);
-            
-            const allChecksPassed = combinedStatus.state === "success";
-
-            if (allChecksPassed) {
-              console.log(`✅ All checks passed for PR #${prNumber}. Attempting to merge...`);
-            
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: prNumber,
-                merge_method: "rebase",
-                commit_title: prTitle,
-                commit_message: prBody
-              });
-            
-              console.log(`🎉 PR #${prNumber} from branch "${headBranch}" successfully merged with title "${prTitle}".`);
-            } else {
-              console.log(`❌ PR #${prNumber} has failing checks (${combinedStatus.state}). Skipping merge.`);
-            }
+            console.log("PR found:", pr.number);
