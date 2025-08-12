@@ -1,8 +1,8 @@
-# News Platform Backend – Technical Specification
+# News Platform – Technical Specification
 
 ## 1. Project Summary
-The **News Platform Backend** is a complete rewrite of a legacy Drupal 6.0-based news portal.  
-The goal is to modernize the platform using **Java 17** and **Spring Boot**, while preserving existing content and improving maintainability, scalability, and security.
+The **News Platform** is a complete rewrite of a legacy Drupal 6.0-based news portal.  
+The goal is to modernize the platform using **Java 21** and **Spring Boot**, while preserving existing content and improving maintainability, scalability, and security.
 
 This backend will power:
 - A **public-facing API** for serving news articles.
@@ -63,7 +63,7 @@ This backend will power:
 ## 6. Technology Stack
 | Area              | Technology |
 |-------------------|------------|
-| Language          | Java 17 |
+| Language          | Java 21 |
 | Framework         | Spring Boot |
 | Database          | MariaDB |
 | ORM               | Hibernate / JPA |
