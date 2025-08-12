@@ -1,54 +1,45 @@
-# Auto Merge PR Workflow
-# Automatically merges pull requests that meet specific criteria
-#
-# Triggers:
-# - When PR is opened, synchronized, reopened, or marked as ready
-# - When check suite completes (for status check results)
-
 name: Auto Merge PR
 
-# Define when the workflow should run
 on:
-  # Trigger on pull request events
   pull_request:
     types: [opened, synchronize, reopened, ready_for_review]
     branches:
       - main
-
-  # Trigger on check suite completion (for status checks)
   check_suite:
     types: [completed]
 
-# Define the jobs to run
 jobs:
-  # Auto merge job
   automerge:
-    # Run on Ubuntu latest
     runs-on: ubuntu-latest
-
-    # Conditional execution based on event type
     if: github.event_name == 'pull_request' || github.event.check_suite.conclusion == 'success'
 
-    # Define the steps to execute
     steps:
-      # Step 1: Checkout the repository code
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          # Fetch all history for proper merge operations
-          fetch-depth: 0
 
-      # Step 2: Auto-merge PR if all conditions are met
-      - name: Auto-merge PR if all checks pass, branch matches, and PR is ready
+      - name: Auto-merge PR
         uses: actions/github-script@v7
         with:
-          # Load and execute the external script
           script: |
-            // Load the external auto-merge script
-            const automergeScript = require('./.github/scripts/automerge.js');
+            const fs = require('fs');
+            const path = require('path');
             
-            // Execute the script with GitHub and context objects
-            await automergeScript({github, context});
-
-          # Provide GitHub token for API access
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+            try {
+              console.log("🚀 Loading external script...");
+              const scriptPath = path.join(process.env.GITHUB_WORKSPACE, '.github', 'scripts', 'automerge.js');
+              console.log(`📂 Script path: ${scriptPath}`);
+            
+              const scriptContent = fs.readFileSync(scriptPath, 'utf8');
+              console.log("✅ Script loaded successfully");
+            
+              // Create a function from the script content
+              const scriptFunction = new Function('github', 'context', scriptContent + '\nreturn module.exports;')(github, context);
+            
+              // Execute the script
+              await scriptFunction({github, context});
+            
+            } catch (error) {
+              console.log(`💥 Error loading/running script: ${error.message}`);
+              console.log(`📝 Error stack: ${error.stack}`);
+              throw error;
+            }

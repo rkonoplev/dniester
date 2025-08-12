@@ -1,22 +1,7 @@
-/**
- * Auto Merge PR Script for GitHub Actions
- *
- * This script automatically merges pull requests that meet specific criteria:
- * - PR is not in draft mode
- * - Source branch follows "feature/*" pattern
- * - Target branch is "main"
- * - All status checks have passed
- * - Uses rebase merge method to maintain linear history
- *
- * @param {Object} github - Octokit instance for GitHub API calls
- * @param {Object} context - GitHub Actions context with event data
- */
 module.exports = async ({github, context}) => {
-  // Debug: Log script start
   console.log("🚀 Starting Auto Merge PR Script");
   console.log(`📊 Event: ${context.eventName}`);
 
-  // Initialize variables for PR data
   let prNumber;
   let headBranch;
   let prTitle;
@@ -25,7 +10,6 @@ module.exports = async ({github, context}) => {
   let prSha;
 
   try {
-    // Handle pull_request event
     if (context.eventName === 'pull_request' && context.payload.pull_request) {
       console.log("📋 Processing pull_request event");
       const pr = context.payload.pull_request;
@@ -38,16 +22,13 @@ module.exports = async ({github, context}) => {
       prSha = pr.head.sha;
 
       console.log(`📊 PR Data - Number: ${prNumber}, Branch: ${headBranch}, Draft: ${isDraft}`);
-    }
-    // Handle check_suite event
-    else if (context.eventName === 'check_suite' && context.payload.check_suite) {
+    } else if (context.eventName === 'check_suite' && context.payload.check_suite) {
       console.log("📋 Processing check_suite event");
       const checkSuite = context.payload.check_suite;
       const prs = checkSuite.pull_requests;
 
-      // Only proceed if there are associated PRs
       if (prs && prs.length > 0) {
-        const pr = prs[0]; // Take the first PR
+        const pr = prs[0];
 
         prNumber = pr.number;
         headBranch = pr.head.ref;
@@ -60,19 +41,16 @@ module.exports = async ({github, context}) => {
       }
     }
 
-    // Early exit conditions
     if (!prNumber || !headBranch) {
       console.log("❌ No pull request or branch found. Skipping auto-merge.");
       return;
     }
 
-    // Skip if PR is Draft
     if (isDraft) {
       console.log(`📝 PR #${prNumber} is in Draft mode. Skipping auto-merge.`);
       return;
     }
 
-    // Filter: only feature/* → main branches allowed
     if (!headBranch.startsWith("feature/")) {
       console.log(`🏷 Branch "${headBranch}" does not match "feature/*" pattern. Skipping auto-merge.`);
       return;
@@ -80,8 +58,7 @@ module.exports = async ({github, context}) => {
 
     console.log(`🔍 Checking status for PR #${prNumber}...`);
 
-    // Get all checks status
-    const { data: combinedStatus } = await github.rest.repos.getCombinedStatusForRef({
+    const {  combinedStatus } = await github.rest.repos.getCombinedStatusForRef({
       owner: context.repo.owner,
       repo: context.repo.repo,
       ref: prSha
@@ -95,7 +72,6 @@ module.exports = async ({github, context}) => {
       console.log(`✅ All checks passed for PR #${prNumber}. Attempting to merge...`);
 
       try {
-        // Perform the merge using rebase method
         await github.rest.pulls.merge({
           owner: context.repo.owner,
           repo: context.repo.repo,
@@ -109,7 +85,6 @@ module.exports = async ({github, context}) => {
 
       } catch (mergeError) {
         console.log(`❌ Failed to merge PR #${prNumber}: ${mergeError.message}`);
-        // Don't throw error to prevent workflow failure
       }
 
     } else {
@@ -117,9 +92,7 @@ module.exports = async ({github, context}) => {
     }
 
   } catch (error) {
-    // Log any unexpected errors but don't fail the workflow
     console.log(`💥 Unexpected error in auto-merge script: ${error.message}`);
-    console.log(`📝 Error stack: ${error.stack}`);
   }
 
   console.log("🏁 Auto Merge PR Script completed");
