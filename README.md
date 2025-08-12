@@ -72,6 +72,11 @@ This project uses several code quality tools to ensure code consistency and prev
     - Automated CI/CD integration
     - Detailed reports available in JetBrains Qodana Cloud
 
+- **CodeCov** - Code coverage analysis and reporting
+    - Tracks test coverage percentage over time
+    - Integrated with GitHub Actions for automated reporting
+    - Detailed coverage reports available in CodeCov Cloud
+
 ### Security Tools
 - **GitLeaks** - Secret detection (pre-commit hook / CI)
     - Run: `gitleaks detect --source .`
