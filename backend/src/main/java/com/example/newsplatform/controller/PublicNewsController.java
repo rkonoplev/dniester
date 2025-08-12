@@ -4,10 +4,8 @@ import com.example.newsplatform.dto.NewsDto;
 import com.example.newsplatform.service.NewsService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/news")
+@RequestMapping("/api/public/news")
 public class PublicNewsController {
 
     private final NewsService newsService;
@@ -16,15 +14,11 @@ public class PublicNewsController {
         this.newsService = newsService;
     }
 
-    // Get list of published news
-    @GetMapping
-    public List<NewsDto> getAllNews() {
-        return newsService.getAllPublishedNews();
-    }
-
-    // Get single news by id
+    /**
+     * Get published news by ID
+     */
     @GetMapping("/{id}")
-    public NewsDto getNewsById(@PathVariable Long id) {
-        return newsService.getPublishedNewsById(id);
+    public NewsDto getPublishedNewsById(@PathVariable Long id) {
+        return newsService.getPublishedById(id);
     }
 }

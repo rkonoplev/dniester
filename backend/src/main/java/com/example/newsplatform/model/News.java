@@ -11,69 +11,37 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 255)
     private String title;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(length = 500)
     private String teaser;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Lob
     private String content;
 
-    @Column(nullable = false)
     private LocalDateTime publishedAt;
 
-    // Example: to store category name or relation in future
-    @Column(length = 100)
-    private String category;
+    // Getters and setters ...
 
-    @Column(nullable = false)
-    private boolean published;
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public News() {
-    }
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    public void setId(Long id) {
-        this.id = id;
-    }
-    public String getTitle() {
-        return title;
-    }
-    public void setTitle(String title) {
-        this.title = title;
-    }
-    public String getTeaser() {
-        return teaser;
-    }
-    public void setTeaser(String teaser) {
-        this.teaser = teaser;
-    }
-    public String getContent() {
-        return content;
-    }
-    public void setContent(String content) {
-        this.content = content;
-    }
-    public LocalDateTime getPublishedAt() {
-        return publishedAt;
-    }
-    public void setPublishedAt(LocalDateTime publishedAt) {
-        this.publishedAt = publishedAt;
-    }
-    public String getCategory() {
-        return category;
-    }
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    public String getTeaser() { return teaser; }
+    public void setTeaser(String teaser) { this.teaser = teaser; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+
+    public LocalDateTime getPublishedAt() { return publishedAt; }
+    public void setPublishedAt(LocalDateTime publishedAt) { this.publishedAt = publishedAt; }
+
+    /**
+     * Returns true if publishedAt is set and not in the future
+     */
     public boolean isPublished() {
-        return published;
-    }
-    public void setPublished(boolean published) {
-        this.published = published;
+        return publishedAt != null && !publishedAt.isAfter(LocalDateTime.now());
     }
 }

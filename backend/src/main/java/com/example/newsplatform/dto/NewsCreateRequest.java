@@ -1,36 +1,13 @@
 package com.example.newsplatform.dto;
 
 import java.time.LocalDateTime;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.NotNull;
-
 
 public class NewsCreateRequest {
-
-    // Fields required to create a new news record
-    @NotBlank
-    @Size(max = 255)
     private String title;
-
-    @NotBlank
     private String teaser;
-
-    @NotBlank
     private String content;
-
-    @Size(max = 100)
-    private String category;
-
-    @NotNull
     private LocalDateTime publishedAt;
 
-    private boolean published;
-
-    public NewsCreateRequest() {
-    }
-
-    // Getters and Setters
     public String getTitle() {
         return title;
     }
@@ -49,22 +26,10 @@ public class NewsCreateRequest {
     public void setContent(String content) {
         this.content = content;
     }
-    public String getCategory() {
-        return category;
-    }
-    public void setCategory(String category) {
-        this.category = category;
-    }
     public LocalDateTime getPublishedAt() {
         return publishedAt;
     }
     public void setPublishedAt(LocalDateTime publishedAt) {
         this.publishedAt = publishedAt;
-    }
-    public boolean isPublished() {
-        return published;
-    }
-    public void setPublished(boolean published) {
-        this.published = published;
     }
 }

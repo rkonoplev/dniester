@@ -4,12 +4,9 @@ import com.example.newsplatform.dto.NewsCreateRequest;
 import com.example.newsplatform.dto.NewsDto;
 import com.example.newsplatform.dto.NewsUpdateRequest;
 import com.example.newsplatform.service.NewsService;
-import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/news")
@@ -22,34 +19,31 @@ public class AdminNewsController {
     }
 
     @GetMapping
-    @Secured("ROLE_ADMIN")
-    public List<NewsDto> getAllNews() {
-        return newsService.getAllNews(); // all news, published or not
+    public Page<NewsDto> getAll(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String category,
+            Pageable pageable
+    ) {
+        return newsService.getAll(search, category, pageable);
     }
 
     @GetMapping("/{id}")
-    @Secured("ROLE_ADMIN")
-    public NewsDto getNewsById(@PathVariable Long id) {
-        return newsService.getNewsById(id);
+    public NewsDto getById(@PathVariable Long id) {
+        return newsService.getById(id);
     }
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    @Secured("ROLE_ADMIN")
-    public NewsDto createNews(@Valid @RequestBody NewsCreateRequest request) {
-        return newsService.createNews(request);
+    public NewsDto create(@RequestBody NewsCreateRequest request) {
+        return newsService.create(request);
     }
 
     @PutMapping("/{id}")
-    @Secured("ROLE_ADMIN")
-    public NewsDto updateNews(@PathVariable Long id, @Valid @RequestBody NewsUpdateRequest request) {
-        return newsService.updateNews(id, request);
+    public NewsDto update(@PathVariable Long id, @RequestBody NewsUpdateRequest request) {
+        return newsService.update(id, request);
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Secured("ROLE_ADMIN")
-    public void deleteNews(@PathVariable Long id) {
-        newsService.deleteNews(id);
+    public void delete(@PathVariable Long id) {
+        newsService.delete(id);
     }
 }
