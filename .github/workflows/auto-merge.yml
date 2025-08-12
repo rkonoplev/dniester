@@ -1,13 +1,10 @@
-# Enhanced Auto Merge Workflow
-# Automatically merges pull requests when CI passes
-name: Auto Merge
+name: Auto Merge PRs
 
 on:
-  # Trigger on PR events
   pull_request:
     types: [opened, reopened, synchronize]
-
-  # Trigger on check suite completion (CI)
+    branches:
+      - main
   check_suite:
     types: [completed]
 
@@ -15,66 +12,55 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
 
-    # Conditional execution - only run if CI is successful
-    if: |
-      (github.event_name == 'pull_request' && github.event.action != 'closed') ||
-      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'success')
-
     steps:
-      # Step 1: Check if PR is mergeable and ready
-      - name: Check PR status
+      - name: Check PR target branch
+        if: github.event.pull_request.base.ref != 'main'
+        run: |
+          echo "PR target branch is not 'main'. Skipping auto-merge."
+          exit 0
+
+      - name: Auto-merge if all checks pass
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            try {
-              // Get PR details
-              const { data: pr } = await github.rest.pulls.get({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.issue.number
+            let prNumber;
+            if (context.eventName === 'pull_request') {
+              prNumber = context.issue.number;
+            } else if (context.eventName === 'check_suite') {
+              const { data: prs } = await github.rest.search.issuesAndPullRequests({
+                q: `repo:${context.repo.owner}/${context.repo.repo} is:pr is:open sha:${context.payload.check_suite.head_sha}`
               });
-            
-              // Skip if PR is already closed/merged
-              if (pr.state !== 'open') {
-                console.log('PR is already closed or merged, skipping');
-                return;
+              if (prs.items.length > 0) {
+                prNumber = prs.items[0].number;
               }
-            
-              // Check if PR is mergeable
-              if (!pr.mergeable) {
-                console.log('PR is not mergeable, skipping');
-                return;
-              }
-            
-              // Check if all required status checks are passing
-              const { data: checks } = await github.rest.checks.listForRef({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                ref: pr.head.sha
-              });
-            
-              const allChecksPassed = checks.check_runs.every(check => 
-                check.status === 'completed' && check.conclusion === 'success'
-              );
-            
-              if (!allChecksPassed) {
-                console.log('Not all required checks have passed, skipping merge');
-                return;
-              }
-            
-              // If we get here, merge the PR
-              console.log('All checks passed, merging PR...');
-              await github.rest.pulls.merge({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                pull_number: context.issue.number,
-                merge_method: 'squash'
-              });
-            
-              console.log('PR merged successfully');
-            
-            } catch (error) {
-              console.error('Error in auto-merge process:', error);
-              // Don't fail the workflow on merge errors
             }
+
+            if (!prNumber) {
+              console.log("No open PR found for this commit. Skipping.");
+              return;
+            }
+
+            const { data: checks } = await github.rest.checks.listForRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: context.payload.check_suite?.head_sha || context.payload.pull_request?.head.sha
+            });
+
+            const allChecksPassed = checks.check_runs.every(check =>
+              check.status === 'completed' && check.conclusion === 'success'
+            );
+
+            if (!allChecksPassed) {
+              console.log("Not all checks passed. Skipping auto-merge.");
+              return;
+            }
+
+            await github.rest.pulls.merge({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+              merge_method: 'squash'
+            });
+
+            console.log(`PR #${prNumber} merged successfully.`);
