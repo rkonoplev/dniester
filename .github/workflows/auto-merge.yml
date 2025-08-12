@@ -1,0 +1,80 @@
+# Enhanced Auto Merge Workflow
+# Automatically merges pull requests when CI passes
+name: Auto Merge
+
+on:
+  # Trigger on PR events
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+  # Trigger on check suite completion (CI)
+  check_suite:
+    types: [completed]
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+
+    # Conditional execution - only run if CI is successful
+    if: |
+      (github.event_name == 'pull_request' && github.event.action != 'closed') ||
+      (github.event_name == 'check_suite' && github.event.check_suite.conclusion == 'success')
+
+    steps:
+      # Step 1: Check if PR is mergeable and ready
+      - name: Check PR status
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            try {
+              // Get PR details
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number
+              });
+            
+              // Skip if PR is already closed/merged
+              if (pr.state !== 'open') {
+                console.log('PR is already closed or merged, skipping');
+                return;
+              }
+            
+              // Check if PR is mergeable
+              if (!pr.mergeable) {
+                console.log('PR is not mergeable, skipping');
+                return;
+              }
+            
+              // Check if all required status checks are passing
+              const { data: checks } = await github.rest.checks.listForRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref: pr.head.sha
+              });
+            
+              const allChecksPassed = checks.check_runs.every(check => 
+                check.status === 'completed' && check.conclusion === 'success'
+              );
+            
+              if (!allChecksPassed) {
+                console.log('Not all required checks have passed, skipping merge');
+                return;
+              }
+            
+              // If we get here, merge the PR
+              console.log('All checks passed, merging PR...');
+              await github.rest.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                merge_method: 'squash'
+              });
+            
+              console.log('PR merged successfully');
+            
+            } catch (error) {
+              console.error('Error in auto-merge process:', error);
+              // Don't fail the workflow on merge errors
+            }

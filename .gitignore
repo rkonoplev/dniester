@@ -82,4 +82,7 @@ application.properties
 backend/build/reports/
 
 # GitHub Actions
-.github/workflows/
+.github/workflows/backend/.gradle/
+backend/build/
+backend/bin/
+backend/out/
