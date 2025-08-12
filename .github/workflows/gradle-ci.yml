@@ -58,7 +58,7 @@ jobs:
       - name: Install and Run GitLeaks scan
         run: |
           echo "Installing GitLeaks..."
-          wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
+          wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz  
           tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
           sudo install gitleaks /usr/bin/gitleaks
           echo "GitLeaks installed successfully!"
@@ -90,9 +90,19 @@ jobs:
           path: backend/build/reports/jacoco/test/
           if-no-files-found: warn # Warn if no files are found, but don't fail the step
 
+      # Step 9: Upload coverage report to CodeCov
+      # Send JaCoCo coverage data to CodeCov for analysis and reporting
+      - name: Upload coverage to CodeCov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: backend/build/reports/jacoco/test/jacocoTestReport.xml
+          flags: unittests
+          name: codecov-news-platform
+
       # --- Qodana Scans ---
 
-      # Step 9: Run Qodana analysis for the Backend (JVM) code
+      # Step 10: Run Qodana analysis for the Backend (JVM) code
       # Uses Pro linter and requires QODANA_TOKEN for Qodana Cloud connection.
       # The '--project-dir' argument specifies the directory to analyze.
       - name: Qodana Backend (JVM) Scan
@@ -107,7 +117,7 @@ jobs:
           use-annotations: true # Add annotations to the code in the PR
           upload-result: true   # Upload the full analysis results to Qodana Cloud
 
-      # Step 10: Optional - Upload GitLeaks results as artifact (only on failure)
+      # Step 11: Optional - Upload GitLeaks results as artifact (only on failure)
       - name: Upload GitLeaks scan results
         if: failure()
         uses: actions/upload-artifact@v4
