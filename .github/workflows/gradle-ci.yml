@@ -58,7 +58,7 @@ jobs:
       - name: Install and Run GitLeaks scan
         run: |
           echo "Installing GitLeaks..."
-          wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz  
+          wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz    
           tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
           sudo install gitleaks /usr/bin/gitleaks
           echo "GitLeaks installed successfully!"
@@ -124,3 +124,80 @@ jobs:
         with:
           name: gitleaks-results
           path: .gitleaks-report.json
+
+      # Step 12: Set build status as success
+      # This explicitly sets the 'build' status check to success
+      - name: Set build status
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const sha = context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha;
+            await github.rest.repos.createStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'success',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: 'Build and tests completed successfully',
+              context: 'build'
+            });
+            console.log('Build status set to success');
+
+      # Step 13: Set test status as success
+      # This explicitly sets the 'test' status check to success
+      - name: Set test status
+        if: success()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const sha = context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha;
+            await github.rest.repos.createStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: sha,
+              state: 'success',
+              target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+              description: 'All tests passed successfully',
+              context: 'test'
+            });
+            console.log('Test status set to success');
+
+      # Step 14: Set failure statuses if workflow fails
+      # This ensures proper status reporting even on failures
+      - name: Set failure statuses
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const sha = context.payload.pull_request ? context.payload.pull_request.head.sha : context.sha;
+            try {
+              await github.rest.repos.createStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: sha,
+                state: 'failure',
+                target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+                description: 'Build or tests failed',
+                context: 'build'
+              });
+            } catch (error) {
+              console.log('Could not set build failure status');
+            }
+            
+            try {
+              await github.rest.repos.createStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: sha,
+                state: 'failure',
+                target_url: `https://github.com/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`,
+                description: 'Tests failed',
+                context: 'test'
+              });
+            } catch (error) {
+              console.log('Could not set test failure status');
+            }
