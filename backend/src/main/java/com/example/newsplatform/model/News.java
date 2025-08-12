@@ -19,6 +19,8 @@ public class News {
     @Lob
     private String content;
 
+    private String category;
+
     private LocalDateTime publishedAt;
 
     // Getters and setters ...

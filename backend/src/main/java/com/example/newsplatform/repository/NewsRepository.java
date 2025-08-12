@@ -5,6 +5,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface NewsRepository extends JpaRepository<News, Long> {
 
@@ -12,22 +13,24 @@ public interface NewsRepository extends JpaRepository<News, Long> {
         SELECT n FROM News n
         WHERE LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
            OR LOWER(n.teaser) LIKE LOWER(CONCAT('%', :keyword, '%'))
-           OR LOWER(n.content) LIKE LOWER(CONCAT('%', :keyword, '%'))
+           OR n.content LIKE CONCAT('%', :keyword, '%')
     """)
-    Page<News> searchByKeyword(String keyword, Pageable pageable);
+    Page<News> searchByKeyword(@Param("keyword") String keyword, Pageable pageable);
 
     @Query("""
         SELECT n FROM News n
         WHERE n.category = :category
     """)
-    Page<News> findByCategory(String category, Pageable pageable);
+    Page<News> findByCategory(@Param("category") String category, Pageable pageable);
 
     @Query("""
         SELECT n FROM News n
         WHERE n.category = :category
-          AND (LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
-               OR LOWER(n.teaser) LIKE LOWER(CONCAT('%', :keyword, '%'))
-               OR LOWER(n.content) LIKE LOWER(CONCAT('%', :keyword, '%')))
+          AND (:keyword IS NULL OR :keyword = '' OR (
+               LOWER(n.title) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR LOWER(n.teaser) LIKE LOWER(CONCAT('%', :keyword, '%'))
+            OR n.content LIKE CONCAT('%', :keyword, '%')
+          ))
     """)
-    Page<News> searchByKeywordAndCategory(String keyword, String category, Pageable pageable);
+    Page<News> searchByKeywordAndCategory(@Param("keyword") String keyword, @Param("category") String category, Pageable pageable);
 }
