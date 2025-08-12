@@ -19,6 +19,11 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Install dependencies
+        run: |
+          npm init -y
+          npm install @octokit/rest
+
       - name: Create and run auto-merge script
         run: |
           cat > /tmp/automerge.js << 'EOF'
@@ -27,10 +32,70 @@ jobs:
           async function run() {
             try {
               console.log("🚀 Starting auto-merge...");
-              // Your simplified auto-merge logic here
-              console.log("✅ Auto-merge completed");
+          
+              // Get GitHub token from environment
+              const token = process.env.GITHUB_TOKEN;
+              if (!token) {
+                console.log("❌ No GitHub token found");
+                return;
+              }
+          
+              // Create Octokit instance
+              const octokit = new Octokit({ auth: token });
+          
+              // Get event payload
+              const eventPayload = process.env.GITHUB_EVENT_PATH ? 
+                require(process.env.GITHUB_EVENT_PATH) : {};
+          
+              const pr = eventPayload.pull_request;
+              if (!pr) {
+                console.log("❌ No PR found in event");
+                return;
+              }
+          
+              console.log(`✅ PR #${pr.number} found from branch ${pr.head.ref}`);
+          
+              // Check branch pattern
+              if (!pr.head.ref.startsWith("feature/")) {
+                console.log(`🏷 Branch "${pr.head.ref}" is not feature/* - skipping`);
+                return;
+              }
+          
+              // Check if PR is draft
+              if (pr.draft) {
+                console.log(`📝 PR is draft - skipping`);
+                return;
+              }
+          
+              console.log(`🔍 Getting status for PR #${pr.number}`);
+          
+              // Get status checks
+              const {  status } = await octokit.rest.repos.getCombinedStatusForRef({
+                owner: process.env.GITHUB_REPOSITORY.split('/')[0],
+                repo: process.env.GITHUB_REPOSITORY.split('/')[1],
+                ref: pr.head.sha
+              });
+          
+              console.log(`📊 Status: ${status.state}`);
+          
+              if (status.state === "success") {
+                console.log(`✅ All checks passed - merging PR #${pr.number}`);
+          
+                await octokit.rest.pulls.merge({
+                  owner: process.env.GITHUB_REPOSITORY.split('/')[0],
+                  repo: process.env.GITHUB_REPOSITORY.split('/')[1],
+                  pull_number: pr.number,
+                  merge_method: "rebase"
+                });
+          
+                console.log(`🎉 PR #${pr.number} merged successfully`);
+              } else {
+                console.log(`❌ Checks not passed - skipping merge`);
+              }
+          
             } catch (error) {
               console.error("❌ Error:", error.message);
+              console.error("📝 Stack:", error.stack);
             }
           }
           
@@ -40,3 +105,5 @@ jobs:
           node /tmp/automerge.js
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
