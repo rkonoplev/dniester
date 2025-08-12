@@ -1,30 +1,20 @@
-name: Auto Merge Pull Requests
+name: Auto merge
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
-    branches:
-      - main
+    types:
+      - labeled
+
+permissions:
+  pull-requests: write
+  contents: write
 
 jobs:
   automerge:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write      # нужно для merge
-      pull-requests: write # нужно для управления PR
     steps:
-      - name: Enable auto-merge for PR
-        uses: peter-evans/enable-pull-request-automerge@v2
+      - name: Enable auto-merge for pull request
+        uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          merge-method: rebase
-
-      - name: Automatically merge PR when checks pass
-        uses: peter-evans/auto-merge@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          merge-method: rebase
-          commit-message: pull-request-title
-          branch-name: 'feature/*' # мёрджим только PR из feature/*
-          skip-draft: true         # не мёрджим черновики
-          delete-branch: true      # удаляем исходную ветку после merge
+          merge-method: squash
