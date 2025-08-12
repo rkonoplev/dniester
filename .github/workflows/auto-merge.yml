@@ -18,7 +18,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const pr = github.context.payload.pull_request;
+            const pr = context.payload.pull_request;
             let prNumber;
             let headBranch;
             let prTitle;
@@ -31,8 +31,8 @@ jobs:
               prTitle = pr.title;
               prBody = pr.body || "";
               isDraft = pr.draft;
-            } else if (github.context.eventName === 'check_suite') {
-              const checkSuite = github.context.payload.check_suite;
+            } else if (context.eventName === 'check_suite') {
+              const checkSuite = context.payload.check_suite;
               const prs = checkSuite.pull_requests;
               if (prs.length > 0) {
                 prNumber = prs[0].number;
@@ -64,7 +64,7 @@ jobs:
             const { data: combinedStatus } = await github.rest.repos.getCombinedStatusForRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: pr ? pr.head.sha : github.context.payload.check_suite.head_sha
+              ref: pr ? pr.head.sha : context.payload.check_suite.head_sha
             });
 
             const allChecksPassed = combinedStatus.state === "success";
