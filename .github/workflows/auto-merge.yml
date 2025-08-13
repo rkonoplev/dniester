@@ -1,18 +1,24 @@
-name: Auto Merge Approved PRs
+name: Auto-merge PRs to main
 
 on:
   pull_request_review:
     types: [submitted]
 
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
-  automerge:
-    if: github.event.review.state == 'approved'
+  auto-merge:
+    if: >
+      github.event.review.state == 'approved' &&
+      github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: write
-      contents: write
     steps:
-      - name: Auto-merge pull request
-        uses: pascalgn/automerge-action@v0.16.4
+      - name: Merge pull request
+        run: |
+          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "Merging PR #$PR_NUMBER into main..."
+          gh pr merge "$PR_NUMBER" --merge --admin
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
