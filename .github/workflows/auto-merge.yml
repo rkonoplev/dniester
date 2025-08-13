@@ -1,44 +1,52 @@
-name: Auto Merge PRs to Main
+name: Auto Merge to Main
 
 on:
+  push:
+    branches:
+      - feature/**
   pull_request:
-    types:
-      - opened
-      - synchronize
-      - reopened
+    types: [opened, synchronize, reopened]
 
 jobs:
-  auto-merge:
+  wait-and-merge:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # Step 2: Wait until all required checks are successful
+      # Wait for required checks
       - name: Wait for status checks
         uses: lewagon/wait-on-check-action@v1.3.3
         with:
-          check-name: '' # Leave empty to wait for all checks
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          check-name: build
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10
 
-      # Step 3: Merge the PR automatically if base branch is main
+      - name: Wait for test check
+        uses: lewagon/wait-on-check-action@v1.3.3
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          check-name: test
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      # Merge PR
       - name: Merge pull request
         uses: actions/github-script@v7
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const pr = context.payload.pull_request;
-            if (pr.base.ref === 'main') {
-              await github.pulls.merge({
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${context.ref.replace('refs/heads/', '')}`,
+              state: 'open'
+            });
+            if (prs.data.length > 0) {
+              await github.rest.pulls.merge({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                pull_number: pr.number,
+                pull_number: prs.data[0].number,
                 merge_method: 'squash'
               });
-              console.log(`✅ PR #${pr.number} merged into main`);
+              core.info(`✅ Merged PR #${prs.data[0].number}`);
             } else {
-              console.log(`ℹ️ PR base branch is not main, skipping merge`);
+              core.info('ℹ️ No open PR found.');
             }
