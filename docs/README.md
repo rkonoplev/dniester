@@ -1,3 +1,3 @@
 # Documentation
 
-This folder will contain project documentation and technical requirements.
+This folder in future will contain project documentation and technical requirements.
