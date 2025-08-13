@@ -3,8 +3,6 @@ name: Java CI with Gradle, Qodana Cloud and GitLeaks
 on:
   push:
     branches: [ "main", "develop", "master" ]  # Runs on push to these branches
-  pull_request:
-    branches: [ "main" ]  # Runs on pull requests targeting main
 
 jobs:
   build:
@@ -16,7 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}  # Ensure correct commit is checked out
           fetch-depth: 0  # Full history for accurate builds
 
       - name: Set up JDK 21
@@ -51,7 +48,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Set up JDK 21
@@ -108,7 +104,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Install and Run GitLeaks scan
@@ -135,7 +130,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
 
       - name: Qodana Backend (JVM) Scan
