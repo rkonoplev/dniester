@@ -55,6 +55,20 @@ tasks.jacocoTestReport {
     }
 }
 
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.0  // No coverage restriction
+            }
+        }
+    }
+}
+
+tasks.check.dependsOn tasks.jacocoTestCoverageVerification
+
 test {
     useJUnitPlatform()
 }
