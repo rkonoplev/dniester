@@ -1,24 +1,44 @@
-name: Auto-merge PRs to main
+name: Auto Merge PRs to Main
 
 on:
-  pull_request_review:
-    types: [submitted]
-
-permissions:
-  pull-requests: write
-  contents: write
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   auto-merge:
-    if: >
-      github.event.review.state == 'approved' &&
-      github.event.pull_request.base.ref == 'main'
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Wait until all required checks are successful
+      - name: Wait for status checks
+        uses: lewagon/wait-on-check-action@v1.3.3
+        with:
+          check-name: '' # Leave empty to wait for all checks
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
+      # Step 3: Merge the PR automatically if base branch is main
       - name: Merge pull request
-        run: |
-          PR_NUMBER=$(jq -r .pull_request.number "$GITHUB_EVENT_PATH")
-          echo "Merging PR #$PR_NUMBER into main..."
-          gh pr merge "$PR_NUMBER" --merge --admin
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request;
+            if (pr.base.ref === 'main') {
+              await github.pulls.merge({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                merge_method: 'squash'
+              });
+              console.log(`✅ PR #${pr.number} merged into main`);
+            } else {
+              console.log(`ℹ️ PR base branch is not main, skipping merge`);
+            }
