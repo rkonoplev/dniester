@@ -125,4 +125,13 @@ Project documentation and technical requirements are stored in the [docs/](docs/
 📜 License
 MIT License. See [LICENSE](LICENSE) for details.
 
+## Archived Branch: `main-legacy`
+
+As of August 14, 2025, the `main-legacy` branch has been officially archived and locked for changes.  
+It contains deprecated code and is preserved solely for historical reference.  
+All active development now takes place in the `main` branch or other current branches.
+
+🔗 Final commit before archival: [`8978e88`](https://github.com/rkonoplev/news-platform/commit/8978e8845a911aec1f2271e4e17f5013ef700efb)
+
+
 
