@@ -20,14 +20,22 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot Starter for building web applications (REST, etc.)
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    // Spring Boot Starter for JPA/Hibernate support
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    // Spring Boot Starter for security (authentication, authorization)
     implementation 'org.springframework.boot:spring-boot-starter-security'
+    // MariaDB JDBC driver for connecting to MariaDB databases
     implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // Spring Boot Starter for bean validation (JSR-380)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Spring Boot Starter for tests (JUnit, Mockito, etc.)
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
+// Configure Checkstyle (static code analysis)
 checkstyle {
     toolVersion = '10.12.1'
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
@@ -35,13 +43,14 @@ checkstyle {
     maxErrors = 0
 }
 
-tasks.withType(Checkstyle) {
+tasks.withType(Checkstyle).configureEach {
     reports {
         xml.required = false
         html.required = true
     }
 }
 
+// Configure JaCoCo for code coverage reports
 jacoco {
     toolVersion = "0.8.11"
 }
@@ -61,12 +70,13 @@ tasks.jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.0  // No coverage restriction
+                minimum = 0.0  // No coverage restriction (change as needed)
             }
         }
     }
 }
 
+// Make 'check' task depend on coverage verification
 tasks.check.dependsOn tasks.jacocoTestCoverageVerification
 
 test {

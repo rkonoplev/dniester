@@ -1,26 +1,48 @@
+# =============================================================
+# Spring Boot Application Properties Template for MariaDB
+# Copy this file as application-local.properties and fill in
+# your own sensitive values!
+# Never commit files with real passwords or secrets to version control!
+# =============================================================
+
+# -------------------------
 # Server configuration
+# -------------------------
 server.port=8080
 
-# H2 Database configuration
-spring.datasource.url=jdbc:h2:mem:testdb
-spring.datasource.driverClassName=org.h2.Driver
-spring.datasource.username=sa
-spring.datasource.password=
+# -------------------------
+# MariaDB Database configuration
+# -------------------------
+spring.datasource.url=jdbc:mariadb://localhost:3306/YOUR_DATABASE
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+spring.datasource.username=YOUR_DATABASE_USER      # <-- Replace this!
+spring.datasource.password=YOUR_DATABASE_PASSWORD  # <-- Replace this!
 
+# -------------------------
 # JPA/Hibernate properties
-spring.jpa.database-platform=org.hibernate.dialect.H2Dialect
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
+# -------------------------
+spring.jpa.database-platform=org.hibernate.dialect.MariaDBDialect
+spring.jpa.hibernate.ddl-auto=update      # Use validate/none for production
+spring.jpa.show-sql=true                  # Disable in production
 
-# H2 Console (for development only)
-spring.h2.console.enabled=true
-spring.h2.console.path=/h2-console
+# -------------------------
+# Spring Security (optional, for default user in dev only)
+# -------------------------
+#spring.security.user.name=YOUR_USERNAME           # Uncomment and change as needed
+#spring.security.user.password=YOUR_SECURE_PASSWORD
+#spring.security.user.roles=ADMIN
 
-# Spring Security default user (CHANGE THESE VALUES IN PRODUCTION)
-spring.security.user.name=YOUR_USERNAME
-spring.security.user.password=YOUR_SECURE_PASSWORD
-spring.security.user.roles=ADMIN
-
+# -------------------------
 # Logging configuration
-logging.level.com.example.newsplatform=DEBUG
-logging.level.org.springframework.security=DEBUG
+# -------------------------
+logging.level.root=INFO
+logging.level.com.example.newsplatform=DEBUG       # Change to INFO or ERROR in production
+logging.level.org.springframework.security=INFO
+
+# -------------------------
+# Additional configuration goes here as needed
+# -------------------------
+
+# ===========================
+#  DO NOT COMMIT FILES THAT CONTAIN REAL CREDENTIALS!
+# ===========================
