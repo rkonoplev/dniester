@@ -1,7 +1,11 @@
 # -------------------------------
 # Java / Gradle
 # -------------------------------
+
+# Compiled class files
 *.class
+
+# Package files
 *.jar
 *.war
 *.ear
@@ -9,14 +13,15 @@
 *.tar.gz
 *.rar
 
-!/gradle/wrapper/gradle-wrapper.jar
+# Gradle Wrapper - only wrapper jar and properties are needed, everything else can be ignored
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
 
-# Gradle build output
-/build/
-/.gradle/
-
-# Maven build output
-/target/
+# Gradle build and cache directories (at any level)
+.gradle/
+build/
+**/build/
+**/.gradle/
 
 # IntelliJ IDEA
 .idea/
@@ -25,7 +30,7 @@
 *.iws
 /out/
 
-# IntelliJ IDEA specific files (safe to ignore)
+# IntelliJ IDEA specific (safe to ignore)
 .idea/artifacts/
 .idea/compiler.xml
 .idea/libraries/
@@ -81,11 +86,12 @@ application.properties
 # Reports
 backend/build/reports/
 
-# GitHub Actions
-.github/workflows/backend/.gradle/
+# GitHub Actions (ignoring Gradle cache and builds inside workflows)
+/github/workflows/backend/.gradle/
 backend/build/
 backend/bin/
 backend/out/
 
+# Secrets and local configs
 secrets.env
 config-local.yml
