@@ -5,8 +5,8 @@
 # News Platform
 
 **Monorepo for a news publishing platform**  
-✅ Backend: Spring Boot  
-🛠 Frontend: Gatsby + JavaScript 
+✅ Backend: Spring Boot
+🛠 Frontend: Gatsby + JavaScript
 📚 Docs: Coming soon
 
 ## 🛠 Technology Stack
@@ -81,18 +81,18 @@ This project uses several code quality tools to ensure code consistency and prev
 - **GitLeaks** - Secret detection (pre-commit hook / CI)
     - Run: `gitleaks detect --source .`
 
-🚀 Development Commands
+## 🚀 Development Commands
 
-# Run all checks (tests + coverage + code style)
+### Run all checks (tests + coverage + code style)
 ./gradlew check
 
-# Run only code style checks
+### Run only code style checks
 ./gradlew checkstyleMain checkstyleTest
 
-# Run tests with coverage
+### Run tests with coverage
 ./gradlew test
 
-# Check for secrets
+### Check for secrets
 gitleaks detect --source .
 
 ## 📌 Planned Features
@@ -101,7 +101,7 @@ gitleaks detect --source .
 - **Authentication & Authorization with Spring Security (JWT or OAuth2)**
 - **CI/CD Pipeline with GitHub Actions**
 
-🌐 Frontend Stack
+## 🌐 Frontend Stack
 
 Gatsby (React-based framework)
 JavaScript
@@ -119,17 +119,18 @@ Create `application.properties` file in `backend/src/main/resources/` directory:
 cp backend/src/main/resources/application.properties.template backend/src/main/resources/application.properties
 ```
 
-📖 Documentation
+## 📖 Documentation
 Project documentation and technical requirements are stored in the [docs/](docs/) folder.
 
-📜 License
+## 📜 License
 MIT License. See [LICENSE](LICENSE) for details.
 
-## Archived Branch: `main-legacy`
+---
+
+### Archived Branch: `main-legacy`
 
 As of August 14, 2025, the `main-legacy` branch has been officially archived and locked for changes.  
 It contains deprecated code and is preserved solely for historical reference.  
 All active development now takes place in the `main` branch or other current branches.
 
 🔗 Final commit before archival: [`8978e88`](https://github.com/rkonoplev/news-platform/commit/8978e8845a911aec1f2271e4e17f5013ef700efb)
-
