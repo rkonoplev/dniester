@@ -1,5 +1,6 @@
 package com.example.newsplatform.controller;
 
+import jakarta.validation.Valid;
 import com.example.newsplatform.dto.NewsDto;
 import com.example.newsplatform.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,7 @@ public class AdminNewsController {
      * Create a new news article.
      */
     @PostMapping
-    public NewsDto create(@RequestBody NewsDto newsDto) {
+    public NewsDto create(@RequestBody @Valid NewsDto newsDto) {
         return newsService.create(newsDto);
     }
 
