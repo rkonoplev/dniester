@@ -86,3 +86,6 @@ backend/build/reports/
 backend/build/
 backend/bin/
 backend/out/
+
+secrets.env
+config-local.yml
