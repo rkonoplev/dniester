@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  db:
+    image: mariadb:10.7
+    restart: always
+    env_file:
+      - .env
+    environment:
+      # Fallback to .env values if available
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+    ports:
+      - "${DATABASE_LOCAL_PORT}:3306"     # Expose MariaDB port to host using variable
+    volumes:
+      - ./db_data:/var/lib/mysql          # Persistent DB data
+      - ./db_dumps:/docker-entrypoint-initdb.d:ro   # Initial SQL dumps
+
+  app:
+    build: .
+    depends_on:
+      - db
+    env_file:
+      - .env
+    environment:
+      # Spring application should use these for DB connection
+      SPRING_DATASOURCE_URL: jdbc:mariadb://db:3306/${MARIADB_DATABASE}
+      SPRING_DATASOURCE_USERNAME: ${MARIADB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${MARIADB_PASSWORD}
+    ports:
+      - "${SPRING_LOCAL_PORT}:8080"       # Expose app port

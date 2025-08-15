@@ -95,3 +95,10 @@ backend/out/
 # Secrets and local configs
 secrets.env
 config-local.yml
+
+# Ignore any SQL dump files
+/db_dumps/*
+!db_dumps/README.md      # allow a readme with description
+
+# Ignore Docker named volume directory (if you ever mount to a local path)
+db_data/
