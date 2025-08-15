@@ -13,11 +13,14 @@ public class NewsCreateRequest {
     @Size(max = 255)
     private String title;
 
-    @NotBlank
+
     private String teaser;
 
     @NotBlank
     private String content;
+
+    @Size(max = 100)
+    private String category;
 
     @NotNull
     private LocalDateTime publishedAt;
@@ -31,6 +34,9 @@ public class NewsCreateRequest {
 
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
+
+    public String getCategory() { return content; }
+    public void setCategory(String content) { this.content = content; }
 
     public LocalDateTime getPublishedAt() { return publishedAt; }
     public void setPublishedAt(LocalDateTime publishedAt) { this.publishedAt = publishedAt; }
