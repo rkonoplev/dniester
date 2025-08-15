@@ -19,6 +19,7 @@ public class NewsCreateRequest {
     @NotBlank
     private String content;
 
+    @NotBlank
     @Size(max = 100)
     private String category;
 

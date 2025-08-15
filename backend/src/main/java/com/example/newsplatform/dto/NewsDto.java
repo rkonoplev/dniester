@@ -1,33 +1,37 @@
 package com.example.newsplatform.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
-/**
- * Data Transfer Object for returning news data to clients.
- */
 public class NewsDto {
     private Long id;
+
+    @NotBlank
     private String title;
+
     private String teaser;
+
+    @NotBlank
     private String content;
+
+    @NotBlank
+    @Size(max = 100)
     private String category;
     private LocalDateTime publishedAt;
 
-    // All-args constructor for mapping
     public NewsDto(Long id, String title, String teaser, String content, String category, LocalDateTime publishedAt) {
         this.id = id;
         this.title = title;
         this.teaser = teaser;
         this.content = content;
-        this.content = category;
+        this.category = category;
         this.publishedAt = publishedAt;
     }
 
-    // No-args constructor for frameworks
-    public NewsDto() {
-    }
+    public NewsDto() {}
 
-    // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -40,8 +44,8 @@ public class NewsDto {
     public String getContent() { return content; }
     public void setContent(String content) { this.content = content; }
 
-    public String getCategory() { return content; }
-    public void setCategory(String content) { this.content = content; }
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 
     public LocalDateTime getPublishedAt() { return publishedAt; }
     public void setPublishedAt(LocalDateTime publishedAt) { this.publishedAt = publishedAt; }
