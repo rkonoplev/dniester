@@ -1,54 +1,69 @@
-Here's the `docs/ARCHITECTURE_MIGRATION.md` file with a clear migration plan, structure, and rollback commands:
+# Architecture Migration Plan (MySQL, Spring Boot, Docker)
 
-# Architecture Migration Plan
+---
 
-## Goals
-- Minimal future intervention
-- Low maintenance cost
-- Stable operation on free-tier services
-- Clean project structure without complex patterns (no DDD)
+## 🎯 Goals
 
-## Recommended Improvements
+- **Minimal future intervention** needed
+- **Low maintenance cost** for the project
+- **Stable operation** on free-tier or managed services
+- **Clean, pragmatic project structure** (no overengineering, no DDD)
+- **Fast developer onboarding & deployment**
 
-### 1. Separate Public and Admin APIs
-- `AdminNewsController` → `/api/admin/news`
-- `PublicNewsController` → `/api/public/news`
+---
 
-### 2. Global Exception Handler
-- Implement `@ControllerAdvice` for consistent JSON error responses
-- Response format:
-```json
-{
-  "timestamp": "2025-08-14T12:00:00Z",
-  "status": 400,
-  "message": "Validation failed",
-  "details": "/api/admin/news"
-}
-```
+## ✅ Completed Improvements
 
-### 3. CORS and Security Configuration
-- Extract CORS settings to dedicated `CorsConfig`
-- Simplifies frontend changes without security rewrites
+1. **Switch to MySQL**
+    - All project data and configuration migrated from MariaDB to MySQL
+    - Full Unicode (utf8mb4) support for Drupal 6 → Java migration (handles Cyrillic)
+    - Database drivers, connection URLs, and Docker Compose updated for MySQL
+2. **Dockerization**
+    - Working `Dockerfile` for Spring Boot application
+    - Production-grade `docker-compose.yml` — Spring Boot app + MySQL db
+    - One-command startup:
+      ```bash
+      docker compose up -d
+      ```
+3. **Profile-based Configuration**
+    - Environment-specific property files (`application-local.properties`, `application-prod.properties` or YAML alternatives)
+    - All secrets and credentials managed via `.env` and environment variables
 
-### 4. Input Validation
-- Enable `@Validated` in controllers
-- Handle `MethodArgumentNotValidException` in `@ControllerAdvice`
+---
 
-### 5. Docker + Docker Compose
-- Single `docker-compose.yml` for project + database
-- One-command startup: `docker compose up -d`
+## 🚧 Next Steps
 
-### 6. Profile-based Configuration
-- `application-dev.properties` for development
-- `application-prod.properties` for production
+1. **Global Exception Handling**
+    - Use `@ControllerAdvice` for unified JSON error responses
+    - Example standard error response:
+      ```json
+      {
+        "timestamp": "2025-08-14T12:00:00Z",
+        "status": 400,
+        "message": "Validation failed",
+        "details": "/api/admin/news"
+      }
+      ```
+2. **Input Validation**
+    - Add validation annotations (`@NotNull`, `@Size`, etc.) inside DTOs (`NewsCreateRequest`, `NewsUpdateRequest`, etc.)
+    - Use `@Validated` on controller classes
+    - Handle `MethodArgumentNotValidException` using the global exception handler
+3. **CORS and Security**
+    - Move CORS rules to a dedicated `CorsConfig` class
+    - Fine-tune security:
+        - Open or limited-auth public endpoints (`/api/public/...`)
+        - Strong protection for admin endpoints (`/api/admin/...`), roles/JWT as needed
+    - Flexible CORS config for frontend teams
+4. **API Documentation & README**
+    - Integrate [springdoc-openapi-ui](https://springdoc.org/) for auto-generated Swagger UI
+    - Add Swagger link and sample API usage to `README.md`
+    - Document endpoint testing workflow for devs and QA
 
-### 7. README + Swagger
-- Add Swagger UI link (via `springdoc-openapi-ui`)
-- Document API testing procedures
+---
 
-## Git Preservation Procedure
+## 🌳 Git Branching and Rollback
 
-### 1. Save current state
+**Archive current main branch:**
 ```bash
 git checkout main
 git pull origin main
@@ -56,49 +71,49 @@ git branch main-legacy
 git push origin main-legacy
 ```
 
-### 2. Create improvement branch
+**Start migration on a feature branch:**
 ```bash
 git checkout -b feature/minimal-improvements
 ```
 
-## Rollback Procedure
-
-### 1. Switch to preserved branch
+**To rollback to legacy version:**
 ```bash
 git checkout main-legacy
-```
-
-### 2. Make it the new main branch (if needed)
-```bash
 git checkout -b main
 git push origin main --force
 ```
 
-## Implementation Order
+---
 
-1. Split API routes (item 1)
-2. Create `@ControllerAdvice` (items 2, 4)
-3. Extract CORS config (item 3)
-4. Implement Docker Compose (item 5)
-5. Add profile configurations (item 6)
-6. Update README + Swagger (item 7)
+## 📝 Recommended Order of Implementation
 
-## Notes
-After implementing all items, the project will be:
-- Easier to maintain
-- Simpler to migrate to new hosting
-- More consistent in error handling
-- Better documented for new developers
-```
+1. Global exception handler & input validation
+2. CORS and security improvements
+3. *(Already completed)* Dockerization (Dockerfile & docker-compose), MySQL migration, profiles
+4. Swagger/OpenAPI integration and README updates
 
-This document provides:
-1. Clear goals for the migration
-2. Specific technical improvements
-3. Step-by-step Git commands for preservation and rollback
-4. Logical implementation order
-5. Justification for each change
+---
 
-The structure follows best practices for architectural documentation while keeping it concise and actionable.
+## 💡 Benefits
+
+- **Consistency:** Unified error handling, input validation, and JSON responses
+- **Portability:** Dockerized & profile-driven; runs anywhere (local, CI, cloud)
+- **Security:** Distinct public/admin APIs; JWT/role-based auth & robust CORS
+- **Maintainability:** Lean, minimalistic codebase — easy upgrades, less glue code
+- **Developer Experience:** Self-documented API (Swagger), clear onboarding & migration guide
+
+---
+
+## 📌 Notes
+
+- **All secrets and credentials** must be provided only via environment variables / secret managers (`.env`, Docker/CI secrets).  
+  _Never_ commit real passwords or database URLs to git!
+- **Database dumps & migrations:** use UTF-8 encoding for error-free Cyrillic/special character import/export.
+- This plan evolves: update architectural docs as the project matures.
+
+---
+
+This document summarizes the migration process, marks completed steps, defines next actions and best practices for a robust, maintainable, and secure Spring Boot news platform migrated from Drupal 6.
 
 ## Archived Branch: `main-legacy`
 

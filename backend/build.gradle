@@ -26,8 +26,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     // Spring Boot Starter for security (authentication, authorization)
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    // MariaDB JDBC driver for connecting to MariaDB databases
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.3.2'
+    // MySQL JDBC driver for connecting to MySQL databases
+    implementation 'com.mysql:mysql-connector-j:8.3.0'
     // Spring Boot Starter for bean validation (JSR-380)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 

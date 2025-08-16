@@ -1,0 +1,33 @@
+server:
+  port: ${SPRING_LOCAL_PORT:8080}   # Default to 8080 if environment variable not set
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}  # Example: jdbc:mysql://localhost:3306/your_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver   # Updated MySQL driver
+
+  jpa:
+    show-sql: true          # Show SQL statements in log (development only)
+    database-platform: org.hibernate.dialect.MySQL8Dialect  # Use correct dialect for your MySQL version
+    hibernate:
+      ddl-auto: update      # For development, set to 'validate' or 'none' in production
+
+  h2:
+    console:
+      enabled: false        # H2 console off (using MySQL)
+
+# Uncomment and set only if needed (DEVELOPMENT ONLY)
+#spring:
+#  security:
+#    user:
+#      name: YOUR_USERNAME
+#      password: YOUR_SECURE_PASSWORD
+#      roles: ADMIN
+
+logging:
+  level:
+    com.example.newsplatform: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.jdbc.core: DEBUG
