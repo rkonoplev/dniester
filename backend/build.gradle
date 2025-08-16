@@ -20,22 +20,25 @@ repositories {
 }
 
 dependencies {
-    // Spring Boot Starter for building web applications (REST, etc.)
+    // Spring Boot Starter for building RESTful web applications
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    // Spring Boot Starter for JPA/Hibernate support
+    // Spring Boot Starter for JPA & Hibernate ORM support
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // Spring Boot Starter for security (authentication, authorization)
+    // Spring Boot Starter for Spring Security (authentication, authorization)
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    // MySQL JDBC driver for connecting to MySQL databases
-    implementation 'com.mysql:mysql-connector-j:8.3.0'
-    // Spring Boot Starter for bean validation (JSR-380)
+    // Spring Boot Starter for Bean Validation (Jakarta Validation API)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // Spring Boot Starter for tests (JUnit, Mockito, etc.)
+    // ✅ MySQL driver should only be required at runtime
+    runtimeOnly 'com.mysql:mysql-connector-j:8.3.0'
+
+    // 🧪 Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    // Embedded DB for tests (H2 in MySQL compatibility mode)
+    testImplementation 'com.h2database:h2'
 }
 
-// Configure Checkstyle (static code analysis)
+// Configure Checkstyle (static code analysis rules)
 checkstyle {
     toolVersion = '10.12.1'
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
@@ -43,6 +46,7 @@ checkstyle {
     maxErrors = 0
 }
 
+// Generate Checkstyle reports
 tasks.withType(Checkstyle).configureEach {
     reports {
         xml.required = false
@@ -50,7 +54,7 @@ tasks.withType(Checkstyle).configureEach {
     }
 }
 
-// Configure JaCoCo for code coverage reports
+// Configure JaCoCo for code coverage reporting
 jacoco {
     toolVersion = "0.8.11"
 }
@@ -64,19 +68,20 @@ tasks.jacocoTestReport {
     }
 }
 
+// Configure coverage verification rules
 tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.0  // No coverage restriction (change as needed)
+                minimum = 0.0  // Adjust minimum coverage requirement if needed
             }
         }
     }
 }
 
-// Make 'check' task depend on coverage verification
+// Enforce coverage check during "gradle check"
 tasks.check.dependsOn tasks.jacocoTestCoverageVerification
 
 test {
