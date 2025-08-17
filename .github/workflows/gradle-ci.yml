@@ -2,14 +2,16 @@ name: Java CI with Gradle, Qodana Cloud and GitLeaks
 
 on:
   push:
-    branches: [ "main", "develop", "master" ]  # Runs on push to these branches
+    branches: [ "main", "develop", "master" ]  # Trigger on pushes to these branches
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     permissions:
-      contents: read  # Minimal read-only permissions
+      contents: read
+    outputs:
+      gradle-cache-key: ${{ steps.cache.outputs.cache-key }}  # Share cache key between jobs
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,6 +25,7 @@ jobs:
           java-version: 21
 
       - name: Cache Gradle packages
+        id: cache
         uses: actions/cache@v4
         with:
           path: |
@@ -32,54 +35,52 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Grant execute permission for Gradle
-        run: chmod +x backend/gradlew
+  build:
+    runs-on: ubuntu-latest
+    needs: setup
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Restore Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ needs.setup.outputs.gradle-cache-key }}
 
       - name: Build with Gradle
         run: cd backend && ./gradlew build --no-daemon --warning-mode all
 
   test:
     runs-on: ubuntu-latest
-    needs: build  # Depends on the build job
+    needs: [setup, build]  # Depends on setup and build jobs
     timeout-minutes: 20
-    permissions:
-      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
-      - name: Cache Gradle packages
+      - name: Restore Gradle cache
         uses: actions/cache@v4
         with:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
-      - name: Grant execute permission for Gradle
-        run: chmod +x backend/gradlew
+          key: ${{ needs.setup.outputs.gradle-cache-key }}
 
       - name: Run tests with coverage
         run: cd backend && ./gradlew test jacocoTestReport --no-daemon --warning-mode all
 
-      - name: Upload test reports
+      - name: Upload test reports (Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: backend/build/reports/tests/test
           if-no-files-found: warn
 
-      - name: Upload JaCoCo coverage report
+      - name: Upload JaCoCo coverage (Artifact)
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
@@ -87,9 +88,8 @@ jobs:
           if-no-files-found: warn
 
       - name: Upload coverage to CodeCov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v4  # No token needed
         with:
-          token: ${{ secrets.CODECOV_TOKEN }}
           file: backend/build/reports/jacoco/test/jacocoTestReport.xml
           flags: unittests
           name: codecov-news-platform
@@ -98,22 +98,17 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, test]
     timeout-minutes: 10
-    permissions:
-      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Install and Run GitLeaks scan
+      - name: Run GitLeaks scan
         run: |
-          wget https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz
-          tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
-          sudo install gitleaks /usr/bin/gitleaks
-          gitleaks detect --source . --verbose --redact
+          # Download and run GitLeaks (no permanent install)
+          curl -sL https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz | tar xz
+          ./gitleaks detect --source . --verbose --redact
 
-      - name: Upload GitLeaks scan results
+      - name: Upload GitLeaks results (if failed)
         if: failure()
         uses: actions/upload-artifact@v4
         with:
@@ -124,18 +119,14 @@ jobs:
     runs-on: ubuntu-latest
     needs: [build, test]
     timeout-minutes: 15
-    permissions:
-      contents: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Qodana Backend (JVM) Scan
+      - name: Run Qodana Scan (JVM)
         uses: JetBrains/qodana-action@v2025.1
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}  # Keep if Qodana requires it
         with:
           args: --project-dir,backend
           post-pr-comment: true

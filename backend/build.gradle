@@ -9,10 +9,17 @@ plugins {
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
+// Configure Java toolchain for JDK 21
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
+}
+
+// Dependency versions (extracted for maintainability)
+ext {
+    mysqlVersion = '8.3.0'
+    h2Version = '2.2.224'
 }
 
 repositories {
@@ -20,25 +27,24 @@ repositories {
 }
 
 dependencies {
-    // Spring Boot Starter for building RESTful web applications
+    // Spring Boot Starters
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    // Spring Boot Starter for JPA & Hibernate ORM support
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    // Spring Boot Starter for Spring Security (authentication, authorization)
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    // Spring Boot Starter for Bean Validation (Jakarta Validation API)
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // ✅ MySQL driver should only be required at runtime
-    runtimeOnly 'com.mysql:mysql-connector-j:8.3.0'
+    // Databases
+    runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"  // MySQL driver (runtime only)
+    testImplementation "com.h2database:h2:${h2Version}"        // H2 for tests
 
-    // 🧪 Test dependencies
+    // Development Tools (optional)
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'  // Hot-reload for local development
+
+    // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    // Embedded DB for tests (H2 in MySQL compatibility mode)
-    testImplementation 'com.h2database:h2'
 }
 
-// Configure Checkstyle (static code analysis rules)
+// Checkstyle configuration
 checkstyle {
     toolVersion = '10.12.1'
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
@@ -46,15 +52,15 @@ checkstyle {
     maxErrors = 0
 }
 
-// Generate Checkstyle reports
+// Generate Checkstyle reports (XML for CI, HTML for local)
 tasks.withType(Checkstyle).configureEach {
     reports {
-        xml.required = false
-        html.required = true
+        xml.required = true  // Required for CI tools (e.g., GitHub Actions)
+        html.required = true // Human-readable report
     }
 }
 
-// Configure JaCoCo for code coverage reporting
+// JaCoCo configuration for code coverage
 jacoco {
     toolVersion = "0.8.11"
 }
@@ -63,25 +69,26 @@ tasks.jacocoTestReport {
     dependsOn test
     reports {
         xml.required = true
+        xml.outputLocation = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")  // Explicit path for Codecov
         html.required = true
         csv.required = false
     }
 }
 
-// Configure coverage verification rules
+// Coverage verification (disabled by setting minimum = 0.0)
 tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
                 counter = 'LINE'
                 value = 'COVEREDRATIO'
-                minimum = 0.0  // Adjust minimum coverage requirement if needed
+                minimum = 0.0  // Adjust to enforce coverage (e.g., 0.8 for 80%)
             }
         }
     }
 }
 
-// Enforce coverage check during "gradle check"
+// Ensure coverage is checked during 'gradle check'
 tasks.check.dependsOn tasks.jacocoTestCoverageVerification
 
 test {
