@@ -1,3 +1,9 @@
+# =========================================================
+# application-dev.yml
+# Development/staging or CI environment configuration.
+# Credentials are always sourced from environment variables.
+# =========================================================
+
 server:
   port: ${SPRING_LOCAL_PORT:8080}
 
@@ -11,7 +17,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update   # On shared dev servers we often allow "update"
+      ddl-auto: update   # Auto schema update allowed in dev
     show-sql: true
 
 logging:

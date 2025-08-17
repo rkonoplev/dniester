@@ -32,18 +32,20 @@ Database: MySQL
 - Docker & Docker Compose
 - Gradle (or use `./gradlew` wrapper)
 
-### 1. Start backend dependencies (MySQL) via Docker Compose:**
+### 1. Start backend dependencies (MySQL) via Docker Compose:
 ```bash
 docker compose up -d
 ```
 
-### 2. Start the Spring Boot application:
+### 2. Start the Spring Boot application (uses .env variables for DB connection):
 
 ```bash
 cd backend
-./gradlew bootRun
+./gradlew bootRun --args='--spring.profiles.active=local'
 ```
-The application will use environment variables from .env for database connection.
+By default, the application reads database connection settings and credentials from the .env file.
+Each Spring Boot profile (local, dev, prod, test) has its own YAML configuration file (application-<profile>.yml).
+In production, you should override the variables directly via the runtime environment instead of .env.
 
 API entrypoint: http://localhost:8080
 

@@ -1,0 +1,83 @@
+# =========================================================
+# docker-compose.override.yml
+# Production override configuration for Docker Compose.
+#
+# This file should be used together with the main docker-compose.yml:
+#   docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+#
+# Key changes from dev:
+# - Remove reliance on .env (all secrets taken from Docker Secrets / CI/CD)
+# - Disable MySQL external port exposure (only app can connect to db)
+# - Use secrets via *_FILE convention
+# - Enable persistent volumes for data and logs
+# =========================================================
+
+version: "3.8"
+
+services:
+  db:
+    restart: always
+    environment:
+      # Secrets injected via Docker Secrets (mounted as /run/secrets/...)
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_DATABASE: newsdb
+      MYSQL_USER_FILE: /run/secrets/db_user
+      MYSQL_PASSWORD_FILE: /run/secrets/db_password
+    # Do NOT expose DB externally in production
+    ports: []
+    volumes:
+      - db_data:/var/lib/mysql
+
+    secrets:
+      - mysql_root_password
+      - db_user
+      - db_password
+
+  app:
+    restart: always
+    environment:
+      # Use *_FILE convention so secrets are injected securely
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/newsdb?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+      SPRING_DATASOURCE_USERNAME_FILE: /run/secrets/db_user
+      SPRING_DATASOURCE_PASSWORD_FILE: /run/secrets/db_password
+      ADMIN_USERNAME_FILE: /run/secrets/admin_user
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+
+      # Force production profile
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"   # Only expose app port
+
+    volumes:
+      - app_logs:/var/log/app
+
+    secrets:
+      - db_user
+      - db_password
+      - admin_user
+      - admin_password
+
+# =========================================================
+# Define Docker Secrets (example: ./secrets/* must exist locally,
+# or CI/CD should provision them before deploy)
+# =========================================================
+secrets:
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt
+  db_user:
+    file: ./secrets/db_user.txt
+  db_password:
+    file: ./secrets/db_password.txt
+  admin_user:
+    file: ./secrets/admin_user.txt
+  admin_password:
+    file: ./secrets/admin_password.txt
+
+# =========================================================
+# Define persistent volumes
+# =========================================================
+volumes:
+  db_data:
+  app_logs:
