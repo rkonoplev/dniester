@@ -1,0 +1,32 @@
+# =========================================================
+# application.yml
+# Base application configuration (fallback defaults).
+# Used when no specific Spring profile is active.
+# Should not contain any secrets; all passwords come from .env/ENV vars.
+# =========================================================
+
+server:
+  port: ${SPRING_LOCAL_PORT:8080}   # Default server port
+
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: update   # For local/dev fallback only
+    show-sql: true
+
+  h2:
+    console:
+      enabled: false
+
+logging:
+  level:
+    com.example.newsplatform: INFO
+    org.springframework.security: INFO
+    org.springframework.jdbc.core: WARN

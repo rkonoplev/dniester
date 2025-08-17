@@ -1,30 +1,32 @@
+# =========================================================
+# application-prod.yml
+# Production configuration.
+# All secrets (DB credentials, admin credentials) must be provided via .env / ENV vars.
+# Schema changes are never allowed automatically in production.
+# =========================================================
+
+admin:
+  username: ${ADMIN_USERNAME}
+  password: ${ADMIN_PASSWORD}
+
 server:
-  port: ${SPRING_LOCAL_PORT:8080}   # In production, port is defined via env variable / container setup
+  port: ${SPRING_LOCAL_PORT:8080}
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}      # Must be provided via env variables in production
+    url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect  # Consistent dialect for MySQL
-    show-sql: false               # Never print SQL in production logs
+    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: validate           # Validate schema (⚠ never allow "update" or "create" in prod)
-
-  h2:
-    console:
-      enabled: false               # No in-memory DB in production
-
-# Production-only admin credentials (must be provided securely via env vars)
-admin:
-  username: ${ADMIN_USERNAME}
-  password: ${ADMIN_PASSWORD}
+      ddl-auto: validate   # Validate schema only, do not auto-update
+    show-sql: false        # No SQL logs in production
 
 logging:
   level:
-    com.example.newsplatform: INFO             # Only essential app logs
-    org.springframework.security: WARN         # Reduce noise in production logs
-    org.springframework.jdbc.core: ERROR       # Log only errors from JDBC layer
+    com.example.newsplatform: INFO
+    org.springframework.security: WARN
+    org.springframework.jdbc.core: ERROR
