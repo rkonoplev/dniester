@@ -1,4 +1,4 @@
-                     # 📖 Documentation
+# 📖 Documentation
 
 This directory contains all project documentation, organized into specific guides.
 
@@ -11,7 +11,7 @@ This directory contains all project documentation, organized into specific guide
   Spring profiles matrix (`local`, `dev`, `test`, `ci`, `prod`), `application-*.yml` files, `.env` usage, and secrets handling.
 
 - [Docker Guide](./DOCKER_GUIDE.md)  
-  Local development with `docker-compose`, production builds with `Dockerfile`, override files, and Render deployment notes.
+  Local development with `docker-compose`, production builds with Dockerfile, override files, and Render deployment notes.
 
 - [CI/CD & Security](./CI_CD_SECURITY.md)  
   GitHub Actions workflow (`gradle-ci.yml`), automated testing, code quality tools (Qodana, JaCoCo), GitLeaks, and best practices for handling secrets.
