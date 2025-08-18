@@ -49,6 +49,129 @@ In production, you should override the variables directly via the runtime enviro
 
 API entrypoint: http://localhost:8080
 
+## ⚙️ Development Environment
+
+Start local dev environment (app + MySQL 8.0):
+
+```bash
+docker compose --env-file .env.dev up -d
+```
+Check running containers:
+
+```bash
+docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"
+```
+Connect to database:
+
+```bash
+docker exec -it news-mysql mysql -uroot -proot dniester
+```
+Stop all services:
+
+```bash
+docker compose down
+```
+
+## 📦 Production Environment
+Production setup uses docker-compose.override.yml and secure secrets.
+
+Start with prod config:
+
+```bash
+docker compose \
+  -f docker-compose.yml \
+  -f docker-compose.override.yml \
+  --env-file .env.prod \
+  up -d
+  ```
+⚠️ .env.prod must NOT be committed — it should be provided via CI/CD secrets or Docker Secrets.
+
+## 📚 Migration from Drupal 6
+### Summary
+Drupal 6 dump (drupal6_working.sql) is imported into a temporary MySQL 5.7 container.
+Then data is normalized into clean schema with migration SQL scripts.
+Finally, the normalized dump clean_schema.sql is loaded into MySQL 8.0 for News Platform.
+
+### Migration Flow
+1. Start MySQL 5.7 (for Drupal 6 dump):
+
+```bash
+docker compose -f docker-compose.drupal.yml up -d
+docker logs -f news-mysql-drupal6
+```
+2. Export old schema and re-import into dniester:
+
+```bash
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
+```
+3. Run migration scripts:
+
+```bash
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_cck_fields.sql
+```
+4. Export normalized schema:
+
+```bash
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
+```
+5. Start MySQL 8.0 (target):
+
+```bash
+docker compose -f docker-compose.yml up -d mysql
+docker logs news-mysql
+```
+If root doesn’t work, fix root password using --skip-grant-tables (see docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md).
+
+6. Import final schema into MySQL 8.0:
+
+```bash
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+```
+Verify:
+
+```bash
+docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+## 💾 File/Folder Structure
+
+news-platform/
+├── backend/                         # Spring Boot app
+├── db_data/                         # migration & clean dumps
+│   ├── migrate_from_drupal6_universal.sql
+│   ├── migrate_cck_fields.sql
+│   └── clean_schema.sql
+├── db_dumps/                        # original dump
+│   └── drupal6_working.sql
+├── docker-compose.yml                # Dev setup
+├── docker-compose.override.yml       # Prod override
+├── docker-compose.drupal.yml         # TEMP (Drupal6 migration only)
+├── Dockerfile                        # Prod build (JAR)
+├── Dockerfile.dev                    # Dev build (bootRun)
+├── .env.dev                          # Local dev env
+├── .env.prod.example                 # Example prod env
+└── README.md                         # This file
+
+## ✅ TL;DR Commands
+```bash
+# 1. Start MySQL 8.0
+docker compose -f docker-compose.yml up -d mysql
+docker logs news-mysql
+
+# 2. If root auth issue → reset password manually via skip-grant-tables
+# (See full doc under docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md)
+
+# 3. Import normalized schema
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+
+# 4. Verify that schema and data are present
+docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+👉 For full migration walkthrough, see docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md.
+
 ## Backend Layer Structure
 
 - `controller` — REST API controllers
