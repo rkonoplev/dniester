@@ -102,6 +102,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 Expected: ~12186 rows (12172 story + 14 book).
 
 ## ✅ TL;DR Script (All Commands)
+### «Short import» / Direct Import into MySQL 8.0 (when clean_schema.sql is ready) 
 
 ```bash
 # 1. Start MySQL 8.0
@@ -118,5 +119,21 @@ docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 
+### Full Migration Pipeline (Drupal6 → MySQL5.7 → Clean SQL → MySQL8.0) 
+```bash
+# Dev
+docker compose --env-file .env.dev up -d
+
+# Migration
+docker compose -f docker-compose.drupal.yml up -d
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
+
+docker compose -f docker-compose.yml up -d mysql
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
 
 
