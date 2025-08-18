@@ -138,6 +138,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Docker Guide](docs/DOCKER_GUIDE.md)
 - [CI/CD & Security](docs/CI_CD_SECURITY.md)
 - [Technical Specification](docs/TECHNICAL_SPEC.md)
+- [API Usage Guide](docs/API_USAGE.md)
 - 
 
 ## 📜 License
