@@ -1,23 +1,27 @@
 # =========================================================
-# application-test.yml
-# Configuration used during automated tests.
-# Runs on in-memory H2 database in MySQL compatibility mode (isolated from real DB).
+# application-prod.yml
+# Production profile.
+# Injected from Render Secret File or ENV variables.
+# Never commit real values into git.
 # =========================================================
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 20
 
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
-      ddl-auto: create-drop   # Schema is created before and destroyed after tests
+      ddl-auto: none        # Never auto-manage schema in prod
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: false
 
 logging:
   level:
-    org.springframework: WARN
-    org.hibernate.SQL: DEBUG
+    root: ERROR
