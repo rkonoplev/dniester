@@ -1,107 +1,140 @@
-# News Platform – Technical Specification
+# 📐 News Platform – Technical Specification
+
+This document provides the technical specification for the **News Platform** project — a complete rewrite of the legacy Drupal 6 news system into a modern Java/Spring Boot application.
+
+---
 
 ## 1. Project Summary
-The **News Platform** is a complete rewrite of a legacy Drupal 6.0-based news portal.  
-The goal is to modernize the platform using **Java 21** and **Spring Boot**, while preserving existing content and improving maintainability, scalability, and security.
+The **News Platform** backend is a robust, maintainable service for publishing and managing news articles.  
+It is designed to replace the legacy Drupal 6.0 stack with a modern architecture for scalability and security.
 
-This backend will power:
-- A **public-facing API** for serving news articles.
-- An **admin panel** for managing content and media.
-- Integration-ready endpoints for future mobile or frontend apps.
+The backend provides:
+- A **public API** for delivering news content to frontend and mobile clients.
+- An **admin API** for editorial teams to manage content and media.
+- Integration points for third-party services and future frontend apps.
 
 ---
 
 ## 2. Business Goals
-1. Replace outdated Drupal backend with a modern, maintainable architecture.
-2. Improve editorial workflow with intuitive CRUD interfaces.
-3. Optimize page load and API response times for better user experience.
-4. Enable future features like push notifications, multilingual support, and analytics.
+1. Replace outdated Drupal backend with a modern system.
+2. Improve editorial workflow with a simple CRUD interface.
+3. Optimize performance (fast response times, scalable).
+4. Enable future features:
+    - multilingual support,
+    - push notifications,
+    - analytics integration.
 
 ---
 
 ## 3. System Architecture
+
 - **Architecture Style:** RESTful API (stateless).
-- **Layers:**
-    - **Controller Layer** – Handles HTTP requests/responses.
-    - **Service Layer** – Business logic and validation.
-    - **Repository Layer** – Database access via Spring Data JPA.
-- **Security Layer:** JWT-based authentication + role-based access control.
+- **Primary Layers:**
+    - **Controller Layer** → REST endpoints.
+    - **Service Layer** → business logic & validation.
+    - **Repository Layer** → Spring Data JPA persistence.
+    - **DTO/Mapper Layer** → separates models and API contract.
+- **Security Layer:** Spring Security + JWT authentication (role-based access).
+
+### Class-Level Structure
+- `controller/` – REST controllers.
+- `service/` – application services with validation logic.
+- `repository/` – database persistence via JPA.
+- `dto/` – request/response objects.
+- `model/` – JPA entities.
+- `mapper/` – MapStruct or manual mapping between DTOs & entities.
 
 ---
 
 ## 4. Functional Requirements
 
 ### 4.1 Public API
-- Retrieve latest news with pagination and sorting.
-- Filter by category (taxonomy) and publication date.
+- Retrieve news articles with pagination and sorting.
+- Filter articles by category and publication date.
 - Retrieve a single article by ID or slug.
-- Search endpoint for article titles and content.
+- Search articles by title and content.
 
-### 4.2 Admin Panel
-- Authentication required.
-- Role-based permissions:
-    - **Admin** – Full access.
-    - **Editor** – Can create, edit, and publish articles.
-- CRUD operations for:
+### 4.2 Admin API
+- Secure access with JWT-based authentication.
+- Role-based authorization:
+    - **Admin** → full access.
+    - **Editor** → CRUD with restrictions.
+- CRUD functionality:
     - Articles
     - Categories
     - Media files
-- Image upload with automatic resizing and optimization.
-- Action buttons:
-    - Publish / Unpublish
-    - Mark as Featured
+- Image upload with automatic resizing/optimization.
+- Actions: **Publish/Unpublish**, **Feature/Unfeature** articles.
 
 ---
 
 ## 5. Data Migration
-- Import from legacy Drupal DB:
-    - `title`, `teaser` (HTML-supported), `body`, `created_at`, `taxonomy`, `node_type`.
-- Map old taxonomy terms to the new schema.
+- Import content from **Drupal 6 DB** into new schema:
+    - `title`, `teaser`, `body`, `created_at`, `taxonomy`, `node_type`.
+- Map legacy Drupal taxonomy to new category model.
+- Ensure UTF-8/utf8mb4 compatibility (for Cyrillic and multilingual content).
 
 ---
 
 ## 6. Technology Stack
+
 | Area              | Technology |
 |-------------------|------------|
 | Language          | Java 21 |
 | Framework         | Spring Boot |
-| Database          | MariaDB |
+| Database          | MySQL 8 (migrated from Drupal 6 DB) |
 | ORM               | Hibernate / JPA |
 | Build Tool        | Gradle |
-| API Docs          | OpenAPI/Swagger |
+| API Docs          | OpenAPI / Swagger (springdoc) |
 | Security          | Spring Security + JWT |
-| Deployment        | Docker |
+| Deployment        | Docker + Render (PaaS) |
 | CI/CD             | GitHub Actions |
-| Code Quality      | JetBrains Qodana |
-| Testing           | JUnit 5 |
+| Code Quality      | JaCoCo, Qodana |
+| Static Checks     | Checkstyle |
+| Testing           | JUnit 5, Testcontainers (planned) |
 
 ---
 
-## 7. Non-functional Requirements
-- **Performance:** Main endpoints respond in under 200ms.
-- **Scalability:** Can handle 10k concurrent users with horizontal scaling.
-- **Security:** OWASP Top 10 compliance.
-- **Code Quality:** Automated checks with Qodana + unit test coverage >80%.
-- **Documentation:** API self-documentation via Swagger UI.
+## 7. Non-functional Requirements (NFRs)
+
+- **Performance:**
+    - Main endpoints ≤ 200ms response time under load.
+- **Scalability:**
+    - Horizontal scalability for >10k concurrent users.
+- **Security:**
+    - OWASP Top 10 compliance.
+    - Secrets managed via `.env`, GitHub Secrets, Render Secrets.
+- **Maintainability:**
+    - >80% unit test coverage (JaCoCo).
+    - Automated static analysis (Qodana, Checkstyle).
+- **Documentation:**
+    - API self-documented with Swagger UI.
+    - Clear onboarding docs in `/docs`.
 
 ---
 
 ## 8. Development Workflow
-- **Branching Model:** `main` (production), `dev` (integration), feature branches.
-- **Code Review:** PRs required before merging to `main`.
-- **Testing:** Automated tests run on every push.
-- **Deployment:** CI/CD pipeline builds Docker image and deploys to staging/production.
+
+- **Branching Model:** Git Flow (main, develop, feature/*).
+- **Code Reviews:** All PRs reviewed before merge.
+- **Testing:** CI runs tests with `ci` profile (H2 in-memory DB).
+- **Deployment:**
+    - CI/CD via GitHub Actions.
+    - Production deploy on Render.
+    - Secrets injected via environment variables or secret files.
 
 ---
 
 ## 9. Future Enhancements
-- Multilingual article support.
+
+- Multilingual support for articles.
 - Scheduled publishing.
-- Integration with analytics tools.
-- RSS and Atom feeds.
-- WebSockets for live updates.
+- Analytics and usage metrics.
+- RSS/Atom feed integration.
+- WebSocket support for live updates.
+- Editor-friendly workflows (drafts, previews).
 
 ---
 
 **Author:** Roman Konoplev  
-**Last Updated:** 2025-08-08
+**Last Updated:** 2025-08-18

@@ -1,41 +1,49 @@
-# Architecture Migration Plan (MySQL, Spring Boot, Docker)
+# 🏗️ Architecture Migration Plan (Drupal 6 → Spring Boot, MySQL, Docker)
+
+This document outlines the migration process from the legacy Drupal 6.0 PHP platform to a modern **Java 21 / Spring Boot** backend with **MySQL** and **Docker**.  
+It summarizes completed phases, next steps, branching strategy, and best practices.
 
 ---
 
 ## 🎯 Goals
 
-- **Minimal future intervention** needed
-- **Low maintenance cost** for the project
-- **Stable operation** on free-tier or managed services
-- **Clean, pragmatic project structure** (no overengineering, no DDD)
-- **Fast developer onboarding & deployment**
+- **Minimal future intervention** — keep the system simple to maintain.
+- **Low maintenance cost** — rely on Spring Boot conventions and Docker.
+- **Stable operation** even on free-tier or managed services.
+- **Clean, pragmatic project structure** — avoid unnecessary complexity (no heavy DDD).
+- **Fast developer onboarding** — easy setup with Docker and `.env` file.
 
 ---
 
 ## ✅ Completed Improvements
 
-1. **Switch to MySQL**
-    - All project data and configuration migrated from MariaDB to MySQL
-    - Full Unicode (utf8mb4) support for Drupal 6 → Java migration (handles Cyrillic)
-    - Database drivers, connection URLs, and Docker Compose updated for MySQL
+1. **Database Migration to MySQL**
+    - Moved from MariaDB → MySQL (more stable support for schema features).
+    - Full **UTF-8 (utf8mb4)** support for Cyrillic and multilingual content.
+    - JDBC drivers and connection URLs updated accordingly.
+    - Docker Compose configured with MySQL service.
+
 2. **Dockerization**
-    - Working `Dockerfile` for Spring Boot application
-    - Production-grade `docker-compose.yml` — Spring Boot app + MySQL db
+    - Working `Dockerfile` for production (slim JRE image, only JAR inside).
+    - `Dockerfile.dev` for development (mounts local project, hot reload).
+    - `docker-compose.yml` and `docker-compose.override.yml` for app + DB orchestration.
     - One-command startup:
       ```bash
       docker compose up -d
       ```
+
 3. **Profile-based Configuration**
-    - Environment-specific property files (`application-local.properties`, `application-prod.properties` or YAML alternatives)
-    - All secrets and credentials managed via `.env` and environment variables
+    - All configs moved to **YAML** (`application.yml` + `application-<profile>.yml`).
+    - Profiles: `local`, `dev`, `test`, `ci`, `prod`.
+    - Secrets and credentials are injected only from `.env` or CI/CD environment variables (no hardcoded passwords).
 
 ---
 
 ## 🚧 Next Steps
 
 1. **Global Exception Handling**
-    - Use `@ControllerAdvice` for unified JSON error responses
-    - Example standard error response:
+    - Introduce `@ControllerAdvice` for unified JSON error responses.
+    - Example error format:
       ```json
       {
         "timestamp": "2025-08-14T12:00:00Z",
@@ -44,78 +52,64 @@
         "details": "/api/admin/news"
       }
       ```
+
 2. **Input Validation**
-    - Add validation annotations (`@NotNull`, `@Size`, etc.) inside DTOs (`NewsCreateRequest`, `NewsUpdateRequest`, etc.)
-    - Use `@Validated` on controller classes
-    - Handle `MethodArgumentNotValidException` using the global exception handler
-3. **CORS and Security**
-    - Move CORS rules to a dedicated `CorsConfig` class
-    - Fine-tune security:
-        - Open or limited-auth public endpoints (`/api/public/...`)
-        - Strong protection for admin endpoints (`/api/admin/...`), roles/JWT as needed
-    - Flexible CORS config for frontend teams
-4. **API Documentation & README**
-    - Integrate [springdoc-openapi-ui](https://springdoc.org/) for auto-generated Swagger UI
-    - Add Swagger link and sample API usage to `README.md`
-    - Document endpoint testing workflow for devs and QA
+    - Add annotations (`@NotNull`, `@Size`, etc.) in DTOs (`NewsCreateRequest`, `NewsUpdateRequest`).
+    - Use `@Validated` on controller classes.
+    - Handle `MethodArgumentNotValidException` via global error handler.
+
+3. **CORS & Security**
+    - Move CORS rules into a dedicated `CorsConfig`.
+    - Split endpoints:
+        - `/api/public/...` → open or limited auth.
+        - `/api/admin/...` → secured with JWT + role-based auth.
+    - Provide flexible CORS config for frontend teams.
+
+4. **API Documentation**
+    - Integrate [springdoc-openapi-ui](https://springdoc.org/) for Swagger UI.
+    - Add Swagger link and usage examples to project `README.md`.
+    - Document dev/QA workflow for testing endpoints.
 
 ---
 
-## 🌳 Git Branching and Rollback
+## 🌳 Git Strategy & Rollback
 
-**Archive current main branch:**
+### Archive the legacy branch
 ```bash
 git checkout main
 git pull origin main
 git branch main-legacy
 git push origin main-legacy
 ```
-
-**Start migration on a feature branch:**
+### Start migration on a new branch
 ```bash
 git checkout -b feature/minimal-improvements
 ```
-
-**To rollback to legacy version:**
+### To rollback to legacy
 ```bash
 git checkout main-legacy
 git checkout -b main
 git push origin main --force
 ```
-
----
-
 ## 📝 Recommended Order of Implementation
-
-1. Global exception handler & input validation
-2. CORS and security improvements
-3. *(Already completed)* Dockerization (Dockerfile & docker-compose), MySQL migration, profiles
-4. Swagger/OpenAPI integration and README updates
-
----
-
+Global error handling & validation.
+CORS and security improvements.
+(Completed) MySQL migration + Dockerization + Profiles.
+Swagger/OpenAPI integration + documentation updates.
 ## 💡 Benefits
-
-- **Consistency:** Unified error handling, input validation, and JSON responses
-- **Portability:** Dockerized & profile-driven; runs anywhere (local, CI, cloud)
-- **Security:** Distinct public/admin APIs; JWT/role-based auth & robust CORS
-- **Maintainability:** Lean, minimalistic codebase — easy upgrades, less glue code
-- **Developer Experience:** Self-documented API (Swagger), clear onboarding & migration guide
-
----
-
+Consistency — unified error handling and validation.
+Portability — Docker + profile-driven configs = can run anywhere.
+Security — strict separation public/admin APIs with JWT & role-based auth.
+Maintainability — lean, minimal dependencies, easy updates.
+Developer Experience — Swagger, clear onboarding, simple Docker setup.
 ## 📌 Notes
+All secrets and credentials must come from .env, CI secrets, or Docker/Cloud secret managers.
+Never commit DB credentials, admin passwords, or tokens into git.
+Database dumps (migrations) must use UTF-8 encoding (prevent broken Cyrillic import/export).
+Documentation should evolve as the migration continues.
 
-- **All secrets and credentials** must be provided only via environment variables / secret managers (`.env`, Docker/CI secrets).  
-  _Never_ commit real passwords or database URLs to git!
-- **Database dumps & migrations:** use UTF-8 encoding for error-free Cyrillic/special character import/export.
-- This plan evolves: update architectural docs as the project matures.
 
----
-
-This document summarizes the migration process, marks completed steps, defines next actions and best practices for a robust, maintainable, and secure Spring Boot news platform migrated from Drupal 6.
-
-## Archived Branch: `main-legacy`
+## Archived Legacy Branch: `main-legacy`
 
 As of August 14, 2025, the `main-legacy` branch has been officially archived and locked for changes.  
 It contains deprecated code and is preserved solely for historical reference.  

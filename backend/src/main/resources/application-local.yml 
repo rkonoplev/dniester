@@ -1,27 +1,27 @@
 # =========================================================
-# application-dev.yml
-# Development/staging or CI environment configuration.
-# Credentials are always sourced from environment variables.
+# application-local.yml
+# Local development profile configuration.
+# Uses MySQL in docker-compose with mounted Drupal dump for legacy data.
+# Credentials are stored in local .env file (not committed to git).
 # =========================================================
-
-server:
-  port: ${SPRING_LOCAL_PORT:8080}
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    url: jdbc:mysql://localhost:3306/newsdb
+    username: root
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 5
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update   # Auto schema update allowed in dev
+      ddl-auto: update        # Safe for local development
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
     show-sql: true
 
 logging:
   level:
-    com.example.newsplatform: DEBUG
-    org.springframework.security: INFO
-    org.springframework.jdbc.core: DEBUG
+    root: DEBUG
