@@ -43,7 +43,7 @@ SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
 SPRING_PROFILES_ACTIVE=ci ./gradlew test
 
 # Run production docker container
-docker run -d -e SPRING_PROFILES_ACTIVE=prod --env-file .env news-platform:latest
+docker run -d -e SPRING_PROFILES_ACTIVE=prod --env-file .env.dev news-platform:latest
 ```
 If no profile is specified, local is used as default.
 
