@@ -6,7 +6,7 @@
 #   docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 #
 # Key changes from dev:
-# - Remove reliance on .env (all secrets taken from Docker Secrets / CI/CD)
+# - Remove reliance on .env.dev (all secrets taken from Docker Secrets / CI/CD)
 # - Disable MySQL external port exposure (only app can connect to db)
 # - Use secrets via *_FILE convention
 # - Enable persistent volumes for data and logs

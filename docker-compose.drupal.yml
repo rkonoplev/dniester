@@ -1,0 +1,26 @@
+# =========================================================
+# docker-compose.drupal.yml
+# Temporary setup for Drupal 6 data migration.
+# Runs MySQL 5.7 for compatibility with legacy dump.
+# All migration scripts live in ./db_data and dumps are in ./db_dumps
+# =========================================================
+
+version: '3.8'
+
+services:
+  mysql-drupal6:
+    image: mysql:5.7
+    container_name: news-mysql-drupal6
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dniester
+    ports:
+      - "3307:3306"   # Note: Expose on 3307 to avoid conflict with main MySQL
+    volumes:
+      - ./db_dumps:/docker-entrypoint-initdb.d   # Auto-load dump files
+      - ./db_data:/db_data                       # Mount migration scripts
+      - mysql_data_drupal6:/var/lib/mysql        # Separate volume
+
+volumes:
+  mysql_data_drupal6:

@@ -1,8 +1,7 @@
 # =========================================================
 # docker-compose.yml
 # Local development orchestration.
-# Loads all environment variables from .env file.
-# Runs Spring Boot (Dockerfile.dev) and MySQL db with Drupal dump mounted.
+# Runs Spring Boot app (backend) and MySQL 8.0 database
 # =========================================================
 
 version: '3.8'
@@ -10,28 +9,29 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
-      dockerfile: Dockerfile.dev
+      context: ./backend                # FIX: build context points to backend folder
+      dockerfile: Dockerfile.dev     # FIX: assuming Dockerfile.dev is in project root
     container_name: news-app
     ports:
-      - "${SPRING_LOCAL_PORT}:8080"     # Maps local port to app port
+      - "${SPRING_LOCAL_PORT}:8080"     # Maps local port 8080 to app port
     volumes:
-      - .:/app                          # Mounts source code to container
+      - ./backend:/app                  # Mount backend sources into container
     env_file:
-      - .env                            # Loads variables from .env
+      - .env.dev
     depends_on:
       - mysql
 
   mysql:
     image: mysql:8.0
     container_name: news-mysql
+    restart: always
     ports:
       - "${DATABASE_LOCAL_PORT}:3306"   # Expose MySQL
     env_file:
-      - .env                            # Load MySQL vars from .env
+      - .env.dev
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db-dumps:/docker-entrypoint-initdb.d  # Load Drupal dump if exists
+      - ./db-dumps:/docker-entrypoint-initdb.d
 
 volumes:
   mysql_data:

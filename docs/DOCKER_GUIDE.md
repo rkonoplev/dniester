@@ -37,7 +37,7 @@ docker build -t news-platform:latest -f Dockerfile .
 ```
 ### 3. Run production container
    ```bash
-   docker run -d -p 8080:8080 --env-file .env news-platform:latest
+   docker run -d -p 8080:8080 --env-file .env.dev news-platform:latest
    ```
 
    - Based on a lightweight JRE runtime image
