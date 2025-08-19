@@ -38,6 +38,69 @@ source db_data/migrate_from_drupal6_universal.sql;
 source db_data/migrate_cck_fields.sql; -- optional
 ```
 
+---
+
+### 📦 What We Imported into the New Schema
+
+After normalizing the dump, the following entities and tables exist in the clean `dniester` schema. These form the core database for the News Platform.
+
+#### 1. Users
+**Source:** Drupal `users`  
+**Target:** `users`  
+**Fields imported:**
+- `uid` → `id` (PK)
+- `name` → `username`
+- `mail` → `email`
+- `status` → `status` (tinyint: 1=active, 0=blocked)
+
+#### 2. Roles & User_Roles
+**Source:** Drupal `role`, `users_roles`  
+**Target:**
+- `roles` (id, name)
+- `user_roles` (user_id, role_id)
+
+Many‑to‑many mapping between users and roles.
+
+#### 3. Content
+**Source:** `node`, `node_revisions`  
+**Target:** `content` (unified table, no “type” field anymore)  
+**Fields imported:**
+- `nid` → `id`
+- `title` → `title`
+- `body` → `body`
+- `teaser` → `teaser`
+- `created` (UNIX ts) → `publication_date` (DATETIME)
+- `uid` → `author_id` (FK → users.id)
+
+> Note: Drupal `story` / `page` / `book` types were merged → all stored in one `content` table.
+
+#### 4. Terms & Content_Terms
+**Source:** `term_data`, `vocabulary`, `term_node`  
+**Target:**
+- `terms` (id, name, vocabulary)
+- `content_terms` (content_id, term_id)
+
+Taxonomy terms and mapping table for content↔terms.
+
+#### 5. Custom Fields (CCK)
+**Source:** Drupal `content_type_*` tables (if present).  
+**Target:** `custom_fields` (generic key→value model).  
+**Fields imported:**
+- `nid` → `content_id`
+- Column name → `field_name`
+- Column value → `field_value`
+
+---
+
+### ✅ Summary of Final Tables
+- `users`
+- `roles`
+- `user_roles`
+- `content`
+- `terms`
+- `content_terms`
+- `custom_fields`
+
 ### ⚠️ Handling Encoding Issues (UTF‑8 / Cyrillic)
 
 If you encounter errors like:
@@ -191,6 +254,55 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sq
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 ---
+
+## 📑 Migration SQL Files Overview
+
+During the migration process several SQL scripts have been created and used. Each has a specific purpose:
+
+- **drupal6_fixed.sql**  
+  Cleaned snapshot of the original Drupal 6 database (`a264971_dniester`) imported into the temporary MySQL 5.7 instance.  
+  Purpose: normalize database name and ensure compatibility for further migration steps.
+
+- **migrate_from_drupal6_universal.sql**  
+  Main migration script. It creates a new clean schema (`users`, `roles`, `user_roles`, `content`, `terms`, `content_terms`) and moves normalized data from the old Drupal tables.  
+  Core of the migration.
+
+- **detect_custom_fields.sql**  
+  Optional helper script. Runs queries against `information_schema` to detect if there are any `content_type_*` tables with additional CCK fields.  
+  ⚠️ If this script selects rows → it means you had custom fields.  
+  If the result set is empty → you had **no CCK custom fields** in your Drupal 6 dump.
+
+- **migrate_cck_fields.sql**  
+  Optional script. Only needed if CCK fields exist. It copies fields from `content_type_*` tables into the generic `custom_fields` table (key → value model).  
+  If you had no CCK, this script can be ignored.
+
+- **clean_schema.sql**  
+  Final export after applying `migrate_from_drupal6_universal.sql` (and optionally `migrate_cck_fields.sql`).  
+  This is the schema and data used in MySQL 8.0 by the News Platform application.
+
+---
+
+### ✅ How to verify CustomFields existence
+Run the following in MySQL 5.7 (Drupal container):
+```sql
+SHOW TABLES LIKE 'content_type%';
+```
+If you see rows like content_type_article, content_type_news, etc. → you had custom CCK fields.
+If nothing is returned → you did not use Drupal CCK, therefore the table custom_fields will remain empty and can be ignored.
+
+### 🔍 How to check CustomFields in the new database only
+
+If the original Drupal 6 container has already been stopped or deleted, you cannot inspect `content_type_*` tables anymore.  
+However, you can still verify whether any CCK fields were migrated by checking the `custom_fields` table in your new `dniester` schema.
+
+Run:
+
+```sql
+SELECT COUNT(*) FROM custom_fields;
+```
+If the result is 0 → you had no custom CCK fields or migration of them was skipped.
+If the result is greater than 0 → you had custom fields in Drupal 6, and they were migrated into custom_fields as key→value records.
+
 
 ## 🧹 Post‑Migration Cleanup
 

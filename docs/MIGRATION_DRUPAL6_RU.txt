@@ -13,6 +13,60 @@
 Импорт: docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
 Проверка: SHOW TABLES;
 
+ЧТО МЫ ФАКТИЧЕСКИ ИМПОРТИРОВАЛИ В НОВУЮ БАЗУ
+
+После миграции структура базы dniester выглядит так:
+
+1. Пользователи (users)
+   Источник: Drupal users
+   Поля:
+   - uid → id
+   - name → username
+   - mail → email
+   - status → status (1=активен, 0=блокирован)
+
+2. Роли (roles) и связка пользователей с ролями (user_roles)
+   Источник: Drupal role, users_roles
+   Заполняем таблицы:
+   - roles (id, name)
+   - user_roles (user_id, role_id)
+
+3. Контент (content)
+   Источник: node, node_revisions
+   Целевая таблица: content (универсальная, без поля type)
+   Поля:
+   - nid → id
+   - title → title
+   - body → body
+   - teaser → teaser
+   - created (UNIX timestamp) → publication_date (DATETIME)
+   - uid → author_id (FK → users.id)
+
+   Важно: разные типы контента (story, page, book) больше НЕ разделяются и хранятся в одной таблице content.
+
+4. Таксономия (terms, content_terms)
+   Источник: term_data, vocabulary, term_node
+   Таблицы:
+   - terms (id, name, vocabulary)
+   - content_terms (content_id, term_id)
+
+5. Дополнительные CCK‑поля
+   Источник: content_type_* таблицы (если есть)
+   Целевая таблица: custom_fields (key-value)
+   Поля:
+   - nid → content_id
+   - имя колонки → field_name
+   - значение → field_value
+
+ИТОГО в чистой схеме появляются таблицы:
+- users
+- roles
+- user_roles
+- content
+- terms
+- content_terms
+- custom_fields
+
 ШАГ 3. Нормализация схемы
 
 Выполнить db_data/migrate_from_drupal6_universal.sql
@@ -62,6 +116,48 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sq
 Поднять MySQL 8.0
 Импортировать clean_schema.sql
 Проверить наличие таблиц и данных
+
+ОПИСАНИЕ SQL-ФАЙЛОВ ДЛЯ МИГРАЦИИ
+
+В процессе миграции было создано несколько SQL-файлов, каждый со своей целью:
+
+drupal6_fixed.sql
+Чистый дамп исходной базы Drupal 6, перелитый в базу dniester внутри MySQL 5.7.
+Использовался для того, чтобы унифицировать работу и иметь новый старт.
+
+migrate_from_drupal6_universal.sql
+Основной миграционный скрипт. Создаёт новые таблицы (users, roles, user_roles, content, terms, content_terms) и переносит очищенные данные из старых таблиц Drupal.
+Это главный шаг миграции.
+
+detect_custom_fields.sql
+Вспомогательный файл. Проверяет, есть ли в базе таблицы вида content_type_*.
+Если в результате выполнения запросов список пуст → CCK-полей не было.
+Если вернулись строки → в базе были кастомные поля, созданные через модуль CCK.
+
+migrate_cck_fields.sql
+Дополнительный скрипт, используется только если реально есть content_type_* таблицы. Перекладывает их данные в универсальную таблицу custom_fields (схема key → value).
+Если CCK не использовался, выполнять не нужно.
+
+clean_schema.sql
+Финальный дамп после нормализации схемы (результат выполнения migrate_from_drupal6_universal.sql и при необходимости migrate_cck_fields.sql). Этот файл и загружается в MySQL 8.0 для работы News Platform.
+
+КАК ПРОВЕРИТЬ, ЕСТЬ ЛИ У ТЕБЯ CUSTOMFIELDS?
+
+В MySQL 5.7 (контейнер news-mysql-drupal6) выполни команду:
+SHOW TABLES LIKE 'content_type%';
+
+Если список вернулся пустым → у тебя нет CCK полей.
+Если есть строки вроде content_type_article, content_type_news и др. → значит были кастомные поля, их можно переложить при необходимости через migrate_cck_fields.sql.
+
+ДОПОЛНИТЕЛЬНАЯ ПРОВЕРКА В НОВОЙ БАЗЕ
+
+Если контейнер со старым Drupal 6 (MySQL 5.7) уже удалён и таблицы content_type_* недоступны, проверить наличие кастомных CCK-полей можно в новой базе dniester.
+
+Выполни:
+SELECT COUNT(*) FROM custom_fields;
+
+Если результат = 0 → кастомных полей в Drupal 6 не было, либо они не мигрированы.
+Если результат > 0 → значит в старой базе они существовали и были перенесены как key-value записи в таблицу custom_fields.
 
 ПОСЛЕ ЗАВЕРШЕНИЯ МИГРАЦИИ
 
