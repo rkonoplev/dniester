@@ -1,18 +1,11 @@
 # Qodana configuration for JVM/Spring Boot projects
 version: "1.0"
 
-# Select the correct Qodana linter for JVM-based projects
-# Full list: https://www.jetbrains.com/help/qodana/linters.html
 linter: jetbrains/qodana-jvm:2025.1
 
-# Choose the inspection profile:
-# - qodana.recommended: balanced set of useful inspections
-# - qodana.starter: minimal configuration, fast to run
 profile:
   name: qodana.recommended
 
-# Explicitly include inspections that are most useful for Spring Boot backend projects.
-# More inspection IDs: https://www.jetbrains.com/help/idea/inspection-tool.html
 include:
   - name: CheckDependencyLicenses
   - name: DuplicatedCode
@@ -26,9 +19,7 @@ include:
   - name: SuspiciousCollectionMethodCalls
   - name: SpringAutowiredFieldsWarning
 
-# Exclude files and directories from analysis
-# Exclude files and directories from analysis
 exclude:
-  - name: backend/src/main/resources/application-ci.yml  # CI-only config with H2
-  - name: backend/target                                # Gradle/Maven build output
-  - name: backend/build                                 # Alternative build output dir
+  - name: backend/src/main/resources/application-ci.yml
+  - name: backend/target
+  - name: backend/build
