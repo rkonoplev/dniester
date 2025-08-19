@@ -137,54 +137,54 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 ```
 ## 💾 File/Folder Structure
 
-| Directory/File                     | Description                                  |
-|------------------------------------|----------------------------------------------|
-| `news-platform/`                   | Root project directory                      |
-| `├── .github/`                     | GitHub configurations                       |
-| `├── .idea/`                       | IDE configuration files                     |
-| `├── backend/`                     | Spring Boot application                     |
-| `│   ├── .gradle/`                 | Gradle cache directory                      |
-| `│   ├── .idea/`                   | Backend-specific IDE configs                |
-| `│   ├── build/`                   | Build output directory                      |
-| `│   ├── config/`                  | Configuration files                         |
-| `│   ├── gradle/`                  | Gradle wrapper files                        |
-| `│   ├── src/`                     | Application source code                     |
-| `│   ├── build.gradle`             | Gradle build configuration                  |
-| `│   ├── Dockerfile.dev`           | Development Docker configuration            |
-| `│   ├── gradlew`                  | Gradle wrapper (Unix)                       |
-| `│   ├── gradlew.bat`              | Gradle wrapper (Windows)                    |
-| `│   └── settings.gradle`          | Gradle project settings                     |
-| `├── db_data/`                     | Database migration files and clean dumps    |
-| `│   ├── clean_schema.sql`         | Clean database schema                       |
-| `│   ├── detect_custom_fields.sql` | Custom fields detection script              |
-| `│   ├── drupal6_fixed.sql`        | Fixed Drupal6 database dump                 |
-| `│   ├── migrate_cck_fields.sql`   | CCK fields migration script                 |
+| Directory/File                               | Description                                  |
+|----------------------------------------------|----------------------------------------------|
+| `news-platform/`                             | Root project directory                      |
+| `├── .github/`                               | GitHub configurations                       |
+| `├── .idea/`                                 | IDE configuration files                     |
+| `├── backend/`                               | Spring Boot application                     |
+| `│   ├── .gradle/`                           | Gradle cache directory                      |
+| `│   ├── .idea/`                             | Backend-specific IDE configs                |
+| `│   ├── build/`                             | Build output directory                      |
+| `│   ├── config/`                            | Configuration files                         |
+| `│   ├── gradle/`                            | Gradle wrapper files                        |
+| `│   ├── src/`                               | Application source code                     |
+| `│   ├── build.gradle`                       | Gradle build configuration                  |
+| `│   ├── Dockerfile.dev`                     | Development Docker configuration            |
+| `│   ├── gradlew`                            | Gradle wrapper (Unix)                       |
+| `│   ├── gradlew.bat`                        | Gradle wrapper (Windows)                    |
+| `│   └── settings.gradle`                    | Gradle project settings                     |
+| `├── db_data/`                               | Database migration files and clean dumps    |
+| `│   ├── clean_schema.sql`                   | Clean database schema                       |
+| `│   ├── detect_custom_fields.sql`           | Custom fields detection script              |
+| `│   ├── drupal6_fixed.sql`                  | Fixed Drupal6 database dump                 |
+| `│   ├── migrate_cck_fields.sql`             | CCK fields migration script                 |
 | `│   └── migrate_from_drupal6_universal.sql` | Universal migration script          |
-| `├── db_dumps/`                    | Original database dumps                     |
-| `├── docs/`                        | Project documentation                       |
-| `│   ├── ARCHITECTURE_MIGRATION.md`| Migration architecture docs                 |
-| `│   ├── CLCD_SECURITY.md`         | Security documentation                      |
-| `│   ├── CONFIG_GUIDE.md`          | Configuration guide                         |
-| `│   ├── DOCKER_GUIDE.md`          | Docker setup guide                          |
-| `│   ├── MIGRATION_DRUPAL6_RU.txt` | Russian migration notes                     |
-| `│   ├── MIGRATION_DRUPAL6_TO_NEWSPLA*` | Drupal6 migration doc                |
-| `│   ├── TECHNICAL_SPEC.md`        | Technical specifications                    |
-| `│   └── ...`                      | Other documentation files                   |
-| `├── frontend/`                    | Frontend application (planned)              |
-| `├── .env.dev`                     | Local development environment variables     |
-| `├── .env.prod`                    | Production environment variables            |
-| `├── .gitignore`                   | Git ignore rules                            |
-| `├── .gitleaks.toml`               | Secrets detection configuration             |
-| `├── codecov.yml`                  | Code coverage configuration                 |
-| `├── create_baseline.sh`           | Baseline creation script                    |
-| `├── docker-compose.yml`           | Main Docker compose configuration           |
-| `├── docker-compose.drupal.yml`    | Drupal6 migration setup                     |
-| `├── docker-compose.override.yml`  | Production override configuration           |
-| `├── Dockerfile`                   | Production Docker configuration             |
-| `├── LICENSE`                      | Project license                             |
-| `├── Makefile`                     | Project make commands                       |
-| `├── qodana.yaml`                  | Qodana static analysis configuration        |
-| `└── README.md`                    | Main project documentation                  |
+| `├── db_dumps/`                              | Original database dumps                     |
+| `├── docs/`                                  | Project documentation                       |
+| `│   ├── ARCHITECTURE_MIGRATION.md`          | Migration architecture docs                 |
+| `│   ├── CLCD_SECURITY.md`                   | Security documentation                      |
+| `│   ├── CONFIG_GUIDE.md`                    | Configuration guide                         |
+| `│   ├── DOCKER_GUIDE.md`                    | Docker setup guide                          |
+| `│   ├── MIGRATION_DRUPAL6_RU.txt`           | Russian migration notes                     |
+| `│   ├── MIGRATION_DRUPAL6.md`               | Drupal6 migration doc                |
+| `│   ├── TECHNICAL_SPEC.md`                  | Technical specifications                    |
+| `│   └── ...`                                | Other documentation files                   |
+| `├── frontend/`                              | Frontend application (planned)              |
+| `├── .env.dev`                               | Local development environment variables     |
+| `├── .env.prod`                              | Production environment variables            |
+| `├── .gitignore`                             | Git ignore rules                            |
+| `├── .gitleaks.toml`                         | Secrets detection configuration             |
+| `├── codecov.yml`                            | Code coverage configuration                 |
+| `├── create_baseline.sh`                     | Baseline creation script                    |
+| `├── docker-compose.yml`                     | Main Docker compose configuration           |
+| `├── docker-compose.drupal.yml`              | Drupal6 migration setup                     |
+| `├── docker-compose.override.yml`            | Production override configuration           |
+| `├── Dockerfile`                             | Production Docker configuration             |
+| `├── LICENSE`                                | Project license                             |
+| `├── Makefile`                               | Project make commands                       |
+| `├── qodana.yaml`                            | Qodana static analysis configuration        |
+| `└── README.md`                              | Main project documentation                  |
 
 ## ✅ TL;DR Commands
 ```bash
@@ -193,7 +193,7 @@ docker compose -f docker-compose.yml up -d mysql
 docker logs news-mysql
 
 # 2. If root auth issue → reset password manually via skip-grant-tables
-# (See full doc under docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md)
+# (See full doc under docs/MIGRATION_DRUPAL6.md)
 
 # 3. Import normalized schema
 docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
@@ -294,7 +294,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [CI/CD & Security](docs/CI_CD_SECURITY.md)
 - [Technical Specification](docs/TECHNICAL_SPEC.md)
 - [API Usage Guide](docs/API_USAGE.md)
-- [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md)
+- [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
 
 ## 📜 License

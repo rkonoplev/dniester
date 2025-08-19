@@ -62,3 +62,21 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sq
 Поднять MySQL 8.0
 Импортировать clean_schema.sql
 Проверить наличие таблиц и данных
+
+ПОСЛЕ ЗАВЕРШЕНИЯ МИГРАЦИИ
+
+Когда вы удостоверились, что база clean_schema.sql успешно импортирована в MySQL 8.0 (контейнер news-mysql), временное окружение Drupal 6 больше не требуется.
+
+Docker volumes:
+
+✅ news-platform_mysql_data → оставить (используется MySQL 8.0 контейнером news-mysql).
+❌ news-platform_mysql_data_drupal6 → можно удалить (это временный том для миграции Drupal 6).
+Далее есть два варианта действий:
+
+ВАРИАНТ 1 — просто остановить контейнер Drupal 6 и оставить volume «на всякий случай»:
+docker stop news-mysql-drupal6
+
+ВАРИАНТ 2 — полностью удалить контейнер и лишний volume (рекомендуется после успешного экспорта):
+docker compose -f docker-compose.drupal.yml down -v
+
+После этого у вас останется только рабочий MySQL 8.0 (контейнер news-mysql) и его volume news-platform_mysql_data, которые нужны для дальнейшей работы News Platform.

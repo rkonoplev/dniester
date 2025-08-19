@@ -190,5 +190,28 @@ docker compose -f docker-compose.yml up -d mysql
 docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
+---
+
+## 🧹 Post‑Migration Cleanup
+
+After completing the migration and successfully importing `clean_schema.sql` into MySQL 8.0, you can clean up the temporary Drupal 6 environment.
+
+### Docker volumes
+
+- ✅ **news-platform_mysql_data** → keep this volume (used by MySQL 8.0: `news-mysql`).
+- ❌ **news-platform_mysql_data_drupal6** → can be safely removed (leftover from Drupal 6 migration).
+
+### Options
+
+**Option A — just stop Drupal 6 container (keep volume just in case):**
+```bash
+docker stop news-mysql-drupal6
+```
+**Option B — completely remove Drupal 6 container and volume:
+
+```bash
+docker compose -f docker-compose.drupal.yml down -v
+```
+👉 After cleanup, only MySQL 8.0 (news-mysql) and its volume (news-platform_mysql_data) should remain for further work with the News Platform.
 
 
