@@ -1,6 +1,19 @@
+# Qodana configuration for JVM projects
 version: "1.0"
 linter: jetbrains/qodana-jvm:2025.1
+
 profile:
-  name: qodana.recommended
+  name: qodana.recommended  # Use JetBrains recommended rules
+
+# Include additional inspections
 include:
-  - name: CheckDependencyLicenses
+  - name: CheckDependencyLicenses  # Ensure all dependencies have proper licenses
+
+# Exclude CI-specific files to prevent false positives
+exclude:
+  - backend/src/main/resources/application-ci.yml  # H2 database only for tests
+
+# Optional: JVM options and timeout for analysis
+settings:
+  jvm-options: "-Xmx1024m"
+  timeout: 120

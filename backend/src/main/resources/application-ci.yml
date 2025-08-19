@@ -1,29 +1,28 @@
 # =========================================================
 # application-ci.yml
-# CI/CD pipeline profile.
-# Runs with in-memory H2 database for fast and isolated tests.
-# No connection to external DB required.
+# CI/CD profile for running tests with in-memory H2 database.
+# Ensures fast, isolated tests without connecting to external DB.
 # =========================================================
 
 server:
-  port: 0   # Random port (not needed for tests)
+  port: 0   # Use random port (not needed for tests)
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL
-    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MySQL  # In-memory H2, MySQL compatibility
+    driver-class-name: org.h2.Driver                        # Full driver class required
     username: sa
     password: sa
 
   jpa:
     hibernate:
-      ddl-auto: create-drop               # Fresh schema for each test run
+      ddl-auto: create-drop               # Fresh schema each test run
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-    show-sql: false                       # Disable SQL logging for CI
+    show-sql: false                       # Disable SQL logging for CI runs
 
 logging:
   level:
-    root: WARN                            # Keep logs clean in CI
-    org.springframework.test: INFO        # Show test-related logs
+    root: WARN                            # Minimal logs in CI
+    org.springframework.test: INFO        # Show test logs
