@@ -45,7 +45,7 @@ jobs:
       # -------------------------------------------------------------------
       - name: Gradle Build, Lint, Test, Coverage
         env:
-          SPRING_PROFILES_ACTIVE: ci  # Use CI profile with H2 database
+          SPRING_PROFILES_ACTIVE: ci  # Use CI profile with H2 in-memory database
         run: |
           cd backend
           ./gradlew build checkstyleMain checkstyleTest test jacocoTestReport --no-daemon --warning-mode all
@@ -106,9 +106,8 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
         with:
-          # Use proper syntax: project-dir without comma
+          # Launch Qodana from repo root, point to backend folder
           args: -i backend
           post-pr-comment: true        # Add results as PR comment
           use-annotations: true        # Annotate issues in PR
           upload-result: true          # Upload results to Qodana Cloud
-

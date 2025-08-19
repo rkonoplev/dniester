@@ -1,19 +1,18 @@
 # Qodana configuration for JVM projects
 version: "1.0"
+
+# Correct linter field to detect Java/Spring Boot
 linter: jetbrains/qodana-jvm:2025.1
 
 profile:
-  name: qodana.recommended  # Use JetBrains recommended rules
+  name: qodana.recommended
 
-# Include additional inspections
 include:
-  - name: CheckDependencyLicenses  # Ensure all dependencies have proper licenses
+  - name: CheckDependencyLicenses
 
-# Exclude CI-specific files to prevent false positives
 exclude:
-  - backend/src/main/resources/application-ci.yml  # H2 database only for tests
+  - backend/src/main/resources/application-ci.yml  # Exclude H2-only CI config
 
-# Optional: JVM options and timeout for analysis
 settings:
   jvm-options: "-Xmx1024m"
   timeout: 120
