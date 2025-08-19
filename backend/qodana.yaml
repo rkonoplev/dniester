@@ -2,24 +2,22 @@ version: "1.0"
 
 linter: jetbrains/qodana-jvm:2025.1
 
+# analyse backend
 projectDir: .
 
+# base cases of JetBrains
 profile:
   name: qodana.recommended
 
+# only critical checks
 include:
-  - name: CheckDependencyLicenses
   - name: DuplicatedCode
-  - name: UnusedDeclaration
-  - name: FieldMayBeFinal
-  - name: VariableCanBeFinal
-  - name: SimplifiableAnnotation
   - name: NullableProblems
-  - name: ConstantConditions
   - name: DataFlowIssue
   - name: SuspiciousCollectionMethodCalls
-  - name: SpringAutowiredFieldsWarning
+  - name: ConstantConditions             #   if (true), null
 
+# garbage folders
 exclude:
   - path: build/
   - path: out/

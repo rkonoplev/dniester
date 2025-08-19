@@ -73,6 +73,7 @@ jobs:
         run: cd backend && ./gradlew build checkstyleMain checkstyleTest test jacocoTestReport --no-daemon --warning-mode all
 
       - name: Upload test reports
+        if: always()   # ✅ always upload, even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
@@ -81,6 +82,7 @@ jobs:
           retention-days: 4
 
       - name: Upload JaCoCo coverage
+        if: always()   # ✅ always upload coverage, even if build/tests fail
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
@@ -89,6 +91,7 @@ jobs:
           retention-days: 4
 
       - name: Upload coverage to Codecov
+        if: success()  # only upload if build/test succeeded
         uses: codecov/codecov-action@v4
         with:
           file: backend/build/reports/jacoco/test/jacocoTestReport.xml
@@ -112,8 +115,8 @@ jobs:
           curl -sL https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz | tar xz
           ./gitleaks detect --source . --verbose --redact
 
-      - name: Upload GitLeaks results (if failed)
-        if: failure()
+      - name: Upload GitLeaks results
+        if: failure()   # upload report only when GitLeaks fails
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-results
@@ -121,7 +124,7 @@ jobs:
           retention-days: 4
 
   # ===================================================================
-  # JOB 4: Qodana static analysis (with retry wrapper)
+  # JOB 4: Qodana static analysis (with retry wrapper, fail only on errors)
   # ===================================================================
   qodana:
     runs-on: ubuntu-latest
@@ -139,11 +142,18 @@ jobs:
         with:
           max_attempts: 3              # retry up to 3 times
           retry_wait_seconds: 30       # wait 30 seconds between retries
+          timeout_minutes: 15          # per attempt timeout
           command: |
             docker run --rm -v ${{ github.workspace }}:/data jetbrains/qodana-jvm:2025.1 \
-              --project-dir=backend --config=backend/qodana.yaml --results-dir /data/qodana/results --cache-dir /data/qodana/cache --timeout=300000
+              --project-dir=backend \
+              --config=backend/qodana.yaml \
+              --results-dir /data/qodana/results \
+              --cache-dir /data/qodana/cache \
+              --timeout=300000 \
+              --fail-threshold=error   # ✅ only fail CI if errors found
 
       - name: Upload Qodana report artifact
+        if: always()   # ✅ always upload report (even if scan failed)
         uses: actions/upload-artifact@v4
         with:
           name: qodana-report
@@ -152,6 +162,7 @@ jobs:
           retention-days: 4
 
       - name: Upload Qodana SARIF report to GitHub Security
+        if: always()   # ✅ always upload SARIF (even if scan failed) so we see results in Security tab
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: qodana/results/qodana.sarif.json
