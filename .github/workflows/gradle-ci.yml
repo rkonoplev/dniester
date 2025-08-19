@@ -34,13 +34,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      # Upload backend sources to allow downstream jobs to run in parallel
       - name: Upload backend sources artifact
         uses: actions/upload-artifact@v4
         with:
           name: backend-sources
           path: backend
-          retention-days: 1    # keep minimal, sources are retrievable from git anyway
+          retention-days: 1
 
   # ===================================================================
   # JOB 2: Gradle build, lint, tests, coverage
@@ -79,7 +78,7 @@ jobs:
           name: test-reports
           path: backend/build/reports/tests/test
           if-no-files-found: warn
-          retention-days: 7    # keep for a week
+          retention-days: 7
 
       - name: Upload JaCoCo coverage
         uses: actions/upload-artifact@v4
@@ -87,7 +86,7 @@ jobs:
           name: jacoco-report
           path: backend/build/reports/jacoco/test/
           if-no-files-found: warn
-          retention-days: 7    # keep for a week
+          retention-days: 7
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -97,22 +96,16 @@ jobs:
           name: codecov-news-platform
 
   # ===================================================================
-  # JOB 3: Security scan with GitLeaks (parallel after build)
+  # JOB 3: Security scan with GitLeaks
   # ===================================================================
   security:
     runs-on: ubuntu-latest
     needs: build_and_test
     steps:
-      - name: Checkout repository  # <-- ADD THIS STEP
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Download backend sources
-        uses: actions/download-artifact@v4
-        with:
-          name: backend-sources
-          path: backend
 
       - name: Run GitLeaks scan
         run: |
@@ -125,10 +118,10 @@ jobs:
         with:
           name: gitleaks-results
           path: .gitleaks-report.json
-          retention-days: 7    # keep for one week
+          retention-days: 7
 
   # ===================================================================
-  # JOB 4: Qodana static analysis (parallel after build)
+  # JOB 4: Qodana static analysis
   # ===================================================================
   qodana:
     runs-on: ubuntu-latest
@@ -143,7 +136,8 @@ jobs:
       - name: Run Qodana Scan (JVM)
         uses: JetBrains/qodana-action@v2025.1
         with:
-          args: --project-dir=backend --timeout=300000
+          # Explicitly point Qodana to backend/qodana.yaml
+          args: --project-dir=backend --config=backend/qodana.yaml --timeout=300000
           post-pr-comment: true
           use-annotations: true
           upload-result: false
@@ -156,7 +150,7 @@ jobs:
           name: qodana-report
           path: qodana/
           if-no-files-found: warn
-          retention-days: 14   # keep longer, for review
+          retention-days: 14
 
       - name: Upload Qodana SARIF report to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
