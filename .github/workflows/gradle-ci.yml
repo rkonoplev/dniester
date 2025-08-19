@@ -99,16 +99,22 @@ jobs:
           path: .gitleaks-report.json
 
       # -------------------------------------------------------------------
-      # Step 10: Run Qodana static analysis
+      # Step 10: Run Qodana static analysis (Spring Boot/JVM)
       # -------------------------------------------------------------------
       - name: Run Qodana Scan (JVM)
         uses: JetBrains/qodana-action@v2025.1
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
         with:
-          # Run Qodana from repo root, analyze the backend module
-          args: -i backend
+          # Do not pass `-i backend`, so Qodana sees qodana.yaml in repo root
           post-pr-comment: true        # Add summary as PR comment
           use-annotations: true        # Annotate issues directly in PR diffs
           upload-result: true          # Upload results to Qodana Cloud
-          github-code-scanning: true   # Push issues into GitHub Security > Code scanning
+
+      # -------------------------------------------------------------------
+      # Step 11: Upload Qodana SARIF report to GitHub Security (Code scanning)
+      # -------------------------------------------------------------------
+      - name: Upload Qodana report to GitHub code scanning
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: qodana/results/qodana.sarif.json
