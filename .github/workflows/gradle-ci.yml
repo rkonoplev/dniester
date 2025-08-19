@@ -106,8 +106,9 @@ jobs:
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
         with:
-          # Launch Qodana from repo root, point to backend folder
+          # Run Qodana from repo root, analyze the backend module
           args: -i backend
-          post-pr-comment: true        # Add results as PR comment
-          use-annotations: true        # Annotate issues in PR
+          post-pr-comment: true        # Add summary as PR comment
+          use-annotations: true        # Annotate issues directly in PR diffs
           upload-result: true          # Upload results to Qodana Cloud
+          github-code-scanning: true   # Push issues into GitHub Security > Code scanning
