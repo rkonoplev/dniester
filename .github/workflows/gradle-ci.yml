@@ -110,7 +110,7 @@ jobs:
           args: --project-dir=backend --timeout=300000
           post-pr-comment: true        # Adds summary of results as PR comment
           use-annotations: true        # Adds inline annotations in PR diffs
-          upload-result: true          # Uploads full results to Qodana Cloud
+          upload-result: false          # Uploads full results to Qodana Cloud
 
       # -------------------------------------------------------------------
       # Step 11: Upload Qodana SARIF report to GitHub Security (Code Scanning)
