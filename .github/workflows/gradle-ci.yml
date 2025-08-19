@@ -107,15 +107,12 @@ jobs:
           # Authentication token for Qodana Cloud integration
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
         with:
-          # Correct way to pass JVM options and timeout for Qodana
-          # --property: use to define JVM/IDE properties (equivalent to -D flags)
-          # --timeout: must be provided in milliseconds (e.g., 300000 = 5 minutes)
+          # Adjust Qodana timeout (milliseconds). Default is -1 (no limit).
           args: >
-            --property idea.cycle.memory.limit=1024m
             --timeout 300000
 
           post-pr-comment: true        # Adds summary of results as PR comment
-          use-annotations: true        # Annotates issues inline in PR diffs
+          use-annotations: true        # Adds inline annotations in PR diffs
           upload-result: true          # Uploads full results to Qodana Cloud
 
       # -------------------------------------------------------------------
@@ -124,5 +121,4 @@ jobs:
       - name: Upload Qodana report to GitHub code scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
-          # Qodana produces SARIF report here; uploading enables GitHub Security integration
           sarif_file: qodana/results/qodana.sarif.json
