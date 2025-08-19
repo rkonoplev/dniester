@@ -109,7 +109,7 @@ jobs:
         with:
           # Adjust Qodana timeout (milliseconds). Default is -1 (no limit).
           args: >
-            --timeout 300000
+            --timeout=300000
 
           post-pr-comment: true        # Adds summary of results as PR comment
           use-annotations: true        # Adds inline annotations in PR diffs
