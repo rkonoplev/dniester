@@ -195,7 +195,7 @@ docker compose -f docker-compose.drupal.yml down -v
 
 Варианты:
 
-ВАРИАНТ А — только база (MySQL для проверки данных)
+🔹 ВАРИАНТ А — только база (MySQL для проверки данных)
 
 Остановить старое окружение:
 docker compose -f docker-compose.yml down -v
@@ -208,7 +208,8 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sq
 Проверить содержимое:
 docker exec -it news-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
-ВАРИАНТ Б — полное окружение (MySQL + backend Spring Boot)
+
+🔹 ВАРИАНТ Б — полное окружение (MySQL + backend Spring Boot)
 
 Убедиться, что создан файл .env.dev с настройками:
 MYSQL_ROOT_PASSWORD=root
