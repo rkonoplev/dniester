@@ -262,7 +262,8 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [CI/CD & Security](docs/CI_CD_SECURITY.md)
 - [Technical Specification](docs/TECHNICAL_SPEC.md)
 - [API Usage Guide](docs/API_USAGE.md)
-- 
+- [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md)
+- [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
 
 ## 📜 License
 MIT License. See [LICENSE](LICENSE) for details.

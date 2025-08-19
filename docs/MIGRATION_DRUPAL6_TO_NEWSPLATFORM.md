@@ -30,12 +30,66 @@ Check:
 ```bash
 docker exec -it news-mysql-drupal6 mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
 ```
-At this point you can run your migration SQL scripts to normalize DB:
+At this point you can run your migration SQL scripts to normalize DB.
+Run migration scripts:
 
 ```sql
 source db_data/migrate_from_drupal6_universal.sql;
 source db_data/migrate_cck_fields.sql; -- optional
 ```
+
+### ⚠️ Handling Encoding Issues (UTF‑8 / Cyrillic)
+
+If you encounter errors like:
+ERROR 1366 (HY000): Incorrect string value: '\xD0\x98\xD0\xBD...' for column 'title'
+
+it means that MySQL created your target table with the wrong default collation (latin1). 
+By default MySQL 5.7 uses `latin1` unless explicitly specified.
+
+#### Step 1. Check table encoding
+Inside MySQL:
+```sql
+SHOW CREATE TABLE a264971_dniester.node \G
+```
+
+Usually, Drupal 6 tables are DEFAULT CHARSET=utf8.
+Now check your new content table (likely has DEFAULT CHARSET=latin1).
+
+Step 2. Recreate the target table with UTF‑8
+Drop and re‑create the content table with correct charset:
+
+```sql
+DROP TABLE IF EXISTS content;
+
+CREATE TABLE content (
+id INT PRIMARY KEY,
+title VARCHAR(255),
+body TEXT,
+teaser TEXT,
+publication_date DATETIME,
+author_id INT,
+FOREIGN KEY (author_id) REFERENCES users(id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+```
+Step 3. Retry data insertion
+Now insert data again:
+
+```sql
+INSERT INTO content (id, title, body, teaser, publication_date, author_id)
+SELECT
+n.nid,
+n.title,
+nr.body,
+nr.teaser,
+FROM_UNIXTIME(n.created),
+n.uid
+FROM a264971_dniester.node n
+LEFT JOIN a264971_dniester.node_revisions nr ON n.vid = nr.vid;
+```
+✅ With utf8_general_ci the Cyrillic text will be inserted correctly.
+
+
+
 ### 3. Export final normalized schema dump
    ```bash
    docker exec -i news-mysql-drupal6 mysqldump -u root -proot dniester > db_data/clean_schema.sql
@@ -124,13 +178,14 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 # Dev
 docker compose --env-file .env.dev up -d
 
-# Migration
+# Migration. Export from a264971_dniester
 docker compose -f docker-compose.drupal.yml up -d
 docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
 docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
 docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
 docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
 
+# Import into MySQL 8.0
 docker compose -f docker-compose.yml up -d mysql
 docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester

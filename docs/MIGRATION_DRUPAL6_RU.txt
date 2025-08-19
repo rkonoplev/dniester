@@ -1,0 +1,64 @@
+ИНСТРУКЦИЯ ПО МИГРАЦИИ: Drupal 6 → News Platform (Spring Boot + MySQL 8)
+
+ШАГ 1. Запуск временного MySQL 5.7 для дампа Drupal 6
+
+Запуск: docker compose -f docker-compose.drupal.yml up -d
+Логи: docker logs -f news-mysql-drupal6
+Подключение: docker exec -it news-mysql-drupal6 mysql -u root -p (пароль root)
+Проверка: SHOW DATABASES; USE a264971_dniester; SHOW TABLES;
+
+ШАГ 2. Экспорт + импорт в новую базу
+
+Экспорт: docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
+Импорт: docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
+Проверка: SHOW TABLES;
+
+ШАГ 3. Нормализация схемы
+
+Выполнить db_data/migrate_from_drupal6_universal.sql
+Выполнить db_data/migrate_cck_fields.sql (если есть CCK)
+Проверка результатa
+
+ШАГ 4. Проблемы с кодировкой (UTF-8, кириллица)
+
+Ошибка: Incorrect string value '\xD0...'
+Причина: таблица создана в latin1
+Проверка: SHOW CREATE TABLE a264971_dniester.node \G
+Решение: пересоздать content с UTF8:
+DROP TABLE IF EXISTS content;
+CREATE TABLE content (...) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+Заново вставить данные из node + node_revisions
+
+ШАГ 5. Экспорт clean_schema.sql
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
+
+ШАГ 6. Подготовка MySQL 8.0
+
+Если запускался неверно: docker compose -f docker-compose.yml down -v
+Запуск: docker compose -f docker-compose.yml up -d mysql
+Проверка логов: docker logs news-mysql (должно быть Creating database dniester)
+
+ШАГ 7. Сброс пароля root при проблемах
+
+docker stop news-mysql
+docker run -it --rm --name mysql-fix -v news-platform_mysql_data:/var/lib/mysql mysql:8.0 --skip-grant-tables --skip-networking
+В другом окне: docker exec -it mysql-fix mysql
+В MySQL:
+FLUSH PRIVILEGES;
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root';
+ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
+Остановить mysql-fix, снова запустить MySQL 8.0
+
+ШАГ 8. Импорт финального дампа
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+
+ШАГ 9. Проверка
+
+Список таблиц: SHOW TABLES;
+Количество: SELECT COUNT(*) FROM content; (ожидание ~12186 строк)
+
+КРАТКИЙ ПЛАН:
+
+Поднять MySQL 8.0
+Импортировать clean_schema.sql
+Проверить наличие таблиц и данных
