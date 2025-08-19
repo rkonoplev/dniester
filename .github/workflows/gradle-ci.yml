@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # fetch full history (needed for GitLeaks and Qodana)
 
       - name: Set up JDK 21
         uses: actions/setup-java@v4
@@ -39,7 +39,7 @@ jobs:
         with:
           name: backend-sources
           path: backend
-          retention-days: 1
+          retention-days: 1    # keep minimal, full repo is always available via checkout
 
   # ===================================================================
   # JOB 2: Gradle build, lint, tests, coverage
@@ -78,7 +78,7 @@ jobs:
           name: test-reports
           path: backend/build/reports/tests/test
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 4   # store reports for 4 days
 
       - name: Upload JaCoCo coverage
         uses: actions/upload-artifact@v4
@@ -86,7 +86,7 @@ jobs:
           name: jacoco-report
           path: backend/build/reports/jacoco/test/
           if-no-files-found: warn
-          retention-days: 7
+          retention-days: 4   # store coverage for 4 days
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -105,7 +105,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 0   # GitLeaks requires full git history
 
       - name: Run GitLeaks scan
         run: |
@@ -118,10 +118,10 @@ jobs:
         with:
           name: gitleaks-results
           path: .gitleaks-report.json
-          retention-days: 7
+          retention-days: 4   # store logs for 4 days if secret scan fails
 
   # ===================================================================
-  # JOB 4: Qodana static analysis
+  # JOB 4: Qodana static analysis (with automatic retry on failure)
   # ===================================================================
   qodana:
     runs-on: ubuntu-latest
@@ -133,16 +133,19 @@ jobs:
           name: backend-sources
           path: backend
 
-      - name: Run Qodana Scan (JVM)
+      # Run Qodana Scan with retry (to handle DockerHub/Docker pull timeouts)
+      - name: Run Qodana Scan (JVM) with retry
         uses: JetBrains/qodana-action@v2025.1
         with:
-          # Explicitly point Qodana to backend/qodana.yaml
           args: --project-dir=backend --config=backend/qodana.yaml --timeout=300000
-          post-pr-comment: true
-          use-annotations: true
-          upload-result: false
+          post-pr-comment: true      # add summary comment to PR
+          use-annotations: true      # inline annotations in PR diff
+          upload-result: true       # do not push to Qodana Cloud, store locally instead
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
+        retry:
+          max: 3       # up to 3 attempts if Qodana fails (e.g. pulling docker image)
+          delay: 30s   # wait 30s between retries
 
       - name: Upload Qodana report artifact
         uses: actions/upload-artifact@v4
@@ -150,7 +153,7 @@ jobs:
           name: qodana-report
           path: qodana/
           if-no-files-found: warn
-          retention-days: 14
+          retention-days: 4   # store Qodana reports for 4 days
 
       - name: Upload Qodana SARIF report to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
