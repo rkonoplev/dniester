@@ -176,3 +176,83 @@ docker stop news-mysql-drupal6
 docker compose -f docker-compose.drupal.yml down -v
 
 После этого у вас останется только рабочий MySQL 8.0 (контейнер news-mysql) и его volume news-platform_mysql_data, которые нужны для дальнейшей работы News Platform.
+
+ЗАПУСК ПРОЕКТА
+
+После того как новая база clean_schema.sql готова и импортирована, можно запускать проект.
+
+Варианты:
+
+ВАРИАНТ А — только база (MySQL для проверки данных)
+
+Остановить старое окружение:
+docker compose -f docker-compose.yml down -v
+Поднять только MySQL:
+docker compose -f docker-compose.yml up -d mysql
+Проверить логи:
+docker logs -f news-mysql
+Импортировать базу (если ещё не залита):
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+Проверить содержимое:
+docker exec -it news-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+ВАРИАНТ Б — полное окружение (MySQL + backend Spring Boot)
+
+Убедиться, что создан файл .env.dev с настройками:
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=dniester
+SPRING_LOCAL_PORT=8080
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+SPRING_DATASOURCE_USERNAME=root
+SPRING_DATASOURCE_PASSWORD=root
+
+Запустить сервисы:
+docker compose --env-file .env.dev up -d
+
+В итоге:
+
+news-mysql → база MySQL 8 с данными
+news-app → приложение Spring Boot
+При необходимости импортировать базу:
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+
+Проверить базу:
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+
+Проверить логи приложения:
+docker logs -f news-app
+
+Проверить API в браузере:
+http://localhost:8080
+
+КРАТКО (TL;DR):
+docker compose --env-file .env.dev up -d
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+
+ЕЖЕДНЕВНЫЙ ЗАПУСК ПРОЕКТА (БЕЗ ПОВТОРНОГО ИМПОРТА БАЗЫ)
+
+Важно: НЕ нужно каждый день снова импортировать clean_schema.sql.
+База сохраняется в Docker volume news-platform_mysql_data и переживает перезагрузки компьютера и контейнеров.
+
+Правила:
+
+Каждый день утром запускаем:
+docker compose --env-file .env.dev up -d
+База и данные уже будут доступны.
+Удалить volume (и потерять данные) можно только если выполнить:
+docker compose down -v (так делать не нужно в ежедневной работе!)
+Что должно быть в Docker:
+
+Контейнеры: news-mysql (и при полном старте ещё news-app)
+Volume: news-platform_mysql_data
+Старый контейнер для миграции Drupal (news-mysql-drupal6) и его том news-platform_mysql_data_drupal6 можно удалить.
+
+Проверка:
+docker ps
+docker volume ls | grep news-platform
+
+Ожидаем:
+
+Containers: news-mysql (и news-app если запускаем приложение)
+Volumes: news-platform_mysql_data
