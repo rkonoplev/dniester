@@ -39,7 +39,7 @@ jobs:
         with:
           name: backend-sources
           path: backend
-          retention-days: 1    # keep minimal, full repo is always available via checkout
+          retention-days: 1    # keep minimal, full repo available in git
 
   # ===================================================================
   # JOB 2: Gradle build, lint, tests, coverage
@@ -78,7 +78,7 @@ jobs:
           name: test-reports
           path: backend/build/reports/tests/test
           if-no-files-found: warn
-          retention-days: 4   # store reports for 4 days
+          retention-days: 4
 
       - name: Upload JaCoCo coverage
         uses: actions/upload-artifact@v4
@@ -86,7 +86,7 @@ jobs:
           name: jacoco-report
           path: backend/build/reports/jacoco/test/
           if-no-files-found: warn
-          retention-days: 4   # store coverage for 4 days
+          retention-days: 4
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
@@ -118,10 +118,10 @@ jobs:
         with:
           name: gitleaks-results
           path: .gitleaks-report.json
-          retention-days: 4   # store logs for 4 days if secret scan fails
+          retention-days: 4
 
   # ===================================================================
-  # JOB 4: Qodana static analysis (with automatic retry on failure)
+  # JOB 4: Qodana static analysis (with retry wrapper)
   # ===================================================================
   qodana:
     runs-on: ubuntu-latest
@@ -133,19 +133,15 @@ jobs:
           name: backend-sources
           path: backend
 
-      # Run Qodana Scan with retry (to handle DockerHub/Docker pull timeouts)
+      # Launch Qodana inside retry wrapper to handle transient network errors
       - name: Run Qodana Scan (JVM) with retry
-        uses: JetBrains/qodana-action@v2025.1
+        uses: nick-invision/retry@v3
         with:
-          args: --project-dir=backend --config=backend/qodana.yaml --timeout=300000
-          post-pr-comment: true      # add summary comment to PR
-          use-annotations: true      # inline annotations in PR diff
-          upload-result: true       # do not push to Qodana Cloud, store locally instead
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
-        retry:
-          max: 3       # up to 3 attempts if Qodana fails (e.g. pulling docker image)
-          delay: 30s   # wait 30s between retries
+          max_attempts: 3              # retry up to 3 times
+          retry_wait_seconds: 30       # wait 30 seconds between retries
+          command: |
+            docker run --rm -v ${{ github.workspace }}:/data jetbrains/qodana-jvm:2025.1 \
+              --project-dir=backend --config=backend/qodana.yaml --results-dir /data/qodana/results --cache-dir /data/qodana/cache --timeout=300000
 
       - name: Upload Qodana report artifact
         uses: actions/upload-artifact@v4
@@ -153,7 +149,7 @@ jobs:
           name: qodana-report
           path: qodana/
           if-no-files-found: warn
-          retention-days: 4   # store Qodana reports for 4 days
+          retention-days: 4
 
       - name: Upload Qodana SARIF report to GitHub Security
         uses: github/codeql-action/upload-sarif@v3
