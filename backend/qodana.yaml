@@ -1,16 +1,12 @@
 version: "1.0"
 
-# Qodana linter for JVM projects (Java, Kotlin, Spring Boot)
 linter: jetbrains/qodana-jvm:2025.1
 
-# Run Qodana from the backend directory
 projectDir: .
 
-# Use recommended inspections profile (balanced set of checks)
 profile:
   name: qodana.recommended
 
-# Enabled inspections (extend as needed)
 include:
   - name: CheckDependencyLicenses
   - name: DuplicatedCode
@@ -24,14 +20,13 @@ include:
   - name: SuspiciousCollectionMethodCalls
   - name: SpringAutowiredFieldsWarning
 
-# Paths and files excluded from analysis
 exclude:
-  - name: build/
-  - name: out/
-  - name: target/
-  - name: generated/
-  - name: tmp/
-  - name: logs/
-  - name: src/main/resources/application-*.yml
-  - name: src/main/resources/application-*.yaml
-  - name: src/main/resources/application-*.properties
+  - path: build/
+  - path: out/
+  - path: target/
+  - path: generated/
+  - path: tmp/
+  - path: logs/
+  - path: src/main/resources/application-*.yml
+  - path: src/main/resources/application-*.yaml
+  - path: src/main/resources/application-*.properties
