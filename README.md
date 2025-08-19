@@ -90,6 +90,7 @@ cp backend/src/main/resources/application.properties.template backend/src/main/r
 Full developer and deployment documentation is available in the [docs/](docs/) folder:
 
 - [Developer Guide](docs/DEVELOPER_GUIDE.md)
+- [Developer Guide (RU, plain text)](docs/DEVELOPER_GUIDE_RU.txt)
 - [Architecture Migration](docs/ARCHITECTURE_MIGRATION.md)
 - [Configuration Guide](docs/CONFIG_GUIDE.md)
 - [Docker Guide](docs/DOCKER_GUIDE.md)

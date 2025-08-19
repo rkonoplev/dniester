@@ -104,20 +104,25 @@ jobs:
       - name: Run Qodana Scan (JVM)
         uses: JetBrains/qodana-action@v2025.1
         env:
+          # Authentication token for Qodana Cloud integration
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
         with:
-          # Pass JVM options and timeout via args instead of "settings" in yaml
+          # Correct way to pass JVM options and timeout for Qodana
+          # --property: use to define JVM/IDE properties (equivalent to -D flags)
+          # --timeout: must be provided in milliseconds (e.g., 300000 = 5 minutes)
           args: >
-            --jvm-options "-Xmx1024m"
-            --timeout 120
-          post-pr-comment: true        # Adds summary as PR comment
-          use-annotations: true        # Adds inline annotations in PR diffs
-          upload-result: true          # Uploads results to Qodana Cloud
+            --property idea.cycle.memory.limit=1024m
+            --timeout 300000
+
+          post-pr-comment: true        # Adds summary of results as PR comment
+          use-annotations: true        # Annotates issues inline in PR diffs
+          upload-result: true          # Uploads full results to Qodana Cloud
 
       # -------------------------------------------------------------------
-      # Step 11: Upload Qodana SARIF report to GitHub Security (Code scanning)
+      # Step 11: Upload Qodana SARIF report to GitHub Security (Code Scanning)
       # -------------------------------------------------------------------
       - name: Upload Qodana report to GitHub code scanning
         uses: github/codeql-action/upload-sarif@v3
         with:
+          # Qodana produces SARIF report here; uploading enables GitHub Security integration
           sarif_file: qodana/results/qodana.sarif.json
