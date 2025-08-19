@@ -256,3 +256,32 @@ docker volume ls | grep news-platform
 
 Containers: news-mysql (и news-app если запускаем приложение)
 Volumes: news-platform_mysql_data
+
+ШПАРГАЛКА ПО РАБОТЕ С MYSQL В КОНТЕЙНЕРЕ
+
+Подключение в интерактивный режим:
+docker exec -it news-mysql mysql -uroot -proot
+
+Внутри MySQL (появляется mysql>):
+
+Посмотреть все базы: SHOW DATABASES;
+Переключиться в базу: USE dniester;
+Посмотреть таблицы: SHOW TABLES;
+Пример: посчитать записи: SELECT COUNT(*) FROM content;
+Выйти: EXIT;
+Экспорт (дамп БД):
+
+Дамп всей базы dniester:
+docker exec -i news-mysql mysqldump -uroot -proot dniester > db_data/exported_dump.sql
+
+Дамп конкретной таблицы (например users):
+docker exec -i news-mysql mysqldump -uroot -proot dniester users > db_data/users_dump.sql
+
+Импорт (залить дамп обратно):
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/exported_dump.sql
+
+Примечания:
+
+В команде указывай имя базы (например dniester).
+Перед импортом база должна существовать.
+Дамп — это обычный .sql файл, его можно хранить в папке db_data для удобства.
