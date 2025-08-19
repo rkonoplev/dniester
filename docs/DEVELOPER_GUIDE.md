@@ -23,24 +23,24 @@ The heavy checks (static analysis, security scanning, code coverage, etc.) are p
   ```bash
   ./gradlew checkstyleMain checkstyleTest
   ```
-  Optional (when needed):
-  If you want to run the full Spring Boot application locally:
+ ### Optional (when needed):
+  If you want to **run the full Spring Boot application locally:**
   Start Docker (e.g., database containers).
   Run the service with:
   ```bash
   ./gradlew bootRun
   ```
   After testing, stop Docker to avoid unnecessary CPU/memory usage.
-- 
+ 
  ## 🔹 Before Pushing to GitHub
   Before committing and pushing, check at least:
 
 ✅ Code compiles (Build Project or ./gradlew build)
-✅ All tests pass (./gradlew test)
+✅ All **tests pass** (./gradlew test)
 ✅ Code style checks pass (./gradlew checkstyleMain checkstyleTest)
 (optional but strongly recommended)
 
-That’s usually enough — GitHub Actions CI will run additional steps:
+That’s usually enough — **GitHub Actions CI** will run additional steps:
 
 🟢 Full Gradle build + unit tests.
 🟢 Qodana static analysis (Spring Boot JVM inspections).
@@ -49,9 +49,9 @@ That’s usually enough — GitHub Actions CI will run additional steps:
 🟢 Code scanning alerts integration in GitHub Security.
 
 ## 🔹 Summary
-👉 Developers can work without Docker most of the time.
-👉 Run unit tests and build locally before pushing.
-👉 Let CI/CD (GitHub Actions) handle static analysis, coverage, and security.
+👉 Developers **can work without Docker** most of the time.
+👉 Run **unit tests and build locally** before pushing.
+👉 Let **CI/CD (GitHub Actions)** handle static analysis, coverage, and security.
 
 This approach ensures fast, resource‑light local development, while CI validates everything in the cloud.
 

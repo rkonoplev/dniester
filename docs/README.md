@@ -8,6 +8,10 @@ This directory contains all project documentation, organized into specific guide
   Daily workflow for developers, local commands, how to run builds/tests in IntelliJ,  
   working without Docker, and CI/CD expectations.
 
+- [Developer Guide (RU, plain text)](./DEVELOPER_GUIDE_RU.txt)  
+  Russian text-only version of the developer guide: local workflow, Gradle/IDE commands,  
+  CI/CD explanation. Useful for Russian-speaking developers who prefer plain text format.
+
 - [Architecture Migration](./ARCHITECTURE_MIGRATION.md)  
   Overview of the migration from Drupal 6 → modern Spring Boot & Docker, completed steps, and next actions.
 
