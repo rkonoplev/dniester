@@ -93,30 +93,30 @@ Then data is normalized into clean schema with migration SQL scripts.
 Finally, the normalized dump clean_schema.sql is loaded into MySQL 8.0 for News Platform.
 
 ### Migration Flow
-1. Start MySQL 5.7 (for Drupal 6 dump):
+**1. Start MySQL 5.7 (for Drupal 6 dump):**
 
 ```bash
 docker compose -f docker-compose.drupal.yml up -d
 docker logs -f news-mysql-drupal6
 ```
-2. Export old schema and re-import into dniester:
+**2. Export old schema and re-import into dniester:**
 
 ```bash
 docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
 docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
 ```
-3. Run migration scripts:
+**3. Run migration scripts:**
 
 ```bash
 docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
 docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_cck_fields.sql
 ```
-4. Export normalized schema:
+**4. Export normalized schema:**
 
 ```bash
 docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
 ```
-5. Start MySQL 8.0 (target):
+**5. Start MySQL 8.0 (target):**
 
 ```bash
 docker compose -f docker-compose.yml up -d mysql
@@ -124,7 +124,7 @@ docker logs news-mysql
 ```
 If root doesn’t work, fix root password using --skip-grant-tables (see docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md).
 
-6. Import final schema into MySQL 8.0:
+**6. Import final schema into MySQL 8.0:**
 
 ```bash
 docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
@@ -323,7 +323,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 ### 🟢 Option B. Run the full stack (Spring Boot + MySQL)
-1. Ensure you have .env.dev in the project root with proper DB configs:
+**1. Ensure you have .env.dev in the project root with proper DB configs:**
 
 ```dotenv
 MYSQL_ROOT_PASSWORD=root
@@ -333,7 +333,7 @@ SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&character
 SPRING_DATASOURCE_USERNAME=root
 SPRING_DATASOURCE_PASSWORD=root
 ```
-2. Start containers:
+**2. Start containers:**
 
 ```bash
 docker compose --env-file .env.dev up -d
@@ -341,22 +341,22 @@ docker compose --env-file .env.dev up -d
 news-mysql → MySQL 8.0 with schema dniester
 news-app → Spring Boot backend
 
-3. Import clean schema if needed:
+**3. Import clean schema if needed:**
 
 ```bash
 docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
 ```
-4. Verify DB data:
+**4. Verify DB data:**
 
 ```bash
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
-5. Check application logs:
+**5. Check application logs:**
 
 ```bash
 docker logs -f news-app
 ```
-6. Open API:
+**6. Open API:**
 
 ```text
 http://localhost:8080
@@ -413,6 +413,66 @@ Expected:
 
 - Containers: news-mysql (+ news-app)
 - Volumes: news-platform_mysql_data
+
+---
+
+## 🛠️ MySQL Handy Commands Cheat Sheet
+
+### 1. Connect to MySQL container (interactive shell)
+
+```bash
+docker exec -it news-mysql mysql -uroot -proot
+```
+Now you are inside the MySQL CLI (mysql>):
+
+List all databases:
+
+```sql
+SHOW DATABASES;
+```
+Select the active database:
+
+```sql
+USE dniester;
+```
+List all tables:
+
+```sql
+SHOW TABLES;
+```
+Example: check content count:
+
+```sql
+SELECT COUNT(*) FROM content;
+```
+Exit MySQL CLI:
+
+```sql
+EXIT;
+```
+**2. Dumping databases (export)**
+   From the terminal (outside MySQL):
+
+Dump a single database:
+
+```bash
+docker exec -i news-mysql mysqldump -uroot -proot dniester > db_data/exported_dump.sql
+```
+Dump a specific table:
+
+```bash
+docker exec -i news-mysql mysqldump -uroot -proot dniester users > db_data/users_dump.sql
+```
+**3. Importing dumps**
+   Load an SQL file back into MySQL:
+
+```bash
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/exported_dump.sql
+```
+👉 Notes:
+
+Replace dniester with the db name you want to use.
+Make sure the database exists before importing.
 
 ## 📜 License
 MIT License. See [LICENSE](LICENSE) for details.
