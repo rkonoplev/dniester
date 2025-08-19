@@ -2,22 +2,18 @@ version: "1.0"
 
 linter: jetbrains/qodana-jvm:2025.1
 
-# analyse backend
-projectDir: .
+projectDir: ./src
 
-# base cases of JetBrains
 profile:
   name: qodana.recommended
 
-# only critical checks
 include:
   - name: DuplicatedCode
   - name: NullableProblems
   - name: DataFlowIssue
   - name: SuspiciousCollectionMethodCalls
-  - name: ConstantConditions             #   if (true), null
+  - name: ConstantConditions
 
-# garbage folders
 exclude:
   - path: build/
   - path: out/
