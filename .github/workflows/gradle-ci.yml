@@ -104,13 +104,24 @@ jobs:
       - name: Run Qodana Scan (JVM)
         uses: JetBrains/qodana-action@v2025.1
         env:
-          # Authentication token for Qodana Cloud integration
+          # Qodana Cloud authentication token (not required if upload-result is false)
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1954113934 }}
         with:
           args: --project-dir=backend --timeout=300000
-          post-pr-comment: true        # Adds summary of results as PR comment
-          use-annotations: true        # Adds inline annotations in PR diffs
-          upload-result: false          # Uploads full results to Qodana Cloud
+          post-pr-comment: true        # Adds summary as a PR comment
+          use-annotations: true        # Adds inline annotations in the PR diff
+          upload-result: false         # Do not upload results to Qodana Cloud
+
+      # -------------------------------------------------------------------
+      # Step 10.1: Upload Qodana HTML/JSON report as GitHub artifact
+      # This ensures that report.zip is always available, even if cloud upload is disabled
+      # -------------------------------------------------------------------
+      - name: Upload Qodana report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: qodana-report
+          path: qodana/
+          if-no-files-found: warn
 
       # -------------------------------------------------------------------
       # Step 11: Upload Qodana SARIF report to GitHub Security (Code Scanning)
