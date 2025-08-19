@@ -21,3 +21,9 @@ This directory contains all project documentation, organized into specific guide
 
 - [API Usage Guide](./API_USAGE.md)  
   Example requests with `curl`, Makefile shortcuts for testing API endpoints, and usage instructions for developers & QA.
+
+- [Migration Drupal6 → News Platform (EN)](./MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md)  
+  Full migration guide in English with all steps and TL;DR commands.
+
+- [Migration Drupal6 → News Platform (RU, plain text)](./MIGRATION_DRUPAL6_RU.txt)  
+  Russian plain-text migration guide for internal use (copyable into Word/Pages).
