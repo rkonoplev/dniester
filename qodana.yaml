@@ -2,45 +2,33 @@
 version: "1.0"
 
 # Select the correct Qodana linter for JVM-based projects
-# Available linters: https://www.jetbrains.com/help/qodana/linters.html
+# Full list: https://www.jetbrains.com/help/qodana/linters.html
 linter: jetbrains/qodana-jvm:2025.1
 
 # Choose the inspection profile:
 # - qodana.recommended: balanced set of useful inspections
 # - qodana.starter: minimal configuration, fast to run
-# We’ll use the recommended one and extend it with additional rules.
 profile:
   name: qodana.recommended
 
-# Explicitly include inspections that are most useful for a Spring Boot backend.
-# You can find more inspection IDs here:
-# https://www.jetbrains.com/help/idea/inspection-tool.html
+# Explicitly include inspections that are most useful for Spring Boot backend projects.
+# More inspection IDs: https://www.jetbrains.com/help/idea/inspection-tool.html
 include:
-  # Dependency/license checks
-  - name: CheckDependencyLicenses       # Ensures external libraries’ licenses are compatible
-  # Code quality and maintainability
-  - name: DuplicatedCode                # Identifies duplicated code fragments
-  - name: UnusedDeclaration             # Detects unused methods, fields, parameters
-  - name: FieldMayBeFinal               # Flags non-final fields that never change
-  - name: VariableCanBeFinal            # Flags local variables that can be final
-  - name: SimplifiableAnnotation        # Flags redundant or simplified annotations
-  # Bugs and potential issues
-  - name: NullableProblems              # Finds incorrect @Nullable / @NotNull usage
-  - name: ConstantConditions            # Detects code with always true/false conditions
-  - name: DataFlowIssue                 # Finds nullability or unreachable cases using data-flow analysis
-  - name: SuspiciousCollectionMethodCalls # Detects incorrect usages of collections (e.g. compare by ref)
-  - name: SpringAutowiredFieldsWarning  # (Spring-specific) Warns about field injection vs constructor injection
+  - name: CheckDependencyLicenses
+  - name: DuplicatedCode
+  - name: UnusedDeclaration
+  - name: FieldMayBeFinal
+  - name: VariableCanBeFinal
+  - name: SimplifiableAnnotation
+  - name: NullableProblems
+  - name: ConstantConditions
+  - name: DataFlowIssue
+  - name: SuspiciousCollectionMethodCalls
+  - name: SpringAutowiredFieldsWarning
 
-# Paths to exclude from analysis (e.g. generated code, configs, test data).
-# These won’t be scanned by Qodana at all.
-excludePaths:
-  - backend/src/main/resources/application-ci.yml  # CI-only config with H2
-  - backend/target                                # Maven/Gradle build output
-  - backend/build                                 # Another common build output dir
-
-settings:
-  # JVM runtime options for running Qodana
-  jvm-options: "-Xmx1024m"
-
-  # Timeout in seconds for analysis
-  timeout: 120
+# Exclude files and directories from analysis
+# Exclude files and directories from analysis
+exclude:
+  - name: backend/src/main/resources/application-ci.yml  # CI-only config with H2
+  - name: backend/target                                # Gradle/Maven build output
+  - name: backend/build                                 # Alternative build output dir
