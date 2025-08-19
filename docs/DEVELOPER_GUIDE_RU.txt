@@ -80,6 +80,3 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/exported_dump.s
 В команде указывай имя базы (например dniester).
 Перед импортом база должна существовать.
 Дамп — это обычный .sql файл, его можно хранить в папке db_data для удобства.
-
-
----
