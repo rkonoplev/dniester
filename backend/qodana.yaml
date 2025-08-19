@@ -2,12 +2,14 @@ version: "1.0"
 
 linter: jetbrains/qodana-jvm:2025.1
 
-projectDir: ./src
+# correct folder
+projectDir: .
 
 profile:
   name: qodana.recommended
 
 include:
+  # checking
   - name: DuplicatedCode
   - name: NullableProblems
   - name: DataFlowIssue
@@ -15,6 +17,7 @@ include:
   - name: ConstantConditions
 
 exclude:
+  # tmp
   - path: build/
   - path: out/
   - path: target/
