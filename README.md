@@ -297,5 +297,122 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
 
+---
+
+## 🚀 Running the Project
+
+After migrating the database and producing `clean_schema.sql`, you can run the full News Platform stack (MySQL + Spring Boot) or only the database for verification.
+
+### 🟢 Option A. Run only the database (MySQL check)
+
+```bash
+# Stop any previous containers and volumes
+docker compose -f docker-compose.yml down -v
+
+# Start MySQL 8.0 only
+docker compose -f docker-compose.yml up -d mysql
+
+# Check logs
+docker logs -f news-mysql
+
+# Import the clean schema (if not imported yet)
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+
+# Verify content
+docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+### 🟢 Option B. Run the full stack (Spring Boot + MySQL)
+1. Ensure you have .env.dev in the project root with proper DB configs:
+
+```dotenv
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=dniester
+SPRING_LOCAL_PORT=8080
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+SPRING_DATASOURCE_USERNAME=root
+SPRING_DATASOURCE_PASSWORD=root
+```
+2. Start containers:
+
+```bash
+docker compose --env-file .env.dev up -d
+```
+news-mysql → MySQL 8.0 with schema dniester
+news-app → Spring Boot backend
+
+3. Import clean schema if needed:
+
+```bash
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+```
+4. Verify DB data:
+
+```bash
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+5. Check application logs:
+
+```bash
+docker logs -f news-app
+```
+6. Open API:
+
+```text
+http://localhost:8080
+```
+### ✅ Quick TL;DR
+```bash
+docker compose --env-file .env.dev up -d
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+---
+
+## 🔁 Daily Workflow 
+
+ **Do not need to import** `clean_schema.sql` every time you restart your computer 🚫.
+
+### Why?
+- MySQL container stores all database data inside `/var/lib/mysql`.
+- In `docker-compose.yml` we mounted a persistent Docker volume:
+  ```yaml
+  volumes:
+    - mysql_data:/var/lib/mysql
+  ```
+This volume (news-platform_mysql_data) survives container restarts and system reboots.
+
+### Rules
+✅ Use docker compose up -d every morning → your data is still there.
+❌ Do NOT run docker compose down -v unless you want to wipe all data and re-import.
+
+### What should be running?
+**Option A (DB only):**
+
+- Containers: news-mysql
+- Volumes: news-platform_mysql_data
+
+**Option B (DB + backend):**
+
+- Containers: news-mysql + news-app
+- Volumes: news-platform_mysql_data
+
+👉 The old migration container news-mysql-drupal6 and its volume news-platform_mysql_data_drupal6 can be safely removed.
+
+**Daily Start Command**
+```bash
+docker compose --env-file .env.dev up -d
+```
+Check:
+
+```bash
+docker ps
+docker volume ls | grep news-platform
+```
+Expected:
+
+- Containers: news-mysql (+ news-app)
+- Volumes: news-platform_mysql_data
+
 ## 📜 License
 MIT License. See [LICENSE](LICENSE) for details.
