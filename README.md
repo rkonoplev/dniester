@@ -101,7 +101,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
 ---
 ## 🤝 Contributing
-Contributions, issues, and feature requests are welcome!
+Contributions, issues, and feature requests are welcome! But not yet now. :-)
 
 - Check the [issues](../../issues) page to see current tasks or report a bug.
 - Open a [Pull Request](../../pulls) to propose changes.
