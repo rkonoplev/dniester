@@ -30,9 +30,11 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
     - Runs **GitLeaks** to detect leaked secrets in the codebase.
     - Uploads report if scan fails.
 
-5. **Qodana (Static Analysis)**
-    - Uses [JetBrains Qodana](https://www.jetbrains.com/qodana/) for static code quality checks.
-    - Results available in GitHub UI and stored as artifact.
+5. **Static Analysis: Checkstyle & PMD**
+    - **Checkstyle** — enforces Java code style and formatting rules.
+    - **PMD** — detects common programming flaws, unused code, and code smells.
+    - Both tools are automatically executed in the Gradle `check` task.
+    - Reports (XML + HTML) are generated and can be uploaded in CI as artifacts.
 
 ---
 
@@ -40,7 +42,8 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 - **JaCoCo** — test coverage (artifact + Codecov report).
 - **Codecov** — coverage metrics integrated to PRs.
-- **Qodana** — static code analysis for JVM.
+- **Checkstyle** — code style enforcement.
+- **PMD** — static analysis to detect code smells and bad practices.
 - **GitLeaks** — secret scanning to prevent accidental leaks.
 
 ---
@@ -73,7 +76,7 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 ## ✅ Summary
 
 - CI/CD pipeline is **fully automated**: build → test → quality → security.
-- Code quality is controlled with **Qodana** + **JaCoCo** + **Codecov**.
+- Code quality is controlled with **Checkstyle**, **PMD**, **JaCoCo**, and **Codecov**.
 - Secrets are strictly managed through environment variables/secrets.
 - Security scans (GitLeaks) protect repository against secret leaks.
 
