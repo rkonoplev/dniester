@@ -6,30 +6,42 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 /**
- * Repository for accessing news data.
+ * Repository for accessing News (content table).
  */
 public interface NewsRepository extends JpaRepository<News, Long> {
 
-    // Search all news by title OR content (case-insensitive)
+    /**
+     * Search all news (published or not) by text and optional category.
+     */
     @Query("""
-        SELECT n FROM News n
-        WHERE (:category IS NULL OR LOWER(n.category) = LOWER(:category))
-        AND (LOWER(n.title) LIKE LOWER(CONCAT('%', :search, '%'))
-             OR LOWER(n.content) LIKE LOWER(CONCAT('%', :search, '%')))
+        SELECT DISTINCT n FROM News n
+        LEFT JOIN n.terms t
+        WHERE (:category IS NULL OR LOWER(t.name) = LOWER(:category))
+          AND (:search IS NULL
+               OR LOWER(n.title) LIKE LOWER(CONCAT('%', :search, '%'))
+               OR LOWER(n.body) LIKE LOWER(CONCAT('%', :search, '%')))
         """)
     Page<News> searchAll(String search, String category, Pageable pageable);
 
-    // Search only published news
+    /**
+     * Search only published news by text and category.
+     */
     @Query("""
-        SELECT n FROM News n
+        SELECT DISTINCT n FROM News n
+        LEFT JOIN n.terms t
         WHERE n.published = true
-        AND (:category IS NULL OR LOWER(n.category) = LOWER(:category))
-        AND (LOWER(n.title) LIKE LOWER(CONCAT('%', :search, '%'))
-             OR LOWER(n.content) LIKE LOWER(CONCAT('%', :search, '%')))
+          AND (:category IS NULL OR LOWER(t.name) = LOWER(:category))
+          AND (:search IS NULL
+               OR LOWER(n.title) LIKE LOWER(CONCAT('%', :search, '%'))
+               OR LOWER(n.body) LIKE LOWER(CONCAT('%', :search, '%')))
         """)
     Page<News> searchPublished(String search, String category, Pageable pageable);
 
-    // Find by ID only if published
-    java.util.Optional<News> findByIdAndPublishedTrue(Long id);
+    /**
+     * Find by id only if published.
+     */
+    Optional<News> findByIdAndPublishedTrue(Long id);
 }
