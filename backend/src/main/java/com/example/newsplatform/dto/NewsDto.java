@@ -1,37 +1,42 @@
 package com.example.newsplatform.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-
 import java.time.LocalDateTime;
 
+/**
+ * DTO representing News entity for API responses.
+ */
 public class NewsDto {
+
     private Long id;
-
-    @NotBlank
     private String title;
-
     private String teaser;
 
-    @NotBlank
-    private String content;
+    /** Main article body. */
+    private String body;
 
-    @NotBlank
-    @Size(max = 100)
+    /** Category name (maps to taxonomy Term name). */
     private String category;
-    private LocalDateTime publishedAt;
 
-    public NewsDto(Long id, String title, String teaser, String content, String category, LocalDateTime publishedAt) {
-        this.id = id;
-        this.title = title;
-        this.teaser = teaser;
-        this.content = content;
-        this.category = category;
-        this.publishedAt = publishedAt;
-    }
+    /** Publication date. */
+    private LocalDateTime publicationDate;
+
+    /** Whether this news is published. */
+    private boolean published;
 
     public NewsDto() {}
 
+    public NewsDto(Long id, String title, String teaser, String body,
+                   String category, LocalDateTime publicationDate, boolean published) {
+        this.id = id;
+        this.title = title;
+        this.teaser = teaser;
+        this.body = body;
+        this.category = category;
+        this.publicationDate = publicationDate;
+        this.published = published;
+    }
+
+    // --- Getters & Setters ---
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -41,12 +46,15 @@ public class NewsDto {
     public String getTeaser() { return teaser; }
     public void setTeaser(String teaser) { this.teaser = teaser; }
 
-    public String getContent() { return content; }
-    public void setContent(String content) { this.content = content; }
+    public String getBody() { return body; }
+    public void setBody(String body) { this.body = body; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
 
-    public LocalDateTime getPublishedAt() { return publishedAt; }
-    public void setPublishedAt(LocalDateTime publishedAt) { this.publishedAt = publishedAt; }
+    public LocalDateTime getPublicationDate() { return publicationDate; }
+    public void setPublicationDate(LocalDateTime publicationDate) { this.publicationDate = publicationDate; }
+
+    public boolean isPublished() { return published; }
+    public void setPublished(boolean published) { this.published = published; }
 }
