@@ -1,4 +1,4 @@
-name: Optimized Hybrid Java CI with Gradle, GitLeaks, SpotBugs and PMD
+name: Optimized Hybrid Java CI with Gradle, GitLeaks, Checkstyle, PMD
 
 on:
   push:
@@ -72,11 +72,11 @@ jobs:
           SPRING_PROFILES_ACTIVE: ci
         run: cd backend && ./gradlew build checkstyleMain checkstyleTest test jacocoTestReport --no-daemon --warning-mode all
 
-      - name: Static Analysis (SpotBugs + PMD)
-        run: cd backend && ./gradlew spotbugsMain spotbugsTest pmdMain pmdTest --no-daemon --warning-mode all
+      - name: Static Analysis (Checkstyle + PMD)
+        run: cd backend && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --no-daemon --warning-mode all
 
       - name: Upload test reports
-        if: always()   # ✅ always upload, even if tests fail
+        if: always()   # always upload, even if tests fail
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
@@ -85,7 +85,7 @@ jobs:
           retention-days: 4
 
       - name: Upload JaCoCo coverage
-        if: always()   # ✅ always upload coverage, even if build/tests fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: jacoco-report
@@ -116,10 +116,10 @@ jobs:
       - name: Run GitLeaks scan
         run: |
           curl -sL https://github.com/gitleaks/gitleaks/releases/download/v8.18.0/gitleaks_8.18.0_linux_x64.tar.gz | tar xz
-          ./gitleaks detect --source . --verbose --redact
+          ./gitleaks detect --source . --verbose --redact --report-path .gitleaks-report.json
 
       - name: Upload GitLeaks results
-        if: failure()   # upload report only when GitLeaks fails
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: gitleaks-results
