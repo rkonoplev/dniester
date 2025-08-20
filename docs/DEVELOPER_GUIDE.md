@@ -42,16 +42,16 @@ The heavy checks (static analysis, security scanning, code coverage, etc.) are p
 
 That’s usually enough — **GitHub Actions CI** will run additional steps:
 
-🟢 Full Gradle build + unit tests.
-🟢 Qodana static analysis (Spring Boot JVM inspections).
-🟢 JaCoCo coverage report + Codecov upload.
-🟢 GitLeaks secrets scanning.
+🟢 Full Gradle build + unit tests.  
+🟢 Static analysis with Checkstyle and PMD.  
+🟢 JaCoCo coverage report + Codecov upload.  
+🟢 GitLeaks secrets scanning.  
 🟢 Code scanning alerts integration in GitHub Security.
 
 ## 🔹 Summary
 👉 Developers **can work without Docker** most of the time.
 👉 Run **unit tests and build locally** before pushing.
-👉 Let **CI/CD (GitHub Actions)** handle static analysis, coverage, and security.
+👉 Let **CI/CD (GitHub Actions)** handle static analysis (Checkstyle + PMD), coverage (JaCoCo + Codecov), and security (GitLeaks).
 
 This approach ensures fast, resource‑light local development, while CI validates everything in the cloud.
 
@@ -143,54 +143,60 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 ```
 ## 💾 File/Folder Structure
 
-| Directory/File                               | Description                                  |
-|----------------------------------------------|----------------------------------------------|
-| `news-platform/`                             | Root project directory                      |
-| `├── .github/`                               | GitHub configurations                       |
-| `├── .idea/`                                 | IDE configuration files                     |
-| `├── backend/`                               | Spring Boot application                     |
-| `│   ├── .gradle/`                           | Gradle cache directory                      |
-| `│   ├── .idea/`                             | Backend-specific IDE configs                |
-| `│   ├── build/`                             | Build output directory                      |
-| `│   ├── config/`                            | Configuration files                         |
-| `│   ├── gradle/`                            | Gradle wrapper files                        |
-| `│   ├── src/`                               | Application source code                     |
-| `│   ├── build.gradle`                       | Gradle build configuration                  |
-| `│   ├── Dockerfile.dev`                     | Development Docker configuration            |
-| `│   ├── gradlew`                            | Gradle wrapper (Unix)                       |
-| `│   ├── gradlew.bat`                        | Gradle wrapper (Windows)                    |
-| `│   └── settings.gradle`                    | Gradle project settings                     |
-| `├── db_data/`                               | Database migration files and clean dumps    |
-| `│   ├── clean_schema.sql`                   | Clean database schema                       |
-| `│   ├── detect_custom_fields.sql`           | Custom fields detection script              |
-| `│   ├── drupal6_fixed.sql`                  | Fixed Drupal6 database dump                 |
-| `│   ├── migrate_cck_fields.sql`             | CCK fields migration script                 |
-| `│   └── migrate_from_drupal6_universal.sql` | Universal migration script          |
-| `├── db_dumps/`                              | Original database dumps                     |
-| `├── docs/`                                  | Project documentation                       |
-| `│   ├── ARCHITECTURE_MIGRATION.md`          | Migration architecture docs                 |
-| `│   ├── CLCD_SECURITY.md`                   | Security documentation                      |
-| `│   ├── CONFIG_GUIDE.md`                    | Configuration guide                         |
-| `│   ├── DOCKER_GUIDE.md`                    | Docker setup guide                          |
-| `│   ├── MIGRATION_DRUPAL6_RU.txt`           | Russian migration notes                     |
-| `│   ├── MIGRATION_DRUPAL6.md`               | Drupal6 migration doc                |
-| `│   ├── TECHNICAL_SPEC.md`                  | Technical specifications                    |
-| `│   └── ...`                                | Other documentation files                   |
-| `├── frontend/`                              | Frontend application (planned)              |
-| `├── .env.dev`                               | Local development environment variables     |
-| `├── .env.prod`                              | Production environment variables            |
-| `├── .gitignore`                             | Git ignore rules                            |
-| `├── .gitleaks.toml`                         | Secrets detection configuration             |
-| `├── codecov.yml`                            | Code coverage configuration                 |
-| `├── create_baseline.sh`                     | Baseline creation script                    |
-| `├── docker-compose.yml`                     | Main Docker compose configuration           |
-| `├── docker-compose.drupal.yml`              | Drupal6 migration setup                     |
-| `├── docker-compose.override.yml`            | Production override configuration           |
-| `├── Dockerfile`                             | Production Docker configuration             |
-| `├── LICENSE`                                | Project license                             |
-| `├── Makefile`                               | Project make commands                       |
-| `├── qodana.yaml`                            | Qodana static analysis configuration        |
-| `└── README.md`                              | Main project documentation                  |
+| Directory/File                            | Description                                     |
+|-------------------------------------------|-------------------------------------------------|
+| `news-platform/`                          | Root project directory                          |
+| ├── `.github/`                            | GitHub configurations (CI/CD workflows)         |
+| ├── `.idea/`                              | IDE configuration files                         |
+| ├── `backend/`                            | Spring Boot backend application                 |
+| │   ├── `.gradle/`                        | Gradle system/cache directory                   |
+| │   ├── `.idea/`                          | Backend-specific IDE configs                    |
+| │   ├── `build/` *(ignored in VCS)*       | Build output (classes, jars, reports, tmp)      |
+| │   ├── `config/`                         | Static analysis configs                         |
+| │   │   ├── `checkstyle/checkstyle.xml`   | Checkstyle rules                                |
+| │   │   ├── `pmd/ruleset.xml`             | PMD rules                                       |
+| │   │   └── `spotbugs/excludeFilter.xml`  | SpotBugs exclude file (legacy)                  |
+| │   ├── `gradle/wrapper/`                 | Gradle wrapper JAR + properties                 |
+| │   ├── `src/main/java/`                  | Application source code (Java)                  |
+| │   ├── `src/main/resources/`             | Configs (`application-*.yml`, static, templates)|
+| │   ├── `src/test/java/`                  | Unit and integration tests                      |
+| │   ├── `build.gradle`                    | Gradle build configuration                      |
+| │   ├── `settings.gradle`                 | Gradle settings                                 |
+| │   ├── `Dockerfile.dev`                  | Dockerfile for local development                |
+| │   ├── `gradlew` / `gradlew.bat`         | Gradle wrapper scripts (Unix / Windows)         |
+| ├── `db_data/`                            | Database migration files and clean dumps        |
+| │   ├── `clean_schema.sql`                | Clean database schema                           |
+| │   ├── `detect_custom_fields.sql`        | Custom fields detection                         |
+| │   ├── `drupal6_fixed.sql`               | Fixed Drupal6 dump                              |
+| │   ├── `migrate_cck_fields.sql`          | CCK fields migration                            |
+| │   └── `migrate_from_drupal6_universal.sql` | Universal migration SQL script                |
+| ├── `db_dumps/`                           | Original (raw) database dumps                   |
+| ├── `docs/`                               | Documentation                                   |
+| │   ├── `ARCHITECTURE_MIGRATION.md`       | Migration architecture guide                    |
+| │   ├── `CI_CD_SECURITY.md`               | CI/CD & security guide                          |
+| │   ├── `CONFIG_GUIDE.md`                 | Configuration guide                             |
+| │   ├── `DEVELOPER_GUIDE.md`              | Developer guide (EN)                            |
+| │   ├── `DEVELOPER_GUIDE_RU.txt`          | Developer guide (RU, text only)                 |
+| │   ├── `DOCKER_GUIDE.md`                 | Docker setup guide                              |
+| │   ├── `MIGRATION_DRUPAL6.md`            | Full migration guide (EN)                       |
+| │   ├── `MIGRATION_DRUPAL6_RU.txt`        | Migration guide (RU)                            |
+| │   ├── `README.md`                       | Docs index page                                 |
+| │   └── `TECHNICAL_SPEC.md`               | Technical specification                         |
+| ├── `frontend/`                           | Placeholder for future frontend app             |
+| ├── `.env.dev`                            | Local development environment variables         |
+| ├── `.env.prod`                           | Production environment variables                |
+| ├── `.gitignore`                          | Git ignore rules                                |
+| ├── `.gitleaks.toml`                      | GitLeaks secret-scanning config                 |
+| ├── `codecov.yml`                         | Codecov configuration                           |
+| ├── `create_baseline.sh`                  | Baseline creation script                        |
+| ├── `docker-compose.yml`                  | Main Docker Compose file                        |
+| ├── `docker-compose.override.yml`         | Override Compose file (prod overrides)          |
+| ├── `docker-compose.drupal.yml`           | Compose setup for Drupal6 migration             |
+| ├── `Dockerfile`                          | Production Dockerfile                           |
+| ├── `LICENSE`                             | Project license                                 |
+| ├── `Makefile`                            | Common make commands                            |
+| └── `README.md`                           | Main repository README                          |
+
 
 ## ✅ TL;DR Commands
 ```bash
@@ -244,8 +250,9 @@ This project uses several tools for code and security assurance.
 
 ### Cloud Analysis
 
-- **Qodana** — cloud code quality, CI-integrated
-- **CodeCov** — code coverage, GitHub Actions integration
+- **Checkstyle** — style guide and formatting enforcement, runs in CI
+- **PMD** — detects code smells and common programming issues, runs in CI
+- **CodeCov** — publishes code coverage reports to GitHub PRs (via JaCoCo)
 
 ### Security
 

@@ -89,8 +89,8 @@ The backend provides:
 | Security          | Spring Security + JWT |
 | Deployment        | Docker + Render (PaaS) |
 | CI/CD             | GitHub Actions |
-| Code Quality      | JaCoCo, Qodana |
-| Static Checks     | Checkstyle |
+| Code Quality      | JaCoCo |
+| Static Checks     | Checkstyle, PMD |
 | Testing           | JUnit 5, Testcontainers (planned) |
 
 ---
@@ -106,7 +106,7 @@ The backend provides:
     - Secrets managed via `.env`, GitHub Secrets, Render Secrets.
 - **Maintainability:**
     - >80% unit test coverage (JaCoCo).
-    - Automated static analysis (Qodana, Checkstyle).
+    - Automated static analysis (Checkstyle, PMD).
 - **Documentation:**
     - API self-documented with Swagger UI.
     - Clear onboarding docs in `/docs`.

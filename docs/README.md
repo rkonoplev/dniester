@@ -22,7 +22,7 @@ This directory contains all project documentation, organized into specific guide
   Local development with `docker-compose`, production builds with Dockerfile, override files, and Render deployment notes.
 
 - [CI/CD & Security](./CI_CD_SECURITY.md)  
-  GitHub Actions workflow (`gradle-ci.yml`), automated testing, code quality tools (Qodana, JaCoCo), GitLeaks, and best practices for handling secrets.
+  GitHub Actions workflow (`gradle-ci.yml`), automated testing, code quality tools (Checkstyle, PMD, JaCoCo), GitLeaks…
 
 - [Technical Specification](./TECHNICAL_SPEC.md)  
   Functional and non-functional requirements, architecture layers, technology stack, and planned future enhancements.

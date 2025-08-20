@@ -1,96 +1,141 @@
 plugins {
+    // Core plugin for Java projects
     id 'java'
+
+    // Static code analysis for coding style
     id 'checkstyle'
+
+    // Code coverage tool
     id 'jacoco'
+
+    // Spring Boot support
     id 'org.springframework.boot' version '3.2.0'
+
+    // Dependency management provided by Spring Boot
     id 'io.spring.dependency-management' version '1.1.4'
+
+    // Static code analysis for "code smells" and potential issues
+    id 'pmd'
 }
 
+// Project metadata
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
-// Configure Java toolchain for JDK 21
+// Java configuration
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        languageVersion = JavaLanguageVersion.of(21) // Use JDK 21 for compilation
     }
 }
 
-// Dependency versions (extracted for maintainability)
+// Extra properties (versions in one place)
 ext {
     mysqlVersion = '8.3.0'
     h2Version = '2.2.224'
 }
 
+// Repositories to resolve dependencies
 repositories {
     mavenCentral()
 }
 
+// Application dependencies
 dependencies {
-    // Spring Boot Starters
+    // Spring Boot starters (web, persistence, security, validation)
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     // Databases
-    runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"  // MySQL driver (runtime only)
-    testImplementation "com.h2database:h2:${h2Version}"        // H2 for tests
+    runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"  // MySQL driver for runtime
+    testImplementation "com.h2database:h2:${h2Version}"         // In-memory DB for testing
 
-    // Development Tools (optional)
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'  // Hot-reload for local development
+    // Developer tools
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    // Testing
+    // Testing support
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-// Checkstyle configuration
+// ---------------- Checkstyle ----------------
+// Code style and formatting rules
 checkstyle {
     toolVersion = '10.12.1'
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
-    maxWarnings = 0
-    maxErrors = 0
+    maxWarnings = 0 // Fail the build if any warning
+    maxErrors = 0   // Fail the build if any error
 }
 
-// Generate Checkstyle reports (XML for CI, HTML for local)
+// Configure Checkstyle reports
 tasks.withType(Checkstyle).configureEach {
     reports {
-        xml.required = true  // Required for CI tools (e.g., GitHub Actions)
-        html.required = true // Human-readable report
+        xml.required = true   // For CI/CD integration
+        html.required = true  // For developers (readable)
     }
 }
 
-// JaCoCo configuration for code coverage
+// ---------------- Jacoco ----------------
+// Code coverage tool
 jacoco {
     toolVersion = "0.8.11"
 }
 
+// Task to generate Jacoco reports (HTML & XML)
 tasks.jacocoTestReport {
     dependsOn test
     reports {
-        xml.required = true
-        xml.outputLocation = file("${buildDir}/reports/jacoco/test/jacocoTestReport.xml")  // Explicit path for Codecov
-        html.required = true
-        csv.required = false
+        xml.required.set(true)
+        // Modern API instead of 'buildDir'
+        xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
+        html.required.set(true)
     }
 }
 
-// Coverage verification (disabled by setting minimum = 0.0)
+// Configure minimum coverage verification
 tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                counter = 'LINE'
-                value = 'COVEREDRATIO'
-                minimum = 0.0  // Adjust to enforce coverage (e.g., 0.8 for 80%)
+                counter = 'LINE'        // Count line coverage
+                value = 'COVEREDRATIO'  // Ratio of covered lines
+                minimum = 0.0           // For now, no minimum (can increase later)
             }
         }
     }
 }
-
-// Ensure coverage is checked during 'gradle check'
 tasks.check.dependsOn tasks.jacocoTestCoverageVerification
 
+// ---------------- PMD ----------------
+// Find "code smells" and potential issues
+pmd {
+    toolVersion = "6.55.0"
+    ignoreFailures = false // Fail the build if PMD finds violations
+    consoleOutput = true   // Print results to console
+    ruleSets = []          // Disable bundled/legacy rule sets
+    // Use a custom ruleset file
+    ruleSetFiles = files("${project.projectDir}/config/pmd/ruleset.xml")
+}
+
+// Configure PMD reports
+tasks.withType(Pmd).configureEach {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+// ---------------- Tests ----------------
+// Use JUnit 5 (Jupiter) for testing
 test {
     useJUnitPlatform()
 }
+
+// ---------------- Integration ----------------
+// Runs all code-quality tools automatically in 'check' phase.
+// So './gradlew check' or './gradlew build' will run:
+// - Checkstyle
+// - PMD
+// - Jacoco coverage verification
+tasks.check.dependsOn 'checkstyleMain', 'pmdMain'
