@@ -14,7 +14,7 @@ plugins {
     // Dependency management provided by Spring Boot
     id 'io.spring.dependency-management' version '1.1.4'
 
-    // Static code analysis for "code smells" and potential issues
+    // Static code analysis for code quality and potential issues
     id 'pmd'
 }
 
@@ -29,7 +29,7 @@ java {
     }
 }
 
-// Extra properties (versions in one place)
+// Extra properties for dependency versions
 ext {
     mysqlVersion = '8.3.0'
     h2Version = '2.2.224'
@@ -64,15 +64,15 @@ dependencies {
 checkstyle {
     toolVersion = '10.12.1'
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
-    maxWarnings = 0 // Fail the build if any warning
-    maxErrors = 0   // Fail the build if any error
+    maxWarnings = 0 // Fail the build if any warnings
+    maxErrors = 0   // Fail the build if any errors
 }
 
 // Configure Checkstyle reports
 tasks.withType(Checkstyle).configureEach {
     reports {
         xml.required = true   // For CI/CD integration
-        html.required = true  // For developers (readable)
+        html.required = true  // For developers (readable format)
     }
 }
 
@@ -87,7 +87,6 @@ tasks.jacocoTestReport {
     dependsOn test
     reports {
         xml.required.set(true)
-        // Modern API instead of 'buildDir'
         xml.outputLocation.set(layout.buildDirectory.file("reports/jacoco/test/jacocoTestReport.xml"))
         html.required.set(true)
     }
@@ -100,22 +99,23 @@ tasks.jacocoTestCoverageVerification {
             limit {
                 counter = 'LINE'        // Count line coverage
                 value = 'COVEREDRATIO'  // Ratio of covered lines
-                minimum = 0.0           // For now, no minimum (can increase later)
+                minimum = 0.0           // No minimum requirement for now (can be increased later)
             }
         }
     }
 }
+
+// Ensure coverage verification runs during check phase
 tasks.check.dependsOn tasks.jacocoTestCoverageVerification
 
 // ---------------- PMD ----------------
-// Find "code smells" and potential issues
+// Static code analysis for code quality and potential issues
 pmd {
     toolVersion = "6.55.0"
     ignoreFailures = false // Fail the build if PMD finds violations
     consoleOutput = true   // Print results to console
-    ruleSets = []          // Disable bundled/legacy rule sets
-    // Use a custom ruleset file
-    ruleSetFiles = files("${project.projectDir}/config/pmd/ruleset.xml")
+    ruleSets = []          // Disable default rule sets
+    ruleSetFiles = files("${project.projectDir}/config/pmd/ruleset.xml") // Use custom ruleset
 }
 
 // Configure PMD reports
@@ -130,12 +130,14 @@ tasks.withType(Pmd).configureEach {
 // Use JUnit 5 (Jupiter) for testing
 test {
     useJUnitPlatform()
+    finalizedBy jacocoTestReport // Generate coverage report after tests
 }
 
 // ---------------- Integration ----------------
-// Runs all code-quality tools automatically in 'check' phase.
-// So './gradlew check' or './gradlew build' will run:
+// Runs all code quality tools automatically during 'check' phase
+// './gradlew check' or './gradlew build' will execute:
 // - Checkstyle
 // - PMD
 // - Jacoco coverage verification
-tasks.check.dependsOn 'checkstyleMain', 'pmdMain'
+// - Tests
+tasks.check.dependsOn 'checkstyleMain', 'pmdMain', 'checkstyleTest', 'pmdTest'
