@@ -2,37 +2,129 @@ package com.example.newsplatform.entity;
 
 import jakarta.persistence.*;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
- * Term entity representing taxonomy terms (categories/tags).
+ * Entity representing a taxonomy term, such as a category or tag.
+ * Terms are used to classify content (e.g., News articles) and grouped by vocabulary.
+ *
+ * Example:
+ * - Name: "Technology", Vocabulary: "category"
+ * - Name: "Urgent", Vocabulary: "tag"
+ *
+ * This entity is linked to News via a many-to-many relationship.
+ * The owning side is {@link News#terms}, so this side uses mappedBy.
  */
 @Entity
-@Table(name = "terms")
+@Table(name = "terms",
+        indexes = @Index(name = "idx_term_name", columnList = "name"),
+        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "vocabulary"}))
 public class Term {
 
+    /**
+     * Unique identifier for the term.
+     * May correspond to external system IDs (e.g., Drupal tid).
+     */
     @Id
-    private Long id; // Drupal tid
+    private Long id;
 
+    /**
+     * Display name of the term (e.g., "Sports", "Breaking News").
+     * Must not be null.
+     */
     @Column(nullable = false, length = 255)
     private String name;
 
+    /**
+     * Grouping namespace for terms (e.g., 'category', 'tag').
+     * Helps organize terms into vocabularies.
+     */
     @Column(length = 100)
     private String vocabulary;
 
-    @ManyToMany(mappedBy = "terms")
+    /**
+     * Bidirectional many-to-many relationship with News.
+     * This is the inverse (mapped) side — the owning side is in {@link News}.
+     *
+     * Contains all news articles associated with this term.
+     */
+    @ManyToMany(mappedBy = "terms", fetch = FetchType.LAZY)
     private Set<News> newsArticles = new HashSet<>();
 
-    // --- Getters & Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // === Constructors ===
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public Term() {
+    }
 
-    public String getVocabulary() { return vocabulary; }
-    public void setVocabulary(String vocabulary) { this.vocabulary = vocabulary; }
+    public Term(Long id, String name, String vocabulary) {
+        this.id = id;
+        this.name = name;
+        this.vocabulary = vocabulary;
+    }
 
-    public Set<News> getNewsArticles() { return newsArticles; }
-    public void setNewsArticles(Set<News> newsArticles) { this.newsArticles = newsArticles; }
+    // === Getters and Setters ===
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getVocabulary() {
+        return vocabulary;
+    }
+
+    public void setVocabulary(String vocabulary) {
+        this.vocabulary = vocabulary;
+    }
+
+    public Set<News> getNewsArticles() {
+        return newsArticles;
+    }
+
+    public void setNewsArticles(Set<News> newsArticles) {
+        this.newsArticles = newsArticles;
+    }
+
+    // === equals & hashCode ===
+
+    /**
+     * Compares terms by identity (ID and vocabulary).
+     * Useful for collections and JPA consistency.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Term term)) return false;
+        return Objects.equals(id, term.id) &&
+                Objects.equals(name, term.name) &&
+                Objects.equals(vocabulary, term.vocabulary);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, vocabulary);
+    }
+
+    // === toString ===
+
+    @Override
+    public String toString() {
+        return "Term{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", vocabulary='" + vocabulary + '\'' +
+                '}';
+    }
 }

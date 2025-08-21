@@ -4,6 +4,7 @@ import com.example.newsplatform.dto.ErrorResponseDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,16 +18,25 @@ import java.util.stream.Collectors;
 /**
  * Centralized exception handler for all controllers.
  * Provides unified error response format for API clients.
+ *
+ * Handles:
+ * - Validation errors (400)
+ * - Not found (404)
+ * - Access denied (403)
+ * - Internal server errors (500)
+ * - IllegalArgumentException (400)
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    /** Handle uncaught exceptions (500 - Internal Server Error). */
+    /**
+     * Handles uncaught exceptions (500 - Internal Server Error).
+     */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, WebRequest request) {
-        ErrorResponseDto error = new ErrorResponseDto(
+        ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                HttpStatus.INTERNAL_SERVER_ERROR,
                 ex.getMessage(),
                 request.getDescription(false),
                 null
@@ -34,18 +44,20 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    /** Handle validation errors from @Valid annotated requests (400). */
+    /**
+     * Handles validation errors from @Valid annotated requests (400 - Bad Request).
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponseDto> handleValidationExceptions(MethodArgumentNotValidException ex, WebRequest request) {
-        List<String> fieldErrors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .toList(); // modern Java 16+ style
+    public ResponseEntity<ErrorResponseDto> handleValidationExceptions(
+            MethodArgumentNotValidException ex, WebRequest request) {
 
-        ErrorResponseDto error = new ErrorResponseDto(
+        List<String> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
+                .map(this::formatFieldError)
+                .collect(Collectors.toList());
+
+        ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
                 "Validation failed",
                 request.getDescription(false),
                 fieldErrors
@@ -53,12 +65,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
 
-    /** Handle custom not-found exceptions (404). */
+    /**
+     * Handles custom not-found exceptions (404 - Not Found).
+     */
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleNotFoundException(NotFoundException ex, WebRequest request) {
-        ErrorResponseDto error = new ErrorResponseDto(
+    public ResponseEntity<ErrorResponseDto> handleNotFoundException(
+            NotFoundException ex, WebRequest request) {
+
+        ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
-                HttpStatus.NOT_FOUND.value(),
+                HttpStatus.NOT_FOUND,
                 ex.getMessage(),
                 request.getDescription(false),
                 null
@@ -66,12 +82,16 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    /** Handle forbidden access exceptions (403). */
+    /**
+     * Handles access denied exceptions (403 - Forbidden).
+     */
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(AccessDeniedException ex, WebRequest request) {
-        ErrorResponseDto error = new ErrorResponseDto(
+    public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(
+            AccessDeniedException ex, WebRequest request) {
+
+        ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
-                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN,
                 "Access is denied",
                 request.getDescription(false),
                 null
@@ -79,16 +99,47 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
     }
 
-    /** Handle illegal arguments thrown manually in service layer (400). */
+    /**
+     * Handles illegal arguments thrown manually in service layer (400 - Bad Request).
+     */
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(IllegalArgumentException ex, WebRequest request) {
-        ErrorResponseDto error = new ErrorResponseDto(
+    public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(
+            IllegalArgumentException ex, WebRequest request) {
+
+        ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
-                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST,
                 ex.getMessage(),
                 request.getDescription(false),
                 Collections.emptyList()
         );
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    // === Private Helpers ===
+
+    /**
+     * Builds a standardized error response DTO.
+     */
+    private ErrorResponseDto buildErrorResponse(
+            Instant timestamp,
+            HttpStatus status,
+            String message,
+            String path,
+            List<String> details) {
+        return new ErrorResponseDto(
+                timestamp,
+                status.value(),
+                message,
+                path,
+                details
+        );
+    }
+
+    /**
+     * Formats a field error as "fieldName: message".
+     */
+    private String formatFieldError(FieldError error) {
+        return error.getField() + ": " + error.getDefaultMessage();
     }
 }

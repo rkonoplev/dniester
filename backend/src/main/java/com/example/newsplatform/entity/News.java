@@ -3,54 +3,109 @@ package com.example.newsplatform.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
- * News entity representing a news article.
- * Maps to table "content" in the database.
+ * Entity representing a news article.
+ * Maps to the "content" database table (legacy Drupal schema).
+ *
+ * Contains core article data, publication status, timestamps, author reference,
+ * and taxonomy terms (categories/tags) via many-to-many relationship.
  */
 @Entity
-@Table(name = "content") // mapping DB table "content" → class News
+@Table(
+        name = "content",
+        indexes = {
+                @Index(name = "idx_news_title", columnList = "title"),
+                @Index(name = "idx_news_published", columnList = "published"),
+                @Index(name = "idx_news_publication_date", columnList = "publication_date")
+        }
+)
 public class News {
 
+    /**
+     * Unique identifier for the news article.
+     * Corresponds to the original Drupal node ID (nid).
+     */
     @Id
-    private Long id; // original Drupal nid
+    private Long id;
 
+    /**
+     * Article title. Must not be null.
+     */
     @Column(nullable = false, length = 255)
     private String title;
 
+    /**
+     * Main article body (full text). Stored as TEXT in DB.
+     */
     @Column(columnDefinition = "TEXT")
-    private String body; // main body text of the article
+    private String body;
 
+    /**
+     * Short preview or lead text shown in lists. Optional.
+     */
     @Column(columnDefinition = "TEXT")
-    private String teaser; // short teaser/lead
+    private String teaser;
 
+    /**
+     * Scheduled or actual publication date and time.
+     * Corresponds to original "created" timestamp in Drupal.
+     */
     @Column(name = "publication_date", nullable = false)
-    private LocalDateTime publicationDate; // original "created" timestamp
+    private LocalDateTime publicationDate;
 
+    /**
+     * Flag indicating whether the article is publicly visible.
+     * Default: false (draft).
+     */
     @Column(nullable = false)
-    private boolean published = false; // whether this news article is published
+    private boolean published = false;
 
-    // Audit fields
+    // === Audit Fields ===
+
+    /**
+     * Timestamp when the record was first created.
+     */
     private LocalDateTime createdAt;
+
+    /**
+     * Timestamp when the record was last updated.
+     */
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    // === Relationships ===
+
+    /**
+     * Author of the news article (User who created it).
+     * Foreign key: author_id → User.id
+     */
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
 
-    @ManyToMany
+    /**
+     * Taxonomy terms associated with this news (e.g., categories, tags).
+     * Stored in join table "content_terms".
+     *
+     * Example: ["Technology", "Urgent"]
+     */
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "content_terms",
             joinColumns = @JoinColumn(name = "content_id"),
             inverseJoinColumns = @JoinColumn(name = "term_id")
     )
-    private Set<Term> terms = new HashSet<>(); // taxonomy terms like categories
+    private Set<Term> terms = new HashSet<>();
+
+    // === Lifecycle Callbacks ===
 
     @PrePersist
     public void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
+        LocalDateTime now = LocalDateTime.now();
+        createdAt = now;
+        updatedAt = now;
     }
 
     @PreUpdate
@@ -58,31 +113,108 @@ public class News {
         updatedAt = LocalDateTime.now();
     }
 
-    // --- Getters & Setters ---
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // === Getters and Setters ===
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getBody() { return body; }
-    public void setBody(String body) { this.body = body; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getTeaser() { return teaser; }
-    public void setTeaser(String teaser) { this.teaser = teaser; }
+    public String getTitle() {
+        return title;
+    }
 
-    public LocalDateTime getPublicationDate() { return publicationDate; }
-    public void setPublicationDate(LocalDateTime publicationDate) { this.publicationDate = publicationDate; }
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
-    public boolean isPublished() { return published; }
-    public void setPublished(boolean published) { this.published = published; }
+    public String getBody() {
+        return body;
+    }
 
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setBody(String body) {
+        this.body = body;
+    }
 
-    public User getAuthor() { return author; }
-    public void setAuthor(User author) { this.author = author; }
+    public String getTeaser() {
+        return teaser;
+    }
 
-    public Set<Term> getTerms() { return terms; }
-    public void setTerms(Set<Term> terms) { this.terms = terms; }
+    public void setTeaser(String teaser) {
+        this.teaser = teaser;
+    }
+
+    public LocalDateTime getPublicationDate() {
+        return publicationDate;
+    }
+
+    public void setPublicationDate(LocalDateTime publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public Set<Term> getTerms() {
+        return terms;
+    }
+
+    public void setTerms(Set<Term> terms) {
+        this.terms = terms;
+    }
+
+    // === equals & hashCode ===
+
+    /**
+     * Compares News entities by ID only (database identity).
+     * Important for JPA consistency and collection handling.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof News news)) return false;
+        return Objects.equals(id, news.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    // === toString ===
+
+    @Override
+    public String toString() {
+        return "News{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", published=" + published +
+                ", publicationDate=" + publicationDate +
+                ", author=" + (author != null ? author.getId() : "null") +
+                '}';
+    }
 }
