@@ -22,7 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Implementation of NewsService using JpaRepository.
+ * Implementation of {@link NewsService} using JpaRepository.
  * Handles business logic, entity mapping, and data integrity.
  *
  * Manages relationships:
@@ -32,6 +32,11 @@ import java.util.Set;
 @Service
 @Transactional
 public class NewsServiceImpl implements NewsService {
+
+    // Reusable error message constants to avoid string duplication
+    private static final String NEWS_NOT_FOUND = "News not found with id ";
+    private static final String USER_NOT_FOUND = "User not found with id: ";
+    private static final String CATEGORY_NOT_FOUND = "Category not found with id: ";
 
     private final NewsRepository newsRepository;
     private final TermRepository termRepository;
@@ -46,40 +51,56 @@ public class NewsServiceImpl implements NewsService {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Searches all news (published and unpublished) with optional filters.
+     */
     @Override
     public Page<NewsDto> searchAll(String search, String category, Pageable pageable) {
         return newsRepository.searchAll(search, category, pageable)
                 .map(NewsMapper::toDto);
     }
 
+    /**
+     * Searches only published news with optional filters.
+     */
     @Override
     public Page<NewsDto> searchPublished(String search, String category, Pageable pageable) {
         return newsRepository.searchPublished(search, category, pageable)
                 .map(NewsMapper::toDto);
     }
 
+    /**
+     * Retrieves a published news item by its ID.
+     *
+     * @throws NotFoundException if no published news exists with the given ID
+     */
     @Override
     public NewsDto getPublishedById(Long id) {
         News news = newsRepository.findByIdAndPublishedTrue(id)
-                .orElseThrow(() -> new NotFoundException("News not found with id " + id));
+                .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
         return NewsMapper.toDto(news);
     }
 
+    /**
+     * Creates a new news item and sets its author and category if provided.
+     *
+     * @throws NotFoundException if the author or category does not exist
+     */
     @Override
     public NewsDto create(NewsCreateRequest request) {
         News news = NewsMapper.fromCreateRequest(request);
 
-        // Set author
+        // Set author if provided
         if (request.getAuthorId() != null) {
             User author = userRepository.findById(request.getAuthorId())
-                    .orElseThrow(() -> new NotFoundException("User not found with id: " + request.getAuthorId()));
+                    .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + request.getAuthorId()));
             news.setAuthor(author);
         }
 
-        // Set category
+        // Set category if provided
         if (request.getCategoryId() != null) {
             Term term = termRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new NotFoundException("Category not found with id: " + request.getCategoryId()));
+                    .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND + request.getCategoryId()));
             news.setTerms(new HashSet<>(Set.of(term)));
         } else {
             news.setTerms(new HashSet<>());
@@ -89,24 +110,29 @@ public class NewsServiceImpl implements NewsService {
         return NewsMapper.toDto(saved);
     }
 
+    /**
+     * Updates an existing news item with new values, including author and category.
+     *
+     * @throws NotFoundException if the news, author, or category does not exist
+     */
     @Override
     public NewsDto update(Long id, NewsUpdateRequest request) {
         News existing = newsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("News not found with id " + id));
+                .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
 
         NewsMapper.updateEntity(existing, request);
 
-        // Update author
+        // Update author if provided
         if (request.getAuthorId() != null) {
             User author = userRepository.findById(request.getAuthorId())
-                    .orElseThrow(() -> new NotFoundException("User not found with id: " + request.getAuthorId()));
+                    .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + request.getAuthorId()));
             existing.setAuthor(author);
         }
 
-        // Update category
+        // Update category if provided
         if (request.getCategoryId() != null) {
             Term term = termRepository.findById(request.getCategoryId())
-                    .orElseThrow(() -> new NotFoundException("Category not found with id: " + request.getCategoryId()));
+                    .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND + request.getCategoryId()));
             existing.setTerms(new HashSet<>(Set.of(term)));
         }
 
@@ -114,10 +140,15 @@ public class NewsServiceImpl implements NewsService {
         return NewsMapper.toDto(updated);
     }
 
+    /**
+     * Deletes a news item by its ID.
+     *
+     * @throws NotFoundException if the news does not exist
+     */
     @Override
     public void delete(Long id) {
         News existing = newsRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("News not found with id " + id));
+                .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
         newsRepository.delete(existing);
     }
 }
