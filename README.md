@@ -99,6 +99,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [API Usage Guide](docs/API_USAGE.md)
 - [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
+- [Database Schema](docs/DATABASE_SCHEMA.md)
 ---
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! But not yet now. :-)

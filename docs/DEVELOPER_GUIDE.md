@@ -447,3 +447,8 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/exported_dump.s
 
 Replace dniester with the db name you want to use.
 Make sure the database exists before importing.
+
+## 📂 Database Schema
+
+The full MySQL 8 database schema (DDL) is documented in [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md).  
+It includes `users`, `roles`, `user_roles`, `content`, `terms`, and `content_terms` tables. 
