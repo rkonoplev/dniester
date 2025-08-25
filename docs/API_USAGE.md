@@ -53,3 +53,12 @@ make test-news-delete API_USER=admin API_PASS=superpass
    - Replace credentials (<USERNAME>/<PASSWORD>) with your configured admin user.
    - Never use real production passwords in scripts or documentation.
    - For automated QA, it is recommended to use seeded test accounts with limited privileges.
+
+## 📚 Alternative API Documentation: Swagger UI
+
+In addition to this `API_USAGE.md`, you can access live API documentation and test endpoints in Swagger UI:
+
+👉 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+
+Swagger UI automatically generates API docs from controllers and annotations.
+It is useful for exploring available endpoints, schemas, and making test requests directly in the browser.

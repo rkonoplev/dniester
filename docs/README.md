@@ -35,3 +35,6 @@ This directory contains all project documentation, organized into specific guide
 
 - [Migration Drupal6 → News Platform (RU, plain text)](./MIGRATION_DRUPAL6_RU.txt)  
   Russian plain-text migration guide for internal use (copyable into Word/Pages).
+
+- [Database Schema](./DATABASE_SCHEMA.md)  
+  Final MySQL 8 schema after migration, with ER model, DDL, and example queries.
