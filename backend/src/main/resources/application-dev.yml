@@ -1,21 +1,20 @@
 # =========================================================
 # application-dev.yml
-# Developer/CI profile configuration.
-# Uses docker-based MySQL service, ENV secrets injected from CI (.env.dev).
+# Dev/CI environment → MySQL provided by Docker.
 # =========================================================
 
 spring:
   datasource:
     url: jdbc:mysql://mysql-dev:3306/newsdb
     username: devuser
-    password: ${MYSQL_DEV_PASSWORD} # Loaded from ENV
+    password: ${MYSQL_DEV_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
     hikari:
       maximum-pool-size: 10
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: update     # safe for dev
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

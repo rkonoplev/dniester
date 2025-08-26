@@ -1,8 +1,6 @@
 # =========================================================
 # application-local.yml
-# Local development profile configuration.
-# Uses MySQL in docker-compose with mounted Drupal dump for legacy data.
-# Credentials are stored in local .env file (not committed to git).
+# Local developer profile, using docker-compose MySQL.
 # =========================================================
 
 spring:
@@ -16,7 +14,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update        # Safe for local development
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect

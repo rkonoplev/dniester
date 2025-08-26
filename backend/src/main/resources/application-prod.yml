@@ -1,8 +1,6 @@
 # =========================================================
 # application-prod.yml
-# Production configuration.
-# All secrets (DB credentials, admin credentials) must be provided via .env / ENV vars.
-# Schema changes are never allowed automatically in production.
+# Production configuration. All secrets come from ENV.
 # =========================================================
 
 admin:
@@ -20,10 +18,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
-    database-platform: org.hibernate.dialect.MySQLDialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: validate   # Validate schema only, do not auto-update
-    show-sql: false        # No SQL logs in production
+      ddl-auto: validate
+    show-sql: false
 
 logging:
   level:
