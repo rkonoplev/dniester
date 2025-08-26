@@ -1,3 +1,8 @@
+# =========================================================
+# application-test.yml
+# Test profile configuration → runs with in-memory H2.
+# =========================================================
+
 spring:
   datasource:
     url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;MODE=MYSQL
@@ -7,9 +12,12 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop   # create schema before tests, drop after
+      ddl-auto: create-drop   # auto-create schema for tests
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
         format_sql: true
     show-sql: true
+
+  flyway:
+    enabled: false    # disable Flyway migrations during tests
