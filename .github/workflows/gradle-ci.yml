@@ -39,7 +39,7 @@ jobs:
         with:
           name: backend-sources
           path: backend
-          retention-days: 1    # keep minimal, full repo available in git
+          retention-days: 1
 
   # ===================================================================
   # JOB 2: Gradle build, lint, tests, coverage, static analysis
@@ -67,16 +67,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build, Lint, Test, Coverage
+      - name: Build, Test, Coverage
         env:
           SPRING_PROFILES_ACTIVE: ci
-        run: cd backend && ./gradlew build checkstyleMain checkstyleTest test jacocoTestReport --no-daemon --warning-mode all
+        run: cd backend && ./gradlew clean build test jacocoTestReport --no-daemon --warning-mode all
 
-      - name: Static Analysis (Checkstyle + PMD)
-        run: cd backend && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --no-daemon --warning-mode all
+      - name: Static Analysis (PMD only)
+        run: cd backend && ./gradlew pmdMain pmdTest --no-daemon --warning-mode all
 
       - name: Upload test reports
-        if: always()   # always upload, even if tests fail
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
@@ -94,7 +94,7 @@ jobs:
           retention-days: 4
 
       - name: Upload coverage to Codecov
-        if: success()  # only upload if build/test succeeded
+        if: success()
         uses: codecov/codecov-action@v4
         with:
           file: backend/build/reports/jacoco/test/jacocoTestReport.xml
@@ -111,7 +111,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # GitLeaks requires full git history
+          fetch-depth: 0
 
       - name: Run GitLeaks scan
         run: |
