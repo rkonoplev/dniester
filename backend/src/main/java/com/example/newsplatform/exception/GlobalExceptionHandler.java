@@ -1,6 +1,8 @@
 package com.example.newsplatform.exception;
 
 import com.example.newsplatform.dto.ErrorResponseDto;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -29,15 +31,24 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     /**
      * Handles uncaught exceptions (500 - Internal Server Error).
+     *
+     * Security note:
+     * - We do NOT expose ex.getMessage() to clients to avoid leaking stacktrace/db details.
+     * - Return a generic message to clients, log real error internally.
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, WebRequest request) {
+        // log full technical details
+        logger.error("Unexpected error occurred", ex);
+
         ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                ex.getMessage(),
+                "Internal server error occurred",   // <--- safe generic message
                 request.getDescription(false),
                 null
         );
