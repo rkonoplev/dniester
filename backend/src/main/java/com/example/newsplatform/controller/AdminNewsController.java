@@ -13,12 +13,19 @@ import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
+// ✅ Swagger annotations
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+
 /**
  * REST controller for admin operations on news articles.
  * Endpoints require authentication and ADMIN role.
  */
 @RestController
 @RequestMapping("/api/admin/news")
+@Tag(name = "Admin News API", description = "Endpoints for administrators/editors to manage news content")
 public class AdminNewsController {
 
     private final NewsService newsService;
@@ -37,6 +44,7 @@ public class AdminNewsController {
      * @return Paginated list of NewsDto.
      */
     @GetMapping
+    @Operation(summary = "Search all news", description = "Search all news items (both published and unpublished) with optional keyword and category filters.")
     public Page<NewsDto> searchAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String category,
@@ -51,6 +59,11 @@ public class AdminNewsController {
      * @return Created NewsDto wrapped in 201 Created response.
      */
     @PostMapping
+    @Operation(summary = "Create a new article", description = "Creates a new news article. Requires ADMIN/EDITOR role.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "News article successfully created"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     public ResponseEntity<NewsDto> create(@RequestBody @Valid NewsDto newsDto) {
         NewsCreateRequest request = NewsMapper.newsDtoToCreateRequest(newsDto);
         NewsDto created = newsService.create(request);
@@ -65,6 +78,12 @@ public class AdminNewsController {
      * @return Updated NewsDto.
      */
     @PutMapping("/{id}")
+    @Operation(summary = "Update an article", description = "Updates an existing article by ID. Requires ADMIN/EDITOR role.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "News article successfully updated"),
+            @ApiResponse(responseCode = "404", description = "Article not found"),
+            @ApiResponse(responseCode = "400", description = "Invalid input data")
+    })
     public ResponseEntity<NewsDto> update(@PathVariable Long id, @RequestBody @Valid NewsDto newsDto) {
         NewsUpdateRequest request = NewsMapper.newsDtoToUpdateRequest(newsDto);
         NewsDto updated = newsService.update(id, request);
@@ -78,6 +97,11 @@ public class AdminNewsController {
      * @return 204 No Content.
      */
     @DeleteMapping("/{id}")
+    @Operation(summary = "Delete an article", description = "Deletes a news article by ID. Requires ADMIN role.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Article not found")
+    })
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         newsService.delete(id);
         return ResponseEntity.noContent().build();
