@@ -76,9 +76,11 @@ replay_pid*
 
 backend/src/main/resources/application-prod.yml
 
-# Environment files
+# Local environment files
+.env.dev
 .env.prod
-.env.*
+.env.*.local
+
 # Reports
 backend/build/reports/
 
