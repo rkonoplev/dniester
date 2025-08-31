@@ -13,44 +13,75 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Security configuration for the News Platform application.
+ * Provides:
+ * - Basic Auth for admin endpoints
+ * - Role-based access control for /api/admin/**
+ * - CSRF disabled for API usage (with clear explanation why)
+ */
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
 
-    // Inject admin credentials from properties
-    @Value("${admin.username}")
+    // Inject admin credentials from application properties or ENV
+    @Value("${admin.username:}")
     private String adminUsername;
 
-    @Value("${admin.password}")
+    @Value("${admin.password:}")
     private String adminPassword;
 
+    /**
+     * Configure the HTTP security filter chain.
+     *
+     * @param http HttpSecurity builder
+     * @return SecurityFilterChain for the application
+     * @throws Exception required by HttpSecurity contract
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for simplicity, enable in production
+                // Disable CSRF because this is a stateless REST API.
+                // If in the future you serve HTML forms and session-based auth, enable CSRF here.
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
-                .httpBasic(httpBasic -> {}); // Enable Basic Auth for admin endpoints
-
+                // Use HTTP Basic Auth for simplicity; consider JWT for production.
+                .httpBasic(httpBasic -> {});
         return http.build();
     }
 
+    /**
+     * Password encoder bean using BCrypt (recommended for production).
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
-        // BCrypt is recommended for production use
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * UserDetailsService that creates an in-memory admin user.
+     * Validates that adminUsername and adminPassword are not empty.
+     *
+     * @param passwordEncoder injected PasswordEncoder
+     * @return InMemoryUserDetailsManager with admin user
+     */
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        // Create in-memory admin user with credentials from properties
+        if (adminUsername == null || adminUsername.isBlank()
+                || adminPassword == null || adminPassword.isBlank()) {
+            // Fail fast: admin credentials must always be provided in configuration
+            throw new IllegalStateException("Admin username and password must be set in configuration/ENV variables");
+        }
+
         UserDetails user = User.builder()
                 .username(adminUsername)
                 .password(passwordEncoder.encode(adminPassword))
                 .roles("ADMIN")
                 .build();
+
         return new InMemoryUserDetailsManager(user);
     }
 }
