@@ -13,10 +13,13 @@ services:
     container_name: news-mysql-drupal6
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: dniester
+      # Use env variable instead of hardcoded password.
+      # Define MYSQL_ROOT_PASSWORD in .env or GitHub Secrets for safety.
+      # The :-root syntax provides 'root' as a local default for dev only.
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-dniester}
     ports:
-      - "3307:3306"   # Note: Expose on 3307 to avoid conflict with main MySQL
+      - "3307:3306"   # Expose on 3307 to avoid conflict with main MySQL
     volumes:
       - ./db_dumps:/docker-entrypoint-initdb.d   # Auto-load dump files
       - ./db_data:/db_data                       # Mount migration scripts
