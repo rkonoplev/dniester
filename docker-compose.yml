@@ -9,15 +9,20 @@ version: '3.8'
 services:
   app:
     build:
-      context: ./backend                # FIX: build context points to backend folder
-      dockerfile: Dockerfile.dev     # FIX: assuming Dockerfile.dev is in project root
+      context: ./backend
+      dockerfile: Dockerfile.dev
     container_name: news-app
     ports:
-      - "${SPRING_LOCAL_PORT}:8080"     # Maps local port 8080 to app port
+      - "${SPRING_LOCAL_PORT:-8080}:8080"  # default to 8080 if not set
     volumes:
-      - ./backend:/app                  # Mount backend sources into container
+      - ./backend:/app
     env_file:
       - .env.dev
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-newsdb}?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-root}
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-root}
+      SPRING_PROFILES_ACTIVE: local
     depends_on:
       - mysql
 
@@ -26,9 +31,12 @@ services:
     container_name: news-mysql
     restart: always
     ports:
-      - "${DATABASE_LOCAL_PORT}:3306"   # Expose MySQL
-    env_file:
-      - .env.dev
+      - "${DATABASE_LOCAL_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-newsdb}
+      MYSQL_USER: ${MYSQL_USER:-root}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-root}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db-dumps:/docker-entrypoint-initdb.d
