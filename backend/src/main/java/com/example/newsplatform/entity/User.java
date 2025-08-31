@@ -5,14 +5,17 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * User entity representing system users (migrated from Drupal).
+ * User entity representing system users (migrated from Drupal 6 or newly created).
  */
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    private Long id; // Drupal uid
+    // For migrated users we preserve original Drupal uid.
+    // For newly created users we can enable Generation if required:
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(nullable = false, unique = true, length = 100)
     private String username;
@@ -21,7 +24,7 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private boolean status; // 1=active, 0=blocked
+    private boolean active; // true=active, false=blocked
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<News> newsArticles = new HashSet<>();
@@ -35,6 +38,7 @@ public class User {
     private Set<Role> roles = new HashSet<>();
 
     // --- Getters & Setters ---
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -44,8 +48,8 @@ public class User {
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
 
-    public boolean isStatus() { return status; }
-    public void setStatus(boolean status) { this.status = status; }
+    public boolean isActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
 
     public Set<News> getNewsArticles() { return newsArticles; }
     public void setNewsArticles(Set<News> newsArticles) { this.newsArticles = newsArticles; }

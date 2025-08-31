@@ -8,12 +8,13 @@ import com.example.newsplatform.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
 
-// ✅ Swagger annotations
+// Swagger/OpenAPI imports
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -45,6 +46,7 @@ public class AdminNewsController {
      */
     @GetMapping
     @Operation(summary = "Search all news", description = "Search all news items (both published and unpublished) with optional keyword and category filters.")
+    @ApiResponse(responseCode = "200", description = "Search executed successfully")
     public Page<NewsDto> searchAll(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String category,
@@ -61,13 +63,14 @@ public class AdminNewsController {
     @PostMapping
     @Operation(summary = "Create a new article", description = "Creates a new news article. Requires ADMIN/EDITOR role.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "News article successfully created"),
+            @ApiResponse(responseCode = "201", description = "News article successfully created"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     public ResponseEntity<NewsDto> create(@RequestBody @Valid NewsDto newsDto) {
         NewsCreateRequest request = NewsMapper.newsDtoToCreateRequest(newsDto);
         NewsDto created = newsService.create(request);
-        return ResponseEntity.ok(created);
+        // Return 201 Created instead of 200 OK
+        return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     /**
@@ -94,7 +97,7 @@ public class AdminNewsController {
      * Delete a news article by ID.
      *
      * @param id ID of the article to delete.
-     * @return 204 No Content.
+     * @return 204 No Content if deleted, 404 if not found.
      */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an article", description = "Deletes a news article by ID. Requires ADMIN role.")
@@ -103,6 +106,7 @@ public class AdminNewsController {
             @ApiResponse(responseCode = "404", description = "Article not found")
     })
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        // our NewsService throws NotFoundException if article doesn't exist (handled by GlobalExceptionHandler)
         newsService.delete(id);
         return ResponseEntity.noContent().build();
     }
