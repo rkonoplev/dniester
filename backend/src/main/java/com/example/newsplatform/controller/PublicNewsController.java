@@ -34,7 +34,8 @@ public class PublicNewsController {
      * Search is case-insensitive and looks in both title and content.
      */
     @GetMapping
-    @Operation(summary = "Search published news", description = "Search only published news by optional keyword or category.")
+    @Operation(summary = "Search published news", 
+            description = "Search only published news by optional keyword or category.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Search executed successfully")
     })

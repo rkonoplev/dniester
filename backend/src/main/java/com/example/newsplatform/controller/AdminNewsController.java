@@ -45,7 +45,8 @@ public class AdminNewsController {
      * @return Paginated list of NewsDto.
      */
     @GetMapping
-    @Operation(summary = "Search all news", description = "Search all news items (both published and unpublished) with optional keyword and category filters.")
+    @Operation(summary = "Search all news", 
+            description = "Search all news items (both published and unpublished) with optional keyword and category filters.")
     @ApiResponse(responseCode = "200", description = "Search executed successfully")
     public Page<NewsDto> searchAll(
             @RequestParam(required = false) String search,
@@ -61,7 +62,8 @@ public class AdminNewsController {
      * @return Created NewsDto wrapped in 201 Created response.
      */
     @PostMapping
-    @Operation(summary = "Create a new article", description = "Creates a new news article. Requires ADMIN/EDITOR role.")
+    @Operation(summary = "Create a new article", 
+            description = "Creates a new news article. Requires ADMIN/EDITOR role.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "News article successfully created"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
@@ -87,7 +89,8 @@ public class AdminNewsController {
             @ApiResponse(responseCode = "404", description = "Article not found"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    public ResponseEntity<NewsDto> update(@PathVariable Long id, @RequestBody @Valid NewsDto newsDto) {
+    public ResponseEntity<NewsDto> update(@PathVariable Long id, 
+            @RequestBody @Valid NewsDto newsDto) {
         NewsUpdateRequest request = NewsMapper.newsDtoToUpdateRequest(newsDto);
         NewsDto updated = newsService.update(id, request);
         return ResponseEntity.ok(updated);
@@ -100,7 +103,8 @@ public class AdminNewsController {
      * @return 204 No Content if deleted, 404 if not found.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an article", description = "Deletes a news article by ID. Requires ADMIN role.")
+    @Operation(summary = "Delete an article", 
+            description = "Deletes a news article by ID. Requires ADMIN role.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Successfully deleted"),
             @ApiResponse(responseCode = "404", description = "Article not found")
