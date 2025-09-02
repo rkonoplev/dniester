@@ -46,7 +46,8 @@ public class AdminNewsController {
      */
     @GetMapping
     @Operation(summary = "Search all news", 
-            description = "Search all news items (both published and unpublished) with optional keyword and category filters.")
+            description = "Search all news items (both published and unpublished) " +
+                    "with optional keyword and category filters.")
     @ApiResponse(responseCode = "200", description = "Search executed successfully")
     public Page<NewsDto> searchAll(
             @RequestParam(required = false) String search,
@@ -83,7 +84,8 @@ public class AdminNewsController {
      * @return Updated NewsDto.
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Update an article", description = "Updates an existing article by ID. Requires ADMIN/EDITOR role.")
+    @Operation(summary = "Update an article", 
+            description = "Updates an existing article by ID. Requires ADMIN/EDITOR role.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "News article successfully updated"),
             @ApiResponse(responseCode = "404", description = "Article not found"),
