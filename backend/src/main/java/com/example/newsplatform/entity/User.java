@@ -12,9 +12,7 @@ import java.util.Set;
 public class User {
 
     @Id
-    // For migrated users we preserve original Drupal uid.
-    // For newly created users we can enable Generation if required:
-    // @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true, length = 100)

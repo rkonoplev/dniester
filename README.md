@@ -101,6 +101,52 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
 - [Database Schema](docs/DATABASE_SCHEMA.md)
 ---
+## ⚙️ Environment Setup
+
+This guide explains how to run News Platform locally using Docker.
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/rkonoplev/news-platform.git
+cd news-platform
+```
+### 2. Prepare environment variables
+   Copy the example environment file to .env.dev:
+
+```bash
+cp .env.dev.example .env.dev
+```
+Edit .env.dev to adjust MySQL root password, database name, or admin username/password if needed.
+⚠️ Do not commit this file — it is excluded via .gitignore.
+
+### 3. Start services with Docker Compose
+   ```bash
+   docker compose --env-file .env.dev up -d
+   ```
+   This will start:
+
+* news-mysql (MySQL 8.0 with schema newsdb)
+* news-app (Spring Boot backend)
+### 4. Verify running containers
+   ```bash
+   docker ps
+   ```
+   Expected:
+
+news-mysql → status "healthy"
+news-app → Spring Boot logs with "Server is running!"
+### 5. Access the services
+   API root: http://localhost:8080
+   Swagger UI: http://localhost:8080/swagger-ui/index.html
+### 6. Stop services
+   ```bash
+   docker compose down
+   ```
+### 7. Reset volumes (wipe DB completely if needed)
+   ```bash
+   docker compose down -v
+   ```
+
 ## 🤝 Contributing
 Contributions, issues, and feature requests are welcome! But not yet now. :-)
 

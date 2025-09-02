@@ -15,7 +15,6 @@ import org.springframework.web.context.request.WebRequest;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Centralized exception handler for all controllers.
@@ -37,26 +36,25 @@ public class GlobalExceptionHandler {
      * Handles uncaught exceptions (500 - Internal Server Error).
      *
      * Security note:
-     * - We do NOT expose ex.getMessage() to clients to avoid leaking stacktrace/db details.
-     * - Return a generic message to clients, log real error internally.
+     * - Do not expose ex.getMessage() to clients (avoid leaking stacktrace/DB info).
+     * - Log real error internally, return safe generic message to client.
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, WebRequest request) {
-        // log full technical details
-        logger.error("Unexpected error occurred", ex);
+        logger.error("Unexpected error", ex);
 
         ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Internal server error occurred",   // <--- safe generic message
+                "Internal server error occurred",
                 request.getDescription(false),
                 null
         );
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 
     /**
-     * Handles validation errors from @Valid annotated requests (400 - Bad Request).
+     * Handles validation errors from @Valid annotated requests (400).
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponseDto> handleValidationExceptions(
@@ -64,7 +62,7 @@ public class GlobalExceptionHandler {
 
         List<String> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
                 .map(this::formatFieldError)
-                .collect(Collectors.toList());
+                .toList(); // modern immutable List
 
         ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
@@ -73,11 +71,11 @@ public class GlobalExceptionHandler {
                 request.getDescription(false),
                 fieldErrors
         );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(error);
     }
 
     /**
-     * Handles custom not-found exceptions (404 - Not Found).
+     * Handles custom not-found exceptions (404).
      */
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleNotFoundException(
@@ -90,11 +88,13 @@ public class GlobalExceptionHandler {
                 request.getDescription(false),
                 null
         );
-        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
     /**
-     * Handles access denied exceptions (403 - Forbidden).
+     * Handles access denied exceptions (403).
+     *
+     * Note: return ex.getMessage() to preserve context (instead of hardcoded text).
      */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponseDto> handleAccessDeniedException(
@@ -103,15 +103,15 @@ public class GlobalExceptionHandler {
         ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
                 HttpStatus.FORBIDDEN,
-                "Access is denied",
+                ex.getMessage(),
                 request.getDescription(false),
                 null
         );
-        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
     }
 
     /**
-     * Handles illegal arguments thrown manually in service layer (400 - Bad Request).
+     * Handles IllegalArgumentException (400).
      */
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponseDto> handleIllegalArgumentException(
@@ -124,32 +124,15 @@ public class GlobalExceptionHandler {
                 request.getDescription(false),
                 Collections.emptyList()
         );
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+        return ResponseEntity.badRequest().body(error);
     }
 
     // === Private Helpers ===
-
-    /**
-     * Builds a standardized error response DTO.
-     */
     private ErrorResponseDto buildErrorResponse(
-            Instant timestamp,
-            HttpStatus status,
-            String message,
-            String path,
-            List<String> details) {
-        return new ErrorResponseDto(
-                timestamp,
-                status.value(),
-                message,
-                path,
-                details
-        );
+            Instant timestamp, HttpStatus status, String message, String path, List<String> details) {
+        return new ErrorResponseDto(timestamp, status.value(), message, path, details);
     }
 
-    /**
-     * Formats a field error as "fieldName: message".
-     */
     private String formatFieldError(FieldError error) {
         return error.getField() + ": " + error.getDefaultMessage();
     }

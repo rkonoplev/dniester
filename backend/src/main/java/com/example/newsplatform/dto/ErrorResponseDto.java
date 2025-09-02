@@ -1,11 +1,12 @@
 package com.example.newsplatform.dto;
 
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 
 /**
- * DTO representing a standardized error response returned by the API.
- * Used by GlobalExceptionHandler across all controllers.
+ * DTO representing a standardized error response.
+ * Returned by GlobalExceptionHandler across all controllers.
  */
 public class ErrorResponseDto {
 
@@ -13,7 +14,7 @@ public class ErrorResponseDto {
     private int status;
     private String message;
     private String details;
-    private List<String> errors; // optional, for validation errors
+    private List<String> errors;
 
     public ErrorResponseDto() {}
 
@@ -22,10 +23,10 @@ public class ErrorResponseDto {
         this.status = status;
         this.message = message;
         this.details = details;
-        this.errors = errors;
+        // defensive copy
+        this.errors = errors != null ? List.copyOf(errors) : null;
     }
 
-    // --- Getters & Setters ---
     public Instant getTimestamp() { return timestamp; }
     public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
 
@@ -38,6 +39,12 @@ public class ErrorResponseDto {
     public String getDetails() { return details; }
     public void setDetails(String details) { this.details = details; }
 
-    public List<String> getErrors() { return errors; }
-    public void setErrors(List<String> errors) { this.errors = errors; }
+    /** Returns unmodifiable list to prevent external modification. */
+    public List<String> getErrors() {
+        return errors != null ? Collections.unmodifiableList(errors) : null;
+    }
+
+    public void setErrors(List<String> errors) {
+        this.errors = errors != null ? List.copyOf(errors) : null;
+    }
 }

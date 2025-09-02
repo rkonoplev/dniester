@@ -14,6 +14,17 @@ spring:
         format_sql: true
     show-sql: true
 
-  # Disable Flyway in tests — ensure test schema is generated automatically
   flyway:
     enabled: false
+
+  liquibase:
+    enabled: false
+
+  # Allow bean definition overriding for tests
+  main:
+    allow-bean-definition-overriding: true
+
+  # Provide dummy admin credentials to avoid validation errors
+  admin:
+    username: "testadmin"
+    password: "testpassword"
