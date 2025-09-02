@@ -50,13 +50,15 @@ dependencies {
 
     // Databases
     runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"  // MySQL driver for runtime
-    testImplementation "com.h2database:h2:${h2Version}"         // In-memory DB for testing
+    runtimeOnly "com.h2database:h2:${h2Version}"               // H2 for runtime (embedded)
 
     // Developer tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Testing support
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testImplementation "com.h2database:h2:${h2Version}"       // H2 for testing
 
     // Swagger / OpenAPI UI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
@@ -133,6 +135,12 @@ tasks.withType(Pmd).configureEach {
 // Use JUnit 5 (Jupiter) for testing
 test {
     useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
     finalizedBy jacocoTestReport // Generate coverage report after tests
 }
 

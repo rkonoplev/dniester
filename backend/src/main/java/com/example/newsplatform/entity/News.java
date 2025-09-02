@@ -29,6 +29,7 @@ public class News {
      * Corresponds to the original Drupal node ID (nid).
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**

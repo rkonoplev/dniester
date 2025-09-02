@@ -27,6 +27,7 @@ public class Term {
      * May correspond to external system IDs (e.g., Drupal tid).
      */
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
