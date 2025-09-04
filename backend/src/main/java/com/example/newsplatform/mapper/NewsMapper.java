@@ -22,36 +22,43 @@ public class NewsMapper {
     public static NewsDto toDto(News entity) {
         if (entity == null) return null;
 
-        NewsDto dto = new NewsDto();
-        dto.setId(entity.getId());
-        dto.setTitle(entity.getTitle());
-        dto.setTeaser(entity.getTeaser());
-        dto.setBody(entity.getBody());
-
-        // Extract category (first term only for API preview)
+        // Extract category and terms
+        String category = null;
+        Long categoryId = null;
         if (entity.getTerms() != null && !entity.getTerms().isEmpty()) {
             Term firstTerm = entity.getTerms().iterator().next();
-            dto.setCategory(firstTerm.getName());
-            dto.setCategoryId(firstTerm.getId());
+            category = firstTerm.getName();
+            categoryId = firstTerm.getId();
         }
 
-        dto.setAuthorId(entity.getAuthor() != null ? entity.getAuthor().getId() : null);
-        dto.setPublicationDate(entity.getPublicationDate());
-        dto.setPublished(entity.isPublished());
-        return dto;
+        return new NewsDto(
+                entity.getId(),
+                entity.getTitle(),
+                entity.getBody(),
+                entity.getTeaser(),
+                entity.getPublicationDate(),
+                entity.isPublished(),
+                entity.getAuthor() != null ? entity.getAuthor().getUsername() : null,
+                entity.getTerms() != null ? 
+                    entity.getTerms().stream().map(Term::getName).collect(java.util.stream.Collectors.toSet()) : 
+                    java.util.Set.of(),
+                category,
+                categoryId,
+                entity.getAuthor() != null ? entity.getAuthor().getId() : null
+        );
     }
 
     /** Maps NewsDto to NewsCreateRequest for service layer. */
     public static NewsCreateRequest newsDtoToCreateRequest(NewsDto dto) {
         if (dto == null) return null;
         NewsCreateRequest request = new NewsCreateRequest();
-        request.setTitle(dto.getTitle());
-        request.setTeaser(dto.getTeaser());
-        request.setBody(dto.getBody());
-        request.setCategoryId(dto.getCategoryId());
-        request.setAuthorId(dto.getAuthorId());
-        request.setPublicationDate(dto.getPublicationDate());
-        request.setPublished(dto.isPublished());
+        request.setTitle(dto.title());
+        request.setTeaser(dto.teaser());
+        request.setBody(dto.body());
+        request.setCategoryId(dto.categoryId());
+        request.setAuthorId(dto.authorId());
+        request.setPublicationDate(dto.publicationDate());
+        request.setPublished(dto.published());
         return request;
     }
 
@@ -59,13 +66,13 @@ public class NewsMapper {
     public static NewsUpdateRequest newsDtoToUpdateRequest(NewsDto dto) {
         if (dto == null) return null;
         NewsUpdateRequest request = new NewsUpdateRequest();
-        request.setTitle(dto.getTitle());
-        request.setTeaser(dto.getTeaser());
-        request.setBody(dto.getBody());
-        request.setCategoryId(dto.getCategoryId());
-        request.setAuthorId(dto.getAuthorId());
-        request.setPublicationDate(dto.getPublicationDate());
-        request.setPublished(dto.isPublished());
+        request.setTitle(dto.title());
+        request.setTeaser(dto.teaser());
+        request.setBody(dto.body());
+        request.setCategoryId(dto.categoryId());
+        request.setAuthorId(dto.authorId());
+        request.setPublicationDate(dto.publicationDate());
+        request.setPublished(dto.published());
         return request;
     }
 

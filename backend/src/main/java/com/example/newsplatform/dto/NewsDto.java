@@ -14,5 +14,8 @@ public record NewsDto(
         LocalDateTime publicationDate,
         boolean published,
         String authorName,
-        Set<String> termNames
+        Set<String> termNames,
+        String category,
+        Long categoryId,
+        Long authorId
 ) {}

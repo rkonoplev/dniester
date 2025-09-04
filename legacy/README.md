@@ -23,6 +23,8 @@ Production override configuration for Docker Compose. This file provides:
 
 ## Usage Context
 
-These files were part of the migration process from a legacy Drupal 6 site to the modern Spring Boot News Platform. They are preserved here for educational purposes and to help developers understand the migration approach used in this study project.
+These files were part of the migration process from a legacy Drupal 6 site to the modern Spring Boot News Platform. 
+They are preserved here for educational purposes and to help developers understand the migration approach used in this 
+study project.
 
 For current development, use the main `docker-compose.yml` in the project root.

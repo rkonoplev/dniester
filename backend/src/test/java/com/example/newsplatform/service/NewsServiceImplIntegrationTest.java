@@ -67,7 +67,7 @@ public class NewsServiceImplIntegrationTest {
         request.setCategoryId(testTerm.getId());
 
         NewsDto saved = newsService.create(request);
-        Long newsId = saved.getId();
+        Long newsId = saved.id();
         assertNotNull(newsId, "News should be created successfully");
 
         // Delete the news
