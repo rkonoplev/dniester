@@ -1,6 +1,8 @@
 package com.example.newsplatform.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -35,6 +37,8 @@ public class News {
     /**
      * Article title. Must not be null.
      */
+    @NotBlank(message = "Title is required")
+    @Size(max = 255, message = "Title must not exceed 255 characters")
     @Column(nullable = false, length = 255)
     private String title;
 
@@ -75,6 +79,12 @@ public class News {
      * Timestamp when the record was last updated.
      */
     private LocalDateTime updatedAt;
+
+    /**
+     * Version field for optimistic locking.
+     */
+    @Version
+    private Long version;
 
     // === Relationships ===
 
@@ -186,6 +196,10 @@ public class News {
 
     public void setTerms(Set<Term> terms) {
         this.terms = terms;
+    }
+
+    public Long getVersion() {
+        return version;
     }
 
     // === equals & hashCode ===
