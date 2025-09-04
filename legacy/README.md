@@ -1,6 +1,7 @@
 # Legacy Docker Compose Files
 
-This folder contains Docker Compose configuration files that were used during the migration from Drupal 6 to the Spring Boot News Platform.
+This folder contains Docker Compose configuration files that were used during 
+the migration from Drupal 6 to the Spring Boot News Platform.
 
 ## Files
 
