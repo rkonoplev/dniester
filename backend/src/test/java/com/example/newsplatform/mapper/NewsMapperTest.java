@@ -36,26 +36,23 @@ class NewsMapperTest {
 
         NewsDto dto = NewsMapper.toDto(news);
 
-        assertEquals(1L, dto.getId());
-        assertEquals("Test title", dto.getTitle());
-        assertEquals("Body", dto.getBody());
-        assertEquals("Teaser", dto.getTeaser());
-        assertEquals(42L, dto.getAuthorId());
-        assertEquals(99L, dto.getCategoryId());
-        assertEquals("Category", dto.getCategory());
-        assertTrue(dto.isPublished());
+        assertEquals(1L, dto.id());
+        assertEquals("Test title", dto.title());
+        assertEquals("Body", dto.body());
+        assertEquals("Teaser", dto.teaser());
+        assertEquals(42L, dto.authorId());
+        assertEquals(99L, dto.categoryId());
+        assertEquals("Category", dto.category());
+        assertTrue(dto.published());
     }
 
     @Test
     void testDtoToCreateRequest() {
-        NewsDto dto = new NewsDto();
-        dto.setTitle("Sample");
-        dto.setBody("Body");
-        dto.setTeaser("Teaser");
-        dto.setAuthorId(10L);
-        dto.setCategoryId(20L);
-        dto.setPublicationDate(LocalDateTime.now());
-        dto.setPublished(true);
+        LocalDateTime now = LocalDateTime.now();
+        NewsDto dto = new NewsDto(
+                null, "Sample", "Body", "Teaser", now, true,
+                null, Set.of(), null, 20L, 10L
+        );
 
         NewsCreateRequest req = NewsMapper.newsDtoToCreateRequest(dto);
 
@@ -70,9 +67,10 @@ class NewsMapperTest {
 
     @Test
     void testDtoToUpdateRequest() {
-        NewsDto dto = new NewsDto();
-        dto.setTitle("Updated");
-        dto.setBody("New body");
+        NewsDto dto = new NewsDto(
+                null, "Updated", "New body", null, null, false,
+                null, Set.of(), null, null, null
+        );
 
         NewsUpdateRequest req = NewsMapper.newsDtoToUpdateRequest(dto);
 
