@@ -11,16 +11,16 @@ Start backend and database together:
 ```bash
 docker-compose up --build
 ```
-- App container (app)
+- **App container (news-app)**
+  - Based on Dockerfile.dev
+  - Source code is mounted (-v .:/app), so changes in IDE take effect after recompilation
+  - Runs Spring Boot with local profile
+  - Includes rate limiting (100 req/min public, 50 req/min admin)
 
--- Based on Dockerfile.dev
--- Source code is mounted (-v .:/app), so changes in IDE take effect after recompilation
--- Runs Spring Boot with local profile
--- Database container (mysql)
-
-- MySQL 8
--- Credentials & schema name from .env
--- Can preload Drupal dump from ./db-dumps/
+- **Database container (news-mysql)**
+  - MySQL 8
+  - Credentials & schema name from .env
+  - Can preload Drupal dump from ./db-dumps/
 
 - After startup, the backend will be accessible at:
 ➡️ http://localhost:8080
@@ -75,6 +75,7 @@ docker build -t news-platform:latest -f Dockerfile .
 | **Secrets**            | Stored in local `.env` (ignored) | Docker Secrets / Render Secrets            |
 | **DB access**          | MySQL exposed on `localhost:3306`| Internal network only, not exposed         |
 | **Schema strategy**    | `ddl-auto=update`                | `ddl-auto=none` (manual migrations only)   |
+| **Rate limiting**      | 100/50 req/min (dev testing)    | 100/50 req/min (production protection)     |
 | **Logs**               | Verbose (for developers)         | Minimal (INFO/ERROR only)                  |
 
 ## ✅ Best Practices

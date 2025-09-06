@@ -29,6 +29,8 @@ Spring Boot chooses configuration based on the active profile (`SPRING_PROFILES_
 | `ci`    | `application-ci.yml`     | H2 (in-memory)    | `create-drop`        | GitHub Actions CI; fast & isolated builds without external DB.        |
 | `prod`  | `application-prod.yml`   | Cloud DB (MySQL/PG)| `none`              | Production (Render); config provided via Secrets (ENV/Secret Files).  |
 
+**Note**: All profiles include rate limiting configuration (100 req/min public, 50 req/min admin).
+
 ---
 
 ## 🚀 Running with Profiles
@@ -71,6 +73,10 @@ SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 # App credentials
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=changemeAdmin
+
+# Rate limiting (optional, defaults applied if not set)
+# PUBLIC_RATE_LIMIT=100
+# ADMIN_RATE_LIMIT=50
 ```
 ⚠️ secrets must never be committed to git. Only .env.example goes into version control.
 

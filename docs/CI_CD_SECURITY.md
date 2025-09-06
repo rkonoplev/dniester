@@ -45,6 +45,7 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 - **Checkstyle** — code style enforcement.
 - **PMD** — static analysis to detect code smells and bad practices.
 - **GitLeaks** — secret scanning to prevent accidental leaks.
+- **Bucket4j** — rate limiting dependency for API protection.
 
 ---
 
@@ -71,6 +72,11 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
       gitleaks detect --source .
       ```
 
+5. **Rate Limiting**
+    - IP-based rate limiting protects against API abuse.
+    - Different limits for public (100/min) and admin (50/min) endpoints.
+    - In-memory bucket storage (resets on application restart).
+
 ---
 
 ## ✅ Summary
@@ -79,5 +85,6 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 - Code quality is controlled with **Checkstyle**, **PMD**, **JaCoCo**, and **Codecov**.
 - Secrets are strictly managed through environment variables/secrets.
 - Security scans (GitLeaks) protect repository against secret leaks.
+- **Rate limiting** provides API protection against abuse and DoS attacks.
 
 ---
