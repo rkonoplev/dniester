@@ -36,6 +36,9 @@ This directory contains all project documentation, organized into specific guide
 - [Technical Specification](./TECHNICAL_SPEC.md)  
   Functional and non-functional requirements, architecture layers, technology stack, and planned future enhancements.
 
+- [Frontend Specification](./FRONTEND_SPEC.md)  
+  Frontend technical specification with Next.js, Material UI, responsive design, SEO requirements, and theming guidelines.
+
 - [API Usage Guide](./API_USAGE.md)  
   Example requests with `curl`, Makefile shortcuts for testing API endpoints, and usage instructions for developers & QA.
 
