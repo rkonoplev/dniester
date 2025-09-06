@@ -151,4 +151,13 @@ public class NewsServiceImpl implements NewsService {
                 .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
         newsRepository.delete(existing);
     }
+
+    /**
+     * Gets published news by term ID with pagination.
+     */
+    @Override
+    public Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable) {
+        return newsRepository.findPublishedByTermId(termId, pageable)
+                .map(NewsMapper::toDto);
+    }
 }

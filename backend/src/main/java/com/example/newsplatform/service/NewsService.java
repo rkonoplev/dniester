@@ -22,4 +22,9 @@ public interface NewsService {
     NewsDto update(Long id, NewsUpdateRequest request);
 
     void delete(Long id);
+
+    /**
+     * Get published news by term ID with pagination.
+     */
+    Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable);
 }
