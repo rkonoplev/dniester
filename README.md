@@ -61,11 +61,15 @@ In production, you should override the variables directly via the runtime enviro
 API entrypoint: http://localhost:8080
 
 
-## 📌 Planned Features
+## 📌 Key Features
 
-- MySQL as the primary database
-- Authentication & Authorization (Spring Security with JWT/OAuth2)
-- CI/CD pipeline based on GitHub Actions
+- **Database**: MySQL 8.0 as primary database with H2 for tests
+- **Security**: Spring Security with Basic Auth (JWT/OAuth2 planned)
+- **API**: RESTful endpoints with OpenAPI/Swagger documentation
+- **Pagination**: Term-based filtering with configurable page sizes
+- **Content Management**: Full CRUD operations for news articles
+- **Taxonomy**: Category and tag system with flexible filtering
+- **CI/CD**: GitHub Actions pipeline with automated testing
 
 ---
 
@@ -138,8 +142,12 @@ Edit .env.dev to adjust MySQL root password, database name, or admin username/pa
 news-mysql → status "healthy"
 news-app → Spring Boot logs with "Server is running!"
 ### 5. Access the services
-   API root: http://localhost:8080
-   Swagger UI: http://localhost:8080/swagger-ui/index.html
+   - **API root**: http://localhost:8080
+   - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
+   - **API Examples**:
+     - All news: `GET /api/public/news?size=10&sort=publicationDate,desc`
+     - By category: `GET /api/public/news/term/5?size=15`
+     - Multiple terms: `GET /api/public/news/terms?termIds=1,3,5&size=20`
 ### 6. Stop services
    ```bash
    docker compose down

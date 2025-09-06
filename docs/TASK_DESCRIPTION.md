@@ -81,12 +81,20 @@ news-platform/
 ### Public API (`/api/public/news`)
 - `GET /` - Search published news (pagination, filters)
 - `GET /{id}` - Get published article by ID
+- `GET /term/{termId}` - Get news by specific term ID (pagination)
+- `GET /terms?termIds=1,3,5` - Get news by multiple term IDs (pagination)
 
 ### Admin API (`/api/admin/news`) - Requires ADMIN role
 - `GET /` - Search all news (published + unpublished)
 - `POST /` - Create new article
 - `PUT /{id}` - Update existing article
 - `DELETE /{id}` - Delete article
+
+### Pagination Support
+- **Parameters**: `page=0&size=10&sort=publicationDate,desc`
+- **Configurable page sizes**: 10, 15, 20+ articles per page
+- **Sorting**: By publication date (latest first) or any field
+- **Response format**: JSON with `content`, `totalElements`, `totalPages`, `size`
 
 ## Configuration Profiles
 
@@ -193,6 +201,9 @@ news-platform/
 - CI/CD pipeline with quality gates
 - Integration tests
 - API documentation (Swagger)
+- **Term-based pagination**: Filter news by taxonomy terms (categories/tags)
+- **Flexible pagination**: Configurable page sizes and sorting options
+- **Multiple term filtering**: Checkbox-based term selection support
 
 ### In Progress 🔄
 - Code quality improvements
