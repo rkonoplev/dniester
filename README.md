@@ -89,6 +89,8 @@ cp backend/src/main/resources/application.properties.template backend/src/main/r
 ## 📖 Documentation
 Full developer and deployment documentation is available in the [docs/](docs/) folder:
 
+- **[Complete Project Information for AI Analysis](docs/TASK_DESCRIPTION.md)** - Comprehensive project overview for AI platforms
+- **[Quick Start (Russian)](docs/QUICK_START_RU.md)** - Быстрый старт для русскоязычных разработчиков
 - [Developer Guide](docs/DEVELOPER_GUIDE.md)
 - [Developer Guide (RU, plain text)](docs/DEVELOPER_GUIDE_RU.txt)
 - [Architecture Migration](docs/ARCHITECTURE_MIGRATION.md)

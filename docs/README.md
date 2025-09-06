@@ -4,6 +4,15 @@ This directory contains all project documentation, organized into specific guide
 
 ---
 
+- **[Complete Project Information for AI Analysis](./TASK_DESCRIPTION.md)**  
+  Comprehensive project overview designed for AI platforms and new developers. Contains complete architecture,  
+  technology stack, database schema, API endpoints, configuration details, and development workflow.  
+  Perfect for quickly understanding the entire project structure and technical decisions.
+
+- **[Quick Start (Russian)](./QUICK_START_RU.md)**  
+  Краткая инструкция по запуску проекта для русскоязычных разработчиков. Включает быстрый старт,  
+  решение типовых проблем и основные команды для разработки.
+
 - [Developer Guide](./DEVELOPER_GUIDE.md)  
   Daily workflow for developers, local commands, how to run builds/tests in IntelliJ,  
   working without Docker, and CI/CD expectations.

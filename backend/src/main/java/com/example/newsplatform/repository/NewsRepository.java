@@ -44,4 +44,15 @@ public interface NewsRepository extends JpaRepository<News, Long> {
      * Find by id only if published.
      */
     Optional<News> findByIdAndPublishedTrue(Long id);
+
+    /**
+     * Find published news by specific term ID with pagination.
+     */
+    @Query("""
+        SELECT DISTINCT n FROM News n
+        JOIN n.terms t
+        WHERE n.published = true AND t.id = :termId
+        ORDER BY n.publicationDate DESC
+        """)
+    Page<News> findPublishedByTermId(Long termId, Pageable pageable);
 }
