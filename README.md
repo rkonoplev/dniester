@@ -76,15 +76,16 @@ API entrypoint: http://localhost:8080
 
 ## 🌐 Frontend Stack (Planned)
 
-- Gatsby (React-based framework)
-- JavaScript, GraphQL
-- CSS-in-JS, Responsive design
+- **Framework:** Next.js (React with SSR/SSG)
+- **UI Library:** Material UI (MUI)
+- **Styling:** Custom Material theme
+- **Typography:** Roboto + Roboto Slab
 
 **Run Frontend (when implemented):**
 ```bash
 cd frontend
 npm install
-npm run develop
+npm run dev
 ```
 ### Configuration
 Create `application.properties` file in `backend/src/main/resources/` directory:
@@ -103,6 +104,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Docker Guide](docs/DOCKER_GUIDE.md)
 - [CI/CD & Security](docs/CI_CD_SECURITY.md)
 - [Technical Specification](docs/TECHNICAL_SPEC.md)
+- [Frontend Specification](docs/FRONTEND_SPEC.md)
 - [API Usage Guide](docs/API_USAGE.md)
 - [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)

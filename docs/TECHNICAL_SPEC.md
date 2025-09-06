@@ -5,13 +5,17 @@ This document provides the technical specification for the **News Platform** pro
 ---
 
 ## 1. Project Summary
-The **News Platform** backend is a robust, maintainable service for publishing and managing news articles.  
-It is designed to replace the legacy Drupal 6.0 stack with a modern architecture for scalability and security.
+The **News Platform** is a complete modern news publishing system consisting of:
+- **Backend:** Spring Boot REST API for content management and delivery
+- **Frontend:** Next.js React application with Material UI (planned)
 
-The backend provides:
-- A **public API** for delivering news content to frontend and mobile clients.
-- An **admin API** for editorial teams to manage content and media.
-- Integration points for third-party services and future frontend apps.
+Designed to replace the legacy Drupal 6.0 stack with modern architecture for scalability and security.
+
+The system provides:
+- A **public API** for delivering news content to frontend and mobile clients
+- An **admin API** for editorial teams to manage content and media
+- A **responsive frontend** with SEO optimization and accessibility compliance
+- Integration points for third-party services and future enhancements
 
 ---
 
@@ -79,21 +83,22 @@ The backend provides:
 
 ## 6. Technology Stack
 
-| Area              | Technology |
-|-------------------|------------|
-| Language          | Java 21 |
-| Framework         | Spring Boot |
-| Database          | MySQL 8 (migrated from Drupal 6 DB) |
-| ORM               | Hibernate / JPA |
-| Build Tool        | Gradle |
-| API Docs          | OpenAPI / Swagger (springdoc) |
-| Security          | Spring Security + Basic Auth |
-| Rate Limiting     | Bucket4j (IP-based) |
-| Deployment        | Docker + Render (PaaS) |
-| CI/CD             | GitHub Actions |
-| Code Quality      | JaCoCo |
-| Static Checks     | Checkstyle, PMD |
-| Testing           | JUnit 5, Testcontainers (planned) |
+| Area              | Backend Technology | Frontend Technology |
+|-------------------|-------------------|--------------------|
+| Language          | Java 21 | TypeScript/JavaScript |
+| Framework         | Spring Boot | Next.js (React) |
+| UI Library        | - | Material UI (MUI) |
+| Database          | MySQL 8 (migrated from Drupal 6 DB) | - |
+| ORM               | Hibernate / JPA | - |
+| Build Tool        | Gradle | npm/yarn |
+| API Docs          | OpenAPI / Swagger (springdoc) | - |
+| Security          | Spring Security + Basic Auth | - |
+| Rate Limiting     | Bucket4j (IP-based) | - |
+| Deployment        | Docker + Render (PaaS) | Vercel/Netlify (planned) |
+| CI/CD             | GitHub Actions | GitHub Actions |
+| Code Quality      | JaCoCo | ESLint, Prettier |
+| Static Checks     | Checkstyle, PMD | TypeScript |
+| Testing           | JUnit 5, Testcontainers (planned) | Jest, React Testing Library |
 
 ---
 
@@ -129,12 +134,21 @@ The backend provides:
 
 ## 9. Future Enhancements
 
-- Multilingual support for articles.
-- Scheduled publishing.
-- Analytics and usage metrics.
-- RSS/Atom feed integration.
-- WebSocket support for live updates.
-- Editor-friendly workflows (drafts, previews).
+### Backend
+- Multilingual support for articles
+- Scheduled publishing
+- Analytics and usage metrics
+- RSS/Atom feed integration
+- WebSocket support for live updates
+- Editor-friendly workflows (drafts, previews)
+
+### Frontend
+- Full-text search with suggestions
+- Dark mode theme toggle
+- Multilingual support (English, Russian, Romanian)
+- Lazy loading and image optimization
+- Infinite scroll option on category pages
+- Progressive Web App (PWA) features
 
 ---
 
