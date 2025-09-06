@@ -69,6 +69,7 @@ API entrypoint: http://localhost:8080
 - **Pagination**: Term-based filtering with configurable page sizes
 - **Content Management**: Full CRUD operations for news articles
 - **Taxonomy**: Category and tag system with flexible filtering
+- **Rate Limiting**: IP-based rate limiting with Bucket4j (100 req/min public, 50 req/min admin)
 - **CI/CD**: GitHub Actions pipeline with automated testing
 
 ---
@@ -106,6 +107,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
 - [Database Schema](docs/DATABASE_SCHEMA.md)
+- [Rate Limiting Guide](docs/RATE_LIMITING.md)
 ---
 ## ⚙️ Environment Setup
 
@@ -148,6 +150,7 @@ news-app → Spring Boot logs with "Server is running!"
      - All news: `GET /api/public/news?size=10&sort=publicationDate,desc`
      - By category: `GET /api/public/news/term/5?size=15`
      - Multiple terms: `GET /api/public/news/terms?termIds=1,3,5&size=20`
+   - **Rate Limiting**: Automatic IP-based limits (check `X-Rate-Limit-Remaining` header)
 ### 6. Stop services
    ```bash
    docker compose down
