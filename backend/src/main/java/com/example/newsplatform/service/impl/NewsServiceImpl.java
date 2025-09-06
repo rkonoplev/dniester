@@ -160,4 +160,16 @@ public class NewsServiceImpl implements NewsService {
         return newsRepository.findPublishedByTermId(termId, pageable)
                 .map(NewsMapper::toDto);
     }
+
+    /**
+     * Gets published news by multiple term IDs with pagination.
+     */
+    @Override
+    public Page<NewsDto> getPublishedByTermIds(java.util.List<Long> termIds, Pageable pageable) {
+        if (termIds == null || termIds.isEmpty()) {
+            return Page.empty(pageable);
+        }
+        return newsRepository.findPublishedByTermIds(termIds, pageable)
+                .map(NewsMapper::toDto);
+    }
 }

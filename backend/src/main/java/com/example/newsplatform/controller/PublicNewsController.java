@@ -72,4 +72,17 @@ public class PublicNewsController {
     public Page<NewsDto> getByTermId(@PathVariable Long termId, Pageable pageable) {
         return newsService.getPublishedByTermId(termId, pageable);
     }
+
+    /**
+     * Get published news by multiple term IDs with pagination.
+     */
+    @GetMapping("/terms")
+    @Operation(summary = "Get news by multiple term IDs", 
+            description = "Get published news articles filtered by multiple term IDs with pagination.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "News found")
+    })
+    public Page<NewsDto> getByTermIds(@RequestParam java.util.List<Long> termIds, Pageable pageable) {
+        return newsService.getPublishedByTermIds(termIds, pageable);
+    }
 }
