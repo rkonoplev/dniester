@@ -219,12 +219,14 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 
 ## Backend Layer Structure
 
-- `controller` — REST API controllers
+- `controller` — REST API controllers (Public + Admin)
 - `service` — Business logic layer
-- `repository` — JPA data access layer
+- `repository` — JPA data access layer with term-based queries
 - `dto` — Data Transfer Objects
 - `mapper` — Entity ↔ DTO mapping
-- `model` — JPA entities
+- `entity` — JPA entities (News, User, Term, Role)
+- `config` — Security, rate limiting, test configurations
+- `filter` — Rate limiting filter with Bucket4j
 
 ---
 
@@ -271,6 +273,9 @@ This project uses several tools for code and security assurance.
 | Run code style checks   | `./gradlew checkstyleMain checkstyleTest` |
 | Run tests with coverage | `./gradlew test`                          |
 | Secret scan             | `gitleaks detect --source .`              |
+| Test public API         | `curl -i "http://localhost:8080/api/public/news"` |
+| Test admin API          | `curl -u admin:password -i "http://localhost:8080/api/admin/news"` |
+| Test rate limiting      | `for i in {1..105}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/api/public/news; done` |
 
 ---
 ## 🚀 Running the Project
@@ -330,16 +335,32 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 ```bash
 docker logs -f news-app
 ```
-**6. Open API:**
+**6. Test API endpoints:**
 
-```text
-http://localhost:8080
+```bash
+# Public API (no auth, rate limited 100/min)
+curl -i "http://localhost:8080/api/public/news?size=5"
+
+# Admin API (basic auth, rate limited 50/min)
+curl -u admin:password -i "http://localhost:8080/api/admin/news"
+
+# Swagger UI
+http://localhost:8080/swagger-ui/index.html
 ```
 ### ✅ Quick TL;DR
 ```bash
+# Start full stack
 docker compose --env-file .env.dev up -d
+
+# Import schema (if needed)
 docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+
+# Verify data
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+
+# Test APIs
+curl -i "http://localhost:8080/api/public/news?size=3"
+curl -u admin:password -i "http://localhost:8080/api/admin/news"
 ```
 ---
 

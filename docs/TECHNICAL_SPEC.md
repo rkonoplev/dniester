@@ -37,34 +37,35 @@ The backend provides:
 - **Security Layer:** Spring Security + JWT authentication (role-based access).
 
 ### Class-Level Structure
-- `controller/` – REST controllers.
+- `controller/` – REST controllers (Public + Admin APIs).
 - `service/` – application services with validation logic.
 - `repository/` – database persistence via JPA.
 - `dto/` – request/response objects.
-- `model/` – JPA entities.
-- `mapper/` – MapStruct or manual mapping between DTOs & entities.
+- `entity/` – JPA entities (News, User, Term, Role).
+- `mapper/` – Entity-DTO mapping.
+- `config/` – Security, rate limiting, test configurations.
+- `filter/` – Rate limiting filter with IP-based buckets.
 
 ---
 
 ## 4. Functional Requirements
 
-### 4.1 Public API
+### 4.1 Public API (Rate Limited: 100 req/min per IP)
 - Retrieve news articles with pagination and sorting.
-- Filter articles by category and publication date.
-- Retrieve a single article by ID or slug.
-- Search articles by title and content.
+- Filter articles by category/term ID and publication date.
+- Filter articles by multiple term IDs (checkbox-style filtering).
+- Retrieve a single article by ID.
+- Automatic rate limiting with response headers.
 
-### 4.2 Admin API
-- Secure access with JWT-based authentication.
+### 4.2 Admin API (Rate Limited: 50 req/min per IP)
+- Secure access with Basic Authentication.
 - Role-based authorization:
-    - **Admin** → full access.
-    - **Editor** → CRUD with restrictions.
+    - **ADMIN** → full access to all endpoints.
 - CRUD functionality:
-    - Articles
-    - Categories
-    - Media files
-- Image upload with automatic resizing/optimization.
-- Actions: **Publish/Unpublish**, **Feature/Unfeature** articles.
+    - Articles (create, read, update, delete)
+    - Published/unpublished content management
+- Actions: **Publish/Unpublish** articles.
+- Stricter rate limiting for security.
 
 ---
 
@@ -86,7 +87,8 @@ The backend provides:
 | ORM               | Hibernate / JPA |
 | Build Tool        | Gradle |
 | API Docs          | OpenAPI / Swagger (springdoc) |
-| Security          | Spring Security + JWT |
+| Security          | Spring Security + Basic Auth |
+| Rate Limiting     | Bucket4j (IP-based) |
 | Deployment        | Docker + Render (PaaS) |
 | CI/CD             | GitHub Actions |
 | Code Quality      | JaCoCo |
