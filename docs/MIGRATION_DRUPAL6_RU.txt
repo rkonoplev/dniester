@@ -15,6 +15,20 @@
 Импорт: docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
 Проверка: SHOW TABLES;
 
+LEGACY-ФАЙЛЫ
+
+Файлы, связанные с миграцией и ранней разработкой, сохранены в папке legacy/:
+- DatabaseProperties.java - класс конфигурации базы данных для миграции
+- Makefile - устаревшие команды для тестирования API
+
+- docker-compose.drupal.yml - временная Docker-конфигурация для миграции
+- docker-compose.override.yml - продакшн-настройки Docker
+- README.md - подробное описание legacy-файлов
+
+Эти файлы оставлены для образовательных целей и понимания процесса миграции.
+
+------------------------------------
+
 ЧТО МЫ ФАКТИЧЕСКИ ИМПОРТИРОВАЛИ В НОВУЮ БАЗУ
 
 После миграции структура базы dniester выглядит так:

@@ -188,13 +188,16 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 | ├── `.gitignore`                          | Git ignore rules                                |
 | ├── `.gitleaks.toml`                      | GitLeaks secret-scanning config                 |
 | ├── `codecov.yml`                         | Codecov configuration                           |
-| ├── `create_baseline.sh`                  | Baseline creation script                        |
 | ├── `docker-compose.yml`                  | Main Docker Compose file                        |
-| ├── `docker-compose.override.yml`         | Override Compose file (prod overrides)          |
-| ├── `docker-compose.drupal.yml`           | Compose setup for Drupal6 migration             |
 | ├── `Dockerfile`                          | Production Dockerfile                           |
+| ├── `legacy/`                             | Migration-era files and obsolete tools          |
+| │   ├── `DatabaseProperties.java`         | Legacy database config class                    |
+| │   ├── `Makefile`                        | Legacy API testing commands                     |
+
+| │   ├── `docker-compose.drupal.yml`       | Drupal 6 migration Docker setup                |
+| │   ├── `docker-compose.override.yml`     | Legacy production overrides                     |
+| │   └── `README.md`                       | Legacy files documentation                      |
 | ├── `LICENSE`                             | Project license                                 |
-| ├── `Makefile`                            | Common make commands                            |
 | └── `README.md`                           | Main repository README                          |
 
 

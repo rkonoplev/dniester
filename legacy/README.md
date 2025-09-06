@@ -5,6 +5,23 @@ the migration from Drupal 6 to the Spring Boot News Platform.
 
 ## Files
 
+### `DatabaseProperties.java`
+Legacy Spring Boot configuration class used during Drupal 6 migration. This file:
+- Defined custom database connection pool settings for migration workload
+- Provided extended connection timeouts for large data transfers
+- Enabled SQL logging for debugging migration queries
+- Used `@ConfigurationProperties(prefix = "app.database")` for configuration binding
+- **Status**: OBSOLETE - Migration completed, standard Spring datasource config used
+
+### `Makefile`
+Legacy testing utility with API endpoint shortcuts. This file:
+- Provided `make test-news-get`, `make test-news-post` commands for API testing
+- Used outdated API endpoints (`/api/news` instead of `/api/public/news`)
+- Required manual credential setup via environment variables
+- **Status**: OBSOLETE - Replaced by curl examples in API_USAGE.md and rate limiting
+
+
+
 ### `docker-compose.drupal.yml`
 Temporary Docker Compose setup for Drupal 6 data migration. This file:
 - Runs MySQL 5.7 for compatibility with legacy Drupal 6 database dumps
@@ -23,8 +40,20 @@ Production override configuration for Docker Compose. This file provides:
 
 ## Usage Context
 
-These files were part of the migration process from a legacy Drupal 6 site to the modern Spring Boot News Platform. 
-They are preserved here for educational purposes and to help developers understand the migration approach used in this 
-study project.
+## Migration Context
 
-For current development, use the main `docker-compose.yml` in the project root.
+These files were part of the migration and early development process from a legacy Drupal 6 site to the modern Spring Boot News Platform. They include:
+
+- **Migration-specific configurations** (Docker Compose files for Drupal 6 compatibility)
+- **Legacy development tools** (Makefile with outdated API endpoints)
+
+- **Migration-era Spring Boot classes** (custom database properties)
+
+They are preserved here for educational purposes and to help developers understand the migration approach and evolution of the project.
+
+## Current Development
+
+For current development, use:
+- Main `docker-compose.yml` in the project root
+- API examples in `docs/API_USAGE.md`
+- Standard Spring Boot configuration profiles

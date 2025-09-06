@@ -40,7 +40,21 @@ source db_data/migrate_cck_fields.sql; -- optional
 
 ---
 
-### 📦 What We Imported into the New Schema
+### 💼 Legacy Files
+
+Migration-related files and obsolete development tools are preserved in the `legacy/` folder:
+- **DatabaseProperties.java** - Custom database configuration class used during migration
+- **Makefile** - Legacy API testing commands (outdated endpoints)
+
+- **docker-compose.drupal.yml** - Temporary Docker setup for Drupal 6 migration
+- **docker-compose.override.yml** - Production Docker overrides
+- **README.md** - Detailed description of legacy files and their purpose
+
+These files are kept for reference and educational purposes to understand the project's evolution.
+
+---
+
+## 📦 What We Imported into the New Schema
 
 After normalizing the dump, the following entities and tables exist in the clean `dniester` schema. These form the core database for the News Platform.
 
