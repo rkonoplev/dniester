@@ -27,4 +27,9 @@ public interface NewsService {
      * Get published news by term ID with pagination.
      */
     Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable);
+
+    /**
+     * Get published news by multiple term IDs with pagination.
+     */
+    Page<NewsDto> getPublishedByTermIds(java.util.List<Long> termIds, Pageable pageable);
 }
