@@ -7,6 +7,7 @@ the migration from Drupal 6 to the Spring Boot News Platform.
 
 ### `DatabaseProperties.java`
 Legacy Spring Boot configuration class used during Drupal 6 migration. This file:
+- **Original location**: `backend/src/main/java/com/example/newsplatform/config/DatabaseProperties.java`
 - Defined custom database connection pool settings for migration workload
 - Provided extended connection timeouts for large data transfers
 - Enabled SQL logging for debugging migration queries
@@ -15,6 +16,7 @@ Legacy Spring Boot configuration class used during Drupal 6 migration. This file
 
 ### `Makefile`
 Legacy testing utility with API endpoint shortcuts. This file:
+- **Original location**: Project root directory (`/Makefile`)
 - Provided `make test-news-get`, `make test-news-post` commands for API testing
 - Used outdated API endpoints (`/api/news` instead of `/api/public/news`)
 - Required manual credential setup via environment variables
@@ -24,6 +26,7 @@ Legacy testing utility with API endpoint shortcuts. This file:
 
 ### `docker-compose.drupal.yml`
 Temporary Docker Compose setup for Drupal 6 data migration. This file:
+- **Original location**: Project root directory (`/docker-compose.drupal.yml`)
 - Runs MySQL 5.7 for compatibility with legacy Drupal 6 database dumps
 - Exposes MySQL on port 3307 to avoid conflicts with the main application database
 - Auto-loads database dumps from `./db_dumps` directory
@@ -32,6 +35,7 @@ Temporary Docker Compose setup for Drupal 6 data migration. This file:
 
 ### `docker-compose.override.yml`
 Production override configuration for Docker Compose. This file provides:
+- **Original location**: Project root directory (`/docker-compose.override.yml`)
 - Production-ready security with Docker secrets for sensitive data
 - Health checks for both database and application services
 - Proper service dependencies and restart policies
