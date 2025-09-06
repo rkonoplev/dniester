@@ -29,17 +29,19 @@
 - **CI/CD**: GitHub Actions
 - **Code Quality**: Checkstyle, JaCoCo coverage
 - **Database**: MySQL with Docker
+- **Rate Limiting**: Bucket4j with IP-based buckets
 
 ## Project Structure
 ```
 news-platform/
 ├── backend/                    # Spring Boot application
 │   ├── src/main/java/com/example/newsplatform/
-│   │   ├── config/            # Security, Test configurations
+│   │   ├── config/            # Security, Test, Rate Limit configurations
 │   │   ├── controller/        # REST endpoints (Admin + Public)
 │   │   ├── dto/              # Data Transfer Objects
 │   │   ├── entity/           # JPA entities (News, User, Term, Role)
 │   │   ├── exception/        # Custom exceptions + Global handler
+│   │   ├── filter/           # Rate limiting filter
 │   │   ├── mapper/           # Entity-DTO mapping
 │   │   ├── repository/       # JPA repositories
 │   │   └── service/          # Business logic
@@ -78,13 +80,13 @@ news-platform/
 
 ## API Endpoints
 
-### Public API (`/api/public/news`)
+### Public API (`/api/public/news`) - Rate Limited: 100 req/min per IP
 - `GET /` - Search published news (pagination, filters)
 - `GET /{id}` - Get published article by ID
 - `GET /term/{termId}` - Get news by specific term ID (pagination)
 - `GET /terms?termIds=1,3,5` - Get news by multiple term IDs (pagination)
 
-### Admin API (`/api/admin/news`) - Requires ADMIN role
+### Admin API (`/api/admin/news`) - Requires ADMIN role, Rate Limited: 50 req/min per IP
 - `GET /` - Search all news (published + unpublished)
 - `POST /` - Create new article
 - `PUT /{id}` - Update existing article
@@ -204,6 +206,7 @@ news-platform/
 - **Term-based pagination**: Filter news by taxonomy terms (categories/tags)
 - **Flexible pagination**: Configurable page sizes and sorting options
 - **Multiple term filtering**: Checkbox-based term selection support
+- **Rate limiting**: IP-based request throttling with Bucket4j (100/min public, 50/min admin)
 
 ### In Progress 🔄
 - Code quality improvements

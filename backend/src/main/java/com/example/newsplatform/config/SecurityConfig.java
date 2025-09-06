@@ -1,5 +1,7 @@
 package com.example.newsplatform.config;
 
+import com.example.newsplatform.filter.RateLimitFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * Security configuration for the News Platform application.
@@ -23,6 +26,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
+
+    @Autowired
+    private RateLimitFilter rateLimitFilter;
 
     // Inject admin credentials from application properties or ENV
     @Value("${admin.username:}")
@@ -49,7 +55,9 @@ public class SecurityConfig {
                         .anyRequest().permitAll()
                 )
                 // Use HTTP Basic Auth for simplicity; consider JWT for production.
-                .httpBasic(httpBasic -> {});
+                .httpBasic(httpBasic -> {})
+                // Add rate limiting filter before authentication
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 

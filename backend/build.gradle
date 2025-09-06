@@ -33,6 +33,7 @@ java {
 ext {
     mysqlVersion = '8.3.0'
     h2Version = '2.2.224'
+    bucket4jVersion = '8.7.0'
 }
 
 // Repositories to resolve dependencies
@@ -62,6 +63,9 @@ dependencies {
 
     // Swagger / OpenAPI UI
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
+
+    // Rate limiting
+    implementation 'com.bucket4j:bucket4j-core:8.7.0'
 }
 
 // ---------------- Checkstyle ----------------
