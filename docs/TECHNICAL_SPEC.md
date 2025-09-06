@@ -24,7 +24,7 @@ The system provides:
 2. Improve editorial workflow with a simple CRUD interface.
 3. Optimize performance (fast response times, scalable).
 4. Enable future features:
-    - multilingual support,
+
     - push notifications,
     - analytics integration.
 
@@ -77,7 +77,7 @@ The system provides:
 - Import content from **Drupal 6 DB** into new schema:
     - `title`, `teaser`, `body`, `created_at`, `taxonomy`, `node_type`.
 - Map legacy Drupal taxonomy to new category model.
-- Ensure UTF-8/utf8mb4 compatibility (for Cyrillic and multilingual content).
+
 
 ---
 
@@ -135,7 +135,7 @@ The system provides:
 ## 9. Future Enhancements
 
 ### Backend
-- Multilingual support for articles
+
 - Scheduled publishing
 - Analytics and usage metrics
 - RSS/Atom feed integration
@@ -145,7 +145,7 @@ The system provides:
 ### Frontend
 - Full-text search with suggestions
 - Dark mode theme toggle
-- Multilingual support (English, Russian, Romanian)
+
 - Lazy loading and image optimization
 - Infinite scroll option on category pages
 - Progressive Web App (PWA) features

@@ -68,7 +68,7 @@
 ## 5. Future Enhancements (Optional)
 - Full-text search with suggestions.  
 - Dark mode theme toggle.  
-- Multilingual support (e.g., English, Russian, Romanian).  
+  
 - Lazy loading and image optimization.  
 - Infinite scroll option on category pages.  
 

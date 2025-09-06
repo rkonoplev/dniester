@@ -19,7 +19,7 @@ It summarizes completed phases, next steps, branching strategy, and best practic
 
 1. **Database Migration to MySQL**
     - Moved from MariaDB → MySQL (more stable support for schema features).
-    - Full **UTF-8 (utf8mb4)** support for Cyrillic and multilingual content.
+
     - JDBC drivers and connection URLs updated accordingly.
     - Docker Compose configured with MySQL service.
 
