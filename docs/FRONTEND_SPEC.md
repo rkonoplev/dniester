@@ -24,10 +24,12 @@
 - Article list grouped by category.  
 
 ### 3.2 Category Page
-- Paginated list of news within the selected category.  
+- Paginated list of news within the selected category (`/category/{id}`).  
 - Category title with highlighted accent color.  
+- Clean numeric category IDs for simple routing.  
 
 ### 3.3 Article Page
+- Accessible via clean numeric URLs (`/node/{id}`, e.g., `/node/15378`).  
 - Large headline, featured image, publication date, and main content.  
 - Related articles block at the bottom.  
 - SEO metadata, OpenGraph, and Twitter card support.  
@@ -40,7 +42,9 @@
 
 ## 4. Functionality
 ### 4.1 SEO & URLs
-- Static, human-readable URLs for all articles (`/news/{slug}` or `/category/{slug}/{id}`).  
+- Static, human-readable URLs for all articles (`/node/{id}` format, e.g., `https://example.com/node/15378`).  
+- Clean numeric IDs for direct article access without complex slug generation.  
+- Category pages: `/category/{id}` (e.g., `/category/5` for politics).  
 - SSR/SSG for indexable content.  
 - JSON-LD structured data (schema.org `NewsArticle`).  
 
