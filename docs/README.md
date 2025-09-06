@@ -50,3 +50,6 @@ This directory contains all project documentation, organized into specific guide
 
 - [Database Schema](./DATABASE_SCHEMA.md)  
   Final MySQL 8 schema after migration, with ER model, DDL, and example queries.
+
+- [Rate Limiting Guide](./RATE_LIMITING.md)  
+  IP-based rate limiting implementation with Bucket4j, configuration options, testing procedures, and production considerations.

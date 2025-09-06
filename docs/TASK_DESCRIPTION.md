@@ -19,10 +19,10 @@
 - **Migration**: Flyway (disabled in favor of Hibernate DDL)
 
 ### Frontend (Planned)
-- **Framework**: GatsbyJS (React-based)
-- **Language**: JavaScript
-- **Query**: GraphQL
-- **Styling**: CSS-in-JS
+- **Framework**: Next.js (React with SSR/SSG)
+- **Language**: JavaScript/TypeScript
+- **UI Library**: Material UI (MUI)
+- **Styling**: Custom Material theme
 
 ### Infrastructure
 - **Containerization**: Docker + Docker Compose
@@ -214,7 +214,7 @@ news-platform/
 - Performance optimizations
 
 ### Planned 📋
-- Frontend development (Gatsby)
+- Frontend development (Next.js)
 - Production deployment
 - Advanced search features
 - File upload capabilities

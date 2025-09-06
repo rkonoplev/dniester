@@ -1,7 +1,5 @@
 # News Platform
 
-# News Platform
-
 [![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)
 [![codecov](https://codecov.io/gh/rkonoplev/news-platform/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/rkonoplev/news-platform)
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
@@ -9,13 +7,13 @@
 Monorepo for a modern news publishing platform.
 
 Back end: Spring Boot  
-Front end: GatsbyJS (React)  
+Front end: Next.js (React)  
 Database: MySQL
 
 ## 📑 Table of Contents
 - [📂 Project Structure](#-project-structure)
 - [🚀 Backend Quick Start](#-backend-quick-start)
-- [📌 Planned Features](#-planned-features)
+- [📌 Key Features](#-key-features)
 - [🌐 Frontend Stack (Planned)](#-frontend-stack-planned)
 - [📖 Documentation](#-documentation)
 - [🤝 Contributing](#-contributing)
@@ -28,10 +26,10 @@ Database: MySQL
 | `news-platform/`       | Root directory of the project      |
 | `├── backend/`         | Spring Boot app (Java 21)          |
 | `│   ├── src/`         | Source code for the backend        |
-| `├── frontend/`        | Gatsby app (planned)               |
+| `├── frontend/`        | Next.js app (planned)              |
 | `│   ├── src/`         | Source code for the frontend       |
 | `│   └── package.json` | Package configuration for frontend |
-| `└── docs/`            | Future documentation               |
+| `└── docs/`            | Documentation                      |
 
 
 ---
@@ -87,11 +85,7 @@ cd frontend
 npm install
 npm run dev
 ```
-### Configuration
-Create `application.properties` file in `backend/src/main/resources/` directory:
-```bash
-cp backend/src/main/resources/application.properties.template backend/src/main/resources/application.properties
-```
+
 ## 📖 Documentation
 Full developer and deployment documentation is available in the [docs/](docs/) folder:
 
@@ -173,6 +167,7 @@ Before submitting PRs, please:
 - Run local checks:
   ```bash
   ./gradlew build test checkstyleMain checkstyleTest
+  ```
   
 ## 📜 License
 MIT License. See [LICENSE](LICENSE) for details.
