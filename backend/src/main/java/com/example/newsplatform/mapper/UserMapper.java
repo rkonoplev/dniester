@@ -4,25 +4,37 @@ import com.example.newsplatform.dto.UserCreateRequest;
 import com.example.newsplatform.dto.UserDto;
 import com.example.newsplatform.dto.UserUpdateRequest;
 import com.example.newsplatform.entity.User;
+import java.util.Set;
 
 /**
  * Utility class to map between User entity and various DTOs.
+ * 
+ * Default Role Behavior:
+ * - If a user has no roles specified, defaults to 'Admin' role in DTO responses
+ * - This serves as a temporary placeholder until roles are fully defined
+ * - The role field cannot be null in API responses
  */
 public class UserMapper {
 
     public static UserDto toDto(User entity) {
         if (entity == null) return null;
         
+        // Default to Admin role if no roles specified
+        Set<String> roleNames;
+        if (entity.getRoles() == null || entity.getRoles().isEmpty()) {
+            roleNames = java.util.Set.of("Admin");
+        } else {
+            roleNames = entity.getRoles().stream()
+                    .map(role -> role.getName())
+                    .collect(java.util.stream.Collectors.toSet());
+        }
+        
         return new UserDto(
                 entity.getId(),
                 entity.getUsername(),
                 entity.getEmail(),
-                entity.getFullName(),
                 entity.isActive(),
-                entity.getCreatedAt(),
-                entity.getRoles() != null ? 
-                    entity.getRoles().stream().map(role -> role.getName()).collect(java.util.stream.Collectors.toSet()) : 
-                    java.util.Set.of()
+                roleNames
         );
     }
 
@@ -32,8 +44,7 @@ public class UserMapper {
         User entity = new User();
         entity.setUsername(request.getUsername());
         entity.setEmail(request.getEmail());
-        entity.setFullName(request.getFullName());
-        entity.setActive(true); // Default to active
+        entity.setActive(request.isActive());
         return entity;
     }
 
@@ -41,7 +52,6 @@ public class UserMapper {
         if (entity == null || request == null) return;
 
         if (request.getEmail() != null) entity.setEmail(request.getEmail());
-        if (request.getFullName() != null) entity.setFullName(request.getFullName());
         if (request.getActive() != null) entity.setActive(request.getActive());
     }
 }
