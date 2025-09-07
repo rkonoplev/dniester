@@ -51,7 +51,7 @@ public class SecurityConfig {
                 // If in the future you serve HTML forms and session-based auth, enable CSRF here.
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "EDITOR")
                         .anyRequest().permitAll()
                 )
                 // Use HTTP Basic Auth for simplicity; consider JWT for production.
@@ -69,27 +69,5 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * UserDetailsService that creates an in-memory admin user.
-     * Validates that adminUsername and adminPassword are not empty.
-     *
-     * @param passwordEncoder injected PasswordEncoder
-     * @return InMemoryUserDetailsManager with admin user
-     */
-    @Bean
-    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        if (adminUsername == null || adminUsername.isBlank()
-                || adminPassword == null || adminPassword.isBlank()) {
-            // Fail fast: admin credentials must always be provided in configuration
-            throw new IllegalStateException("Admin username and password must be set in configuration/ENV variables");
-        }
-
-        UserDetails user = User.builder()
-                .username(adminUsername)
-                .password(passwordEncoder.encode(adminPassword))
-                .roles("ADMIN")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
-    }
+    // UserDetailsService is now provided by EnvironmentUserDetailsService
 }

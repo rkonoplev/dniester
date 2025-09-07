@@ -70,9 +70,11 @@ SPRING_DATASOURCE_URL=jdbc:mysql://mysql:${DATABASE_LOCAL_PORT}/newsdb?useUnicod
 SPRING_DATASOURCE_USERNAME=${MYSQL_USER}
 SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 
-# App credentials
+# Authentication credentials (Basic Auth)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=changemeAdmin
+EDITOR_USERNAME=editor
+EDITOR_PASSWORD=changemeEditor
 
 # Rate limiting (optional, defaults applied if not set)
 # PUBLIC_RATE_LIMIT=100
@@ -82,6 +84,14 @@ ADMIN_PASSWORD=changemeAdmin
 
 ## 🔒 Secrets Management
 
+### Authentication Security
+- **Basic Auth** with environment-based multi-user credentials
+- **Role separation**: ADMIN (full access) and EDITOR (content management)
+- **BCrypt encoding** for password security
+- **No database storage** of authentication credentials (security best practice)
+- User profile data stored in database, authentication handled separately
+
+### Environment Management
 - Local: .env file (ignored by git).
 - CI/CD: GitHub Actions → repository Secrets.
 - Production (Render): environment variables or Secret Files mounted at runtime.

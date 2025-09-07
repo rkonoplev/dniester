@@ -1,0 +1,13 @@
+# Security configuration
+admin:
+  username: ${ADMIN_USERNAME:admin}
+  password: ${ADMIN_PASSWORD:changeme}
+
+editor:
+  username: ${EDITOR_USERNAME:}
+  password: ${EDITOR_PASSWORD:}
+
+# Optional JWT configuration for future use
+jwt:
+  secret: ${JWT_SECRET:mySecretKey}
+  expiration: 86400000 # 24 hours

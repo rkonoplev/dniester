@@ -51,28 +51,52 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 ## 🔒 Security Best Practices
 
-1. **Secrets in CI**
+1. **Authentication Architecture**
+    - **Basic Auth** with environment-based credentials (no database storage)
+    - **Role-based access**: ADMIN and EDITOR roles
+    - **BCrypt password encoding** for secure credential storage
+    - **Multi-user support** through environment variables
+    - Credentials never stored in application code or database entities
+
+2. **Authentication Usage**
+    ```bash
+    # Admin access
+    curl -u admin:securepassword http://localhost:8080/api/admin/news
+    
+    # Editor access
+    curl -u editor:editorpass http://localhost:8080/api/admin/news
+    ```
+
+3. **Environment Variables for Auth**
+    ```bash
+    ADMIN_USERNAME=admin
+    ADMIN_PASSWORD=securepassword
+    EDITOR_USERNAME=editor
+    EDITOR_PASSWORD=editorpass
+    ```
+
+4. **Secrets in CI**
     - Use GitHub **Repository Secrets** (Settings → Secrets → Actions).
-    - Examples: `DEV_DB_URL`, `DEV_DB_USER`, `DEV_DB_PASS`.
+    - Examples: `DEV_DB_URL`, `DEV_DB_USER`, `DEV_DB_PASS`, `ADMIN_PASSWORD`.
     - Never commit `.env` with real secrets into repo.
 
-2. **Profiles for CI**
+5. **Profiles for CI**
     - Always run CI tests with `ci` profile (uses H2 in-memory DB).
     - Ensures builds are independent of external databases.
 
-3. **Docker & Deploy Secrets**
+6. **Docker & Deploy Secrets**
     - Local dev → `.env` (ignored by git).
     - CI → GitHub Secrets.
     - Render production → environment variables or Secret Files.
 
-4. **GitLeaks**
+7. **GitLeaks**
     - Prevents committing credentials, API keys, or tokens by mistake.
     - Run locally before commit:
       ```bash
       gitleaks detect --source .
       ```
 
-5. **Rate Limiting**
+8. **Rate Limiting**
     - IP-based rate limiting protects against API abuse.
     - Different limits for public (100/min) and admin (50/min) endpoints.
     - In-memory bucket storage (resets on application restart).
