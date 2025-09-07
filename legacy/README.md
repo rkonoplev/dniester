@@ -42,6 +42,13 @@ Production override configuration for Docker Compose. This file provides:
 - Secure database configuration without external port exposure
 - Application logging with persistent volumes
 
+### `ExampleTest.java`
+Legacy placeholder test file from early development. This file:
+- **Original location**: `backend/src/test/java/com/example/newsplatform/ExampleTest.java`
+- Simple JUnit 5 test with `assertTrue(true)` assertion
+- Created as initial test structure during project setup
+- **Status**: OBSOLETE - Replaced by comprehensive unit and integration tests
+
 ## Usage Context
 
 ## Migration Context

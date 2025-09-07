@@ -101,6 +101,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [CI/CD & Security](docs/CI_CD_SECURITY.md)
 - [Technical Specification](docs/TECHNICAL_SPEC.md)
 - [Frontend Specification](docs/FRONTEND_SPEC.md)
+- [Admin Panel Specification](docs/ADMIN_PANEL_SPEC.md)
 - [API Usage Guide](docs/API_USAGE.md)
 - [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
 - [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)

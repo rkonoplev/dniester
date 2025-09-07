@@ -39,6 +39,9 @@ This directory contains all project documentation, organized into specific guide
 - [Frontend Specification](./FRONTEND_SPEC.md)  
   Frontend technical specification with Next.js, Material UI, responsive design, SEO requirements, and theming guidelines.
 
+- [Admin Panel Specification](./ADMIN_PANEL_SPEC.md)  
+  Technical requirements for the admin panel interface including role management, news management, taxonomy terms, bulk actions, and security validation.
+
 - [API Usage Guide](./API_USAGE.md)  
   Example requests with `curl`, Makefile shortcuts for testing API endpoints, and usage instructions for developers & QA.
 
