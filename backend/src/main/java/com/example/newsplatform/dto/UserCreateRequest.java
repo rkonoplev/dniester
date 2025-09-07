@@ -18,10 +18,6 @@ public class UserCreateRequest {
     @Email(message = "Email must be valid")
     private String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at least 6 characters")
-    private String password;
-
     private boolean active = true;
 
     private Set<Long> roleIds;
@@ -32,9 +28,6 @@ public class UserCreateRequest {
 
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }

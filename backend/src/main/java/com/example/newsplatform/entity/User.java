@@ -31,9 +31,6 @@ public class User {
     @Column(nullable = false)
     private boolean active; // true=active, false=blocked
 
-    @Column(nullable = false)
-    private String password; // Encrypted password for admin panel access
-
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<News> newsArticles = new HashSet<>();
 
@@ -64,7 +61,4 @@ public class User {
 
     public Set<Role> getRoles() { return roles; }
     public void setRoles(Set<Role> roles) { this.roles = roles; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
 }

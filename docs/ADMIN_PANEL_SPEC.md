@@ -10,7 +10,7 @@ This document outlines the technical requirements for the News Platform admin pa
 - **View and edit roles** of administrators and editors
 - **Pagination** for large user lists
 - **Link to user creation page** for adding new authors or admins
-- **User creation form** with login and password assignment for admin panel access
+- **User creation form** with username and email (authentication handled separately by system administrators)
 
 ---
 
@@ -83,6 +83,11 @@ This document outlines the technical requirements for the News Platform admin pa
 - **Allowed content:** Text formatting and external media embedding only
 - **Content sanitization:** Strip or sanitize all HTML/script tags except allowed formatting
 - **Whitelist approach** for permitted HTML tags and attributes
+
+### 6.3 Authentication Security
+- **User authentication:** Handled by Spring Security with Basic Auth or JWT
+- **Password management:** Managed separately from user profile data
+- **Admin access:** Controlled through application configuration, not user self-registration
 
 ---
 
