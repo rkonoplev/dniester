@@ -15,9 +15,8 @@ public class TermMapper {
         return new TermDto(
                 entity.getId(),
                 entity.getName(),
-                entity.getDescription(),
-                entity.getType(),
-                entity.getWeight()
+                entity.getVocabulary(),
+                entity.getNewsArticles() != null ? entity.getNewsArticles().size() : 0
         );
     }
 
@@ -26,9 +25,7 @@ public class TermMapper {
         
         Term entity = new Term();
         entity.setName(request.getName());
-        entity.setDescription(request.getDescription());
-        entity.setType(request.getType());
-        entity.setWeight(request.getWeight() != null ? request.getWeight() : 0);
+        entity.setVocabulary(request.getVocabulary());
         return entity;
     }
 
@@ -36,8 +33,6 @@ public class TermMapper {
         if (entity == null || request == null) return;
 
         if (request.getName() != null) entity.setName(request.getName());
-        if (request.getDescription() != null) entity.setDescription(request.getDescription());
-        if (request.getType() != null) entity.setType(request.getType());
-        if (request.getWeight() != null) entity.setWeight(request.getWeight());
+        if (request.getVocabulary() != null) entity.setVocabulary(request.getVocabulary());
     }
 }

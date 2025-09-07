@@ -14,7 +14,7 @@ public class RoleMapper {
         return new RoleDto(
                 entity.getId(),
                 entity.getName(),
-                entity.getDescription()
+                entity.getUsers() != null ? entity.getUsers().size() : 0
         );
     }
 
@@ -24,7 +24,6 @@ public class RoleMapper {
         Role entity = new Role();
         entity.setId(dto.id());
         entity.setName(dto.name());
-        entity.setDescription(dto.description());
         return entity;
     }
 }
