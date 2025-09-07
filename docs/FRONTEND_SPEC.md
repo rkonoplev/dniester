@@ -2,9 +2,9 @@
 
 ## 1. General Objectives
 - Develop a **modern, responsive news portal frontend**.  
-- Follow **Material Design principles** for layout, typography, and components.  
-- Provide a **clean, SEO-friendly structure** with static URLs for all pages.  
-- Ensure **accessibility** and **fast loading performance** across devices.  
+- Follow **Google News–inspired design principles**: clean, spacious, mobile-first, highly readable.  
+- Provide a **SEO-friendly structure** with static URLs for all news articles.  
+- Ensure **accessibility (WCAG 2.1 AA)** and **fast loading performance**.  
 
 ---
 
@@ -18,58 +18,71 @@
 
 ## 3. Layout & Pages
 ### 3.1 Homepage
-- Multi-column grid layout (2–3 columns desktop, single column mobile).  
-- Featured article block on top.  
-- Horizontal navigation bar with categories.  
-- Article list grouped by category.  
+- Clean multi-column grid layout:  
+  - Desktop: 2–3 columns.  
+  - Mobile: 1 column.  
+- Featured article block at the top (large image, headline, excerpt).  
+- Secondary articles below with medium-sized images.  
+- Smaller news items listed in compact cards.  
+- Category navigation bar at the top.  
 
 ### 3.2 Category Page
-- Paginated list of news within the selected category (`/category/{id}`).  
-- Category title with highlighted accent color.  
-- Clean numeric category IDs for simple routing.  
+- Paginated list of articles belonging to the selected category.  
+- Category title highlighted with branding accent color.  
 
 ### 3.3 Article Page
-- Accessible via clean numeric URLs (`/node/{id}`, e.g., `/node/15378`).  
-- Large headline, featured image, publication date, and main content.  
-- Related articles block at the bottom.  
+- Large headline with serif font.  
+- Featured image (responsive, up to ~800px wide).  
+- Publication date, author, and category.  
+- Full content with images and inline HTML elements.  
+- Related articles at the bottom.  
 - SEO metadata, OpenGraph, and Twitter card support.  
 
 ### 3.4 Static Pages
 - About page.  
-- Archive page (searchable by date/category).  
+- Archive page (filter by date/category).  
 
 ---
 
 ## 4. Functionality
 ### 4.1 SEO & URLs
-- Static, human-readable URLs for all articles (`/node/{id}` format, e.g., `https://example.com/node/15378`).  
-- Clean numeric IDs for direct article access without complex slug generation.  
+- Static, human-readable URLs for articles (`/node/{id}` format, e.g., `/node/15378`).  
 - Category pages: `/category/{id}` (e.g., `/category/5` for politics).  
 - SSR/SSG for indexable content.  
-- JSON-LD structured data (schema.org `NewsArticle`).  
+- JSON-LD structured data (`NewsArticle` schema).  
 
 ### 4.2 Responsive Design
-- Mobile-first implementation with tablet and desktop breakpoints.  
-- Adaptive typography and responsive images.  
+- Mobile-first layout.  
+- Adaptive typography and fluid images.  
+- Featured images:  
+  - Top article: ~600–800px width.  
+  - Standard articles: ~320–400px width.  
+  - Thumbnails: ~160–200px width.  
 
 ### 4.3 Accessibility
 - WCAG 2.1 AA compliance.  
 - ARIA labels, proper contrast, keyboard navigation.  
 
-### 4.4 Theming
-- Global MUI theme provider.  
-- Primary color: Dark Blue (#1c355e).  
-- Secondary color: Deep Red (#cc0000).  
-- Background: Light Beige (#f5f0e0).  
-- Categories can have accent colors (e.g., red for analytics, blue for politics).  
+### 4.4 Theming & Branding
+- **Base colors**:  
+  - Primary: Dark Blue (#1c355e).  
+  - Secondary: Deep Red (#cc0000).  
+  - Background: White (#ffffff) or Off-White (#fdfcf8).  
+  - Neutral gray accents for borders and dividers (#eeeeee).  
+- **Usage**:  
+  - Headlines and links: Dark Blue.  
+  - Category highlights (e.g., Analytics): Red.  
+  - Navigation bar: Dark Blue background with white text.  
+- **Typography**:  
+  - Headlines: Serif (Roboto Slab).  
+  - Body text: Sans-serif (Roboto).  
 
 ---
 
 ## 5. Future Enhancements (Optional)
-- Full-text search with suggestions.  
+- Full-text search with auto-suggestions.  
 - Dark mode theme toggle.  
-  
-- Lazy loading and image optimization.  
-- Infinite scroll option on category pages.  
+- Lazy loading for images and infinite scroll on category pages.  
+- Push notifications for breaking news.  
 
 ---

@@ -19,10 +19,12 @@
 - **Migration**: Flyway (disabled in favor of Hibernate DDL)
 
 ### Frontend (Planned)
-- **Framework**: Next.js (React with SSR/SSG)
-- **Language**: JavaScript/TypeScript
-- **UI Library**: Material UI (MUI)
-- **Styling**: Custom Material theme
+- Next.js (React) with Material UI for Google News–inspired design  
+- Responsive, mobile-first layout with clean grid system  
+- Static SEO-friendly URLs for all articles (SSR/SSG enabled)  
+- Structured data (JSON-LD) + OpenGraph metadata for search engines  
+- Branding with custom color palette (dark blue, red, white) and typography  
+- Planned enhancements: search, dark mode, push notifications
 
 ### Infrastructure
 - **Containerization**: Docker + Docker Compose
