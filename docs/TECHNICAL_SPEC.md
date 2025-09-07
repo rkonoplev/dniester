@@ -143,11 +143,10 @@ The system provides:
 - Editor-friendly workflows (drafts, previews)
 
 ### Frontend
-- Full-text search with suggestions
+- Full-text search with auto-suggestions
 - Dark mode theme toggle
-
-- Lazy loading and image optimization
-- Infinite scroll option on category pages
+- Lazy loading for images and infinite scroll on category pages
+- Push notifications for breaking news
 - Progressive Web App (PWA) features
 
 ---
