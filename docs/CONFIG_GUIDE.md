@@ -1,5 +1,16 @@
 # ⚙️ Configuration Guide
 
+## 📑 Table of Contents
+- [📂 Configuration Files Location](#-configuration-files-location)
+- [🧩 Spring Profiles Matrix](#-spring-profiles-matrix)
+- [🚀 Running with Profiles](#-running-with-profiles)
+- [🔐 Environment Variables & .env](#-environment-variables--env)
+- [🔒 Secrets Management](#-secrets-management)
+    - [Authentication Security](#authentication-security)
+    - [Environment Management](#environment-management)
+- [✅ Best Practices](#-best-practices)
+
+
 This document explains the configuration strategy for the News Platform backend.  
 Spring Boot profiles, YAML configuration files, and environment variables are used to keep the system secure, portable, and consistent across environments.
 

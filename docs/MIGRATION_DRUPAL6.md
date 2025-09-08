@@ -1,5 +1,28 @@
 # 🚀 Migration Guide: Drupal 6 → News Platform
 
+# 🚀 Migration Guide: Drupal 6 → News Platform
+
+## 📑 Table of Contents
+- [Overview](#-overview)
+- [Short Version](#-short-version)
+- [Migration from Drupal 6](#-migration-from-drupal-6)
+    - [Summary](#summary)
+    - [Migration Flow](#migration-flow)
+- [TL;DR Commands](#-tldr-commands)
+- [Quick Start (TL;DR)](#-quick-start-tldr)
+- [Complete Migration Guide](#-complete-migration-guide)
+    - [Step 1: Start MySQL 5.7](#step-1-start-mysql-57-for-drupal-6-dump)
+    - [Step 2: Export and normalize data](#step-2-export-and-normalize-data)
+    - [Step 3: Export final schema](#step-3-export-final-schema)
+    - [Step 4: Setup MySQL 80 target](#step-4-setup-mysql-80-target)
+    - [Step 5: Import into MySQL 80](#step-5-import-into-mysql-80)
+    - [Step 6: Verify migration](#step-6-verify-migration)
+- [Detailed Migration Steps](#-detailed-migration-steps)
+- [Database Schema Mapping](#-database-schema-mapping)
+- [Troubleshooting](#-troubleshooting)
+- [Reference](#-reference)
+
+
 ## 📋 Overview
 This guide covers migrating from Drupal 6 to the modern News Platform (Spring Boot + MySQL 8).
 

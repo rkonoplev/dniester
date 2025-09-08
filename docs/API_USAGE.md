@@ -1,5 +1,24 @@
 # 📡 API Usage Guide
 
+## 📑 Table of Contents
+- [🚦 Rate Limiting](#-rate-limiting)
+- [🌐 Public API Endpoints (No Authentication Required)](#-public-api-endpoints-no-authentication-required)
+    - [1. Get All Published News (with Pagination)](#1-get-all-published-news-with-pagination)
+    - [2. Get Published News by ID](#2-get-published-news-by-id)
+    - [3. Get Published News by Term ID (Category/Tag)](#3-get-published-news-by-term-id-categorytag)
+    - [4. Get Published News by Multiple Term IDs](#4-get-published-news-by-multiple-term-ids)
+    - [5. Check Rate Limiting Headers](#5-check-rate-limiting-headers)
+- [🔒 Admin API Endpoints (Authentication Required)](#-admin-api-endpoints-authentication-required)
+    - [1. Get All News (Published + Unpublished)](#1-get-all-news-published--unpublished)
+    - [2. Create News Item](#2-create-news-item)
+    - [3. Update News Item](#3-update-news-item)
+    - [4. Delete News Item](#4-delete-news-item)
+- [📋 Pagination Parameters](#-pagination-parameters)
+- [📊 Rate Limiting Testing](#-rate-limiting-testing)
+- [⚠️ Notes](#️-notes)
+- [📚 Alternative API Documentation: Swagger UI](#-alternative-api-documentation-swagger-ui)
+
+
 This guide provides practical examples for testing the News Platform API endpoints using **curl**.
 
 ## 🚦 Rate Limiting

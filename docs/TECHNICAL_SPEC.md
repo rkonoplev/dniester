@@ -1,4 +1,20 @@
 # 📐 News Platform – Technical Specification
+## 📑 Table of Contents
+- [1. Project Summary](#1-project-summary)
+- [2. Business Goals](#2-business-goals)
+- [3. System Architecture](#3-system-architecture)
+    - [Class-Level Structure](#class-level-structure)
+- [4. Functional Requirements](#4-functional-requirements)
+    - [4.1 Public API](#41-public-api-rate-limited-100-reqmin-per-ip)
+    - [4.2 Admin API](#42-admin-api-rate-limited-50-reqmin-per-ip)
+- [5. Data Migration](#5-data-migration)
+- [6. Technology Stack](#6-technology-stack)
+- [7. Non-functional Requirements (NFRs)](#7-non-functional-requirements-nfrs)
+- [8. Development Workflow](#8-development-workflow)
+- [9. Future Enhancements](#9-future-enhancements)
+    - [Backend](#backend)
+    - [Frontend](#frontend)
+
 
 This document provides the technical specification for the **News Platform** project — a complete rewrite of the legacy Drupal 6 news system into a modern Java/Spring Boot application.
 
