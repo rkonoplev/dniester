@@ -85,7 +85,8 @@ This document outlines the technical requirements for the News Platform admin pa
 - **Whitelist approach** for permitted HTML tags and attributes
 
 ### 6.3 Authentication Security
-- **User authentication:** Handled by Spring Security with Basic Auth or JWT
+- **Current authentication:** Spring Security with Basic Auth
+- **Planned migration:** Google OAuth2 for all roles (ADMIN, EDITOR, USER)
 - **Password management:** Managed separately from user profile data
 - **Admin access:** Controlled through application configuration, not user self-registration
 

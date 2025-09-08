@@ -1,4 +1,4 @@
-# Complete Project Information for AI Analysis
+# Complete Project Information
 
 ## Project Overview
 **Name**: News Platform  
@@ -12,7 +12,7 @@
 - **Framework**: Spring Boot 3.x
 - **Language**: Java 21
 - **Database**: MySQL 8.0 (H2 for tests)
-- **Security**: Spring Security with Basic Auth
+- **Security**: Spring Security with Basic Auth (Google OAuth2 planned)
 - **API**: REST with OpenAPI/Swagger documentation
 - **Build**: Gradle 8.7
 - **Testing**: JUnit 5, Integration tests with H2
@@ -226,7 +226,7 @@ news-platform/
 
 ### Security
 - CORS configuration needs refinement for production
-- Consider JWT tokens for stateless authentication
+- **Google OAuth2 migration planned**: Replace Basic Auth with Google Sign-In for ADMIN, EDITOR, USER roles
 - Input validation and sanitization improvements
 
 ### Performance
@@ -279,4 +279,4 @@ ADMIN_PASSWORD=<dev_admin_password>
 6. **REST over GraphQL**: Traditional REST API with OpenAPI documentation
 7. **Gradle over Maven**: Build tool choice for dependency management
 
-This document provides complete context for any AI platform to understand the project architecture, current state, and technical decisions made during development.
+This document provides complete context for understanding the project architecture, current state, and technical decisions made during development.

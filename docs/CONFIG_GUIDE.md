@@ -85,9 +85,10 @@ EDITOR_PASSWORD=changemeEditor
 ## 🔒 Secrets Management
 
 ### Authentication Security
-- **Basic Auth** with environment-based multi-user credentials
-- **Role separation**: ADMIN (full access) and EDITOR (content management)
-- **BCrypt encoding** for password security
+- **Current**: Basic Auth with environment-based multi-user credentials
+- **Role separation**: ADMIN (full access), EDITOR (content management), USER (public access)
+- **Planned migration**: Google OAuth2 for all roles (ADMIN, EDITOR, USER) replacing Basic Auth
+- **BCrypt encoding** for password security (current implementation)
 - **No database storage** of authentication credentials (security best practice)
 - User profile data stored in database, authentication handled separately
 
