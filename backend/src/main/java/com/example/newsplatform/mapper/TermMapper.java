@@ -1,38 +1,34 @@
 package com.example.newsplatform.mapper;
 
-import com.example.newsplatform.dto.TermCreateRequest;
-import com.example.newsplatform.dto.TermDto;
+import com.example.newsplatform.dto.TermCreateRequestDto;
+import com.example.newsplatform.dto.TermResponseDto;
+import com.example.newsplatform.dto.TermUpdateRequestDto;
 import com.example.newsplatform.entity.Term;
+import org.springframework.stereotype.Component;
 
 /**
- * Utility class to map between Term entity and various DTOs.
+ * Mapper for Term entity and DTOs.
  */
+@Component
 public class TermMapper {
 
-    public static TermDto toDto(Term entity) {
-        if (entity == null) return null;
-        
-        return new TermDto(
-                entity.getId(),
-                entity.getName(),
-                entity.getVocabulary(),
-                entity.getNewsArticles() != null ? entity.getNewsArticles().size() : 0
+    public TermResponseDto toResponse(Term term) {
+        return new TermResponseDto(
+                term.getId(),
+                term.getName(),
+                term.getVocabulary()
         );
     }
 
-    public static Term fromCreateRequest(TermCreateRequest request) {
-        if (request == null) return null;
-        
-        Term entity = new Term();
-        entity.setName(request.getName());
-        entity.setVocabulary(request.getVocabulary());
-        return entity;
+    public Term toEntity(TermCreateRequestDto request) {
+        Term term = new Term();
+        term.setName(request.name());
+        term.setVocabulary(request.vocabulary());
+        return term;
     }
 
-    public static void updateEntity(Term entity, TermCreateRequest request) {
-        if (entity == null || request == null) return;
-
-        if (request.getName() != null) entity.setName(request.getName());
-        if (request.getVocabulary() != null) entity.setVocabulary(request.getVocabulary());
+    public void updateEntity(Term term, TermUpdateRequestDto request) {
+        term.setName(request.name());
+        term.setVocabulary(request.vocabulary());
     }
 }
