@@ -1,8 +1,8 @@
 package com.example.newsplatform.mapper;
 
-import com.example.newsplatform.dto.NewsCreateRequest;
+import com.example.newsplatform.dto.NewsCreateRequestDto;
 import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequest;
+import com.example.newsplatform.dto.NewsUpdateRequestDto;
 import com.example.newsplatform.entity.News;
 import com.example.newsplatform.entity.Term;
 import com.example.newsplatform.entity.User;
@@ -54,7 +54,7 @@ class NewsMapperTest {
                 null, Set.of(), null, 20L, 10L
         );
 
-        NewsCreateRequest req = NewsMapper.newsDtoToCreateRequest(dto);
+        NewsCreateRequestDto req = NewsMapper.newsDtoToCreateRequest(dto);
 
         assertNotNull(req);
         assertEquals("Sample", req.getTitle());
@@ -72,7 +72,7 @@ class NewsMapperTest {
                 null, Set.of(), null, null, null
         );
 
-        NewsUpdateRequest req = NewsMapper.newsDtoToUpdateRequest(dto);
+        NewsUpdateRequestDto req = NewsMapper.newsDtoToUpdateRequest(dto);
 
         assertEquals("Updated", req.getTitle());
         assertEquals("New body", req.getBody());
@@ -80,7 +80,7 @@ class NewsMapperTest {
 
     @Test
     void testFromCreateRequest() {
-        NewsCreateRequest req = new NewsCreateRequest();
+        NewsCreateRequestDto req = new NewsCreateRequestDto();
         req.setTitle("Created");
         req.setBody("Body");
         req.setTeaser("Teaser");
@@ -98,7 +98,7 @@ class NewsMapperTest {
     @Test
     void testUpdateEntity() {
         News news = new News();
-        NewsUpdateRequest req = new NewsUpdateRequest();
+        NewsUpdateRequestDto req = new NewsUpdateRequestDto();
         req.setTitle("NewTitle");
         req.setBody("NewBody");
         req.setPublished(true);

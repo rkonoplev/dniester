@@ -1,7 +1,7 @@
 package com.example.newsplatform.service;
 
 import com.example.newsplatform.NewsPlatformApplication;
-import com.example.newsplatform.dto.NewsCreateRequest;
+import com.example.newsplatform.dto.NewsCreateRequestDto;
 import com.example.newsplatform.dto.NewsDto;
 import com.example.newsplatform.entity.Term;
 import com.example.newsplatform.entity.User;
@@ -58,7 +58,7 @@ public class NewsServiceImplIntegrationTest {
         testTerm = termRepository.save(testTerm);
 
         // Create news
-        NewsCreateRequest request = new NewsCreateRequest();
+        NewsCreateRequestDto request = new NewsCreateRequestDto();
         request.setTitle("Temp News");
         request.setBody("Some body");
         request.setPublicationDate(LocalDateTime.now());
