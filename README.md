@@ -105,7 +105,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Admin Panel Specification](docs/ADMIN_PANEL_SPEC.md)
 - [API Usage Guide](docs/API_USAGE.md)
 - [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
-- [Migration Drupal6 → News Platform (RU, plain text)](docs/MIGRATION_DRUPAL6_RU.txt)
+- [Migration Drupal6 → News Platform (RU)](docs/MIGRATION_DRUPAL6_RU.md)
 - [Database Schema](docs/DATABASE_SCHEMA.md)
 - [Rate Limiting Guide](docs/RATE_LIMITING.md)
 ---

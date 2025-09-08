@@ -3,8 +3,8 @@
 ## Project Overview
 **Name**: News Platform  
 **Type**: Modern news publishing platform (monorepo)  
-**Migration**: Drupal 6 → Spring Boot + React  
-**Status**: Backend complete, Frontend planned  
+**Migration**: Drupal 6 → Spring Boot + Next.js  
+**Status**: Backend production-ready, Frontend planned  
 
 ## Technology Stack
 
@@ -19,12 +19,11 @@
 - **Migration**: Flyway (disabled in favor of Hibernate DDL)
 
 ### Frontend (Planned)
-- Next.js (React) with Material UI for Google News–inspired design  
-- Responsive, mobile-first layout with clean grid system  
-- Static SEO-friendly URLs for all articles (SSR/SSG enabled)  
-- Structured data (JSON-LD) + OpenGraph metadata for search engines  
-- Branding with custom color palette (dark blue, red, white) and typography  
-- Planned enhancements: search, dark mode, push notifications
+- **Framework**: Next.js (React) with Material UI
+- **Design**: Google News–inspired responsive layout
+- **SEO**: Static URLs, SSR/SSG, JSON-LD, OpenGraph metadata
+- **Branding**: Custom color palette (dark blue, red, white)
+- **Features**: Search, dark mode, push notifications (planned)
 
 ### Infrastructure
 - **Containerization**: Docker + Docker Compose
@@ -52,7 +51,7 @@ news-platform/
 │   │   ├── application*.yml  # Environment configurations
 │   │   └── static/           # Static resources
 │   └── src/test/             # Unit + Integration tests
-├── frontend/                  # Future Gatsby application
+├── frontend/                  # Future Next.js application
 ├── docs/                     # Documentation
 ├── .github/workflows/        # CI/CD pipelines
 ├── docker-compose.yml        # Development environment
@@ -197,30 +196,26 @@ news-platform/
 ## Current Status & Next Steps
 
 ### Completed ✅
-- Core backend functionality
-- REST API with full CRUD operations
-- Security implementation
-- Database schema and relationships
-- Docker development environment
-- CI/CD pipeline with quality gates
-- Integration tests
-- API documentation (Swagger)
-- **Term-based pagination**: Filter news by taxonomy terms (categories/tags)
-- **Flexible pagination**: Configurable page sizes and sorting options
-- **Multiple term filtering**: Checkbox-based term selection support
-- **Rate limiting**: IP-based request throttling with Bucket4j (100/min public, 50/min admin)
+- **Backend Core**: Spring Boot 3.x with Java 21
+- **Database**: MySQL 8.0 with H2 for tests
+- **Security**: Spring Security with Basic Auth
+- **API**: RESTful endpoints with OpenAPI/Swagger
+- **Pagination**: Term-based filtering with configurable page sizes
+- **Rate Limiting**: IP-based throttling (100 req/min public, 50 req/min admin)
+- **CI/CD**: GitHub Actions with automated testing
+- **Docker**: Development environment with Docker Compose
+- **Migration**: Drupal 6 data migration scripts and documentation
 
 ### In Progress 🔄
-- Code quality improvements
-- Security vulnerability fixes
+- Documentation updates
+- Code quality refinements
 - Performance optimizations
 
 ### Planned 📋
-- Frontend development (Next.js)
-- Production deployment
-- Advanced search features
-- File upload capabilities
-- Email notifications
+- **Frontend**: Next.js with Material UI
+- **Authentication**: Google OAuth2 for ADMIN, EDITOR, USER roles
+- **Features**: Advanced search, file uploads, push notifications
+- **Production**: Deployment and monitoring setup
 
 ## Known Issues & Technical Debt
 
@@ -273,7 +268,10 @@ ADMIN_PASSWORD=<dev_admin_password>
 
 1. **Monorepo Structure**: Backend and frontend in single repository
 2. **JPA over MyBatis**: Hibernate for ORM with automatic schema generation
-3. **Basic Auth**: Simple authentication suitable for admin interface
+3. **H2 for Testing**: In-memory database for fast test execution
+4. **Rate Limiting**: Bucket4j for IP-based request throttling
+5. **Docker First**: Development environment prioritizes containerization
+6. **Migration Strategy**: Drupal 6 → MySQL 5.7 → normalization → MySQL 8.0 **Basic Auth**: Simple authentication suitable for admin interface
 4. **H2 for Tests**: Fast, isolated test execution
 5. **Docker First**: Development environment containerized
 6. **REST over GraphQL**: Traditional REST API with OpenAPI documentation
