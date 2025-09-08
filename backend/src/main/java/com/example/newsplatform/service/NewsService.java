@@ -1,8 +1,8 @@
 package com.example.newsplatform.service;
 
-import com.example.newsplatform.dto.NewsCreateRequest;
+import com.example.newsplatform.dto.NewsCreateRequestDto;
 import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequest;
+import com.example.newsplatform.dto.NewsUpdateRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,9 +17,9 @@ public interface NewsService {
 
     NewsDto getPublishedById(Long id);
 
-    NewsDto create(NewsCreateRequest request);
+    NewsDto create(NewsCreateRequestDto request);
 
-    NewsDto update(Long id, NewsUpdateRequest request);
+    NewsDto update(Long id, NewsUpdateRequestDto request);
 
     void delete(Long id);
 

@@ -1,8 +1,8 @@
 package com.example.newsplatform.mapper;
 
-import com.example.newsplatform.dto.UserCreateRequest;
+import com.example.newsplatform.dto.UserCreateRequestDto;
 import com.example.newsplatform.dto.UserDto;
-import com.example.newsplatform.dto.UserUpdateRequest;
+import com.example.newsplatform.dto.UserUpdateRequestDto;
 import com.example.newsplatform.entity.User;
 import java.util.Set;
 
@@ -38,7 +38,7 @@ public class UserMapper {
         );
     }
 
-    public static User fromCreateRequest(UserCreateRequest request) {
+    public static User fromCreateRequest(UserCreateRequestDto request) {
         if (request == null) return null;
         
         User entity = new User();
@@ -48,7 +48,7 @@ public class UserMapper {
         return entity;
     }
 
-    public static void updateEntity(User entity, UserUpdateRequest request) {
+    public static void updateEntity(User entity, UserUpdateRequestDto request) {
         if (entity == null || request == null) return;
 
         if (request.getEmail() != null) entity.setEmail(request.getEmail());

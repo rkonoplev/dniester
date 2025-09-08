@@ -1,8 +1,8 @@
 package com.example.newsplatform.mapper;
 
-import com.example.newsplatform.dto.NewsCreateRequest;
+import com.example.newsplatform.dto.NewsCreateRequestDto;
 import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequest;
+import com.example.newsplatform.dto.NewsUpdateRequestDto;
 import com.example.newsplatform.entity.News;
 import com.example.newsplatform.entity.Term;
 
@@ -49,9 +49,9 @@ public class NewsMapper {
     }
 
     /** Maps NewsDto to NewsCreateRequest for service layer. */
-    public static NewsCreateRequest newsDtoToCreateRequest(NewsDto dto) {
+    public static NewsCreateRequestDto newsDtoToCreateRequest(NewsDto dto) {
         if (dto == null) return null;
-        NewsCreateRequest request = new NewsCreateRequest();
+        NewsCreateRequestDto request = new NewsCreateRequestDto();
         request.setTitle(dto.title());
         request.setTeaser(dto.teaser());
         request.setBody(dto.body());
@@ -63,9 +63,9 @@ public class NewsMapper {
     }
 
     /** Maps NewsDto to NewsUpdateRequest for service layer. */
-    public static NewsUpdateRequest newsDtoToUpdateRequest(NewsDto dto) {
+    public static NewsUpdateRequestDto newsDtoToUpdateRequest(NewsDto dto) {
         if (dto == null) return null;
-        NewsUpdateRequest request = new NewsUpdateRequest();
+        NewsUpdateRequestDto request = new NewsUpdateRequestDto();
         request.setTitle(dto.title());
         request.setTeaser(dto.teaser());
         request.setBody(dto.body());
@@ -77,7 +77,7 @@ public class NewsMapper {
     }
 
     /** Converts create request to News entity. */
-    public static News fromCreateRequest(NewsCreateRequest request) {
+    public static News fromCreateRequest(NewsCreateRequestDto request) {
         if (request == null) return null;
         News entity = new News();
         entity.setTitle(request.getTitle());
@@ -91,7 +91,7 @@ public class NewsMapper {
     /**
      * Updates entity fields from update request (null-safe).
      */
-    public static void updateEntity(News entity, NewsUpdateRequest request) {
+    public static void updateEntity(News entity, NewsUpdateRequestDto request) {
         if (entity == null || request == null) return;
 
         if (request.getTitle() != null) entity.setTitle(request.getTitle());
