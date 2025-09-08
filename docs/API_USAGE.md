@@ -100,11 +100,22 @@ curl -i "http://localhost:8080/api/public/news?page=1&size=5&sort=title,asc"
 ### Response Format:
 ```json
 {
-  "content": [...],
+  "content": [
+    {
+      "id": 1,
+      "title": "Sample News Title",
+      "teaser": "Brief summary...",
+      "publicationDate": "2024-01-15T10:30:00"
+    }
+  ],
   "totalElements": 25,
   "totalPages": 3,
   "size": 10,
-  "number": 0
+  "number": 0,
+  "first": true,
+  "last": false,
+  "numberOfElements": 10,
+  "empty": false
 }
 ```
 
