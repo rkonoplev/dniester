@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
  * Note: Use wrapper types (e.g., Boolean) to distinguish between
  * "not provided" and "explicit value".
  */
-public class NewsUpdateRequest {
+public class NewsUpdateRequestDto {
 
     @Size(max = 255)
     private String title;

@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * DTO for bulk operations in admin panel.
  */
-public class BulkActionRequest {
+public class BulkActionRequestDto {
 
     public enum ActionType {
         DELETE, UNPUBLISH

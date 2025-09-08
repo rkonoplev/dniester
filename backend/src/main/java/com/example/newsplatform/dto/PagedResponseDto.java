@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Generic DTO for paginated API responses.
  */
-public record PagedResponse<T>(
+public record PagedResponseDto<T>(
         List<T> content,
         PaginationInfo pagination
 ) {}
