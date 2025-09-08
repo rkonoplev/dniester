@@ -1,10 +1,8 @@
 # 🚀 Migration Guide: Drupal 6 → News Platform
 
-# 🚀 Migration Guide: Drupal 6 → News Platform
-
 ## 📑 Table of Contents
 - [Overview](#-overview)
-- [Short Version](#-short-version)
+- [Short Version](#short-version)
 - [Migration from Drupal 6](#-migration-from-drupal-6)
     - [Summary](#summary)
     - [Migration Flow](#migration-flow)
@@ -66,7 +64,7 @@ docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/cle
 docker compose -f docker-compose.yml up -d mysql
 docker logs news-mysql
 ```
-If root doesn’t work, fix root password using --skip-grant-tables (see docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md).
+If root doesn’t work, fix root password using --skip-grant-tables (see docs/MIGRATION_DRUPAL6.md).
 
 **6. Import final schema into MySQL 8.0:**
 
@@ -225,7 +223,7 @@ docker compose -f docker-compose.yml down -v
 docker compose -f docker-compose.yml up -d mysql
 docker logs news-mysql
 ```
-In logs you should see:
+In logs, you should see:
 
 ```text
 [Entrypoint]: Creating database dniester
@@ -371,7 +369,7 @@ If you encounter errors like:
 ERROR 1366 (HY000): Incorrect string value: '\xD0\x98\xD0\xBD...' for column 'title'
 
 it means that MySQL created your target table with the wrong default collation (latin1).
-By default MySQL 5.7 uses `latin1` unless explicitly specified.
+By default, MySQL 5.7 uses `latin1` unless explicitly specified.
 
 #### Step 1. Check table encoding
 Inside MySQL:
