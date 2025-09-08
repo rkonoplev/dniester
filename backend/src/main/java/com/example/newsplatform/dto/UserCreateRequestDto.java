@@ -8,7 +8,7 @@ import java.util.Set;
 /**
  * DTO for creating new users in admin panel.
  */
-public class UserCreateRequest {
+public class UserCreateRequestDto {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters")

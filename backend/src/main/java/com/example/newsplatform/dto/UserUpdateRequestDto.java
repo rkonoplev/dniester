@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * DTO for updating existing users in admin panel.
  */
-public class UserUpdateRequest {
+public class UserUpdateRequestDto {
 
     @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters")
     private String username;

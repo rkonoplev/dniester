@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  *
  * Note: All fields are required unless marked otherwise.
  */
-public class NewsCreateRequest {
+public class NewsCreateRequestDto {
 
     @NotBlank(message = "Title is required")
     @Size(max = 255)
