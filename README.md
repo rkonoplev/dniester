@@ -62,7 +62,7 @@ API entrypoint: http://localhost:8080
 ## 📌 Key Features
 
 - **Database**: MySQL 8.0 as primary database with H2 for tests
-- **Security**: Spring Security with Basic Auth (JWT/OAuth2 planned)
+- **Security**: Spring Security with Basic Auth (Google OAuth2 planned for ADMIN, EDITOR, USER roles)
 - **API**: RESTful endpoints with OpenAPI/Swagger documentation
 - **Pagination**: Term-based filtering with configurable page sizes
 - **Content Management**: Full CRUD operations for news articles
@@ -91,7 +91,7 @@ npm run dev
 ## 📖 Documentation
 Full developer and deployment documentation is available in the [docs/](docs/) folder:
 
-- **[Complete Project Information for AI Analysis](docs/TASK_DESCRIPTION.md)** - Comprehensive project overview for AI platforms
+- **[Complete Project Information](docs/TASK_DESCRIPTION.md)** - Comprehensive project overview and technical documentation
 - **[Quick Start (Russian)](docs/QUICK_START_RU.md)** - Быстрый старт для русскоязычных разработчиков
 - [Developer Guide](docs/DEVELOPER_GUIDE.md)
 - [Developer Guide (RU, plain text)](docs/DEVELOPER_GUIDE_RU.txt)

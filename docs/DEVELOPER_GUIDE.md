@@ -53,7 +53,9 @@ That’s usually enough — **GitHub Actions CI** will run additional steps:
 👉 Run **unit tests and build locally** before pushing.
 👉 Let **CI/CD (GitHub Actions)** handle static analysis (Checkstyle + PMD), coverage (JaCoCo + Codecov), and security (GitLeaks).
 
-This approach ensures fast, resource‑light local development, while CI validates everything in the cloud.
+This approach ensures fast, resource-light local development, while CI validates everything in the cloud.
+
+**Note**: Future authentication migration to Google OAuth2 is planned for all user roles (ADMIN, EDITOR, USER).
 
 ## ⚙️ Development Environment
 
