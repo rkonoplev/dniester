@@ -94,7 +94,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - **[Complete Project Information](docs/TASK_DESCRIPTION.md)** - Comprehensive project overview and technical documentation
 - **[Quick Start (Russian)](docs/QUICK_START_RU.md)** - Быстрый старт для русскоязычных разработчиков
 - [Developer Guide](docs/DEVELOPER_GUIDE.md)
-- [Developer Guide (RU, plain text)](docs/DEVELOPER_GUIDE_RU.txt)
+- [Developer Guide (RU)](docs/DEVELOPER_GUIDE_RU.md)
 - [Architecture Migration](docs/ARCHITECTURE_MIGRATION.md)
 - [Configuration Guide](docs/CONFIG_GUIDE.md)
 - [Authentication Guide](docs/AUTHENTICATION_GUIDE.md)
