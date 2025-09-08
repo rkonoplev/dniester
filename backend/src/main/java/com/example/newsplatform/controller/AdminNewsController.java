@@ -1,8 +1,8 @@
 package com.example.newsplatform.controller;
 
-import com.example.newsplatform.dto.NewsCreateRequest;
+import com.example.newsplatform.dto.NewsCreateRequestDto;
 import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequest;
+import com.example.newsplatform.dto.NewsUpdateRequestDto;
 import com.example.newsplatform.mapper.NewsMapper;
 import com.example.newsplatform.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class AdminNewsController {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     public ResponseEntity<NewsDto> create(@RequestBody @Valid NewsDto newsDto) {
-        NewsCreateRequest request = NewsMapper.newsDtoToCreateRequest(newsDto);
+        NewsCreateRequestDto request = NewsMapper.newsDtoToCreateRequest(newsDto);
         NewsDto created = newsService.create(request);
         // Return 201 Created instead of 200 OK
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -93,7 +93,7 @@ public class AdminNewsController {
     })
     public ResponseEntity<NewsDto> update(@PathVariable Long id, 
             @RequestBody @Valid NewsDto newsDto) {
-        NewsUpdateRequest request = NewsMapper.newsDtoToUpdateRequest(newsDto);
+        NewsUpdateRequestDto request = NewsMapper.newsDtoToUpdateRequest(newsDto);
         NewsDto updated = newsService.update(id, request);
         return ResponseEntity.ok(updated);
     }

@@ -1,8 +1,8 @@
 package com.example.newsplatform.service.impl;
 
-import com.example.newsplatform.dto.NewsCreateRequest;
+import com.example.newsplatform.dto.NewsCreateRequestDto;
 import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequest;
+import com.example.newsplatform.dto.NewsUpdateRequestDto;
 import com.example.newsplatform.entity.News;
 import com.example.newsplatform.entity.Term;
 import com.example.newsplatform.entity.User;
@@ -87,7 +87,7 @@ public class NewsServiceImpl implements NewsService {
      * @throws NotFoundException if the author or category does not exist
      */
     @Override
-    public NewsDto create(NewsCreateRequest request) {
+    public NewsDto create(NewsCreateRequestDto request) {
         News news = NewsMapper.fromCreateRequest(request);
 
         // Set author if provided
@@ -116,7 +116,7 @@ public class NewsServiceImpl implements NewsService {
      * @throws NotFoundException if the news, author, or category does not exist
      */
     @Override
-    public NewsDto update(Long id, NewsUpdateRequest request) {
+    public NewsDto update(Long id, NewsUpdateRequestDto request) {
         News existing = newsRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
 
