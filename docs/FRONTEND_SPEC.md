@@ -1,5 +1,21 @@
 # 📰 Frontend Technical Specification
 
+## 📑 Table of Contents
+- [1. General Objectives](#1-general-objectives)
+- [2. Technology Stack](#2-technology-stack)
+- [3. Layout & Pages](#3-layout--pages)
+    - [3.1 Homepage](#31-homepage)
+    - [3.2 Category Page](#32-category-page)
+    - [3.3 Article Page](#33-article-page)
+    - [3.4 Static Pages](#34-static-pages)
+- [4. Functionality](#4-functionality)
+    - [4.1 SEO & URLs](#41-seo--urls)
+    - [4.2 Responsive Design](#42-responsive-design)
+    - [4.3 Accessibility](#43-accessibility)
+    - [4.4 Theming & Branding](#44-theming--branding)
+- [5. Future Enhancements (Optional)](#5-future-enhancements-optional)
+
+
 ## 1. General Objectives
 - Develop a **modern, responsive news portal frontend**.  
 - Follow **Google News–inspired design principles**: clean, spacious, mobile-first, highly readable.  

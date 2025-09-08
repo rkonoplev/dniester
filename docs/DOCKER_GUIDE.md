@@ -1,5 +1,16 @@
 # 🐳 Docker Guide
 
+## 📑 Table of Contents
+- [🚀 Local Development with Docker Compose](#-local-development-with-docker-compose)
+- [🏭 Production Build with Docker](#-production-build-with-docker)
+    - [1. Build application JAR](#1-build-application-jar)
+    - [2. Build production Docker image](#2-build-production-docker-image)
+    - [3. Run production container](#3-run-production-container)
+    - [🔑 Secrets Management in Docker](#-secrets-management-in-docker)
+- [🆚 Local vs Production – Summary Table](#-local-vs-production--summary-table)
+- [✅ Best Practices](#-best-practices)
+
+
 This document explains how to work with Docker in the News Platform project, both for **local development** and **production deployment**.
 
 ---

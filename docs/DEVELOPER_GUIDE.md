@@ -1,5 +1,27 @@
 # Developer Guide – Local Workflow and CI/CD Expectations
 
+## 📑 Table of Contents
+- [🔹 Local Development Workflow](#-local-development-workflow)
+- [🔹 Before Pushing to GitHub](#-before-pushing-to-github)
+- [🔹 Summary](#-summary)
+- [⚙️ Development Environment](#️-development-environment)
+- [📦 Production Environment](#-production-environment)
+- [📚 Migration from Drupal 6](#-migration-from-drupal-6)
+- [Backend Layer Structure](#backend-layer-structure)
+- [🛡️ Code Quality & Security Tools](#️-code-quality--security-tools)
+    - [Local Analysis](#local-analysis)
+    - [Cloud Analysis](#cloud-analysis)
+    - [Security](#security)
+- [🧑‍💻 Common Development Commands](#-common-development-commands)
+- [🚀 Running the Project](#-running-the-project)
+    - [🟢 Option A. Run only the database (MySQL check)](#-option-a-run-only-the-database-mysql-check)
+    - [🟢 Option B. Run the full stack (Spring Boot + MySQL)](#-option-b-run-the-full-stack-spring-boot--mysql)
+    - [✅ Quick TL;DR](#-quick-tldr)
+- [🔁 Daily Workflow](#-daily-workflow)
+- [🛠️ MySQL Handy Commands Cheat Sheet](#️-mysql-handy-commands-cheat-sheet)
+- [📂 Database Schema](#-database-schema)
+
+
 This document explains how developers should work with the project locally
 (IntelliJ IDEA, Gradle, Docker), and what checks will be automatically run in GitHub Actions (CI/CD).
 
