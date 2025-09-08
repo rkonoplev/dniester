@@ -5,7 +5,77 @@ This guide covers migrating from Drupal 6 to the modern News Platform (Spring Bo
 
 **Process:** Drupal 6 dump → MySQL 5.7 container → normalize with SQL scripts → MySQL 8.0
 
----
+## SHORT VERSION
+
+## 📚 Migration from Drupal 6
+### Summary
+Drupal 6 dump (drupal6_working.sql) is imported into a temporary MySQL 5.7 container.
+Then data is normalized into clean schema with migration SQL scripts.
+Finally, the normalized dump clean_schema.sql is loaded into MySQL 8.0 for News Platform.
+
+### Migration Flow
+**1. Start MySQL 5.7 (for Drupal 6 dump):**
+
+```bash
+docker compose -f docker-compose.drupal.yml up -d
+docker logs -f news-mysql-drupal6
+```
+**2. Export old schema and re-import into dniester:**
+
+```bash
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
+```
+**3. Run migration scripts:**
+
+```bash
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_cck_fields.sql
+```
+**4. Export normalized schema:**
+
+```bash
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
+```
+**5. Start MySQL 8.0 (target):**
+
+```bash
+docker compose -f docker-compose.yml up -d mysql
+docker logs news-mysql
+```
+If root doesn’t work, fix root password using --skip-grant-tables (see docs/MIGRATION_DRUPAL6_TO_NEWSPLATFORM.md).
+
+**6. Import final schema into MySQL 8.0:**
+
+```bash
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+```
+Verify:
+
+```bash
+docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+
+## ✅ TL;DR Commands
+```bash
+# 1. Start MySQL 8.0
+docker compose -f docker-compose.yml up -d mysql
+docker logs news-mysql
+
+# 2. If root auth issue → reset password manually via skip-grant-tables
+# (See full doc under docs/MIGRATION_DRUPAL6.md)
+
+# 3. Import normalized schema
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+
+# 4. Verify that schema and data are present
+docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+
+## FULL VERSION
+
 
 ## ⚡ Quick Start (TL;DR)
 
@@ -84,7 +154,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
    docker compose -f docker-compose.drupal.yml up -d
    docker logs -f news-mysql-drupal6
    ```
-   Login:
+Login:
 
 ```bash
 docker exec -it news-mysql-drupal6 mysql -u root -p
@@ -125,7 +195,7 @@ source db_data/migrate_cck_fields.sql; -- optional
    ```
 
 ### 4. Setup MySQL 8.0 target
-   Important: if MySQL 8.0 was already initialized incorrectly, reset it.
+Important: if MySQL 8.0 was already initialized incorrectly, reset it.
 
 ```bash
 docker compose -f docker-compose.yml down -v
@@ -140,7 +210,7 @@ In logs you should see:
 ```
 
 ### 5. Fix MySQL 8.0 root password (if needed)
-   If root is created with empty password/socket auth in MySQL 8.0:
+If root is created with empty password/socket auth in MySQL 8.0:
 
 ```bash
 # Stop container
@@ -277,7 +347,7 @@ Taxonomy terms and mapping table for content↔terms.
 If you encounter errors like:
 ERROR 1366 (HY000): Incorrect string value: '\xD0\x98\xD0\xBD...' for column 'title'
 
-it means that MySQL created your target table with the wrong default collation (latin1). 
+it means that MySQL created your target table with the wrong default collation (latin1).
 By default MySQL 5.7 uses `latin1` unless explicitly specified.
 
 #### Step 1. Check table encoding
