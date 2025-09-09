@@ -1,24 +1,24 @@
 # 🚀 Migration Guide: Drupal 6 → News Platform
 
 ## 📑 Table of Contents
-- [Overview](#-overview)
+- [📋 Overview](#-overview)
 - [Short Version](#short-version)
-- [Migration from Drupal 6](#-migration-from-drupal-6)
+- [📚 Migration from Drupal 6](#-migration-from-drupal-6)
     - [Summary](#summary)
     - [Migration Flow](#migration-flow)
-- [TL;DR Commands](#-tldr-commands)
-- [Quick Start (TL;DR)](#-quick-start-tldr)
-- [Complete Migration Guide](#-complete-migration-guide)
+- [✅ TL;DR Commands](#-tldr-commands)
+- [⚡ Quick Start (TL;DR)](#-quick-start-tldr)
+- [📋 Complete Migration Guide](#-complete-migration-guide)
     - [Step 1: Start MySQL 5.7](#step-1-start-mysql-57-for-drupal-6-dump)
     - [Step 2: Export and normalize data](#step-2-export-and-normalize-data)
     - [Step 3: Export final schema](#step-3-export-final-schema)
     - [Step 4: Setup MySQL 80 target](#step-4-setup-mysql-80-target)
     - [Step 5: Import into MySQL 80](#step-5-import-into-mysql-80)
     - [Step 6: Verify migration](#step-6-verify-migration)
-- [Detailed Migration Steps](#-detailed-migration-steps)
-- [Database Schema Mapping](#-database-schema-mapping)
-- [Troubleshooting](#-troubleshooting)
-- [Reference](#-reference)
+- [🔧 Detailed Migration Steps](#-detailed-migration-steps)
+- [📊 Database Schema Mapping](#-database-schema-mapping)
+- [🔧 Troubleshooting](#-troubleshooting)
+- [📄 Reference](#-reference)
 
 
 ## 📋 Overview
@@ -417,6 +417,18 @@ LEFT JOIN a264971_dniester.node_revisions nr ON n.vid = nr.vid;
 ---
 
 ## 📄 Reference
+
+### Legacy Files Relocation
+
+After successful migration completion, several files that were used during the migration process have been moved to the `legacy/` folder for historical reference:
+
+- **`DatabaseProperties.java`** - Custom database configuration class used during migration with extended timeouts and connection pool settings
+- **`Makefile`** - Legacy API testing utility with outdated endpoints (replaced by `docs/API_USAGE.md`)
+- **`docker-compose.drupal.yml`** - Temporary Docker setup for MySQL 5.7 compatibility with Drupal 6 dumps
+- **`docker-compose.override.yml`** - Production Docker configuration with security enhancements
+- **`ExampleTest.java`** - Initial placeholder test file from early development
+
+These files are preserved for educational purposes and understanding the migration evolution. See `legacy/README.md` for detailed descriptions.
 
 ### Migration SQL Files
 
