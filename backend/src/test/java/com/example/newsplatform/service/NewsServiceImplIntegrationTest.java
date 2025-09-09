@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Integration test for NewsService.
@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 })
 @ActiveProfiles("test")
 @Transactional
+@Rollback
 public class NewsServiceImplIntegrationTest {
 
     @Autowired
@@ -74,9 +75,10 @@ public class NewsServiceImplIntegrationTest {
         newsService.delete(newsId);
 
         // Verify that news is not found after deletion
-        assertThrows(NotFoundException.class,
+        NotFoundException exception = assertThrows(NotFoundException.class,
                 () -> newsService.getPublishedById(newsId),
                 "News should be deleted and not found"
         );
+        assertEquals("News not found with id " + newsId, exception.getMessage());
     }
 }
