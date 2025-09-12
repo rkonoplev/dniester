@@ -86,7 +86,7 @@ This document outlines the technical requirements for the News Platform admin pa
 
 ### 6.3 Authentication Security
 - **Current authentication:** Spring Security with Basic Auth
-- **Planned migration:** Google OAuth2 for all roles (ADMIN, EDITOR, USER)
+- **Planned migration:** OAuth 2.0 + 2FA for all roles (ADMIN, EDITOR, USER)
 - **Password management:** Managed separately from user profile data
 - **Admin access:** Controlled through application configuration, not user self-registration
 

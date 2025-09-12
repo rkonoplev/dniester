@@ -23,7 +23,7 @@ This document provides the technical specification for the **News Platform** pro
 ## 1. Project Summary
 The **News Platform** is a complete modern news publishing system consisting of:
 - **Backend:** Spring Boot REST API for content management and delivery
-- **Frontend:** Next.js React application with Material UI (planned)
+- **Frontend:** Angular application with Angular Universal (planned)
 
 Designed to replace the legacy Drupal 6.0 stack with modern architecture for scalability and security.
 
@@ -102,19 +102,19 @@ The system provides:
 | Area              | Backend Technology | Frontend Technology |
 |-------------------|-------------------|--------------------|
 | Language          | Java 21 | TypeScript/JavaScript |
-| Framework         | Spring Boot | Next.js (React) |
-| UI Library        | - | Material UI (MUI) |
+| Framework         | Spring Boot | Angular with Angular Universal |
+| UI Library        | - | Angular Material |
 | Database          | MySQL 8 (migrated from Drupal 6 DB) | - |
 | ORM               | Hibernate / JPA | - |
 | Build Tool        | Gradle | npm/yarn |
 | API Docs          | OpenAPI / Swagger (springdoc) | - |
-| Security          | Spring Security + Basic Auth | - |
+| Security          | Spring Security + Basic Auth (OAuth 2.0 + 2FA planned) | - |
 | Rate Limiting     | Bucket4j (IP-based) | - |
-| Deployment        | Docker + Render (PaaS) | Vercel/Netlify (planned) |
+| Deployment        | Docker + Render (PaaS) | Angular Universal SSR (planned) |
 | CI/CD             | GitHub Actions | GitHub Actions |
 | Code Quality      | JaCoCo | ESLint, Prettier |
 | Static Checks     | Checkstyle, PMD | TypeScript |
-| Testing           | JUnit 5, Testcontainers (planned) | Jest, React Testing Library |
+| Testing           | JUnit 5, Testcontainers (planned) | Jasmine, Karma, Angular Testing Library |
 
 ---
 

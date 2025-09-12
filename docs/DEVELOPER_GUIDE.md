@@ -77,7 +77,7 @@ That’s usually enough — **GitHub Actions CI** will run additional steps:
 
 This approach ensures fast, resource-light local development, while CI validates everything in the cloud.
 
-**Note**: Future authentication migration to Google OAuth2 is planned for all user roles (ADMIN, EDITOR, USER).
+**Note**: Future authentication migration to OAuth 2.0 + 2FA is planned for all user roles (ADMIN, EDITOR, USER).
 
 ## ⚙️ Development Environment
 

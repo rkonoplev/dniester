@@ -29,7 +29,7 @@ This document explains the authentication architecture and security practices fo
 | EDITOR  | Content management, limited access    | `/api/admin/news/**`        |
 | USER    | Read-only access to published content | `/api/public/**`            |
 
-**Note**: PUBLIC role will be replaced with USER role in future Google OAuth2 migration.
+**Note**: PUBLIC role will be replaced with USER role in future OAuth 2.0 + 2FA migration.
 
 ---
 
@@ -112,9 +112,9 @@ curl http://localhost:8080/api/public/news?size=10
 ## 🔄 Future Enhancements
 
 ### Planned Features
-- **Google OAuth2 migration**: Replace Basic Auth with Google Sign-In for all roles (ADMIN, EDITOR, USER)
+- **OAuth 2.0 + 2FA migration**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for all roles (ADMIN, EDITOR, USER)
 - **JWT tokens** for stateless authentication
-- **Multi-factor authentication** (MFA)
+- **Two-factor authentication** (2FA) for enhanced security
 - **API key authentication** for service-to-service calls
 - **Audit logging** for authentication events
 

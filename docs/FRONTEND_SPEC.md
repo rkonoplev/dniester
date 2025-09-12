@@ -25,9 +25,9 @@
 ---
 
 ## 2. Technology Stack
-- **Framework:** Next.js (React, supports SSR/SSG for SEO and performance).  
-- **UI Library:** Material UI (MUI).  
-- **Styling:** Custom Material theme (overrides for branding, typography, and colors).  
+- **Framework:** Angular with Angular Universal (supports SSR for SEO and performance).  
+- **UI Library:** Angular Material.  
+- **Styling:** Custom Angular Material theme (overrides for branding, typography, and colors).  
 - **Typography:** Roboto (base) + Roboto Slab / Serif for article headlines.  
 
 ---
@@ -64,7 +64,7 @@
 ### 4.1 SEO & URLs
 - Static, human-readable URLs for articles (`/node/{id}` format, e.g., `/node/15378`).  
 - Category pages: `/category/{id}` (e.g., `/category/5` for politics).  
-- SSR/SSG for indexable content.  
+- SSR for indexable content via Angular Universal.  
 - JSON-LD structured data (`NewsArticle` schema).  
 
 ### 4.2 Responsive Design
