@@ -37,7 +37,7 @@ This directory contains all project documentation, organized into specific guide
   Functional and non-functional requirements, architecture layers, technology stack, and planned future enhancements.
 
 - [Frontend Specification](./FRONTEND_SPEC.md)  
-  Frontend technical specification with Next.js, Material UI, responsive design, SEO requirements, and theming guidelines.
+  Frontend technical specification with Angular, Angular Material, responsive design, SEO requirements, and theming guidelines.
 
 - [Admin Panel Specification](./ADMIN_PANEL_SPEC.md)  
   Technical requirements for the admin panel interface including role management, news management, taxonomy terms, bulk actions, and security validation.

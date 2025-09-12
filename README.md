@@ -7,7 +7,7 @@
 Monorepo for a modern news publishing platform.
 
 Back end: Spring Boot  
-Front end: Next.js (React)  
+Front end: Angular with Angular Universal  
 Database: MySQL
 
 ## 📑 Table of Contents
@@ -26,7 +26,7 @@ Database: MySQL
 | `news-platform/`       | Root directory of the project      |
 | `├── backend/`         | Spring Boot app (Java 21)          |
 | `│   ├── src/`         | Source code for the backend        |
-| `├── frontend/`        | Next.js app (planned)              |
+| `├── frontend/`        | Angular app (planned)              |
 | `│   ├── src/`         | Source code for the frontend       |
 | `│   └── package.json` | Package configuration for frontend |
 | `└── docs/`            | Documentation                      |
@@ -62,7 +62,7 @@ API entrypoint: http://localhost:8080
 ## 📌 Key Features
 
 - **Database**: MySQL 8.0 as primary database with H2 for tests
-- **Security**: Spring Security with Basic Auth (Google OAuth2 planned for ADMIN, EDITOR, USER roles)
+- **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned for ADMIN, EDITOR, USER roles)
 - **API**: RESTful endpoints with OpenAPI/Swagger documentation
 - **Pagination**: Term-based filtering with configurable page sizes
 - **Content Management**: Full CRUD operations for news articles
@@ -74,9 +74,9 @@ API entrypoint: http://localhost:8080
 
 ## 🌐 Frontend Stack (Planned)
 
-- Next.js (React) with Material UI for Google News–inspired design  
+- Angular with Angular Universal for Google News–inspired design  
 - Responsive, mobile-first layout with clean grid system  
-- Static SEO-friendly URLs for all articles (SSR/SSG enabled)  
+- Static SEO-friendly URLs for all articles (SSR enabled)  
 - Structured data (JSON-LD) + OpenGraph metadata for search engines  
 - Branding with custom color palette (dark blue, red, white) and typography  
 - Planned enhancements: search, dark mode, push notifications
@@ -85,7 +85,7 @@ API entrypoint: http://localhost:8080
 ```bash
 cd frontend
 npm install
-npm run dev
+npm start
 ```
 
 ## 📖 Documentation

@@ -3,7 +3,7 @@
 ## Project Overview
 **Name**: News Platform  
 **Type**: Modern news publishing platform (monorepo)  
-**Migration**: Drupal 6 → Spring Boot + Next.js  
+**Migration**: Drupal 6 → Spring Boot + Angular  
 **Status**: Backend production-ready, Frontend planned  
 
 ## Technology Stack
@@ -12,16 +12,16 @@
 - **Framework**: Spring Boot 3.x
 - **Language**: Java 21
 - **Database**: MySQL 8.0 (H2 for tests)
-- **Security**: Spring Security with Basic Auth (Google OAuth2 planned)
+- **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned)
 - **API**: REST with OpenAPI/Swagger documentation
 - **Build**: Gradle 8.7
 - **Testing**: JUnit 5, Integration tests with H2
 - **Migration**: Flyway (disabled in favor of Hibernate DDL)
 
 ### Frontend (Planned)
-- **Framework**: Next.js (React) with Material UI
+- **Framework**: Angular with Angular Universal
 - **Design**: Google News–inspired responsive layout
-- **SEO**: Static URLs, SSR/SSG, JSON-LD, OpenGraph metadata
+- **SEO**: Static URLs, SSR, JSON-LD, OpenGraph metadata
 - **Branding**: Custom color palette (dark blue, red, white)
 - **Features**: Search, dark mode, push notifications (planned)
 
@@ -51,7 +51,7 @@ news-platform/
 │   │   ├── application*.yml  # Environment configurations
 │   │   └── static/           # Static resources
 │   └── src/test/             # Unit + Integration tests
-├── frontend/                  # Future Next.js application
+├── frontend/                  # Future Angular application
 ├── docs/                     # Documentation
 ├── .github/workflows/        # CI/CD pipelines
 ├── docker-compose.yml        # Development environment
@@ -212,8 +212,8 @@ news-platform/
 - Performance optimizations
 
 ### Planned 📋
-- **Frontend**: Next.js with Material UI
-- **Authentication**: Google OAuth2 for ADMIN, EDITOR, USER roles
+- **Frontend**: Angular with Angular Universal
+- **Authentication**: OAuth 2.0 + 2FA for ADMIN, EDITOR, USER roles
 - **Features**: Advanced search, file uploads, push notifications
 - **Production**: Deployment and monitoring setup
 
@@ -221,7 +221,7 @@ news-platform/
 
 ### Security
 - CORS configuration needs refinement for production
-- **Google OAuth2 migration planned**: Replace Basic Auth with Google Sign-In for ADMIN, EDITOR, USER roles
+- **OAuth 2.0 + 2FA migration planned**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for ADMIN, EDITOR, USER roles
 - Input validation and sanitization improvements
 
 ### Performance
