@@ -98,5 +98,11 @@ config-local.yml
 /db_dumps/*
 !db_dumps/README.md      # allow a readme with description
 
-# Ignore Docker named volume directory (if you ever mount to a local path)
-db_data/
+# Database files - exclude large data files, allow migration scripts
+/db_data/clean_schema.sql
+/db_data/drupal6_fixed.sql
+# Allow small migration scripts and README
+!/db_data/README.md
+!/db_data/detect_custom_fields.sql
+!/db_data/migrate_cck_fields.sql
+!/db_data/migrate_from_drupal6_universal.sql
