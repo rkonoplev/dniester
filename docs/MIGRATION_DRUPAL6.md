@@ -434,6 +434,8 @@ These files are preserved for educational purposes and understanding the migrati
 
 During the migration process several SQL scripts have been created and used. Each has a specific purpose:
 
+For detailed information about all migration scripts and files, see [Database Migration Scripts](../db_data/README.md).
+
 - **drupal6_fixed.sql**  
   Cleaned snapshot of the original Drupal 6 database (`a264971_dniester`) imported into the temporary MySQL 5.7 instance.  
   Purpose: normalize database name and ensure compatibility for further migration steps.
