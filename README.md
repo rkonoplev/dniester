@@ -107,6 +107,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Migration Drupal6 → News Platform (EN)](docs/MIGRATION_DRUPAL6.md)
 - [Migration Drupal6 → News Platform (RU)](docs/MIGRATION_DRUPAL6_RU.md)
 - [Database Schema](docs/DATABASE_SCHEMA.md)
+- [Database Migration Scripts](db_data/README.md)
 - [Rate Limiting Guide](docs/RATE_LIMITING.md)
 ---
 ## ⚙️ Environment Setup
