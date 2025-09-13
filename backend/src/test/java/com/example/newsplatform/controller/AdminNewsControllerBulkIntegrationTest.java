@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureWebMvc
 @ActiveProfiles("test")
-class AdminNewsControllerBulkTest {
+class AdminNewsControllerBulkIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
