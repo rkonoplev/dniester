@@ -53,18 +53,24 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 1. **Authentication Architecture**
     - **Basic Auth** with environment-based credentials (no database storage)
-    - **Role-based access**: ADMIN and EDITOR roles
+    - **Two-role system**: ADMIN (full access) and EDITOR (own content only)
     - **BCrypt password encoding** for secure credential storage
-    - **Multi-user support** through environment variables
+    - **Author-based authorization** for EDITOR role
     - Credentials never stored in application code or database entities
+    - **Implementation details**: See [Role Security Implementation Guide](ROLE_SECURITY_IMPLEMENTATION.md)
 
-2. **Authentication Usage**
+2. **Role-Based Authentication Usage**
     ```bash
-    # Admin access
+    # Admin access - full system access
     curl -u admin:securepassword http://localhost:8080/api/admin/news
     
-    # Editor access
+    # Editor access - own content only
     curl -u editor:editorpass http://localhost:8080/api/admin/news
+    # Can view all but only edit/delete own authored content
+    
+    # Editor attempting to edit others' content
+    curl -u editor:editorpass -X PUT http://localhost:8080/api/admin/news/123
+    # Returns 403 Forbidden if not the author
     ```
 
 3. **Environment Variables for Auth**

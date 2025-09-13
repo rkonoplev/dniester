@@ -80,11 +80,15 @@ The system provides:
 ### 4.2 Admin API (Rate Limited: 50 req/min per IP)
 - Secure access with Basic Authentication.
 - Role-based authorization:
-    - **ADMIN** → full access to all endpoints.
+    - **ADMIN** → full access to all endpoints and content
+    - **EDITOR** → content management restricted to own authored articles
 - CRUD functionality:
-    - Articles (create, read, update, delete)
-    - Published/unpublished content management
-- Actions: **Publish/Unpublish** articles.
+    - **ADMIN**: All articles (create, read, update, delete)
+    - **EDITOR**: Own articles only (create, read own, update own, delete own)
+- Publication control:
+    - **ADMIN**: Publish/unpublish any article
+    - **EDITOR**: Publish/unpublish own articles only
+- Author-based security validation at service layer
 - Stricter rate limiting for security.
 
 ---

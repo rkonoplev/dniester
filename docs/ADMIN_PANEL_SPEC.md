@@ -6,23 +6,37 @@ This document outlines the technical requirements for the News Platform admin pa
 
 ## 1. Roles and Permissions
 
-### 1.1 Role Management Page
-- **View and edit roles** of administrators and editors
-- **Pagination** for large user lists
-- **Link to user creation page** for adding new authors or admins
-- **User creation form** with username and email (authentication handled separately by system administrators)
+### 1.1 Role-Based Access Control
+
+The News Platform uses a two-role system: **ADMIN** (full access) and **EDITOR** (own content only).
+
+**Implementation Details**: See [Role Security Implementation Guide](./ROLE_SECURITY_IMPLEMENTATION.md) for complete security requirements and code examples.
+
+### 1.2 UI Security Enforcement
+- **Role-based interface** - UI elements shown/hidden based on user role and content ownership
+- **Real-time validation** - backend security checks prevent unauthorized operations
 
 ---
 
 ## 2. News Management
 
 ### 2.1 News List Page
+
+#### For ADMIN Users
 - **Paginated list** of all news items
-- **Action buttons** for each news item:
+- **Full action buttons** for each news item:
   - **Create News** - Navigate to creation form
-  - **Edit News** - Navigate to editing form
-  - **Delete News** - Remove news item with confirmation
-  - **Unpublish** - Change publication status
+  - **Edit News** - Navigate to editing form (any article)
+  - **Delete News** - Remove any news item with confirmation
+  - **Publish/Unpublish** - Change publication status (any article)
+
+#### For EDITOR Users
+- **Paginated list** of all news items (read-only view for others' content)
+- **Limited action buttons** based on authorship:
+  - **Create News** - Navigate to creation form
+  - **Edit News** - Only available for own articles
+  - **Delete News** - Only available for own articles with confirmation
+  - **Publish/Unpublish** - Only available for own articles
 
 ---
 
@@ -38,14 +52,16 @@ This document outlines the technical requirements for the News Platform admin pa
 
 ## 4. Bulk Actions
 
-### 4.1 System-wide Bulk Operations
-- **Bulk delete/unpublish** all site content (except main administrator)
-- **Bulk role management** (delete all user roles except main administrator)
+### 4.1 ADMIN-Only Bulk Operations
+- **Bulk delete/unpublish** all site content
+- **Bulk role management** (manage user roles)
+- **System-wide operations** with confirmation dialogs
 
-### 4.2 Content Filtering Bulk Operations
-- **Bulk selection by term** - Select content matching specific taxonomy term
-- **Bulk selection by author** - Select content by specific author
-- **Confirmation step** required before final deletion for all bulk operations
+### 4.2 EDITOR Bulk Operations (Restricted)
+- **Bulk selection** - only own authored content
+- **Bulk publish/unpublish** - only own articles
+- **No system-wide operations** - cannot affect other users' content
+- **Confirmation step** required for all bulk operations on own content
 
 ---
 
