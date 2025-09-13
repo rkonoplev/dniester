@@ -118,4 +118,29 @@ public class AdminNewsController {
         newsService.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    /**
+     * Perform bulk operations on news articles.
+     * RESTRICTION: Only ADMIN role can perform bulk operations.
+     * EDITOR role is limited to single article operations only.
+     *
+     * @param request bulk action request (delete/unpublish with filters)
+     * @param authentication current user authentication
+     * @return 204 No Content if successful
+     */
+    @PostMapping("/bulk")
+    @Operation(summary = "Bulk operations on articles", 
+            description = "Perform bulk delete or unpublish operations. " +
+                    "RESTRICTED: Only ADMIN role allowed. EDITOR cannot perform bulk operations.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "204", description = "Bulk operation completed successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied - EDITOR role cannot perform bulk operations"),
+            @ApiResponse(responseCode = "400", description = "Invalid request or operation not confirmed")
+    })
+    public ResponseEntity<Void> performBulkAction(
+            @RequestBody @Valid com.example.newsplatform.dto.BulkActionRequestDto request,
+            Authentication authentication) {
+        newsService.performBulkAction(request, authentication);
+        return ResponseEntity.noContent().build();
+    }
 }

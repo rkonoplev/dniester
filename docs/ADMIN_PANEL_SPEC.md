@@ -56,12 +56,16 @@ The News Platform uses a two-role system: **ADMIN** (full access) and **EDITOR**
 - **Bulk delete/unpublish** all site content
 - **Bulk role management** (manage user roles)
 - **System-wide operations** with confirmation dialogs
+- **Bulk selection by term** - Select content matching specific taxonomy term
+- **Bulk selection by author** - Select content by specific author
+- **Bulk selection by IDs** - Select specific articles by ID list
 
-### 4.2 EDITOR Bulk Operations (Restricted)
-- **Bulk selection** - only own authored content
-- **Bulk publish/unpublish** - only own articles
-- **No system-wide operations** - cannot affect other users' content
-- **Confirmation step** required for all bulk operations on own content
+### 4.2 EDITOR Bulk Operations (RESTRICTED)
+- **NO BULK OPERATIONS ALLOWED** - EDITOR role is restricted to single article operations only
+- **Single article delete** - Can only delete one article at a time (own content)
+- **Single article publish/unpublish** - Can only modify one article at a time (own content)
+- **Security enforcement** - Backend prevents EDITOR from accessing bulk operation endpoints
+- **UI restriction** - Bulk operation buttons hidden/disabled for EDITOR role
 
 ---
 

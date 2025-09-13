@@ -15,7 +15,7 @@ This directory contains SQL scripts and database files used for migrating from D
   - Establishes foreign key relationships
   - Unifies all node types into single `content` table
 - **Usage**: Run after importing Drupal 6 data into temporary database
-- **Educational Value**: Shows complete schema transformation approach
+- **Technical Value**: Shows complete schema transformation approach
 
 #### `migrate_cck_fields.sql` (1.7K)
 - **Purpose**: Handles Drupal 6 CCK (Content Construction Kit) custom fields
@@ -25,7 +25,7 @@ This directory contains SQL scripts and database files used for migrating from D
   - Generates INSERT statements for custom_fields table
   - Preserves field data in normalized format
 - **Usage**: Run after main migration to handle custom content fields
-- **Educational Value**: Demonstrates dynamic SQL generation for field migration
+- **Technical Value**: Demonstrates dynamic SQL generation for field migration
 
 #### `detect_custom_fields.sql` (212B)
 - **Purpose**: Discovery script for Drupal 6 CCK fields
@@ -34,7 +34,7 @@ This directory contains SQL scripts and database files used for migrating from D
   - Lists all `content_type_*` tables
   - Shows column structure of custom content types
 - **Usage**: Run on Drupal 6 database to understand field structure
-- **Educational Value**: Shows database introspection techniques
+- **Technical Value**: Shows database introspection techniques
 
 ### Data Files (Excluded from Git)
 
@@ -82,7 +82,7 @@ The migration process follows this sequence:
    SELECT COUNT(*) FROM terms;
    ```
 
-## 🎓 Educational Purpose
+## 🔧 Technical Implementation
 
 These scripts demonstrate:
 
@@ -96,7 +96,7 @@ These scripts demonstrate:
 ## 🔒 Privacy & Security
 
 - **No Personal Data**: Large database files excluded from public repository
-- **Educational Scripts Only**: Only migration logic shared publicly
+- **Migration Scripts Only**: Only migration logic shared publicly
 - **Sanitized Examples**: Sample field names and structures shown
 - **No Credentials**: No database passwords or connection strings included
 
@@ -110,5 +110,5 @@ These scripts demonstrate:
 
 - Scripts reference `a264971_dniester` database - update for your environment
 - Large data files must be obtained separately for local development
-- Migration scripts are educational examples, adapt for production use
+- Migration scripts are reference examples, adapt for production use
 - Always backup databases before running migration scripts

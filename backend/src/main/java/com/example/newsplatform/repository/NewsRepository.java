@@ -92,4 +92,31 @@ public interface NewsRepository extends JpaRepository<News, Long> {
                OR LOWER(n.body) LIKE LOWER(CONCAT('%', :search, '%')))
         """)
     Page<News> searchAllByAuthor(String search, String category, Long authorId, Pageable pageable);
+
+    // Bulk operation methods - ADMIN only
+    
+    /**
+     * Get all article IDs for bulk operations.
+     */
+    @Query("SELECT n.id FROM News n")
+    java.util.List<Long> findAllIds();
+
+    /**
+     * Get article IDs by term ID for bulk operations.
+     */
+    @Query("SELECT DISTINCT n.id FROM News n JOIN n.terms t WHERE t.id = :termId")
+    java.util.List<Long> findIdsByTermId(Long termId);
+
+    /**
+     * Get article IDs by author ID for bulk operations.
+     */
+    @Query("SELECT n.id FROM News n WHERE n.author.id = :authorId")
+    java.util.List<Long> findIdsByAuthorId(Long authorId);
+
+    /**
+     * Bulk unpublish articles by IDs.
+     */
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("UPDATE News n SET n.published = false WHERE n.id IN :ids")
+    void unpublishByIds(java.util.List<Long> ids);
 }
