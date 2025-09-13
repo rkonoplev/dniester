@@ -134,7 +134,8 @@ public class AdminNewsController {
                     "RESTRICTED: Only ADMIN role allowed. EDITOR cannot perform bulk operations.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Bulk operation completed successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied - EDITOR role cannot perform bulk operations"),
+            @ApiResponse(responseCode = "403", 
+                    description = "Access denied - EDITOR role cannot perform bulk operations"),
             @ApiResponse(responseCode = "400", description = "Invalid request or operation not confirmed")
     })
     public ResponseEntity<Void> performBulkAction(
