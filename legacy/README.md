@@ -60,7 +60,7 @@ These files were part of the migration and early development process from a lega
 
 - **Migration-era Spring Boot classes** (custom database properties)
 
-They are preserved here for educational purposes and to help developers understand the migration approach and evolution of the project.
+They are preserved here for reference and to help developers understand the migration approach and evolution of the project.
 
 ## Current Development
 

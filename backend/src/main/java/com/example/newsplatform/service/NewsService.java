@@ -32,4 +32,12 @@ public interface NewsService {
      * Get published news by multiple term IDs with pagination.
      */
     Page<NewsDto> getPublishedByTermIds(java.util.List<Long> termIds, Pageable pageable);
+
+    /**
+     * Perform bulk operations on news articles.
+     * Only ADMIN role can perform bulk delete operations.
+     * EDITOR role is restricted to single article operations only.
+     */
+    void performBulkAction(com.example.newsplatform.dto.BulkActionRequestDto request, 
+                          org.springframework.security.core.Authentication auth);
 }

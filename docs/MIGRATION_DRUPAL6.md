@@ -428,7 +428,7 @@ After successful migration completion, several files that were used during the m
 - **`docker-compose.override.yml`** - Production Docker configuration with security enhancements
 - **`ExampleTest.java`** - Initial placeholder test file from early development
 
-These files are preserved for educational purposes and understanding the migration evolution. See `legacy/README.md` for detailed descriptions.
+These files are preserved for reference and understanding the migration evolution. See `legacy/README.md` for detailed descriptions.
 
 ### Migration SQL Files
 
