@@ -150,6 +150,33 @@ The system provides:
     - Production deploy on Render.
     - Secrets injected via environment variables or secret files.
 
+### Testing Strategy
+
+#### Unit Tests
+- **Mappers**: Entity ↔ DTO conversion
+- **Services**: Business logic validation including bulk operations
+- **BulkOperationsTest**: Role-based access control for bulk operations
+- **Controllers**: Endpoint behavior (selective)
+
+#### Integration Tests
+- **Database**: H2 in-memory with MySQL mode
+- **Repository**: Custom query methods and bulk operations
+- **NewsRepositoryBulkIntegrationTest**: Bulk query methods testing
+- **Security**: Isolated test configuration
+- **Transactions**: `@Transactional` for cleanup
+
+#### Test Configuration
+- **Profiles**: Separate test profile with H2
+- **Security**: Overridden with permissive config
+- **Data**: Auto-generated test entities
+- **Disabled Tests**: Controller integration tests for bulk operations (tested at service layer)
+
+#### Test Coverage Notes
+- **Bulk Operations**: Fully tested at service and repository layers
+- **Role Restrictions**: ADMIN vs EDITOR access control verified
+- **Controller Layer**: Thin HTTP adapter, core logic tested in service layer
+- **Future**: Controller integration tests will be re-enabled with OAuth 2.0 + 2FA implementation
+
 ---
 
 ## 9. Future Enhancements
