@@ -361,4 +361,47 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 **Проверить логи приложения:**
 ```bash
 docker logs -f news-app
+```/clean_schema.sql
+```
+
+**Проверить содержимое:**
+```bash
+docker exec -it news-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+
+### 🔹 ВАРИАНТ Б — полное окружение (MySQL + backend Spring Boot)
+
+**Убедиться, что создан файл .env.dev с настройками:**
+```bash
+MYSQL_ROOT_PASSWORD=root
+MYSQL_DATABASE=dniester
+SPRING_LOCAL_PORT=8080
+SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+SPRING_DATASOURCE_USERNAME=root
+SPRING_DATASOURCE_PASSWORD=root
+```
+
+**Запустить сервисы:**
+```bash
+docker compose --env-file .env.dev up -d
+```
+
+**В итоге:**
+- news-mysql → база MySQL 8 с данными
+- news-app → приложение Spring Boot
+
+**При необходимости импортировать базу:**
+```bash
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+```
+
+**Проверить базу:**
+```bash
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+```
+
+**Проверить логи приложения:**
+```bash
+docker logs -f news-app
 ```
