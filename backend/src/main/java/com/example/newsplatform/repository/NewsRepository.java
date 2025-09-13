@@ -66,4 +66,30 @@ public interface NewsRepository extends JpaRepository<News, Long> {
         ORDER BY n.publicationDate DESC
         """)
     Page<News> findPublishedByTermIds(java.util.List<Long> termIds, Pageable pageable);
+
+    /**
+     * Find news by author ID (for EDITOR role).
+     */
+    Page<News> findByAuthorId(Long authorId, Pageable pageable);
+
+    /**
+     * Check if user is author of specific article.
+     */
+    boolean existsByIdAndAuthorId(Long id, Long authorId);
+
+
+
+    /**
+     * Search with author filter for EDITOR role.
+     */
+    @Query("""
+        SELECT DISTINCT n FROM News n
+        LEFT JOIN n.terms t
+        WHERE (:authorId IS NULL OR n.author.id = :authorId)
+          AND (:category IS NULL OR LOWER(t.name) = LOWER(:category))
+          AND (:search IS NULL
+               OR LOWER(n.title) LIKE LOWER(CONCAT('%', :search, '%'))
+               OR LOWER(n.body) LIKE LOWER(CONCAT('%', :search, '%')))
+        """)
+    Page<News> searchAllByAuthor(String search, String category, Long authorId, Pageable pageable);
 }
