@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DataJpaTest
 @ActiveProfiles("test")
-class NewsRepositoryBulkTest {
+class NewsRepositoryBulkIntegrationTest {
 
     @Autowired
     private TestEntityManager entityManager;
