@@ -98,6 +98,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Architecture Migration](docs/ARCHITECTURE_MIGRATION.md)
 - [Configuration Guide](docs/CONFIG_GUIDE.md)
 - [Authentication Guide](docs/AUTHENTICATION_GUIDE.md)
+- [Role Security Implementation](docs/ROLE_SECURITY_IMPLEMENTATION.md)
 - [Docker Guide](docs/DOCKER_GUIDE.md)
 - [CI/CD & Security](docs/CI_CD_SECURITY.md)
 - [Technical Specification](docs/TECHNICAL_SPEC.md)

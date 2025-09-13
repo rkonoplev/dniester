@@ -23,13 +23,12 @@ This document explains the authentication architecture and security practices fo
 
 ## 👥 User Roles & Permissions
 
-| Role    | Permissions                           | Endpoints                    |
-|---------|---------------------------------------|------------------------------|
-| ADMIN   | Full system access, user management   | `/api/admin/**`             |
-| EDITOR  | Content management, limited access    | `/api/admin/news/**`        |
-| USER    | Read-only access to published content | `/api/public/**`            |
+| Role    | Permissions                                    | Endpoints                    |
+|---------|------------------------------------------------|------------------------------|
+| ADMIN   | Full system access, all content management    | `/api/admin/**`             |
+| EDITOR  | Own content only (create, read, update, delete) | `/api/admin/news/**`        |
 
-**Note**: PUBLIC role will be replaced with USER role in future OAuth 2.0 + 2FA migration.
+**Note**: Detailed role implementation requirements are documented in [Role Security Implementation Guide](ROLE_SECURITY_IMPLEMENTATION.md).
 
 ---
 
@@ -71,14 +70,23 @@ curl -u admin:secureAdminPassword \
 
 ### Editor Access
 ```bash
-# Editor can manage content
+# Editor can view all news but only edit own content
 curl -u editor:secureEditorPassword \
   http://localhost:8080/api/admin/news
 
-# But cannot access user management
+# Editor can create new articles
 curl -u editor:secureEditorPassword \
-  http://localhost:8080/api/admin/users
-# Returns 403 Forbidden
+  -H "Content-Type: application/json" \
+  -d '{"title":"My Article","content":"Content"}' \
+  http://localhost:8080/api/admin/news
+
+# Editor can only edit articles they authored
+curl -u editor:secureEditorPassword \
+  -X PUT \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Title"}' \
+  http://localhost:8080/api/admin/news/123
+# Returns 403 Forbidden if not the author
 ```
 
 ### Public Access

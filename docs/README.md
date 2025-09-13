@@ -42,6 +42,9 @@ This directory contains all project documentation, organized into specific guide
 - [Admin Panel Specification](./ADMIN_PANEL_SPEC.md)  
   Technical requirements for the admin panel interface including role management, news management, taxonomy terms, bulk actions, and security validation.
 
+- [Role Security Implementation](./ROLE_SECURITY_IMPLEMENTATION.md)  
+  Comprehensive guide for implementing ADMIN and EDITOR role restrictions with author-based security.
+
 - [API Usage Guide](./API_USAGE.md)  
   Example requests with `curl`, Makefile shortcuts for testing API endpoints, and usage instructions for developers & QA.
 
