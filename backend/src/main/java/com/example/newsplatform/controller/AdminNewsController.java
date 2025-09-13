@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.Authentication;
 
 import jakarta.validation.Valid;
 
@@ -92,7 +93,8 @@ public class AdminNewsController {
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
     public ResponseEntity<NewsDto> update(@PathVariable Long id, 
-            @RequestBody @Valid NewsDto newsDto) {
+            @RequestBody @Valid NewsDto newsDto,
+            Authentication authentication) {
         NewsUpdateRequestDto request = NewsMapper.newsDtoToUpdateRequest(newsDto);
         NewsDto updated = newsService.update(id, request);
         return ResponseEntity.ok(updated);
@@ -111,7 +113,7 @@ public class AdminNewsController {
             @ApiResponse(responseCode = "204", description = "Successfully deleted"),
             @ApiResponse(responseCode = "404", description = "Article not found")
     })
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
         // our NewsService throws NotFoundException if article doesn't exist (handled by GlobalExceptionHandler)
         newsService.delete(id);
         return ResponseEntity.noContent().build();

@@ -16,24 +16,16 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Implementation of {@link NewsService} using JpaRepository.
- * Handles business logic, entity mapping, and data integrity.
- *
- * Manages relationships:
- * - News ↔ User (author)
- * - News ↔ Term (categories)
- */
 @Service
 @Transactional
 public class NewsServiceImpl implements NewsService {
 
-    // Reusable error message constants to avoid string duplication
     private static final String NEWS_NOT_FOUND = "News not found with id ";
     private static final String USER_NOT_FOUND = "User not found with id: ";
     private static final String CATEGORY_NOT_FOUND = "Category not found with id: ";
@@ -51,29 +43,28 @@ public class NewsServiceImpl implements NewsService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Searches all news (published and unpublished) with optional filters.
-     */
     @Override
     public Page<NewsDto> searchAll(String search, String category, Pageable pageable) {
         return newsRepository.searchAll(search, category, pageable)
                 .map(NewsMapper::toDto);
     }
 
-    /**
-     * Searches only published news with optional filters.
-     */
+    public Page<NewsDto> searchAll(String search, String category, Pageable pageable, Authentication auth) {
+        if (hasRoleId(auth, 1L)) {
+            return newsRepository.searchAll(search, category, pageable).map(NewsMapper::toDto);
+        } else if (hasRoleId(auth, 2L)) {
+            Long authorId = getCurrentUserId(auth);
+            return newsRepository.searchAllByAuthor(search, category, authorId, pageable).map(NewsMapper::toDto);
+        }
+        throw new org.springframework.security.access.AccessDeniedException("Insufficient permissions");
+    }
+
     @Override
     public Page<NewsDto> searchPublished(String search, String category, Pageable pageable) {
         return newsRepository.searchPublished(search, category, pageable)
                 .map(NewsMapper::toDto);
     }
 
-    /**
-     * Retrieves a published news item by its ID.
-     *
-     * @throws NotFoundException if no published news exists with the given ID
-     */
     @Override
     public NewsDto getPublishedById(Long id) {
         News news = newsRepository.findByIdAndPublishedTrue(id)
@@ -81,23 +72,16 @@ public class NewsServiceImpl implements NewsService {
         return NewsMapper.toDto(news);
     }
 
-    /**
-     * Creates a new news item and sets its author and category if provided.
-     *
-     * @throws NotFoundException if the author or category does not exist
-     */
     @Override
     public NewsDto create(NewsCreateRequestDto request) {
         News news = NewsMapper.fromCreateRequest(request);
 
-        // Set author if provided
         if (request.getAuthorId() != null) {
             User author = userRepository.findById(request.getAuthorId())
                     .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + request.getAuthorId()));
             news.setAuthor(author);
         }
 
-        // Set category if provided
         if (request.getCategoryId() != null) {
             Term term = termRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND + request.getCategoryId()));
@@ -110,11 +94,22 @@ public class NewsServiceImpl implements NewsService {
         return NewsMapper.toDto(saved);
     }
 
-    /**
-     * Updates an existing news item with new values, including author and category.
-     *
-     * @throws NotFoundException if the news, author, or category does not exist
-     */
+    public boolean isAuthor(Long newsId, Long authorId) {
+        return newsRepository.existsByIdAndAuthorId(newsId, authorId);
+    }
+
+    public Long getCurrentUserId(Authentication auth) {
+        return null;
+    }
+
+    public boolean hasRoleId(Authentication auth, Long roleId) {
+        return false;
+    }
+    
+    public Set<Long> getCurrentUserRoleIds(Authentication auth) {
+        return new HashSet<>();
+    }
+
     @Override
     public NewsDto update(Long id, NewsUpdateRequestDto request) {
         News existing = newsRepository.findById(id)
@@ -122,14 +117,12 @@ public class NewsServiceImpl implements NewsService {
 
         NewsMapper.updateEntity(existing, request);
 
-        // Update author if provided
         if (request.getAuthorId() != null) {
             User author = userRepository.findById(request.getAuthorId())
                     .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND + request.getAuthorId()));
             existing.setAuthor(author);
         }
 
-        // Update category if provided
         if (request.getCategoryId() != null) {
             Term term = termRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new NotFoundException(CATEGORY_NOT_FOUND + request.getCategoryId()));
@@ -140,11 +133,6 @@ public class NewsServiceImpl implements NewsService {
         return NewsMapper.toDto(updated);
     }
 
-    /**
-     * Deletes a news item by its ID.
-     *
-     * @throws NotFoundException if the news does not exist
-     */
     @Override
     public void delete(Long id) {
         News existing = newsRepository.findById(id)
@@ -152,18 +140,12 @@ public class NewsServiceImpl implements NewsService {
         newsRepository.delete(existing);
     }
 
-    /**
-     * Gets published news by term ID with pagination.
-     */
     @Override
     public Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable) {
         return newsRepository.findPublishedByTermId(termId, pageable)
                 .map(NewsMapper::toDto);
     }
 
-    /**
-     * Gets published news by multiple term IDs with pagination.
-     */
     @Override
     public Page<NewsDto> getPublishedByTermIds(java.util.List<Long> termIds, Pageable pageable) {
         if (termIds == null || termIds.isEmpty()) {

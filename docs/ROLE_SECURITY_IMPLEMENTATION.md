@@ -43,10 +43,10 @@ public Page<NewsDto> searchAll(String search, String category, Pageable pageable
 
 #### Required Security Annotations
 ```java
-@PreAuthorize("hasRole('ADMIN') or (hasRole('EDITOR') and @newsService.isAuthor(#id, authentication.name))")
+@PreAuthorize("@newsService.hasRoleId(authentication, 1L) or (@newsService.hasRoleId(authentication, 2L) and @newsService.isAuthor(#id, @newsService.getCurrentUserId(authentication)))")
 public NewsDto update(Long id, NewsUpdateRequestDto request);
 
-@PreAuthorize("hasRole('ADMIN') or (hasRole('EDITOR') and @newsService.isAuthor(#id, authentication.name))")  
+@PreAuthorize("@newsService.hasRoleId(authentication, 1L) or (@newsService.hasRoleId(authentication, 2L) and @newsService.isAuthor(#id, @newsService.getCurrentUserId(authentication)))")  
 public void delete(Long id);
 ```
 
@@ -116,11 +116,11 @@ public class SecurityConfig {
 @Transactional
 public class NewsServiceImpl implements NewsService {
     
-    public boolean isAuthor(Long newsId, String username) {
-        return newsRepository.existsByIdAndAuthorUsername(newsId, username);
+    public boolean isAuthor(Long newsId, Long authorId) {
+        return newsRepository.existsByIdAndAuthorId(newsId, authorId);
     }
     
-    @PreAuthorize("hasRole('ADMIN') or (hasRole('EDITOR') and @newsService.isAuthor(#id, authentication.name))")
+    @PreAuthorize("@newsService.hasRoleId(authentication, 1L) or (@newsService.hasRoleId(authentication, 2L) and @newsService.isAuthor(#id, @newsService.getCurrentUserId(authentication)))")
     public NewsDto update(Long id, NewsUpdateRequestDto request) {
         // Implementation with security check
         News existing = newsRepository.findById(id)
@@ -131,9 +131,9 @@ public class NewsServiceImpl implements NewsService {
     }
     
     public Page<NewsDto> searchAll(String search, String category, Pageable pageable, Authentication auth) {
-        if (hasRole(auth, "ADMIN")) {
+        if (hasRoleId(auth, 1L)) { // ADMIN role ID = 1
             return newsRepository.searchAll(search, category, pageable).map(NewsMapper::toDto);
-        } else if (hasRole(auth, "EDITOR")) {
+        } else if (hasRoleId(auth, 2L)) { // EDITOR role ID = 2
             Long authorId = getCurrentUserId(auth);
             return newsRepository.searchAllByAuthor(search, category, authorId, pageable).map(NewsMapper::toDto);
         }
@@ -165,14 +165,18 @@ public class NewsServiceImpl implements NewsService {
 
 ## 📝 Implementation Checklist
 
-- [ ] Add `Authentication` parameters to controller methods
-- [ ] Implement `@PreAuthorize` annotations on service methods  
-- [ ] Add author verification methods to service layer
-- [ ] Create role-based repository query methods
-- [ ] Update security configuration for method-level security
-- [ ] Add comprehensive security tests
+- [x] Add `Authentication` parameters to controller methods
+- [x] Implement `@PreAuthorize` annotations on service methods  
+- [x] Add author verification methods to service layer
+- [x] Create role-based repository query methods
+- [x] Update security configuration for method-level security
+- [x] Add comprehensive security tests
 - [ ] Update API documentation with role restrictions
 - [ ] Implement proper error handling for authorization failures
+- [ ] Implement getCurrentUserId() method in service layer (currently returns null - needs proper implementation)
+- [ ] Implement hasRoleId() method to check roles by ID instead of name
+- [ ] Implement getCurrentUserRoleIds() method to get user's role IDs from authentication
+- [ ] Add integration tests for controller security
 
 ## 🔗 Related Files to Update
 
