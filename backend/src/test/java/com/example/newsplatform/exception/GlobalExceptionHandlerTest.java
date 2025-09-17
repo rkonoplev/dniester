@@ -107,7 +107,8 @@ class GlobalExceptionHandlerTest {
     void handleIllegalArgumentException_ShouldReturn400() {
         IllegalArgumentException exception = new IllegalArgumentException("Invalid argument");
 
-        ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleIllegalArgumentException(exception, webRequest);
+        ResponseEntity<ErrorResponseDto> response = 
+                exceptionHandler.handleIllegalArgumentException(exception, webRequest);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals("Invalid argument", response.getBody().getMessage());
