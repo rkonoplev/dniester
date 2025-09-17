@@ -1,4 +1,4 @@
-package com.example.newsplatform.dto;
+package com.example.newsplatform.dto.response;
 
 import com.example.newsplatform.value.PaginationInfo;
 import java.util.List;

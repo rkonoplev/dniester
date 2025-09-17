@@ -1,4 +1,4 @@
-package com.example.newsplatform.dto;
+package com.example.newsplatform.dto.response;
 
 import java.time.Instant;
 import java.util.Collections;

@@ -1,8 +1,8 @@
 package com.example.newsplatform.service.impl;
 
-import com.example.newsplatform.dto.NewsCreateRequestDto;
-import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequestDto;
+import com.example.newsplatform.dto.request.NewsCreateRequestDto;
+import com.example.newsplatform.dto.response.NewsDto;
+import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
 import com.example.newsplatform.entity.News;
 import com.example.newsplatform.entity.Term;
 import com.example.newsplatform.entity.User;
@@ -285,7 +285,7 @@ public class NewsServiceImpl implements NewsService {
      * @throws IllegalArgumentException if request is invalid
      */
     @Override
-    public void performBulkAction(com.example.newsplatform.dto.BulkActionRequestDto request, 
+    public void performBulkAction(com.example.newsplatform.dto.request.BulkActionRequestDto request, 
                                  org.springframework.security.core.Authentication auth) {
         // Only ADMIN can perform bulk operations
         if (!hasRoleId(auth, 1L)) {
@@ -323,7 +323,7 @@ public class NewsServiceImpl implements NewsService {
      * @param request bulk action request with filter parameters
      * @return list of article IDs to process
      */
-    private java.util.List<Long> getTargetIds(com.example.newsplatform.dto.BulkActionRequestDto request) {
+    private java.util.List<Long> getTargetIds(com.example.newsplatform.dto.request.BulkActionRequestDto request) {
         switch (request.getFilterType()) {
             case BY_IDS:
                 return request.getItemIds() != null ? 

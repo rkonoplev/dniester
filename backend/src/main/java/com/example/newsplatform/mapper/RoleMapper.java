@@ -1,6 +1,6 @@
 package com.example.newsplatform.mapper;
 
-import com.example.newsplatform.dto.RoleDto;
+import com.example.newsplatform.dto.response.RoleDto;
 import com.example.newsplatform.entity.Role;
 
 /**

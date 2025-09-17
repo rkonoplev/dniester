@@ -1,6 +1,6 @@
 package com.example.newsplatform.controller;
 
-import com.example.newsplatform.dto.NewsDto;
+import com.example.newsplatform.dto.response.NewsDto;
 import com.example.newsplatform.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

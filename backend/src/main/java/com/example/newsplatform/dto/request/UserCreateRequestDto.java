@@ -1,4 +1,4 @@
-package com.example.newsplatform.dto;
+package com.example.newsplatform.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

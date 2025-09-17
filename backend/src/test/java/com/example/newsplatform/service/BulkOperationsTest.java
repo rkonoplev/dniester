@@ -1,6 +1,6 @@
 package com.example.newsplatform.service;
 
-import com.example.newsplatform.dto.BulkActionRequestDto;
+import com.example.newsplatform.dto.request.BulkActionRequestDto;
 import com.example.newsplatform.repository.NewsRepository;
 import com.example.newsplatform.service.impl.NewsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;

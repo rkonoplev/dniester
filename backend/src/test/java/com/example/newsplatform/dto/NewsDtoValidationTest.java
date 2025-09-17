@@ -1,5 +1,7 @@
 package com.example.newsplatform.dto;
 
+import com.example.newsplatform.dto.request.NewsCreateRequestDto;
+import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

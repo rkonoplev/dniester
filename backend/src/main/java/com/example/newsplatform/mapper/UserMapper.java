@@ -1,8 +1,8 @@
 package com.example.newsplatform.mapper;
 
-import com.example.newsplatform.dto.UserCreateRequestDto;
-import com.example.newsplatform.dto.UserDto;
-import com.example.newsplatform.dto.UserUpdateRequestDto;
+import com.example.newsplatform.dto.request.UserCreateRequestDto;
+import com.example.newsplatform.dto.response.UserDto;
+import com.example.newsplatform.dto.request.UserUpdateRequestDto;
 import com.example.newsplatform.entity.User;
 import java.util.Set;
 

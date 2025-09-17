@@ -1,8 +1,8 @@
 package com.example.newsplatform.service;
 
-import com.example.newsplatform.dto.NewsCreateRequestDto;
-import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequestDto;
+import com.example.newsplatform.dto.request.NewsCreateRequestDto;
+import com.example.newsplatform.dto.response.NewsDto;
+import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -38,6 +38,6 @@ public interface NewsService {
      * Only ADMIN role can perform bulk delete operations.
      * EDITOR role is restricted to single article operations only.
      */
-    void performBulkAction(com.example.newsplatform.dto.BulkActionRequestDto request, 
+    void performBulkAction(com.example.newsplatform.dto.request.BulkActionRequestDto request, 
                           org.springframework.security.core.Authentication auth);
 }
