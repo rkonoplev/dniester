@@ -1,8 +1,8 @@
 package com.example.newsplatform.controller;
 
-import com.example.newsplatform.dto.TermCreateRequestDto;
-import com.example.newsplatform.dto.TermResponseDto;
-import com.example.newsplatform.dto.TermUpdateRequestDto;
+import com.example.newsplatform.dto.request.TermCreateRequestDto;
+import com.example.newsplatform.dto.response.TermResponseDto;
+import com.example.newsplatform.dto.request.TermUpdateRequestDto;
 import com.example.newsplatform.entity.Term;
 import com.example.newsplatform.mapper.TermMapper;
 import com.example.newsplatform.service.TermService;

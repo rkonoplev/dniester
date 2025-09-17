@@ -1,4 +1,4 @@
-package com.example.newsplatform.dto;
+package com.example.newsplatform.dto.response;
 
 /**
  * DTO for Term API responses.

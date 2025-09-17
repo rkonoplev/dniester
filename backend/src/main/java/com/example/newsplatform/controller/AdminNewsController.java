@@ -1,8 +1,8 @@
 package com.example.newsplatform.controller;
 
-import com.example.newsplatform.dto.NewsCreateRequestDto;
-import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequestDto;
+import com.example.newsplatform.dto.request.NewsCreateRequestDto;
+import com.example.newsplatform.dto.response.NewsDto;
+import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
 import com.example.newsplatform.mapper.NewsMapper;
 import com.example.newsplatform.service.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -139,7 +139,7 @@ public class AdminNewsController {
             @ApiResponse(responseCode = "400", description = "Invalid request or operation not confirmed")
     })
     public ResponseEntity<Void> performBulkAction(
-            @RequestBody @Valid com.example.newsplatform.dto.BulkActionRequestDto request,
+            @RequestBody @Valid com.example.newsplatform.dto.request.BulkActionRequestDto request,
             Authentication authentication) {
         newsService.performBulkAction(request, authentication);
         return ResponseEntity.noContent().build();

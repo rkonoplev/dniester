@@ -1,4 +1,4 @@
-package com.example.newsplatform.dto;
+package com.example.newsplatform.dto.response;
 
 import java.time.LocalDateTime;
 import java.util.Set;

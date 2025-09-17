@@ -1,8 +1,8 @@
 package com.example.newsplatform.mapper;
 
-import com.example.newsplatform.dto.NewsCreateRequestDto;
-import com.example.newsplatform.dto.NewsDto;
-import com.example.newsplatform.dto.NewsUpdateRequestDto;
+import com.example.newsplatform.dto.request.NewsCreateRequestDto;
+import com.example.newsplatform.dto.response.NewsDto;
+import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
 import com.example.newsplatform.entity.News;
 import com.example.newsplatform.entity.Term;
 

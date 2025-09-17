@@ -1,6 +1,6 @@
 package com.example.newsplatform.controller;
 
-import com.example.newsplatform.dto.BulkActionRequestDto;
+import com.example.newsplatform.dto.request.BulkActionRequestDto;
 import com.example.newsplatform.service.NewsService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

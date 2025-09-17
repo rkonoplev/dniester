@@ -1,6 +1,6 @@
 package com.example.newsplatform.exception;
 
-import com.example.newsplatform.dto.ErrorResponseDto;
+import com.example.newsplatform.dto.response.ErrorResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;

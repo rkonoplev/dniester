@@ -1,5 +1,8 @@
 package com.example.newsplatform.dto;
 
+import com.example.newsplatform.dto.request.NewsCreateRequestDto;
+import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
+import com.example.newsplatform.dto.response.NewsDto;
 import com.example.newsplatform.entity.Term;
 import com.example.newsplatform.entity.User;
 import com.example.newsplatform.repository.TermRepository;

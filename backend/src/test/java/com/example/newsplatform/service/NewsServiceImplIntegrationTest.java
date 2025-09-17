@@ -1,8 +1,8 @@
 package com.example.newsplatform.service;
 
 import com.example.newsplatform.NewsPlatformApplication;
-import com.example.newsplatform.dto.NewsCreateRequestDto;
-import com.example.newsplatform.dto.NewsDto;
+import com.example.newsplatform.dto.request.NewsCreateRequestDto;
+import com.example.newsplatform.dto.response.NewsDto;
 import com.example.newsplatform.entity.Term;
 import com.example.newsplatform.entity.User;
 import com.example.newsplatform.exception.NotFoundException;
