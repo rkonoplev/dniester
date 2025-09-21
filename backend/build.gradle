@@ -66,6 +66,10 @@ dependencies {
 
     // Rate limiting
     implementation 'com.bucket4j:bucket4j-core:8.7.0'
+
+    // High-performance in-memory cache
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
 }
 
 // ---------------- Checkstyle ----------------
