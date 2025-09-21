@@ -1,21 +1,19 @@
 package com.example.newsplatform.security;
 
-import com.example.newsplatform.entity.Role;
-import com.example.newsplatform.entity.User;
-import com.example.newsplatform.repository.UserRepository;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.aspectj.lang.ProceedingJoinPoint;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -23,66 +21,78 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class RoleSecurityAspectTest {
 
-    @Mock
-    private UserRepository userRepository;
+    @InjectMocks
+    private RoleSecurityAspect roleSecurityAspect;
 
     @Mock
     private ProceedingJoinPoint joinPoint;
 
     @Mock
-    private Authentication authentication;
+    private RequireRole requireRole;
 
     @Mock
-    private SecurityContext securityContext;
+    private RequireAnyRole requireAnyRole;
 
-    @InjectMocks
-    private RoleSecurityAspect roleSecurityAspect;
+    @Mock
+    private RequireAllRoles requireAllRoles;
+
+    @BeforeEach
+    void setUp() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void mockAuthentication(String role) {
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                "user", "password", Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role))
+        );
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
 
     @Test
-    void checkRole_WithValidRole_ShouldProceed() throws Throwable {
-        // Setup
-        User user = new User();
-        user.setUsername("admin");
-        Role adminRole = new Role();
-        adminRole.setId(1L);
-        user.setRoles(Set.of(adminRole));
+    void checkRole_shouldProceed_whenUserHasRole() throws Throwable {
+        mockAuthentication("ADMIN");
+        when(requireRole.value()).thenReturn("ADMIN");
 
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("admin");
-        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(user));
-        when(joinPoint.proceed()).thenReturn("success");
-        SecurityContextHolder.setContext(securityContext);
+        roleSecurityAspect.checkRole(joinPoint, requireRole);
 
-        RequireRole requireRole = mock(RequireRole.class);
-        when(requireRole.value()).thenReturn(new long[]{1L});
-
-        // Execute
-        Object result = roleSecurityAspect.checkRole(joinPoint, requireRole);
-
-        // Verify
-        assertEquals("success", result);
         verify(joinPoint).proceed();
     }
 
     @Test
-    void checkRole_WithInvalidRole_ShouldThrowException() {
-        // Setup
-        User user = new User();
-        user.setUsername("editor");
-        Role editorRole = new Role();
-        editorRole.setId(2L);
-        user.setRoles(Set.of(editorRole));
+    void checkRole_shouldThrowException_whenUserDoesNotHaveRole() {
+        mockAuthentication("EDITOR");
+        when(requireRole.value()).thenReturn("ADMIN"); // Requires ADMIN but user is EDITOR
 
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        when(authentication.getName()).thenReturn("editor");
-        when(userRepository.findByUsername("editor")).thenReturn(Optional.of(user));
-        SecurityContextHolder.setContext(securityContext);
+        assertThrows(AccessDeniedException.class, () -> {
+            roleSecurityAspect.checkRole(joinPoint, requireRole);
+        });
+    }
 
-        RequireRole requireRole = mock(RequireRole.class);
-        when(requireRole.value()).thenReturn(new long[]{1L}); // Requires ADMIN but user is EDITOR
+    @Test
+    void checkAnyRole_shouldProceed_whenUserHasOneOfRoles() throws Throwable {
+        mockAuthentication("EDITOR");
+        when(requireAnyRole.value()).thenReturn(new String[]{"ADMIN", "EDITOR"});
 
-        // Execute & Verify
-        assertThrows(AccessDeniedException.class, 
-            () -> roleSecurityAspect.checkRole(joinPoint, requireRole));
+        roleSecurityAspect.checkAnyRole(joinPoint, requireAnyRole);
+
+        verify(joinPoint).proceed();
+    }
+
+    @Test
+    void checkAllRoles_shouldThrowException_whenUserDoesNotHaveAllRoles() {
+        mockAuthentication("ADMIN");
+        when(requireAllRoles.value()).thenReturn(new String[]{"ADMIN", "SUPER_ADMIN"});
+
+        assertThrows(AccessDeniedException.class, () -> {
+            roleSecurityAspect.checkAllRoles(joinPoint, requireAllRoles);
+        });
+    }
+
+    @Test
+    void checkSecurity_shouldThrowException_whenNoAuthentication() {
+        when(requireRole.value()).thenReturn("ADMIN");
+        assertThrows(AccessDeniedException.class, () -> {
+            roleSecurityAspect.checkRole(joinPoint, requireRole);
+        });
     }
 }

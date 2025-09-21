@@ -5,18 +5,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class TestSecurityService {
 
-    @RequireAnyRole({1L, 2L}) // ADMIN or EDITOR
-    public void adminOrEditorMethod() {
-        // Test method for security aspect
+    @RequireAnyRole({"ADMIN", "EDITOR"})
+    public String requiresAdminOrEditor() {
+        return "Success";
     }
 
-    @RequireAllRoles({1L, 2L}) // Both ADMIN and EDITOR (unlikely scenario)
-    public void adminAndEditorMethod() {
-        // Test method for security aspect
+    @RequireAllRoles({"ADMIN", "EDITOR"}) // Both ADMIN and EDITOR (unlikely scenario)
+    public String requiresAdminAndEditor() {
+        return "Success";
     }
 
-    @RequireRole({1L}) // Only ADMIN
-    public void adminOnlyMethod() {
-        // Test method for security aspect
+    @RequireRole("ADMIN") // Only ADMIN
+    public String requiresAdmin() {
+        return "Success";
+    }
+
+    public String noSecurity() {
+        return "Success";
     }
 }

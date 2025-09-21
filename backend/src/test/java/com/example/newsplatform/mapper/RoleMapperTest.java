@@ -1,91 +1,83 @@
 package com.example.newsplatform.mapper;
 
+import com.example.newsplatform.dto.request.RoleCreateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
+import com.example.newsplatform.entity.Permission;
 import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.entity.User;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
-import java.util.Set;
+import java.util.Collections;
+import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for RoleMapper utility class.
- * Tests bidirectional mapping between Role entities and DTOs.
- * Includes user count calculation and null safety checks.
- */
+@SpringBootTest
+@ActiveProfiles("test")
 class RoleMapperTest {
 
-    /**
-     * Test mapping Role entity to DTO with associated users.
-     * Should correctly calculate user count from entity relationships.
-     */
+    @Autowired
+    private RoleMapper roleMapper;
+
     @Test
-    void toDto_ShouldMapCorrectly() {
+    void toDto_shouldMapRoleToRoleDto() {
+        // Given
         Role role = new Role();
         role.setId(1L);
         role.setName("ADMIN");
-        
-        User user1 = new User();
-        User user2 = new User();
-        role.setUsers(Set.of(user1, user2));
+        role.setDescription("Administrator role");
+        role.setActive(true);
 
-        RoleDto dto = RoleMapper.toDto(role);
+        User user = new User();
+        role.setUsers(new HashSet<>(Collections.singletonList(user)));
 
+        Permission perm = new Permission();
+        perm.setId(100L);
+        perm.setName("EDIT_ARTICLE");
+        role.setPermissions(new HashSet<>(Collections.singletonList(perm)));
+
+        // When
+        RoleDto dto = roleMapper.toDto(role);
+
+        // Then
+        assertNotNull(dto);
         assertEquals(1L, dto.id());
         assertEquals("ADMIN", dto.name());
-        assertEquals(2, dto.userCount());
+        assertEquals("Administrator role", dto.description());
+        assertTrue(dto.active());
+        assertEquals(1, dto.userCount());
+        assertEquals(1, dto.permissions().size());
+        assertNotNull(dto.permissions().iterator().next());
+        assertEquals("EDIT_ARTICLE", dto.permissions().iterator().next().name());
     }
 
-    /**
-     * Test mapping Role entity when users collection is null.
-     * Should return zero user count instead of throwing exception.
-     */
     @Test
-    void toDto_WithNullUsers_ShouldReturnZeroCount() {
-        Role role = new Role();
-        role.setId(1L);
-        role.setName("EDITOR");
-        role.setUsers(null);
-
-        RoleDto dto = RoleMapper.toDto(role);
-
-        assertEquals(1L, dto.id());
-        assertEquals("EDITOR", dto.name());
-        assertEquals(0, dto.userCount());
+    void toDto_shouldReturnNull_whenRoleIsNull() {
+        assertNull(roleMapper.toDto((Role) null));
     }
 
-    /**
-     * Test null safety of toDto method.
-     * Should return null when input entity is null.
-     */
     @Test
-    void toDto_WithNullRole_ShouldReturnNull() {
-        RoleDto dto = RoleMapper.toDto(null);
-        assertNull(dto);
+    void toEntity_shouldMapRoleCreateRequestDtoToRole() {
+        // Given
+        RoleCreateRequestDto createDto = new RoleCreateRequestDto();
+        createDto.setName("EDITOR");
+        createDto.setDescription("Editor role");
+
+        // When
+        Role role = roleMapper.toEntity(createDto);
+
+        // Then
+        assertNotNull(role);
+        assertNull(role.getId()); // ID should be null before saving
+        assertEquals("EDITOR", role.getName());
+        assertEquals("Editor role", role.getDescription());
     }
 
-    /**
-     * Test mapping from RoleDto to Role entity.
-     * Should properly map ID and name fields.
-     */
     @Test
-    void fromDto_ShouldMapCorrectly() {
-        RoleDto dto = new RoleDto(1L, "USER", 5);
-
-        Role role = RoleMapper.fromDto(dto);
-
-        assertEquals(1L, role.getId());
-        assertEquals("USER", role.getName());
-    }
-
-    /**
-     * Test null safety of fromDto method.
-     * Should return null when input DTO is null.
-     */
-    @Test
-    void fromDto_WithNullDto_ShouldReturnNull() {
-        Role role = RoleMapper.fromDto(null);
-        assertNull(role);
+    void toEntity_shouldReturnNull_whenDtoIsNull() {
+        assertNull(roleMapper.toEntity(null));
     }
 }
