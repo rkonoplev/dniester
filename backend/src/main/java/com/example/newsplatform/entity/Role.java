@@ -15,7 +15,8 @@ import java.util.Set;
 public class Role {
 
     @Id
-    private Long id; // Drupal rid
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotBlank(message = "Role name is required")
     @Size(max = 100, message = "Role name must not exceed 100 characters")
