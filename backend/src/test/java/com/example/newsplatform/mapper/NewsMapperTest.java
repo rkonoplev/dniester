@@ -103,7 +103,7 @@ class NewsMapperTest {
         req.setBody("NewBody");
         req.setPublished(true);
 
-        NewsMapper.updateEntity(news, req);
+        NewsMapper.updateEntity(req, news);
 
         assertEquals("NewTitle", news.getTitle());
         assertEquals("NewBody", news.getBody());

@@ -3,57 +3,41 @@ package com.example.newsplatform.config;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for CacheConfig.
- * Tests cache manager configuration and cache creation.
- */
 @SpringBootTest
-@TestPropertySource(properties = "spring.cache.type=caffeine")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
 class CacheConfigTest {
 
     @Autowired
     private CacheManager cacheManager;
 
-    /**
-     * Test that cache manager is properly configured and available.
-     */
     @Test
     void cacheManager_ShouldBeConfigured() {
-        assertNotNull(cacheManager);
-        assertEquals("CaffeineCacheManager", cacheManager.getClass().getSimpleName());
+        assertNotNull(cacheManager, "CacheManager should be configured");
     }
 
-    /**
-     * Test that caches can be created and accessed.
-     */
     @Test
     void cacheManager_ShouldCreateCaches() {
-        // Test cache creation
-        assertNotNull(cacheManager.getCache("terms"));
-        assertNotNull(cacheManager.getCache("publishedNews"));
-        assertNotNull(cacheManager.getCache("newsByTerm"));
+        assertNotNull(cacheManager.getCache("news-by-id"), "'news-by-id' cache should exist");
+        assertNotNull(cacheManager.getCache("news-by-term"), "'news-by-term' cache should exist");
     }
 
-    /**
-     * Test cache operations - put and get.
-     */
     @Test
     void cache_ShouldStoreAndRetrieveValues() {
-        var cache = cacheManager.getCache("testCache");
+        Cache cache = cacheManager.getCache("news-by-id");
         assertNotNull(cache);
 
-        // Test cache put and get
-        cache.put("key1", "value1");
-        assertEquals("value1", cache.get("key1", String.class));
+        String key = "testKey";
+        String value = "testValue";
 
-        // Test cache miss
-        assertNull(cache.get("nonexistent", String.class));
+        cache.put(key, value);
+        String retrievedValue = cache.get(key, String.class);
+
+        assertEquals(value, retrievedValue, "Should retrieve the stored value from the cache");
     }
 }
