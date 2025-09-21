@@ -33,7 +33,8 @@ public class PermissionController {
      * @return the ResponseEntity with status 200 (OK) and the list of permissions in body.
      */
     @GetMapping
-    @Operation(summary = "Get all permissions", description = "Retrieve a list of all available permissions in the system.")
+    @Operation(summary = "Get all permissions", 
+               description = "Retrieve a list of all available permissions in the system.")
     public ResponseEntity<List<PermissionDto>> getAllPermissions() {
         return ResponseEntity.ok(permissionService.getAllPermissions());
     }

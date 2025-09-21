@@ -76,7 +76,8 @@ public class RoleController {
     @DeleteMapping("/{roleId}/permissions/{permissionId}")
     @Operation(summary = "Remove a permission from a role")
     @RequireRole("ADMIN")
-    public ResponseEntity<RoleDto> removePermissionFromRole(@PathVariable Long roleId, @PathVariable Long permissionId) {
+    public ResponseEntity<RoleDto> removePermissionFromRole(@PathVariable Long roleId, 
+                                                            @PathVariable Long permissionId) {
         return ResponseEntity.ok(roleService.removePermissionFromRole(roleId, permissionId));
     }
 }
