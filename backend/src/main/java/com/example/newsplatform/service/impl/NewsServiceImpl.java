@@ -14,6 +14,8 @@ import com.example.newsplatform.repository.UserRepository;
 import com.example.newsplatform.service.NewsService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -95,6 +97,7 @@ public class NewsServiceImpl implements NewsService {
 
     /**
      * Search only published news articles - public access.
+     * Results are cached for 5 minutes to balance performance and freshness.
      *
      * @param search search term for title/content filtering
      * @param category category filter
@@ -102,6 +105,7 @@ public class NewsServiceImpl implements NewsService {
      * @return paginated list of published news DTOs
      */
     @Override
+    @Cacheable(value = "publishedNews", key = "#search + '_' + #category + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<NewsDto> searchPublished(String search, String category, Pageable pageable) {
         return newsRepository.searchPublished(search, category, pageable)
                 .map(NewsMapper::toDto);
@@ -109,12 +113,14 @@ public class NewsServiceImpl implements NewsService {
 
     /**
      * Get a single published news article by ID - public access.
+     * Individual articles are cached for 15 minutes.
      *
      * @param id news article ID
      * @return news DTO if found and published
      * @throws NotFoundException if news not found or not published
      */
     @Override
+    @Cacheable(value = "publishedNewsById", key = "#id")
     public NewsDto getPublishedById(Long id) {
         News news = newsRepository.findByIdAndPublishedTrue(id)
                 .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
@@ -123,12 +129,14 @@ public class NewsServiceImpl implements NewsService {
 
     /**
      * Create a new news article.
+     * Evicts published news caches to ensure fresh data.
      *
      * @param request news creation request with title, content, author, and category
      * @return created news DTO
      * @throws NotFoundException if author or category not found
      */
     @Override
+    @CacheEvict(value = {"publishedNews", "newsByTerm"}, allEntries = true)
     public NewsDto create(NewsCreateRequestDto request) {
         News news = NewsMapper.fromCreateRequest(request);
 
@@ -199,6 +207,7 @@ public class NewsServiceImpl implements NewsService {
 
     /**
      * Update an existing news article.
+     * Evicts related caches to maintain data consistency.
      *
      * @param id news article ID to update
      * @param request update request with new values
@@ -206,6 +215,7 @@ public class NewsServiceImpl implements NewsService {
      * @throws NotFoundException if news, author, or category not found
      */
     @Override
+    @CacheEvict(value = {"publishedNews", "publishedNewsById", "newsByTerm"}, allEntries = true)
     public NewsDto update(Long id, NewsUpdateRequestDto request) {
         News existing = newsRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
@@ -233,11 +243,13 @@ public class NewsServiceImpl implements NewsService {
 
     /**
      * Delete a news article by ID.
+     * Evicts all related caches.
      *
      * @param id news article ID to delete
      * @throws NotFoundException if news not found
      */
     @Override
+    @CacheEvict(value = {"publishedNews", "publishedNewsById", "newsByTerm"}, allEntries = true)
     public void delete(Long id) {
         News existing = newsRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(NEWS_NOT_FOUND + id));
@@ -246,12 +258,14 @@ public class NewsServiceImpl implements NewsService {
 
     /**
      * Get published news articles filtered by a specific term/category ID.
+     * Category-based results are cached for 10 minutes.
      *
      * @param termId term/category ID to filter by
      * @param pageable pagination parameters
      * @return paginated list of published news DTOs
      */
     @Override
+    @Cacheable(value = "newsByTerm", key = "#termId + '_' + #pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable) {
         return newsRepository.findPublishedByTermId(termId, pageable)
                 .map(NewsMapper::toDto);
