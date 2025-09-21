@@ -1,0 +1,18 @@
+package com.example.newsplatform.service;
+
+import com.example.newsplatform.dto.response.PermissionDto;
+
+import java.util.List;
+
+/**
+ * Service interface for managing permissions.
+ */
+public interface PermissionService {
+
+    /**
+     * Retrieves a list of all available permissions.
+     *
+     * @return A list of {@link PermissionDto}s.
+     */
+    List<PermissionDto> getAllPermissions();
+}
