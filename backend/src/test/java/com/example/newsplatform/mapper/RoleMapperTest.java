@@ -5,24 +5,30 @@ import com.example.newsplatform.dto.response.RoleDto;
 import com.example.newsplatform.entity.Permission;
 import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.entity.User;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.ActiveProfiles;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.HashSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
+@ExtendWith(MockitoExtension.class)
 class RoleMapperTest {
 
-    @Autowired
-    private RoleMapper roleMapper;
+    // Use Spy to allow both mocked and real method calls if needed
+    @Spy
+    private PermissionMapper permissionMapper = Mappers.getMapper(PermissionMapper.class);
+
+    @InjectMocks
+    private RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
 
     @Test
     void toDto_shouldMapRoleToRoleDto() {

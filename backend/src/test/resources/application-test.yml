@@ -4,27 +4,11 @@ spring:
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
-
   jpa:
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
         dialect: org.hibernate.dialect.H2Dialect
-        format_sql: true
-    show-sql: true
-
   flyway:
     enabled: false
-
-  liquibase:
-    enabled: false
-
-  # Allow bean definition overriding for tests
-  main:
-    allow-bean-definition-overriding: true
-
-  # Provide dummy admin credentials to avoid validation errors
-  admin:
-    username: "testadmin"
-    password: "testpassword"

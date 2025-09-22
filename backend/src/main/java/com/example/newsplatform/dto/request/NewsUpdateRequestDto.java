@@ -1,7 +1,9 @@
 package com.example.newsplatform.dto.request;
 
 import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /**
  * DTO for updating an existing news article.
@@ -31,7 +33,12 @@ public class NewsUpdateRequestDto {
 
     private Boolean published;
 
+    // === NEW FIELD ===
+    // Set of term IDs to associate with the news article.
+    private Set<Long> termIds;
+
     // === Getters and Setters ===
+
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
@@ -55,4 +62,13 @@ public class NewsUpdateRequestDto {
 
     public Boolean getPublished() { return published; }
     public void setPublished(Boolean published) { this.published = published; }
+
+    // === NEW GETTER/SETTER ===
+    public Set<Long> getTermIds() {
+        return termIds;
+    }
+
+    public void setTermIds(Set<Long> termIds) {
+        this.termIds = termIds;
+    }
 }
