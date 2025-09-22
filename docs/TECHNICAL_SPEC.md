@@ -1,5 +1,6 @@
-# 📐 News Platform – Technical Specification
-## 📑 Table of Contents
+# News Platform – Technical Specification
+
+## Table of Contents
 - [1. Project Summary](#1-project-summary)
 - [2. Business Goals](#2-business-goals)
 - [3. System Architecture](#3-system-architecture)
@@ -110,6 +111,7 @@ The system provides:
 | UI Library        | - | Angular Material |
 | Database          | MySQL 8 (migrated from Drupal 6 DB) | - |
 | ORM               | Hibernate / JPA | - |
+| Caching           | Caffeine (In-Memory) | - |
 | Build Tool        | Gradle | npm/yarn |
 | API Docs          | OpenAPI / Swagger (springdoc) | - |
 | Security          | Spring Security + Basic Auth (OAuth 2.0 + 2FA planned) | - |
@@ -126,6 +128,12 @@ The system provides:
 
 - **Performance:**
     - Main endpoints ≤ 200ms response time under load.
+- **Caching:**
+    - **Implementation**: High-performance in-memory caching is implemented using Caffeine to reduce database load and improve response times for frequently accessed data.
+    - **Strategy**: A multi-level caching strategy is employed:
+        - **Default Cache**: A default TTL of 15 minutes and a maximum size of 1000 entries, used for general-purpose caching like individual news articles.
+        - **Terms Cache**: A specialized cache for taxonomy terms with a longer TTL of 1 hour and a size of 500 entries, as this data changes infrequently.
+        - **Search Cache**: A cache for search results with a shorter TTL of 5 minutes and a larger size of 2000 entries to balance data freshness with performance.
 - **Scalability:**
     - Horizontal scalability for >10k concurrent users.
 - **Security:**

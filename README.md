@@ -10,16 +10,16 @@ Back end: Spring Boot
 Front end: Angular with Angular Universal  
 Database: MySQL
 
-## 📑 Table of Contents
-- [📂 Project Structure](#-project-structure)
-- [🚀 Backend Quick Start](#-backend-quick-start)
-- [📌 Key Features](#-key-features)
-- [🌐 Frontend Stack (Planned)](#-frontend-stack-planned)
-- [📖 Documentation](#-documentation)
-- [🤝 Contributing](#-contributing)
-- [📜 License](#-license)
+## Table of Contents
+- [Project Structure](#project-structure)
+- [Backend Quick Start](#backend-quick-start)
+- [Key Features](#key-features)
+- [Frontend Stack (Planned)](#frontend-stack-planned)
+- [Documentation](#documentation)
+- [Contributing](#contributing)
+- [License](#license)
 
-## 📂 Project Structure
+## Project Structure
 
 | Directory              | Description                        |
 |------------------------|------------------------------------|
@@ -34,7 +34,7 @@ Database: MySQL
 
 ---
 
-## 🚀 Backend Quick Start
+## Backend Quick Start
 
 **Requirements:**
 - JDK 21+
@@ -59,7 +59,7 @@ In production, you should override the variables directly via the runtime enviro
 API entrypoint: http://localhost:8080
 
 
-## 📌 Key Features
+## Key Features
 
 - **Database**: MySQL 8.0 as primary database with H2 for tests
 - **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned for ADMIN, EDITOR, USER roles)
@@ -67,12 +67,13 @@ API entrypoint: http://localhost:8080
 - **Pagination**: Term-based filtering with configurable page sizes
 - **Content Management**: Full CRUD operations for news articles
 - **Taxonomy**: Category and tag system with flexible filtering
+- **Caching**: High-performance in-memory caching with Caffeine for frequently accessed data, significantly reducing database load.
 - **Rate Limiting**: IP-based rate limiting with Bucket4j (100 req/min public, 50 req/min admin)
 - **CI/CD**: GitHub Actions pipeline with automated testing
 
 ---
 
-## 🌐 Frontend Stack (Planned)
+## Frontend Stack (Planned)
 
 - Angular with Angular Universal for Google News–inspired design  
 - Responsive, mobile-first layout with clean grid system  
@@ -88,7 +89,7 @@ npm install
 npm start
 ```
 
-## 📖 Documentation
+## Documentation
 Full developer and deployment documentation is available in the [docs/](docs/) folder:
 
 - **[Complete Project Information](docs/TASK_DESCRIPTION.md)** - Comprehensive project overview and technical documentation
@@ -111,7 +112,7 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Database Migration Scripts](db_data/README.md)
 - [Rate Limiting Guide](docs/RATE_LIMITING.md)
 ---
-## ⚙️ Environment Setup
+## Environment Setup
 
 This guide explains how to run News Platform locally using Docker.
 
@@ -127,7 +128,7 @@ cd news-platform
 cp .env.dev.example .env.dev
 ```
 Edit .env.dev to adjust MySQL root password, database name, or admin username/password if needed.
-⚠️ Do not commit this file — it is excluded via .gitignore.
+Note: Do not commit this file — it is excluded via .gitignore.
 
 ### 3. Start services with Docker Compose
    ```bash
@@ -162,7 +163,7 @@ news-app → Spring Boot logs with "Server is running!"
    docker compose down -v
    ```
 
-## 🤝 Contributing
+## Contributing
 Contributions, issues, and feature requests are welcome! But not yet now. :-)
 
 - Check the [issues](../../issues) page to see current tasks or report a bug.
@@ -175,5 +176,5 @@ Before submitting PRs, please:
   ./gradlew build test checkstyleMain checkstyleTest
   ```
   
-## 📜 License
+## License
 MIT License. See [LICENSE](LICENSE) for details.

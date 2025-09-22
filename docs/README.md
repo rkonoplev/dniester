@@ -1,4 +1,4 @@
-# 📖 Documentation
+# Documentation
 
 This directory contains all project documentation, organized into specific guides.
 

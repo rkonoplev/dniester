@@ -1,10 +1,10 @@
-# 🔐 Authentication Guide
+# Authentication Guide
 
 This document explains the authentication architecture and security practices for the News Platform.
 
 ---
 
-## 🏗️ Authentication Architecture
+## Authentication Architecture
 
 ### Current Implementation
 - **Basic Authentication** with Spring Security
@@ -21,7 +21,7 @@ This document explains the authentication architecture and security practices fo
 
 ---
 
-## 👥 User Roles & Permissions
+## User Roles & Permissions
 
 | Role    | Permissions                                    | Endpoints                    |
 |---------|------------------------------------------------|------------------------------|
@@ -32,7 +32,7 @@ This document explains the authentication architecture and security practices fo
 
 ---
 
-## 🔧 Configuration
+## Configuration
 
 ### Environment Variables
 ```bash
@@ -53,7 +53,7 @@ EDITOR_PASSWORD=secureEditorPassword
 
 ---
 
-## 🚀 Usage Examples
+## Usage Examples
 
 ### Admin Access
 ```bash
@@ -97,7 +97,7 @@ curl http://localhost:8080/api/public/news?size=10
 
 ---
 
-## 🛡️ Security Best Practices
+## Security Best Practices
 
 ### Development
 - Use `.env` file for local credentials (never commit)
@@ -117,7 +117,7 @@ curl http://localhost:8080/api/public/news?size=10
 
 ---
 
-## 🔄 Future Enhancements
+## Future Enhancements
 
 ### Planned Features
 - **OAuth 2.0 + 2FA migration**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for all roles (ADMIN, EDITOR, USER)
@@ -134,7 +134,7 @@ curl http://localhost:8080/api/public/news?size=10
 
 ---
 
-## ⚠️ Security Considerations
+## Security Considerations
 
 ### Current Limitations
 - Basic Auth credentials transmitted with each request
@@ -150,7 +150,7 @@ curl http://localhost:8080/api/public/news?size=10
 
 ---
 
-## 📚 Related Documentation
+## Related Documentation
 
 - [Configuration Guide](CONFIG_GUIDE.md) - Environment and profile setup
 - [CI/CD & Security](CI_CD_SECURITY.md) - Pipeline security practices

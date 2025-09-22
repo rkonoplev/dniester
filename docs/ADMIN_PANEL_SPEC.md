@@ -1,4 +1,4 @@
-# 🔧 Technical Specification for the Admin Panel
+# Technical Specification for the Admin Panel
 
 This document outlines the technical requirements for the News Platform admin panel interface.
 

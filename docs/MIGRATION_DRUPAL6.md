@@ -1,34 +1,34 @@
-# 🚀 Migration Guide: Drupal 6 → News Platform
+# Migration Guide: Drupal 6 → News Platform
 
-## 📑 Table of Contents
-- [📋 Overview](#-overview)
+## Table of Contents
+- [Overview](#overview)
 - [Short Version](#short-version)
-- [📚 Migration from Drupal 6](#-migration-from-drupal-6)
+- [Migration from Drupal 6](#migration-from-drupal-6)
     - [Summary](#summary)
     - [Migration Flow](#migration-flow)
-- [✅ TL;DR Commands](#-tldr-commands)
-- [⚡ Quick Start (TL;DR)](#-quick-start-tldr)
-- [📋 Complete Migration Guide](#-complete-migration-guide)
+- [TL;DR Commands](#tldr-commands)
+- [Quick Start (TL;DR)](#quick-start-tldr)
+- [Complete Migration Guide](#complete-migration-guide)
     - [Step 1: Start MySQL 5.7](#step-1-start-mysql-57-for-drupal-6-dump)
     - [Step 2: Export and normalize data](#step-2-export-and-normalize-data)
     - [Step 3: Export final schema](#step-3-export-final-schema)
     - [Step 4: Setup MySQL 80 target](#step-4-setup-mysql-80-target)
     - [Step 5: Import into MySQL 80](#step-5-import-into-mysql-80)
     - [Step 6: Verify migration](#step-6-verify-migration)
-- [🔧 Detailed Migration Steps](#-detailed-migration-steps)
-- [📊 Database Schema Mapping](#-database-schema-mapping)
-- [🔧 Troubleshooting](#-troubleshooting)
-- [📄 Reference](#-reference)
+- [Detailed Migration Steps](#detailed-migration-steps)
+- [Database Schema Mapping](#database-schema-mapping)
+- [Troubleshooting](#troubleshooting)
+- [Reference](#reference)
 
 
-## 📋 Overview
+## Overview
 This guide covers migrating from Drupal 6 to the modern News Platform (Spring Boot + MySQL 8).
 
 **Process:** Drupal 6 dump → MySQL 5.7 container → normalize with SQL scripts → MySQL 8.0
 
 ## SHORT VERSION
 
-## 📚 Migration from Drupal 6
+## Migration from Drupal 6
 ### Summary
 Drupal 6 dump (drupal6_working.sql) is imported into a temporary MySQL 5.7 container.
 Then data is normalized into clean schema with migration SQL scripts.
@@ -78,7 +78,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 
-## ✅ TL;DR Commands
+## TL;DR Commands
 ```bash
 # 1. Start MySQL 8.0
 docker compose -f docker-compose.yml up -d mysql
@@ -98,7 +98,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 ## FULL VERSION
 
 
-## ⚡ Quick Start (TL;DR)
+## Quick Start (TL;DR)
 
 If you already have `clean_schema.sql` ready:
 
@@ -117,7 +117,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 
 ---
 
-## 📋 Complete Migration Guide
+## Complete Migration Guide
 
 ### Step 1: Start MySQL 5.7 (for Drupal 6 dump)
 
@@ -168,7 +168,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 
 ---
 
-## 🔧 Detailed Migration Steps
+## Detailed Migration Steps
 
 ### 1. Setup temporary MySQL 5.7 for Drupal 6 dump
    ```bash
@@ -300,7 +300,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 
 ---
 
-## 📊 Database Schema Mapping
+## Database Schema Mapping
 
 After normalizing the dump, the following entities and tables exist in the clean `dniester` schema. These form the core database for the News Platform.
 
@@ -361,7 +361,7 @@ Taxonomy terms and mapping table for content↔terms.
 
 ---
 
-## 🔧 Troubleshooting
+## Troubleshooting
 
 ### UTF-8 / Cyrillic Encoding Issues
 
@@ -412,11 +412,11 @@ n.uid
 FROM a264971_dniester.node n
 LEFT JOIN a264971_dniester.node_revisions nr ON n.vid = nr.vid;
 ```
-✅ With utf8_general_ci the Cyrillic text will be inserted correctly.
+With utf8_general_ci the Cyrillic text will be inserted correctly.
 
 ---
 
-## 📄 Reference
+## Reference
 
 ### Legacy Files Relocation
 
@@ -446,7 +446,7 @@ For detailed information about all migration scripts and files, see [Database Mi
 
 - **detect_custom_fields.sql**  
   Optional helper script. Runs queries against `information_schema` to detect if there are any `content_type_*` tables with additional CCK fields.  
-  ⚠️ If this script selects rows → it means you had custom fields.  
+  Note: If this script selects rows → it means you had custom fields.  
   If the result set is empty → you had **no CCK custom fields** in your Drupal 6 dump.
 
 - **migrate_cck_fields.sql**  
@@ -484,8 +484,8 @@ After completing the migration and successfully importing `clean_schema.sql` int
 
 #### Docker volumes
 
-- ✅ **news-platform_mysql_data** → keep this volume (used by MySQL 8.0: `news-mysql`).
-- ❌ **news-platform_mysql_data_drupal6** → can be safely removed (leftover from Drupal 6 migration).
+- **news-platform_mysql_data** → keep this volume (used by MySQL 8.0: `news-mysql`).
+- **news-platform_mysql_data_drupal6** → can be safely removed (leftover from Drupal 6 migration).
 
 #### Options
 
@@ -498,4 +498,4 @@ docker stop news-mysql-drupal6
 ```bash
 docker compose -f docker-compose.drupal.yml down -v
 ```
-👉 After cleanup, only MySQL 8.0 (news-mysql) and its volume (news-platform_mysql_data) should remain for further work with the News Platform.
+After cleanup, only MySQL 8.0 (news-mysql) and its volume (news-platform_mysql_data) should remain for further work with the News Platform.

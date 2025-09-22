@@ -1,21 +1,21 @@
-# 🐳 Docker Guide
+# Docker Guide
 
-## 📑 Table of Contents
-- [🚀 Local Development with Docker Compose](#-local-development-with-docker-compose)
-- [🏭 Production Build with Docker](#-production-build-with-docker)
+## Table of Contents
+- [Local Development with Docker Compose](#local-development-with-docker-compose)
+- [Production Build with Docker](#production-build-with-docker)
     - [1. Build application JAR](#1-build-application-jar)
     - [2. Build production Docker image](#2-build-production-docker-image)
     - [3. Run production container](#3-run-production-container)
-    - [🔑 Secrets Management in Docker](#-secrets-management-in-docker)
-- [🆚 Local vs Production – Summary Table](#-local-vs-production--summary-table)
-- [✅ Best Practices](#-best-practices)
+    - [Secrets Management in Docker](#secrets-management-in-docker)
+- [Local vs Production – Summary Table](#local-vs-production--summary-table)
+- [Best Practices](#best-practices)
 
 
 This document explains how to work with Docker in the News Platform project, both for **local development** and **production deployment**.
 
 ---
 
-## 🚀 Local Development with Docker Compose
+## Local Development with Docker Compose
 
 Start backend and database together:
 
@@ -34,9 +34,9 @@ docker-compose up --build
   - Can preload Drupal dump from ./db-dumps/
 
 - After startup, the backend will be accessible at:
-➡️ http://localhost:8080
+http://localhost:8080
 
-## 🏭 Production Build with Docker
+## Production Build with Docker
 ### 1. Build application JAR
    ```bash
    cd backend
@@ -55,7 +55,7 @@ docker build -t news-platform:latest -f Dockerfile .
    - Contains only the compiled JAR (no source code, no Gradle wrapper)
    - Configuration comes from environment variables or injected Secret Files
    
-### 🔑 Secrets Management in Docker
+### Secrets Management in Docker
    - Local .env
    Used for local development
    Ignored by git (.gitignore)
@@ -75,9 +75,9 @@ docker build -t news-platform:latest -f Dockerfile .
    echo "UltraSecure!" > secrets/admin_password.txt
    ```
 
-   ⚠️ Add secrets/ folder to .gitignore to ensure secrets are not committed.
+   Note: Add secrets/ folder to .gitignore to ensure secrets are not committed.
 
-# 🆚 Local vs Production – Summary Table
+# Local vs Production – Summary Table
 
 | Aspect                | Local Development (`local`)       | Production Deployment (`prod`)             |
 |------------------------|-----------------------------------|--------------------------------------------|
@@ -89,7 +89,7 @@ docker build -t news-platform:latest -f Dockerfile .
 | **Rate limiting**      | 100/50 req/min (dev testing)    | 100/50 req/min (production protection)     |
 | **Logs**               | Verbose (for developers)         | Minimal (INFO/ERROR only)                  |
 
-## ✅ Best Practices
+## Best Practices
 - Keep Dockerfile for production minimal (no Gradle, only JAR).
 - Use Dockerfile.dev for developer productivity (mounted source, bootRun from Gradle).
 - Always load database dumps into Docker MySQL via ./db-dumps.

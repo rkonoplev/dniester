@@ -1,14 +1,14 @@
-# ⚙️ Configuration Guide
+# Configuration Guide
 
-## 📑 Table of Contents
-- [📂 Configuration Files Location](#-configuration-files-location)
-- [🧩 Spring Profiles Matrix](#-spring-profiles-matrix)
-- [🚀 Running with Profiles](#-running-with-profiles)
-- [🔐 Environment Variables & .env](#-environment-variables--env)
-- [🔒 Secrets Management](#-secrets-management)
+## Table of Contents
+- [Configuration Files Location](#configuration-files-location)
+- [Spring Profiles Matrix](#spring-profiles-matrix)
+- [Running with Profiles](#running-with-profiles)
+- [Environment Variables & .env](#environment-variables--env)
+- [Secrets Management](#secrets-management)
     - [Authentication Security](#authentication-security)
     - [Environment Management](#environment-management)
-- [✅ Best Practices](#-best-practices)
+- [Best Practices](#best-practices)
 
 
 This document explains the configuration strategy for the News Platform backend.  
@@ -16,7 +16,7 @@ Spring Boot profiles, YAML configuration files, and environment variables are us
 
 ---
 
-## 📂 Configuration Files Location
+## Configuration Files Location
 
 All application configuration is located under:
 
@@ -30,7 +30,7 @@ Spring Boot chooses configuration based on the active profile (`SPRING_PROFILES_
 
 ---
 
-## 🧩 Spring Profiles Matrix
+## Spring Profiles Matrix
 
 | Profile | File                     | Database          | Schema Strategy      | Usage                                                                 |
 |---------|--------------------------|-------------------|----------------------|----------------------------------------------------------------------|
@@ -44,7 +44,7 @@ Spring Boot chooses configuration based on the active profile (`SPRING_PROFILES_
 
 ---
 
-## 🚀 Running with Profiles
+## Running with Profiles
 
 Profiles can be set with either `SPRING_PROFILES_ACTIVE` environment variable or JVM arg:
 
@@ -60,7 +60,7 @@ docker run -d -e SPRING_PROFILES_ACTIVE=prod --env-file .env.dev news-platform:l
 ```
 If no profile is specified, local is used as default.
 
-## 🔐 Environment Variables & .env
+## Environment Variables & .env
 Local Development (.env)
 .env (ignored by git) provides DB and app credentials locally.
 .env.example is included in the repo with placeholders (changemePass etc).
@@ -91,9 +91,9 @@ EDITOR_PASSWORD=changemeEditor
 # PUBLIC_RATE_LIMIT=100
 # ADMIN_RATE_LIMIT=50
 ```
-⚠️ secrets must never be committed to git. Only .env.example goes into version control.
+Note: secrets must never be committed to git. Only .env.example goes into version control.
 
-## 🔒 Secrets Management
+## Secrets Management
 
 ### Authentication Security
 - **Current**: Basic Auth with environment-based multi-user credentials
@@ -107,10 +107,10 @@ EDITOR_PASSWORD=changemeEditor
 - Local: .env file (ignored by git).
 - CI/CD: GitHub Actions → repository Secrets.
 - Production (Render): environment variables or Secret Files mounted at runtime.
-- ✅ Passwords, tokens, and admin credentials are always injected via environment variables.
-- ❌ Never hardcode secrets in application-*.yml or commit real credentials.
+- Passwords, tokens, and admin credentials are always injected via environment variables.
+- Never hardcode secrets in application-*.yml or commit real credentials.
 
-## ✅ Best Practices
+## Best Practices
 - Keep application.yml as minimal defaults (no secrets).
 - Use .env only for local/staging; add .env.example to repository as template.
 - Production configs (prod profile) should only read from environment variables or secret files.

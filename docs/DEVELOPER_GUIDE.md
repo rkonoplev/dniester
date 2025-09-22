@@ -1,25 +1,25 @@
 # Developer Guide – Local Workflow and CI/CD Expectations
 
-## 📑 Table of Contents
-- [🔹 Local Development Workflow](#-local-development-workflow)
-- [🔹 Before Pushing to GitHub](#-before-pushing-to-github)
-- [🔹 Summary](#-summary)
-- [⚙️ Development Environment](#️-development-environment)
-- [📦 Production Environment](#-production-environment)
-- [📚 Migration from Drupal 6](#-migration-from-drupal-6)
+## Table of Contents
+- [Local Development Workflow](#local-development-workflow)
+- [Before Pushing to GitHub](#before-pushing-to-github)
+- [Summary](#summary)
+- [Development Environment](#development-environment)
+- [Production Environment](#production-environment)
+- [Migration from Drupal 6](#migration-from-drupal-6)
 - [Backend Layer Structure](#backend-layer-structure)
-- [🛡️ Code Quality & Security Tools](#️-code-quality--security-tools)
+- [Code Quality & Security Tools](#code-quality--security-tools)
     - [Local Analysis](#local-analysis)
     - [Cloud Analysis](#cloud-analysis)
     - [Security](#security)
-- [🧑‍💻 Common Development Commands](#-common-development-commands)
-- [🚀 Running the Project](#-running-the-project)
-    - [🟢 Option A. Run only the database (MySQL check)](#-option-a-run-only-the-database-mysql-check)
-    - [🟢 Option B. Run the full stack (Spring Boot + MySQL)](#-option-b-run-the-full-stack-spring-boot--mysql)
-    - [✅ Quick TL;DR](#-quick-tldr)
-- [🔁 Daily Workflow](#-daily-workflow)
-- [🛠️ MySQL Handy Commands Cheat Sheet](#️-mysql-handy-commands-cheat-sheet)
-- [📂 Database Schema](#-database-schema)
+- [Common Development Commands](#common-development-commands)
+- [Running the Project](#running-the-project)
+    - [Option A. Run only the database (MySQL check)](#option-a-run-only-the-database-mysql-check)
+    - [Option B. Run the full stack (Spring Boot + MySQL)](#option-b-run-the-full-stack-spring-boot--mysql)
+    - [Quick TL;DR](#quick-tldr)
+- [Daily Workflow](#daily-workflow)
+- [MySQL Handy Commands Cheat Sheet](#mysql-handy-commands-cheat-sheet)
+- [Database Schema](#database-schema)
 
 
 This document explains how developers should work with the project locally
@@ -27,7 +27,7 @@ This document explains how developers should work with the project locally
 
 ---
 
-## 🔹 Local Development Workflow
+## Local Development Workflow
 
 You do **not** need to keep Docker containers or databases running all the time during active development.  
 Focus on the code and use Docker only when you want to test the full application.  
@@ -54,32 +54,32 @@ The heavy checks (static analysis, security scanning, code coverage, etc.) are p
   ```
   After testing, stop Docker to avoid unnecessary CPU/memory usage.
  
- ## 🔹 Before Pushing to GitHub
+ ## Before Pushing to GitHub
   Before committing and pushing, check at least:
 
-✅ Code compiles (Build Project or ./gradlew build)
-✅ All **tests pass** (./gradlew test)
-✅ Code style checks pass (./gradlew checkstyleMain checkstyleTest)
+- Code compiles (Build Project or ./gradlew build)
+- All **tests pass** (./gradlew test)
+- Code style checks pass (./gradlew checkstyleMain checkstyleTest)
 (optional but strongly recommended)
 
 That’s usually enough — **GitHub Actions CI** will run additional steps:
 
-🟢 Full Gradle build + unit tests.  
-🟢 Static analysis with Checkstyle and PMD.  
-🟢 JaCoCo coverage report + Codecov upload.  
-🟢 GitLeaks secrets scanning.  
-🟢 Code scanning alerts integration in GitHub Security.
+- Full Gradle build + unit tests.  
+- Static analysis with Checkstyle and PMD.  
+- JaCoCo coverage report + Codecov upload.  
+- GitLeaks secrets scanning.  
+- Code scanning alerts integration in GitHub Security.
 
-## 🔹 Summary
-👉 Developers **can work without Docker** most of the time.
-👉 Run **unit tests and build locally** before pushing.
-👉 Let **CI/CD (GitHub Actions)** handle static analysis (Checkstyle + PMD), coverage (JaCoCo + Codecov), and security (GitLeaks).
+## Summary
+Developers **can work without Docker** most of the time.
+Run **unit tests and build locally** before pushing.
+Let **CI/CD (GitHub Actions)** handle static analysis (Checkstyle + PMD), coverage (JaCoCo + Codecov), and security (GitLeaks).
 
 This approach ensures fast, resource-light local development, while CI validates everything in the cloud.
 
 **Note**: Future authentication migration to OAuth 2.0 + 2FA is planned for all user roles (ADMIN, EDITOR, USER).
 
-## ⚙️ Development Environment
+## Development Environment
 
 Start local dev environment (app + MySQL 8.0):
 
@@ -102,7 +102,7 @@ Stop all services:
 docker compose down
 ```
 
-## 📦 Production Environment
+## Production Environment
 Production setup uses docker-compose.override.yml and secure secrets.
 
 Start with prod config:
@@ -114,9 +114,9 @@ docker compose \
   --env-file .env.prod \
   up -d
   ```
-⚠️ .env.prod must NOT be committed — it should be provided via CI/CD secrets or Docker Secrets.
+Note: .env.prod must NOT be committed — it should be provided via CI/CD secrets or Docker Secrets.
 
-## 📚 Migration from Drupal 6
+## Migration from Drupal 6
 For complete migration instructions, see [Migration Drupal6 → News Platform](MIGRATION_DRUPAL6.md).
 
 
@@ -133,7 +133,7 @@ For complete migration instructions, see [Migration Drupal6 → News Platform](M
 
 ---
 
-## 🛡️ Code Quality & Security Tools
+## Code Quality & Security Tools
 
 This project uses several tools for code and security assurance.
 
@@ -168,7 +168,7 @@ This project uses several tools for code and security assurance.
 
 ---
 
-## 🧑‍💻 Common Development Commands
+## Common Development Commands
 
 | Task                    | Command                                   |
 |-------------------------|-------------------------------------------|
@@ -181,11 +181,11 @@ This project uses several tools for code and security assurance.
 | Test rate limiting      | `for i in {1..105}; do curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8080/api/public/news; done` |
 
 ---
-## 🚀 Running the Project
+## Running the Project
 
 After migrating the database and producing `clean_schema.sql`, you can run the full News Platform stack (MySQL + Spring Boot) or only the database for verification.
 
-### 🟢 Option A. Run only the database (MySQL check)
+### Option A. Run only the database (MySQL check)
 
 ```bash
 # Stop any previous containers and volumes
@@ -204,7 +204,7 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sq
 docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;"
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
-### 🟢 Option B. Run the full stack (Spring Boot + MySQL)
+### Option B. Run the full stack (Spring Boot + MySQL)
 **1. Ensure you have .env.dev in the project root with proper DB configs:**
 
 ```dotenv
@@ -250,7 +250,7 @@ curl -u admin:password -i "http://localhost:8080/api/admin/news"
 # Swagger UI
 http://localhost:8080/swagger-ui/index.html
 ```
-### ✅ Quick TL;DR
+### Quick TL;DR
 ```bash
 # Start full stack
 docker compose --env-file .env.dev up -d
@@ -267,9 +267,9 @@ curl -u admin:password -i "http://localhost:8080/api/admin/news"
 ```
 ---
 
-## 🔁 Daily Workflow
+## Daily Workflow
 
-**Do not need to import** `clean_schema.sql` every time you restart your computer 🚫.
+**Do not need to import** `clean_schema.sql` every time you restart your computer.
 
 ### Why?
 - MySQL container stores all database data inside `/var/lib/mysql`.
@@ -281,8 +281,8 @@ curl -u admin:password -i "http://localhost:8080/api/admin/news"
 This volume (news-platform_mysql_data) survives container restarts and system reboots.
 
 ### Rules
-✅ Use docker compose up -d every morning → your data is still there.
-❌ Do NOT run docker compose down -v unless you want to wipe all data and re-import.
+- Use docker compose up -d every morning → your data is still there.
+- Do NOT run docker compose down -v unless you want to wipe all data and re-import.
 
 ### What should be running?
 **Option A (DB only):**
@@ -295,7 +295,7 @@ This volume (news-platform_mysql_data) survives container restarts and system re
 - Containers: news-mysql + news-app
 - Volumes: news-platform_mysql_data
 
-👉 The old migration container news-mysql-drupal6 and its volume news-platform_mysql_data_drupal6 can be safely removed.
+The old migration container news-mysql-drupal6 and its volume news-platform_mysql_data_drupal6 can be safely removed.
 
 **Daily Start Command**
 ```bash
@@ -314,7 +314,7 @@ Expected:
 
 ---
 
-## 🛠️ MySQL Handy Commands Cheat Sheet
+## MySQL Handy Commands Cheat Sheet
 
 ### 1. Connect to MySQL container (interactive shell)
 
@@ -367,12 +367,12 @@ Load an SQL file back into MySQL:
 ```bash
 docker exec -i news-mysql mysql -uroot -proot dniester < db_data/exported_dump.sql
 ```
-👉 Notes:
+Notes:
 
 Replace dniester with the db name you want to use.
 Make sure the database exists before importing.
 
-## 📂 Database Schema
+## Database Schema
 
 The full MySQL 8 database schema (DDL) is documented in [DATABASE_SCHEMA.md](DATABASE_SCHEMA.md).  
 It includes `users`, `roles`, `user_roles`, `content`, `terms`, and `content_terms` tables. 

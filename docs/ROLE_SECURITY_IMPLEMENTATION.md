@@ -1,8 +1,8 @@
-# 🔐 Role-Based Security Implementation Guide
+# Role-Based Security Implementation Guide
 
 This document outlines the implementation requirements for ADMIN and EDITOR role security in the News Platform.
 
-## 📋 Role Definitions
+## Role Definitions
 
 ### ADMIN Role
 - **Full system access** - can perform any operation
@@ -18,7 +18,7 @@ This document outlines the implementation requirements for ADMIN and EDITOR role
 - **Publication control** - publish/unpublish own articles only
 - **Read-only access** - can view but not modify others' content
 
-## 🛡️ Security Implementation Requirements
+## Security Implementation Requirements
 
 ### 1. Service Layer Security
 
@@ -142,7 +142,7 @@ public class NewsServiceImpl implements NewsService {
 }
 ```
 
-## 🧪 Testing Requirements
+## Testing Requirements
 
 ### Security Test Cases
 
@@ -163,7 +163,7 @@ public class NewsServiceImpl implements NewsService {
    - Test author verification logic
    - Test role-based filtering in search results
 
-## 📝 Implementation Checklist
+## Implementation Checklist
 
 - [x] Add `Authentication` parameters to controller methods
 - [x] Implement `@PreAuthorize` annotations on service methods  
@@ -178,7 +178,7 @@ public class NewsServiceImpl implements NewsService {
 - [ ] Implement getCurrentUserRoleIds() method to get user's role IDs from authentication
 - [ ] Add integration tests for controller security
 
-## 🔗 Related Files to Update
+## Related Files to Update
 
 - `AdminNewsController.java` - Add authentication parameters
 - `NewsServiceImpl.java` - Add authorization checks  
