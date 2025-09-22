@@ -1,27 +1,27 @@
-# 📡 API Usage Guide
+# API Usage Guide
 
-## 📑 Table of Contents
-- [🚦 Rate Limiting](#-rate-limiting)
-- [🌐 Public API Endpoints (No Authentication Required)](#-public-api-endpoints-no-authentication-required)
+## Table of Contents
+- [Rate Limiting](#rate-limiting)
+- [Public API Endpoints (No Authentication Required)](#public-api-endpoints-no-authentication-required)
     - [1. Get All Published News (with Pagination)](#1-get-all-published-news-with-pagination)
     - [2. Get Published News by ID](#2-get-published-news-by-id)
     - [3. Get Published News by Term ID (Category/Tag)](#3-get-published-news-by-term-id-categorytag)
     - [4. Get Published News by Multiple Term IDs](#4-get-published-news-by-multiple-term-ids)
     - [5. Check Rate Limiting Headers](#5-check-rate-limiting-headers)
-- [🔒 Admin API Endpoints (Authentication Required)](#-admin-api-endpoints-authentication-required)
+- [Admin API Endpoints (Authentication Required)](#admin-api-endpoints-authentication-required)
     - [1. Get All News (Published + Unpublished)](#1-get-all-news-published--unpublished)
     - [2. Create News Item](#2-create-news-item)
     - [3. Update News Item](#3-update-news-item)
     - [4. Delete News Item](#4-delete-news-item)
-- [📋 Pagination Parameters](#-pagination-parameters)
-- [📊 Rate Limiting Testing](#-rate-limiting-testing)
-- [⚠️ Notes](#️-notes)
-- [📚 Alternative API Documentation: Swagger UI](#-alternative-api-documentation-swagger-ui)
+- [Pagination Parameters](#pagination-parameters)
+- [Rate Limiting Testing](#rate-limiting-testing)
+- [Notes](#notes)
+- [Alternative API Documentation: Swagger UI](#alternative-api-documentation-swagger-ui)
 
 
 This guide provides practical examples for testing the News Platform API endpoints using **curl**.
 
-## 🚦 Rate Limiting
+## Rate Limiting
 
 All API endpoints are rate limited by IP address:
 - **Public API** (`/api/public/**`): 100 requests per minute
@@ -36,7 +36,7 @@ When rate limit is exceeded, you'll receive HTTP 429:
 ```
 
 ---
-## 🌐 Public API Endpoints (No Authentication Required)
+## Public API Endpoints (No Authentication Required)
 
 ### 1. Get All Published News (with Pagination)
 ```bash
@@ -65,7 +65,7 @@ curl -i "http://localhost:8080/api/public/news" | grep "X-Rate-Limit"
 
 ---
 
-## 🔒 Admin API Endpoints (Authentication Required)
+## Admin API Endpoints (Authentication Required)
 
 ### 1. Get All News (Published + Unpublished)
 ```bash
@@ -104,7 +104,7 @@ curl -u admin:password -X DELETE "http://localhost:8080/api/admin/news/1"
 ```
 ---
 
-## 📋 Pagination Parameters
+## Pagination Parameters
 
 All list endpoints support pagination:
 - `page`: Page number (0-based, default: 0)
@@ -140,7 +140,7 @@ curl -i "http://localhost:8080/api/public/news?page=1&size=5&sort=title,asc"
 
 ---
 
-## 📊 Rate Limiting Testing
+## Rate Limiting Testing
 
 ### Test Public API Rate Limit (100/min):
 ```bash
@@ -160,18 +160,18 @@ Expected: First requests return `200`, then `429` after limit exceeded.
 
 ---
 
-## ⚠️ Notes
+## Notes
 - All examples assume local development: `http://localhost:8080`
 - Replace `admin:password` with your configured credentials
 - Rate limits are per IP address and reset every minute
 - Use `-i` flag to see response headers including rate limit info
 - Never use real production passwords in scripts or documentation
 
-## 📚 Alternative API Documentation: Swagger UI
+## Alternative API Documentation: Swagger UI
 
 In addition to this `API_USAGE.md`, you can access live API documentation and test endpoints in Swagger UI:
 
-👉 [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+[http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 Swagger UI automatically generates API docs from controllers and annotations.
 It is useful for exploring available endpoints, schemas, and making test requests directly in the browser.

@@ -1,4 +1,4 @@
-# 🗄️ Database Schema – News Platform
+# Database Schema – News Platform
 
 This document describes the **final MySQL 8 database schema** used by the News Platform project.  
 It has been normalized from the legacy Drupal 6 database into a modern schema compatible with **Spring Boot + JPA/Hibernate**.
@@ -12,7 +12,7 @@ The schema is designed to support:
 
 ---
 
-## 📂 Entity-Relationship (ER) Model – Overview
+## Entity-Relationship (ER) Model – Overview
 
 - **users**: System users imported from Drupal.
 - **roles**: User roles (Admin, Editor, etc.).
@@ -23,7 +23,7 @@ The schema is designed to support:
 
 ---
 
-## 📐 DDL – Final Schema
+## DDL – Final Schema
 
 ```sql
 -- ======================================
@@ -93,7 +93,7 @@ CREATE TABLE content_terms (
     FOREIGN KEY(term_id) REFERENCES terms(id) ON DELETE CASCADE
 );
 ```
-## 📊 ER Diagram (ASCII Representation)
+## ER Diagram (ASCII Representation)
 
           +-------------------+
           |      users        |
@@ -159,7 +159,7 @@ content (*) ---- (*) terms   → Many-to-many relation via content_terms.
           +-------------------+
 
 
-## 📊 Example Queries (cheatsheet)
+## Example Queries (cheatsheet)
 
 ```sql
 -- list all published news articles
@@ -182,7 +182,7 @@ JOIN roles r ON ur.role_id = r.id
 WHERE u.status = 1;
 ```
 
-## 📚 Notes
+## Notes
 - content is the main entity (News in JPA code).
 - The `published` column (added in Flyway migration V2) implements explicit publish/unpublish workflow.
 - Audit fields (created_at, updated_at) are managed automatically in JPA via entity lifecycle hooks.

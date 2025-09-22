@@ -14,6 +14,7 @@
 - **Database**: MySQL 8.0 (H2 for tests)
 - **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned)
 - **API**: REST with OpenAPI/Swagger documentation
+- **Caching**: Caffeine (In-Memory)
 - **Build**: Gradle 8.7
 - **Testing**: JUnit 5, Integration tests with H2
 - **Migration**: Flyway (disabled in favor of Hibernate DDL)
@@ -37,7 +38,7 @@
 news-platform/
 ├── backend/                    # Spring Boot application
 │   ├── src/main/java/com/example/newsplatform/
-│   │   ├── config/            # Security, Test, Rate Limit configurations
+│   │   ├── config/            # Security, Test, Rate Limit, Cache configurations
 │   │   ├── controller/        # REST endpoints (Admin + Public)
 │   │   ├── dto/              # Data Transfer Objects
 │   │   ├── entity/           # JPA entities (News, User, Term, Role)
@@ -147,7 +148,7 @@ news-platform/
 - **Steps**: Build → Test → Coverage → Static Analysis
 - **Artifacts**: Test reports, coverage data
 
-### Code Quality
+## Code Quality
 - **Checkstyle**: 120 character line limit, Java conventions
 - **JaCoCo**: Test coverage reporting
 - **CodeCov**: Coverage tracking integration
@@ -195,23 +196,24 @@ news-platform/
 
 ## Current Status & Next Steps
 
-### Completed ✅
+### Completed
 - **Backend Core**: Spring Boot 3.x with Java 21
 - **Database**: MySQL 8.0 with H2 for tests
 - **Security**: Spring Security with Basic Auth
 - **API**: RESTful endpoints with OpenAPI/Swagger
 - **Pagination**: Term-based filtering with configurable page sizes
+- **Caching**: High-performance in-memory caching with Caffeine to reduce database load.
 - **Rate Limiting**: IP-based throttling (100 req/min public, 50 req/min admin)
 - **CI/CD**: GitHub Actions with automated testing
 - **Docker**: Development environment with Docker Compose
 - **Migration**: Drupal 6 data migration scripts and documentation
 
-### In Progress 🔄
+### In Progress
 - Documentation updates
 - Code quality refinements
 - Performance optimizations
 
-### Planned 📋
+### Planned
 - **Frontend**: Angular with Angular Universal
 - **Authentication**: OAuth 2.0 + 2FA for ADMIN, EDITOR, USER roles
 - **Features**: Advanced search, file uploads, push notifications
@@ -226,7 +228,6 @@ news-platform/
 
 ### Performance
 - Database query optimization needed
-- Consider caching for frequently accessed data
 - Pagination improvements for large datasets
 
 ### Code Quality
@@ -271,10 +272,9 @@ ADMIN_PASSWORD=<dev_admin_password>
 3. **H2 for Testing**: In-memory database for fast test execution
 4. **Rate Limiting**: Bucket4j for IP-based request throttling
 5. **Docker First**: Development environment prioritizes containerization
-6. **Migration Strategy**: Drupal 6 → MySQL 5.7 → normalization → MySQL 8.0 **Basic Auth**: Simple authentication suitable for admin interface
-4. **H2 for Tests**: Fast, isolated test execution
-5. **Docker First**: Development environment containerized
-6. **REST over GraphQL**: Traditional REST API with OpenAPI documentation
-7. **Gradle over Maven**: Build tool choice for dependency management
+6. **Migration Strategy**: Drupal 6 → MySQL 5.7 → normalization → MySQL 8.0
+7. **Basic Auth**: Simple authentication suitable for admin interface
+8. **REST over GraphQL**: Traditional REST API with OpenAPI documentation
+9. **Gradle over Maven**: Build tool choice for dependency management
 
 This document provides complete context for understanding the project architecture, current state, and technical decisions made during development.

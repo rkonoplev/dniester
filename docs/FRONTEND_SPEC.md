@@ -1,6 +1,6 @@
-# 📰 Frontend Technical Specification
+# Frontend Technical Specification
 
-## 📑 Table of Contents
+## Table of Contents
 - [1. General Objectives](#1-general-objectives)
 - [2. Technology Stack](#2-technology-stack)
 - [3. Layout & Pages](#3-layout--pages)

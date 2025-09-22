@@ -1,10 +1,10 @@
-# 🔄 CI/CD & Security Guide
+# CI/CD & Security Guide
 
 This document describes the **continuous integration pipeline**, quality tools, and security practices used in the News Platform project.
 
 ---
 
-## ⚡ CI/CD Pipeline (GitHub Actions)
+## CI/CD Pipeline (GitHub Actions)
 
 The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
@@ -38,7 +38,7 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 ---
 
-## 📊 Tools Integrated in CI
+## Tools Integrated in CI
 
 - **JaCoCo** — test coverage (artifact + Codecov report).
 - **Codecov** — coverage metrics integrated to PRs.
@@ -49,7 +49,7 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 ---
 
-## 🔒 Security Best Practices
+## Security Best Practices
 
 1. **Authentication Architecture**
     - **Basic Auth** with environment-based credentials (no database storage)
@@ -109,7 +109,7 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 ---
 
-## ✅ Summary
+## Summary
 
 - CI/CD pipeline is **fully automated**: build → test → quality → security.
 - Code quality is controlled with **Checkstyle**, **PMD**, **JaCoCo**, and **Codecov**.
