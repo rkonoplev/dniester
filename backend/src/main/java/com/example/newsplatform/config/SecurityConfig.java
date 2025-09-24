@@ -1,41 +1,31 @@
 package com.example.newsplatform.config;
 
 import com.example.newsplatform.filter.RateLimitFilter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
- * Security configuration for the News Platform application.
- * Provides:
- * - Basic Auth for admin endpoints
- * - Role-based access control for /api/admin/**
- * - CSRF disabled for API usage (with clear explanation why)
+ * Security configuration for the News Platform application. Configures endpoint authorization,
+ * CSRF protection, and the password encoder.
  */
 @Configuration
 @EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
-    private RateLimitFilter rateLimitFilter;
+    private final RateLimitFilter rateLimitFilter;
 
-    // Inject admin credentials from application properties or ENV
-    @Value("${admin.username:}")
-    private String adminUsername;
-
-    @Value("${admin.password:}")
-    private String adminPassword;
+    public SecurityConfig(RateLimitFilter rateLimitFilter) {
+        this.rateLimitFilter = rateLimitFilter;
+    }
 
     /**
      * Configure the HTTP security filter chain.
@@ -47,22 +37,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                // Disable CSRF because this is a stateless REST API.
-                // If in the future you serve HTML forms and session-based auth, enable CSRF here.
-                .csrf(csrf -> csrf.disable())
+                // Disable CSRF as this is a stateless REST API.
+                // For session-based authentication with web forms, CSRF should be enabled.
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints are open to everyone
+                        .requestMatchers("/api/public/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        // Secure admin endpoints with role-based access
+                        .requestMatchers(HttpMethod.GET, "/api/admin/**").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers(HttpMethod.POST, "/api/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/admin/**").hasAnyRole("ADMIN", "EDITOR")
+                        .requestMatchers(HttpMethod.DELETE, "/api/admin/**").hasRole("ADMIN")
+                        // Fallback for any other admin endpoints
                         .requestMatchers("/api/admin/**").hasAnyRole("ADMIN", "EDITOR")
+                        // All other requests must be authenticated
                         .anyRequest().permitAll()
                 )
-                // Use HTTP Basic Auth for simplicity; consider JWT for production.
-                .httpBasic(httpBasic -> {})
-                // Add rate limiting filter before authentication
+                // Use HTTP Basic Authentication.
+                .httpBasic(org.springframework.security.config.Customizer.withDefaults())
+                // Set session management to stateless, as we are not using sessions.
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Add the custom rate limiting filter before the authentication filter.
                 .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
     /**
-     * Password encoder bean using BCrypt (recommended for production).
+     * Provides a BCrypt password encoder bean for hashing user passwords.
      */
     @Bean
     public PasswordEncoder passwordEncoder() {

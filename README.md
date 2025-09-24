@@ -62,7 +62,7 @@ API entrypoint: http://localhost:8080
 ## Key Features
 
 - **Database**: MySQL 8.0 as primary database with H2 for tests
-- **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned for ADMIN, EDITOR, USER roles)
+- **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned for ADMIN and EDITOR roles)
 - **API**: RESTful endpoints with OpenAPI/Swagger documentation
 - **Pagination**: Term-based filtering with configurable page sizes
 - **Content Management**: Full CRUD operations for news articles
