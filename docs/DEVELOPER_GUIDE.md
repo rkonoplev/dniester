@@ -22,16 +22,16 @@
 - [Database Schema](#database-schema)
 
 
-This document explains how developers should work with the project locally
-(IntelliJ IDEA, Gradle, Docker), and what checks will be automatically run in GitHub Actions (CI/CD).
+This document explains how developers should work with the project locally (IntelliJ IDEA, Gradle, Docker),
+and what checks will be automatically run in GitHub Actions (CI/CD).
 
 ---
 
 ## Local Development Workflow
 
 You do **not** need to keep Docker containers or databases running all the time during active development.  
-Focus on the code and use Docker only when you want to test the full application.  
-The heavy checks (static analysis, security scanning, code coverage, etc.) are performed in GitHub Actions.
+Focus on the code and use Docker only when you want to test the full application. The heavy checks
+(static analysis, security scanning, code coverage, etc.) are performed in GitHub Actions.
 
 ### Daily workflow in IntelliJ IDEA:
 - **Write code** and use `Build Project` (`Ctrl+F9`) to compile changes.
@@ -73,7 +73,8 @@ That’s usually enough — **GitHub Actions CI** will run additional steps:
 ## Summary
 Developers **can work without Docker** most of the time.
 Run **unit tests and build locally** before pushing.
-Let **CI/CD (GitHub Actions)** handle static analysis (Checkstyle + PMD), coverage (JaCoCo + Codecov), and security (GitLeaks).
+Let **CI/CD (GitHub Actions)** handle static analysis (Checkstyle + PMD), coverage (JaCoCo + Codecov),
+and security (GitLeaks).
 
 This approach ensures fast, resource-light local development, while CI validates everything in the cloud.
 
@@ -81,40 +82,42 @@ This approach ensures fast, resource-light local development, while CI validates
 
 ## Development Environment
 
-Start local dev environment (app + MySQL 8.0):
+The project uses Docker Compose to manage the local development environment, which consists of the backend application
+and a MySQL database.
 
+To start the local environment, run:
 ```bash
 docker compose --env-file .env.dev up -d
 ```
-Check running containers:
+This command automatically uses both `docker-compose.yml` (the base configuration) and `docker-compose.override.yml`
+(for local development tweaks). For a detailed explanation of how these two files work together, please see the
+**[Docker Guide](DOCKER_GUIDE.md#understanding-docker-composeyml-vs-docker-composeoverrideyml)**.
 
+To check the running containers:
 ```bash
 docker ps --format "table {{.Names}}\t{{.Image}}\t{{.Ports}}\t{{.Status}}"
 ```
-Connect to database:
-
+To connect to the database:
 ```bash
 docker exec -it news-mysql mysql -uroot -proot dniester
 ```
-Stop all services:
-
+To stop all services:
 ```bash
 docker compose down
 ```
 
 ## Production Environment
-Production setup uses docker-compose.override.yml and secure secrets.
 
-Start with prod config:
+The production environment should be deployed using a CI/CD pipeline. The setup uses the base `docker-compose.yml`
+and injects production secrets securely. The `docker-compose.override.yml` file is **not** used in production.
 
+A simplified command for a production-like start would be:
 ```bash
-docker compose \
-  -f docker-compose.yml \
-  -f docker-compose.override.yml \
-  --env-file .env.prod \
-  up -d
-  ```
-Note: .env.prod must NOT be committed — it should be provided via CI/CD secrets or Docker Secrets.
+docker compose -f docker-compose.yml --env-file .env.prod up -d
+```
+Note: `.env.prod` must NOT be committed. In a real production scenario, these variables would be provided by the
+hosting platform (e.g., Render, AWS) or a secrets manager. For more details on production builds, see the
+**[Docker Guide](DOCKER_GUIDE.md)**.
 
 ## Migration from Drupal 6
 For complete migration instructions, see [Migration Drupal6 → News Platform](MIGRATION_DRUPAL6.md).
@@ -183,7 +186,8 @@ This project uses several tools for code and security assurance.
 ---
 ## Running the Project
 
-After migrating the database and producing `clean_schema.sql`, you can run the full News Platform stack (MySQL + Spring Boot) or only the database for verification.
+After migrating the database and producing `clean_schema.sql`, you can run the full News Platform stack
+(MySQL + Spring Boot) or only the database for verification.
 
 ### Option A. Run only the database (MySQL check)
 
