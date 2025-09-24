@@ -67,7 +67,8 @@ API entrypoint: http://localhost:8080
 - **Pagination**: Term-based filtering with configurable page sizes
 - **Content Management**: Full CRUD operations for news articles
 - **Taxonomy**: Category and tag system with flexible filtering
-- **Caching**: High-performance in-memory caching with Caffeine for frequently accessed data, significantly reducing database load.
+- **Caching**: High-performance in-memory caching with Caffeine for frequently accessed data,
+  significantly reducing database load.
 - **Rate Limiting**: IP-based rate limiting with Bucket4j (100 req/min public, 50 req/min admin)
 - **CI/CD**: GitHub Actions pipeline with automated testing
 

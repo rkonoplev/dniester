@@ -2,6 +2,7 @@
 
 ## Table of Contents
 - [Local Development with Docker Compose](#local-development-with-docker-compose)
+  - [Understanding `docker-compose.yml` vs. `docker-compose.override.yml`](#understanding-docker-composeyml-vs-docker-composeoverrideyml)
 - [Production Build with Docker](#production-build-with-docker)
     - [1. Build application JAR](#1-build-application-jar)
     - [2. Build production Docker image](#2-build-production-docker-image)
@@ -11,13 +12,41 @@
 - [Best Practices](#best-practices)
 
 
-This document explains how to work with Docker in the News Platform project, both for **local development** and **production deployment**.
+This document explains how to work with Docker in the News Platform project, both for local development
+and production deployment.
 
 ---
 
 ## Local Development with Docker Compose
 
-Start backend and database together:
+The project uses a two-file approach for Docker Compose to separate the core application architecture
+from local development conveniences.
+
+### Understanding `docker-compose.yml` vs. `docker-compose.override.yml`
+
+#### `docker-compose.yml` (The Architectural Blueprint)
+-   **Purpose**: Defines the fundamental services that make up the application. It states that the News Platform
+    consists of a `backend` service and a `database` service.
+-   **Analogy**: Think of this file as the architectural plan for a building. It describes the foundation,
+    the number of floors, and the main structure. It is essential and universal for any environment.
+-   **Content**: Contains service definitions, network configurations, and volume stubs that are common
+    across all environments.
+
+#### `docker-compose.override.yml` (The Developer's Scaffolding)
+-   **Purpose**: Provides local, development-specific overrides. This file is automatically and transparently
+    used by Docker Compose when you run `docker-compose up`.
+-   **Analogy**: This is the temporary scaffolding used to construct the building. It's essential for the
+    development process but is not part of the final structure.
+-   **Content**: It typically includes configurations that are only useful for local development, such as:
+    -   **Port Mapping**: Exposing the database port to the host machine for direct access with a GUI client.
+    -   **Volume Mounts**: Mounting local source code into the container to enable hot-reloading.
+    -   **Development-only tools**: Potentially adding extra services like a database admin tool.
+
+This separation ensures that the base `docker-compose.yml` remains clean and representative of the production
+architecture, while developers have the flexibility to customize their local environment without affecting the
+core configuration.
+
+To start the backend and database together for local development, run:
 
 ```bash
 docker-compose up --build
