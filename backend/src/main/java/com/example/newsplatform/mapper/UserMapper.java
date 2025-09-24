@@ -4,54 +4,45 @@ import com.example.newsplatform.dto.request.UserCreateRequestDto;
 import com.example.newsplatform.dto.response.UserDto;
 import com.example.newsplatform.dto.request.UserUpdateRequestDto;
 import com.example.newsplatform.entity.User;
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Utility class to map between User entity and various DTOs.
- * 
- * Default Role Behavior:
- * - If a user has no roles specified, defaults to 'Admin' role in DTO responses
- * - This serves as a temporary placeholder until roles are fully defined
- * - The role field cannot be null in API responses
+ * Mapper for converting between User entity and various User DTOs using MapStruct.
  */
-public class UserMapper {
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface UserMapper {
 
-    public static UserDto toDto(User entity) {
-        if (entity == null) return null;
-        
-        // Default to Admin role if no roles specified
-        Set<String> roleNames;
-        if (entity.getRoles() == null || entity.getRoles().isEmpty()) {
-            roleNames = java.util.Set.of("Admin");
-        } else {
-            roleNames = entity.getRoles().stream()
-                    .map(role -> role.getName())
-                    .collect(java.util.stream.Collectors.toSet());
+    @Mapping(source = "roles", target = "roleNames")
+    UserDto toDto(User entity);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "active", ignore = true)
+    User fromCreateRequest(UserCreateRequestDto request);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "roles", ignore = true)
+    void updateEntity(@MappingTarget User entity, UserUpdateRequestDto request);
+
+    default Set<String> rolesToRoleNames(Set<com.example.newsplatform.entity.Role> roles) {
+        if (roles == null || roles.isEmpty()) {
+            // Default to a non-privileged role for safety
+            return Set.of("EDITOR");
         }
-        
-        return new UserDto(
-                entity.getId(),
-                entity.getUsername(),
-                entity.getEmail(),
-                entity.isActive(),
-                roleNames
-        );
-    }
-
-    public static User fromCreateRequest(UserCreateRequestDto request) {
-        if (request == null) return null;
-        
-        User entity = new User();
-        entity.setUsername(request.getUsername());
-        entity.setEmail(request.getEmail());
-        entity.setActive(request.isActive());
-        return entity;
-    }
-
-    public static void updateEntity(User entity, UserUpdateRequestDto request) {
-        if (entity == null || request == null) return;
-
-        if (request.getEmail() != null) entity.setEmail(request.getEmail());
-        if (request.getActive() != null) entity.setActive(request.getActive());
+        return roles.stream()
+                .map(com.example.newsplatform.entity.Role::getName)
+                .collect(Collectors.toSet());
     }
 }

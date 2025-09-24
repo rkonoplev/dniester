@@ -1,8 +1,10 @@
 package com.example.newsplatform.service;
 
 import com.example.newsplatform.dto.request.BulkActionRequestDto;
+import com.example.newsplatform.mapper.NewsMapper;
 import com.example.newsplatform.repository.NewsRepository;
 import com.example.newsplatform.service.impl.NewsServiceImpl;
+import com.example.newsplatform.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,20 +32,26 @@ class BulkOperationsTest {
     private NewsRepository newsRepository;
 
     @Mock
+    private UserRepository userRepository;
+
+    @Mock
+    private NewsMapper newsMapper;
+
+    @Mock
     private Authentication authentication;
 
     private NewsServiceImpl newsService;
 
     @BeforeEach
     void setUp() {
-        newsService = spy(new NewsServiceImpl(newsRepository, null, null));
+        newsService = spy(new NewsServiceImpl(newsRepository, userRepository, newsMapper));
     }
 
     @Test
     void performBulkAction_AdminRole_ShouldAllowBulkDelete() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
-        
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
         request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
@@ -58,8 +66,8 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_AdminRole_ShouldAllowBulkUnpublish() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
-        
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.UNPUBLISH);
         request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
@@ -74,8 +82,8 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_EditorRole_ShouldDenyBulkOperations() {
         // Given
-        doReturn(false).when(newsService).hasRoleId(authentication, 1L); // Not ADMIN
-        
+        doReturn(false).when(newsService).hasRole(authentication, "ADMIN"); // Simulate non-ADMIN user
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
         request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
@@ -83,12 +91,12 @@ class BulkOperationsTest {
         request.setConfirmed(true);
 
         // When & Then
-        AccessDeniedException exception = assertThrows(AccessDeniedException.class, 
-            () -> newsService.performBulkAction(request, authentication));
-        
-        assertEquals("Bulk operations are restricted to ADMIN role only. EDITOR can only delete single articles.", 
-            exception.getMessage());
-        
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+                () -> newsService.performBulkAction(request, authentication));
+
+        assertEquals("Bulk operations are restricted to ADMIN role only. EDITOR can only delete single articles.",
+                exception.getMessage());
+
         verify(newsRepository, never()).deleteAllById(any());
         verify(newsRepository, never()).unpublishByIds(any());
     }
@@ -96,8 +104,8 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_UnconfirmedRequest_ShouldThrowException() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
-        
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
         request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
@@ -105,9 +113,9 @@ class BulkOperationsTest {
         request.setConfirmed(false); // Not confirmed
 
         // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, 
-            () -> newsService.performBulkAction(request, authentication));
-        
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> newsService.performBulkAction(request, authentication));
+
         assertEquals("Bulk operation must be confirmed", exception.getMessage());
         verify(newsRepository, never()).deleteAllById(any());
     }
@@ -115,9 +123,9 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_ByTermFilter_ShouldCallCorrectRepository() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
         when(newsRepository.findIdsByTermId(5L)).thenReturn(Arrays.asList(1L, 2L, 3L));
-        
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
         request.setFilterType(BulkActionRequestDto.FilterType.BY_TERM);
@@ -135,9 +143,9 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_ByAuthorFilter_ShouldCallCorrectRepository() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
         when(newsRepository.findIdsByAuthorId(10L)).thenReturn(Arrays.asList(4L, 5L));
-        
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.UNPUBLISH);
         request.setFilterType(BulkActionRequestDto.FilterType.BY_AUTHOR);
@@ -155,9 +163,9 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_AllFilter_ShouldCallCorrectRepository() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
         when(newsRepository.findAllIds()).thenReturn(Arrays.asList(1L, 2L, 3L, 4L, 5L));
-        
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
         request.setFilterType(BulkActionRequestDto.FilterType.ALL);
@@ -174,8 +182,8 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_EmptyTargetIds_ShouldNotCallRepository() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
-        
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
         request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
@@ -193,8 +201,8 @@ class BulkOperationsTest {
     @Test
     void performBulkAction_UnsupportedAction_ShouldThrowException() {
         // Given
-        doReturn(true).when(newsService).hasRoleId(authentication, 1L); // ADMIN role
-        
+        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(null); // Unsupported action
         request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
@@ -202,10 +210,9 @@ class BulkOperationsTest {
         request.setConfirmed(true);
 
         // When & Then
-        Exception exception = assertThrows(Exception.class, 
-            () -> newsService.performBulkAction(request, authentication));
-        
-        assertTrue(exception.getMessage().contains("Unsupported bulk action") || 
-                  exception instanceof NullPointerException);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> newsService.performBulkAction(request, authentication));
+
+        assertTrue(exception.getMessage().contains("Unsupported bulk action"));
     }
 }

@@ -6,36 +6,34 @@ import com.example.newsplatform.dto.response.UserDto;
 import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.entity.User;
 import org.junit.jupiter.api.Test;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for UserMapper utility class.
- * Tests mapping between User entities and DTOs for API responses.
- * Includes edge cases like null handling and default role assignment.
- */
 class UserMapperTest {
 
-    /**
-     * Test mapping User entity to DTO when user has assigned roles.
-     * Should properly map all fields including role names.
-     */
+    private final UserMapper userMapper = Mappers.getMapper(UserMapper.class);
+
     @Test
-    void toDto_WithRoles_ShouldMapCorrectly() {
+    void shouldMapUserToUserDto() {
+        // Given
         User user = new User();
         user.setId(1L);
         user.setUsername("testuser");
         user.setEmail("test@example.com");
         user.setActive(true);
 
-        Role role = new Role();
-        role.setName("ADMIN");
-        user.setRoles(Set.of(role));
+        Role adminRole = new Role();
+        adminRole.setName("ADMIN");
+        user.setRoles(Set.of(adminRole));
 
-        UserDto dto = UserMapper.toDto(user);
+        // When
+        UserDto dto = userMapper.toDto(user);
 
+        // Then
+        assertNotNull(dto);
         assertEquals(1L, dto.id());
         assertEquals("testuser", dto.username());
         assertEquals("test@example.com", dto.email());
@@ -43,99 +41,92 @@ class UserMapperTest {
         assertTrue(dto.roleNames().contains("ADMIN"));
     }
 
-    /**
-     * Test mapping User entity to DTO when user has no roles.
-     * Should default to 'Admin' role as fallback behavior.
-     */
     @Test
-    void toDto_WithoutRoles_ShouldDefaultToAdmin() {
+    void shouldMapUserWithNoRolesToDtoWithDefaultRole() {
+        // Given
         User user = new User();
-        user.setId(1L);
-        user.setUsername("testuser");
-        user.setEmail("test@example.com");
-        user.setActive(true);
-        user.setRoles(Set.of());
+        user.setUsername("editor_user");
+        user.setRoles(Set.of()); // No roles
 
-        UserDto dto = UserMapper.toDto(user);
+        // When
+        UserDto dto = userMapper.toDto(user);
 
-        assertTrue(dto.roleNames().contains("Admin"));
+        // Then
+        assertNotNull(dto);
+        assertEquals(1, dto.roleNames().size());
+        assertTrue(dto.roleNames().contains("EDITOR"));
     }
 
-    /**
-     * Test null safety of toDto method.
-     * Should return null when input entity is null.
-     */
     @Test
-    void toDto_WithNullUser_ShouldReturnNull() {
-        UserDto dto = UserMapper.toDto(null);
+    void shouldReturnNullDtoForNullUser() {
+        // When
+        UserDto dto = userMapper.toDto(null);
+        // Then
         assertNull(dto);
     }
 
-    /**
-     * Test mapping from UserCreateRequestDto to User entity.
-     * Should properly map all creation fields.
-     */
     @Test
-    void fromCreateRequest_ShouldMapCorrectly() {
+    void shouldMapCreateRequestToUser() {
+        // Given
         UserCreateRequestDto request = new UserCreateRequestDto();
         request.setUsername("newuser");
         request.setEmail("new@example.com");
-        request.setActive(true);
 
-        User user = UserMapper.fromCreateRequest(request);
+        // When
+        User user = userMapper.fromCreateRequest(request);
 
+        // Then
+        assertNotNull(user);
         assertEquals("newuser", user.getUsername());
         assertEquals("new@example.com", user.getEmail());
-        assertTrue(user.isActive());
     }
 
-    /**
-     * Test null safety of fromCreateRequest method.
-     * Should return null when input DTO is null.
-     */
     @Test
-    void fromCreateRequest_WithNullRequest_ShouldReturnNull() {
-        User user = UserMapper.fromCreateRequest(null);
+    void shouldReturnNullUserForNullCreateRequest() {
+        // When
+        User user = userMapper.fromCreateRequest(null);
+        // Then
         assertNull(user);
     }
 
-    /**
-     * Test updating existing User entity with new data.
-     * Should only update non-null fields from update DTO.
-     */
     @Test
-    void updateEntity_ShouldUpdateFields() {
+    void shouldUpdateUserFromUpdateRequest() {
+        // Given
         User user = new User();
-        user.setEmail("old@example.com");
+        user.setUsername("original");
+        user.setEmail("original@example.com");
         user.setActive(false);
 
         UserUpdateRequestDto request = new UserUpdateRequestDto();
         request.setEmail("updated@example.com");
         request.setActive(true);
 
-        UserMapper.updateEntity(user, request);
+        // When
+        userMapper.updateEntity(user, request);
 
+        // Then
+        assertEquals("original", user.getUsername()); // Username should not change
         assertEquals("updated@example.com", user.getEmail());
         assertTrue(user.isActive());
     }
 
-    /**
-     * Test update behavior with null values in DTO.
-     * Should preserve original values when DTO fields are null.
-     */
     @Test
-    void updateEntity_WithNullValues_ShouldNotUpdate() {
+    void shouldIgnoreNullsInUpdateRequest() {
+        // Given
         User user = new User();
+        user.setUsername("original");
         user.setEmail("original@example.com");
-        user.setActive(true);
+        user.setActive(false);
 
         UserUpdateRequestDto request = new UserUpdateRequestDto();
-        request.setEmail(null);
-        request.setActive(null);
+        request.setEmail(null); // Email is null
+        request.setActive(true); // Active is not null
 
-        UserMapper.updateEntity(user, request);
+        // When
+        userMapper.updateEntity(user, request);
 
-        assertEquals("original@example.com", user.getEmail());
-        assertTrue(user.isActive());
+        // Then
+        assertEquals("original@example.com", user.getEmail()); // Should not be updated to null
+        assertTrue(user.isActive()); // Should be updated
     }
 }

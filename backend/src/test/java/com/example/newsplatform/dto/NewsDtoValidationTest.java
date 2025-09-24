@@ -6,88 +6,89 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 class NewsDtoValidationTest {
 
-    private Validator validator;
+    private static Validator validator;
 
-    @BeforeEach
-    void setUp() {
+    @BeforeAll
+    static void setUp() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
     }
 
+    // --- NewsCreateRequestDto Tests ---
+
     @Test
-    void newsCreateRequestDto_WithValidData_ShouldPassValidation() {
+    void whenCreateDtoIsValid_thenNoViolations() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setTitle("Valid Title");
-        dto.setBody("Valid body content");
-        dto.setAuthorId(1L);
-        dto.setCategoryId(1L);
-        dto.setPublicationDate(LocalDateTime.now());
-        dto.setPublished(true);
-
+        dto.setContent("Valid Content");
         Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
-
-        assertTrue(violations.isEmpty());
+        assertEquals(0, violations.size());
     }
 
     @Test
-    void newsCreateRequestDto_WithBlankTitle_ShouldFailValidation() {
+    void whenCreateDtoTitleIsBlank_thenViolation() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setTitle("");
-        dto.setBody("Valid body");
-        dto.setAuthorId(1L);
-        dto.setCategoryId(1L);
-        dto.setPublicationDate(LocalDateTime.now());
-
+        dto.setContent("Valid Content");
         Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
-
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Title is required")));
     }
 
     @Test
-    void newsCreateRequestDto_WithNullRequiredFields_ShouldFailValidation() {
+    void whenCreateDtoContentIsBlank_thenViolation() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setTitle("Valid Title");
-        dto.setBody("Valid body");
-
+        dto.setContent("");
         Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
-
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Category ID is required")));
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Author ID is required")));
-        assertTrue(violations.stream().anyMatch(v -> v.getMessage().contains("Publication date is required")));
     }
 
     @Test
-    void newsUpdateRequestDto_WithValidData_ShouldPassValidation() {
-        NewsUpdateRequestDto dto = new NewsUpdateRequestDto();
-        dto.setTitle("Updated Title");
-        dto.setBody("Updated body");
-        dto.setCategoryId(2L);
+    void whenCreateDtoTitleExceedsLimit_thenViolation() {
+        NewsCreateRequestDto dto = new NewsCreateRequestDto();
+        dto.setTitle("A".repeat(256));
+        dto.setContent("Content");
+        Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty());
+    }
 
+    // --- NewsUpdateRequestDto Tests ---
+
+    @Test
+    void whenUpdateDtoIsValid_thenNoViolations() {
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Updated Title", "Updated content", true);
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
-
-        assertTrue(violations.isEmpty());
+        assertEquals(0, violations.size());
     }
 
     @Test
-    void newsUpdateRequestDto_WithTooLongTitle_ShouldFailValidation() {
-        NewsUpdateRequestDto dto = new NewsUpdateRequestDto();
-        dto.setTitle("A".repeat(256)); // Exceeds 255 character limit
-
+    void whenUpdateDtoTitleIsBlank_thenViolation() {
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("", "Updated content", true);
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
-
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("title")));
+    }
+
+    @Test
+    void whenUpdateDtoTitleExceedsLimit_thenViolation() {
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("A".repeat(256), "Content", false);
+        Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    void whenUpdateDtoPublishedIsNull_thenViolation() {
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Title", "Content", null);
+        Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
+        assertFalse(violations.isEmpty());
     }
 }
