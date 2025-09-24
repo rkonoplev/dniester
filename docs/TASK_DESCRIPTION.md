@@ -12,7 +12,7 @@
 - **Framework**: Spring Boot 3.x
 - **Language**: Java 21
 - **Database**: MySQL 8.0 (H2 for tests)
-- **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned)
+- **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned for ADMIN and EDITOR roles)
 - **API**: REST with OpenAPI/Swagger documentation
 - **Caching**: Caffeine (In-Memory)
 - **Build**: Gradle 8.7
@@ -215,7 +215,7 @@ news-platform/
 
 ### Planned
 - **Frontend**: Angular with Angular Universal
-- **Authentication**: OAuth 2.0 + 2FA for ADMIN, EDITOR, USER roles
+- **Authentication**: OAuth 2.0 + 2FA for ADMIN and EDITOR roles
 - **Features**: Advanced search, file uploads, push notifications
 - **Production**: Deployment and monitoring setup
 
@@ -223,7 +223,7 @@ news-platform/
 
 ### Security
 - CORS configuration needs refinement for production
-- **OAuth 2.0 + 2FA migration planned**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for ADMIN, EDITOR, USER roles
+- **OAuth 2.0 + 2FA migration planned**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for ADMIN and EDITOR roles
 - Input validation and sanitization improvements
 
 ### Performance

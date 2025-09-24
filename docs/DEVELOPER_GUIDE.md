@@ -78,7 +78,7 @@ and security (GitLeaks).
 
 This approach ensures fast, resource-light local development, while CI validates everything in the cloud.
 
-**Note**: Future authentication migration to OAuth 2.0 + 2FA is planned for all user roles (ADMIN, EDITOR, USER).
+**Note**: Future authentication migration to OAuth 2.0 + 2FA is planned for the ADMIN and EDITOR roles.
 
 ## Development Environment
 

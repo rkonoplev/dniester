@@ -120,7 +120,7 @@ curl http://localhost:8080/api/public/news?size=10
 ## Future Enhancements
 
 ### Planned Features
-- **OAuth 2.0 + 2FA migration**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for all roles (ADMIN, EDITOR, USER)
+- **OAuth 2.0 + 2FA migration**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for ADMIN and EDITOR roles.
 - **JWT tokens** for stateless authentication
 - **Two-factor authentication** (2FA) for enhanced security
 - **API key authentication** for service-to-service calls
