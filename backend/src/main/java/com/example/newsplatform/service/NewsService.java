@@ -8,17 +8,19 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
+import java.util.List;
+
 public interface NewsService {
 
-    Page<NewsDto> searchAll(String filter, Pageable pageable);
+    Page<NewsDto> searchAll(String search, String category, Pageable pageable);
 
-    Page<NewsDto> searchPublished(String filter, Pageable pageable);
+    Page<NewsDto> searchPublished(String search, String category, Pageable pageable);
 
     NewsDto getPublishedById(Long id);
 
-    Page<NewsDto> getByTermId(Long termId, Pageable pageable);
+    Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable);
 
-    Page<NewsDto> getByTermIds(Long[] termIds, Pageable pageable);
+    Page<NewsDto> getPublishedByTermIds(List<Long> termIds, Pageable pageable);
 
     NewsDto create(NewsCreateRequestDto createRequest);
 
@@ -26,5 +28,6 @@ public interface NewsService {
 
     void delete(Long id);
 
-    void performBulkAction(BulkActionRequestDto request, Authentication auth);
+    BulkActionRequestDto.BulkActionResult performBulkAction(BulkActionRequestDto request, Authentication authentication);
+
 }

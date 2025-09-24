@@ -1,12 +1,20 @@
 package com.example.newsplatform.dto.request;
 
-import com.example.newsplatform.entity.News;
-import com.example.newsplatform.repository.NewsRepository;
+import com.example.newsplatform.dto.response.NewsDto;
+import com.example.newsplatform.entity.User;
+import com.example.newsplatform.repository.UserRepository;
+import com.example.newsplatform.service.NewsService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -14,38 +22,46 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 @ActiveProfiles("test")
 @Transactional
-class NewsCreateRequestDtoIntegrationTest {
+public class NewsCreateRequestDtoIntegrationTest {
 
     @Autowired
-    private NewsRepository newsRepository;
+    private NewsService newsService;
 
-    @Test
-    void createNews_WithValidDto_ShouldCreateNewsSuccessfully() {
-        NewsCreateRequestDto dto = new NewsCreateRequestDto();
-        dto.setTitle("Integration Test Title");
-        dto.setBody("Integration test body content.");
+    @Autowired
+    private UserRepository userRepository;
 
-        News news = new News();
-        news.setTitle(dto.getTitle());
-        news.setBody(dto.getBody());
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-        News savedNews = newsRepository.save(news);
+    private User author;
 
-        assertNotNull(savedNews.getId());
-        assertEquals("Integration Test Title", savedNews.getTitle());
+    @BeforeEach
+    void setUp() {
+        author = new User();
+        author.setUsername("creator_user");
+        author.setPassword(passwordEncoder.encode("password"));
+        author.setActive(true);
+        userRepository.save(author);
+
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(author.getUsername(), "password", Collections.emptyList())
+        );
     }
 
     @Test
-    void createNews_WithOptionalFields_ShouldCreateNewsWithDefaults() {
+    void whenCreateNewsWithValidDto_thenNewsIsCreated() {
+        // Given
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
-        dto.setTitle("Another Test Title");
+        dto.setTitle("Integration Test Title");
+        dto.setContent("Integration test body content.");
 
-        News news = new News();
-        news.setTitle(dto.getTitle());
+        // When
+        NewsDto result = newsService.create(dto);
 
-        News savedNews = newsRepository.save(news);
-
-        assertNotNull(savedNews.getId());
-        assertEquals("Another Test Title", savedNews.getTitle());
+        // Then
+        assertNotNull(result.getId());
+        assertEquals("Integration Test Title", result.getTitle());
+        assertEquals("Integration test body content.", result.getContent());
+        assertEquals(author.getId(), result.getAuthorId());
     }
 }

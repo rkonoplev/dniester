@@ -1,29 +1,26 @@
 package com.example.newsplatform.controller;
 
+import com.example.newsplatform.dto.request.BulkActionRequestDto;
 import com.example.newsplatform.dto.request.NewsCreateRequestDto;
-import com.example.newsplatform.dto.response.NewsDto;
 import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
-import com.example.newsplatform.mapper.NewsMapper;
+import com.example.newsplatform.dto.response.NewsDto;
 import com.example.newsplatform.service.NewsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.Authentication;
-
-import jakarta.validation.Valid;
-
-// Swagger/OpenAPI imports
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * REST controller for admin operations on news articles.
- * Endpoints require authentication and ADMIN role.
+ * Endpoints require authentication and ADMIN/EDITOR role.
  */
 @RestController
 @RequestMapping("/api/admin/news")
@@ -46,7 +43,7 @@ public class AdminNewsController {
      * @return Paginated list of NewsDto.
      */
     @GetMapping
-    @Operation(summary = "Search all news", 
+    @Operation(summary = "Search all news",
             description = "Search all news items (both published and unpublished) " +
                     "with optional keyword and category filters.")
     @ApiResponse(responseCode = "200", description = "Search executed successfully")
@@ -60,19 +57,18 @@ public class AdminNewsController {
     /**
      * Create a new news article.
      *
-     * @param newsDto Validated input data.
+     * @param createRequest Validated input data.
      * @return Created NewsDto wrapped in 201 Created response.
      */
     @PostMapping
-    @Operation(summary = "Create a new article", 
+    @Operation(summary = "Create a new article",
             description = "Creates a new news article. Requires ADMIN/EDITOR role.")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "News article successfully created"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    public ResponseEntity<NewsDto> create(@RequestBody @Valid NewsDto newsDto) {
-        NewsCreateRequestDto request = NewsMapper.newsDtoToCreateRequest(newsDto);
-        NewsDto created = newsService.create(request);
+    public ResponseEntity<NewsDto> create(@RequestBody @Valid NewsCreateRequestDto createRequest) {
+        NewsDto created = newsService.create(createRequest);
         // Return 201 Created instead of 200 OK
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
@@ -81,22 +77,20 @@ public class AdminNewsController {
      * Update an existing news article.
      *
      * @param id      ID of the article to update.
-     * @param newsDto Updated data.
+     * @param updateRequest Updated data.
      * @return Updated NewsDto.
      */
     @PutMapping("/{id}")
-    @Operation(summary = "Update an article", 
+    @Operation(summary = "Update an article",
             description = "Updates an existing article by ID. Requires ADMIN/EDITOR role.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "News article successfully updated"),
             @ApiResponse(responseCode = "404", description = "Article not found"),
             @ApiResponse(responseCode = "400", description = "Invalid input data")
     })
-    public ResponseEntity<NewsDto> update(@PathVariable Long id, 
-            @RequestBody @Valid NewsDto newsDto,
-            Authentication authentication) {
-        NewsUpdateRequestDto request = NewsMapper.newsDtoToUpdateRequest(newsDto);
-        NewsDto updated = newsService.update(id, request);
+    public ResponseEntity<NewsDto> update(@PathVariable Long id,
+                                          @RequestBody @Valid NewsUpdateRequestDto updateRequest) {
+        NewsDto updated = newsService.update(id, updateRequest);
         return ResponseEntity.ok(updated);
     }
 
@@ -107,13 +101,13 @@ public class AdminNewsController {
      * @return 204 No Content if deleted, 404 if not found.
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete an article", 
-            description = "Deletes a news article by ID. Requires ADMIN role.")
+    @Operation(summary = "Delete an article",
+            description = "Deletes a news article by ID. Requires ADMIN/EDITOR role.")
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Successfully deleted"),
             @ApiResponse(responseCode = "404", description = "Article not found")
     })
-    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         // our NewsService throws NotFoundException if article doesn't exist (handled by GlobalExceptionHandler)
         newsService.delete(id);
         return ResponseEntity.noContent().build();
@@ -126,22 +120,22 @@ public class AdminNewsController {
      *
      * @param request bulk action request (delete/unpublish with filters)
      * @param authentication current user authentication
-     * @return 204 No Content if successful
+     * @return A DTO with the count of affected items.
      */
     @PostMapping("/bulk")
-    @Operation(summary = "Bulk operations on articles", 
+    @Operation(summary = "Bulk operations on articles",
             description = "Perform bulk delete or unpublish operations. " +
                     "RESTRICTED: Only ADMIN role allowed. EDITOR cannot perform bulk operations.")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Bulk operation completed successfully"),
-            @ApiResponse(responseCode = "403", 
+            @ApiResponse(responseCode = "200", description = "Bulk operation completed successfully"),
+            @ApiResponse(responseCode = "403",
                     description = "Access denied - EDITOR role cannot perform bulk operations"),
             @ApiResponse(responseCode = "400", description = "Invalid request or operation not confirmed")
     })
-    public ResponseEntity<Void> performBulkAction(
-            @RequestBody @Valid com.example.newsplatform.dto.request.BulkActionRequestDto request,
+    public ResponseEntity<BulkActionRequestDto.BulkActionResult> performBulkAction(
+            @RequestBody @Valid BulkActionRequestDto request,
             Authentication authentication) {
-        newsService.performBulkAction(request, authentication);
-        return ResponseEntity.noContent().build();
+        BulkActionRequestDto.BulkActionResult result = newsService.performBulkAction(request, authentication);
+        return ResponseEntity.ok(result);
     }
 }

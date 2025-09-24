@@ -3,28 +3,24 @@ package com.example.newsplatform.controller;
 import com.example.newsplatform.dto.response.NewsDto;
 import com.example.newsplatform.service.NewsService;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-/**
- * Unit tests for PublicNewsController.
- * Tests public API endpoints for fetching published news articles.
- * Ensures only published content is accessible through public endpoints.
- */
 @ExtendWith(MockitoExtension.class)
 class PublicNewsControllerTest {
 
@@ -34,74 +30,62 @@ class PublicNewsControllerTest {
     @InjectMocks
     private PublicNewsController controller;
 
-    /**
-     * Test public search functionality for published news.
-     * Verifies only published articles are returned with proper pagination.
-     */
     @Test
-    void searchPublished_ShouldReturnPublishedNews() {
-        NewsDto newsDto = new NewsDto(1L, "Public Title", "Public Body", "Public Teaser",
-                LocalDateTime.now(), true, "author", Set.of("tag"), "category", 1L, 1L);
+    void searchPublished_ShouldReturnPageOfNews() {
+        // Given
+        NewsDto newsDto = new NewsDto(1L, "Public Title", "Public Content", true, LocalDateTime.now(), 1L, "author", Collections.emptySet());
         Page<NewsDto> page = new PageImpl<>(List.of(newsDto));
+        when(newsService.searchPublished(eq("test"), eq("cat"), any(Pageable.class))).thenReturn(page);
 
-        when(newsService.searchPublished(anyString(), anyString(), any(Pageable.class)))
-                .thenReturn(page);
+        // When
+        Page<NewsDto> result = controller.searchPublished("test", "cat", PageRequest.of(0, 10));
 
-        Page<NewsDto> result = controller.searchPublished("test", "tech", Pageable.unpaged());
-        
-        assertEquals(1, result.getContent().size());
-        assertEquals("Public Title", result.getContent().get(0).title());
+        // Then
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Public Title", result.getContent().get(0).getTitle());
     }
 
-    /**
-     * Test fetching a single published news article by ID.
-     * Ensures proper data mapping and response structure.
-     */
     @Test
-    void getPublishedById_ShouldReturnNews() {
-        NewsDto newsDto = new NewsDto(1L, "Single News", "Body", "Teaser",
-                LocalDateTime.now(), true, "author", Set.of(), "category", 1L, 1L);
-
+    void getPublishedById_ShouldReturnSingleNews() {
+        // Given
+        NewsDto newsDto = new NewsDto(1L, "Single News", "Content", true, LocalDateTime.now(), 1L, "author", Collections.emptySet());
         when(newsService.getPublishedById(1L)).thenReturn(newsDto);
 
+        // When
         NewsDto result = controller.getPublishedById(1L);
-        
-        assertEquals("Single News", result.title());
+
+        // Then
+        assertEquals("Single News", result.getTitle());
     }
 
-    /**
-     * Test filtering published news by taxonomy term ID.
-     * Verifies category-based filtering works correctly.
-     */
     @Test
-    void getByTermId_ShouldReturnNewsByTerm() {
-        NewsDto newsDto = new NewsDto(1L, "Term News", "Body", "Teaser",
-                LocalDateTime.now(), true, "author", Set.of(), "category", 1L, 1L);
+    void getByTermId_ShouldReturnPageOfNews() {
+        // Given
+        NewsDto newsDto = new NewsDto(1L, "Term News", "Content", true, LocalDateTime.now(), 1L, "author", Collections.emptySet());
         Page<NewsDto> page = new PageImpl<>(List.of(newsDto));
+        when(newsService.getPublishedByTermId(eq(5L), any(Pageable.class))).thenReturn(page);
 
-        when(newsService.getPublishedByTermId(eq(1L), any(Pageable.class))).thenReturn(page);
+        // When
+        Page<NewsDto> result = controller.getByTermId(5L, PageRequest.of(0, 10));
 
-        Page<NewsDto> result = controller.getByTermId(1L, Pageable.unpaged());
-        
-        assertEquals(1, result.getContent().size());
-        assertEquals("Term News", result.getContent().get(0).title());
+        // Then
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Term News", result.getContent().get(0).getTitle());
     }
 
-    /**
-     * Test filtering published news by multiple term IDs.
-     * Ensures multi-category filtering functionality.
-     */
     @Test
-    void getByTermIds_ShouldReturnNewsByMultipleTerms() {
-        NewsDto newsDto = new NewsDto(1L, "Multi Term News", "Body", "Teaser",
-                LocalDateTime.now(), true, "author", Set.of(), "category", 1L, 1L);
+    void getByTermIds_ShouldReturnPageOfNews() {
+        // Given
+        NewsDto newsDto = new NewsDto(1L, "Multi Term News", "Content", true, LocalDateTime.now(), 1L, "author", Collections.emptySet());
         Page<NewsDto> page = new PageImpl<>(List.of(newsDto));
+        List<Long> termIds = List.of(5L, 6L);
+        when(newsService.getPublishedByTermIds(eq(termIds), any(Pageable.class))).thenReturn(page);
 
-        when(newsService.getPublishedByTermIds(anyList(), any(Pageable.class))).thenReturn(page);
+        // When
+        Page<NewsDto> result = controller.getByTermIds(termIds, PageRequest.of(0, 10));
 
-        Page<NewsDto> result = controller.getByTermIds(List.of(1L, 2L, 3L), Pageable.unpaged());
-        
-        assertEquals(1, result.getContent().size());
-        assertEquals("Multi Term News", result.getContent().get(0).title());
+        // Then
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Multi Term News", result.getContent().get(0).getTitle());
     }
 }

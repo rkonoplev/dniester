@@ -5,6 +5,7 @@ import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.entity.User;
 import com.example.newsplatform.repository.NewsRepository;
 import com.example.newsplatform.repository.UserRepository;
+import com.example.newsplatform.security.AuthorVerification;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

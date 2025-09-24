@@ -1,15 +1,9 @@
 package com.example.newsplatform.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * User entity representing system users (migrated from Drupal 6 or newly created).
- */
 @Entity
 @Table(name = "users")
 public class User {
@@ -18,23 +12,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Username is required")
-    @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters")
-    @Column(nullable = false, unique = true, length = 100)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email must be valid")
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false)
+    private String password;
+
+    @Column(unique = true)
     private String email;
 
     @Column(nullable = false)
-    private boolean active; // true=active, false=blocked
+    private boolean active = true;
 
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<News> newsArticles = new HashSet<>();
-
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -42,23 +32,53 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    // --- Getters & Setters ---
+    // Getters
+    public Long getId() {
+        return id;
+    }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getUsername() {
+        return username;
+    }
 
-    public String getUsername() { return username; }
-    public void setUsername(String username) { this.username = username; }
+    public String getPassword() {
+        return password;
+    }
 
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public boolean isActive() { return active; }
-    public void setActive(boolean active) { this.active = active; }
+    public boolean isActive() {
+        return active;
+    }
 
-    public Set<News> getNewsArticles() { return newsArticles; }
-    public void setNewsArticles(Set<News> newsArticles) { this.newsArticles = newsArticles; }
+    public Set<Role> getRoles() {
+        return roles;
+    }
 
-    public Set<Role> getRoles() { return roles; }
-    public void setRoles(Set<Role> roles) { this.roles = roles; }
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
 }
