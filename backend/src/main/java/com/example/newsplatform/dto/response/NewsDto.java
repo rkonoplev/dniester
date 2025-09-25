@@ -9,7 +9,8 @@ import java.util.Set;
 public class NewsDto {
     private Long id;
     private String title;
-    private String content;
+    private String body;
+    private String teaser;
     private boolean published;
     private LocalDateTime publicationDate;
     private Long authorId;
@@ -20,10 +21,11 @@ public class NewsDto {
     public NewsDto() {
     }
 
-    public NewsDto(Long id, String title, String content, boolean published, LocalDateTime publicationDate, Long authorId, String authorName, Set<String> termNames) {
+    public NewsDto(Long id, String title, String body, String teaser, boolean published, LocalDateTime publicationDate, Long authorId, String authorName, Set<String> termNames) {
         this.id = id;
         this.title = title;
-        this.content = content;
+        this.body = body;
+        this.teaser = teaser;
         this.published = published;
         this.publicationDate = publicationDate;
         this.authorId = authorId;
@@ -47,12 +49,20 @@ public class NewsDto {
         this.title = title;
     }
 
-    public String getContent() {
-        return content;
+    public String getBody() {
+        return body;
     }
 
-    public void setContent(String content) {
-        this.content = content;
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public String getTeaser() {
+        return teaser;
+    }
+
+    public void setTeaser(String teaser) {
+        this.teaser = teaser;
     }
 
     public boolean isPublished() {

@@ -4,8 +4,8 @@ This directory contains all project documentation, organized into specific guide
 
 ---
 
-- **[Complete Project Information for AI Analysis](./TASK_DESCRIPTION.md)**  
-  Comprehensive project overview designed for AI platforms and new developers. Contains complete architecture,  
+- **[Complete Project Information](./TASK_DESCRIPTION.md)**  
+  Comprehensive project overview designed for new developers. Contains complete architecture,  
   technology stack, database schema, API endpoints, configuration details, and development workflow.  
   Perfect for quickly understanding the entire project structure and technical decisions.
 

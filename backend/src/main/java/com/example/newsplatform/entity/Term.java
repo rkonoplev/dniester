@@ -108,14 +108,12 @@ public class Term {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Term term)) return false;
-        return Objects.equals(id, term.id) &&
-                Objects.equals(name, term.name) &&
-                Objects.equals(vocabulary, term.vocabulary);
+        return id != null && id.equals(term.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, vocabulary);
+        return getClass().hashCode();
     }
 
     // === toString ===
