@@ -97,8 +97,8 @@ Note: secrets must never be committed to git. Only .env.example goes into versio
 
 ### Authentication Security
 - **Current**: Basic Auth with environment-based multi-user credentials
-- **Role separation**: ADMIN (full access), EDITOR (content management), USER (public access)
-- **Planned migration**: OAuth 2.0 + 2FA for all roles (ADMIN, EDITOR, USER) replacing Basic Auth
+- **Role separation**: ADMIN (full access), EDITOR (content management)
+- **Planned migration**: OAuth 2.0 + 2FA for ADMIN and EDITOR roles, replacing Basic Auth
 - **BCrypt encoding** for password security (current implementation)
 - **No database storage** of authentication credentials (security best practice)
 - User profile data stored in database, authentication handled separately

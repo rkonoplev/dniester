@@ -191,7 +191,6 @@ The system provides:
 
 ### Backend
 
-- Scheduled publishing
 - Analytics and usage metrics
 - RSS/Atom feed integration
 - WebSocket support for live updates
