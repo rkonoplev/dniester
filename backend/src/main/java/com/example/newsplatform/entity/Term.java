@@ -107,8 +107,9 @@ public class Term {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Term term)) return false;
-        return id != null && id.equals(term.id);
+        if (o == null || getClass() != o.getClass()) return false;
+        Term term = (Term) o;
+        return id != null && Objects.equals(id, term.id);
     }
 
     @Override

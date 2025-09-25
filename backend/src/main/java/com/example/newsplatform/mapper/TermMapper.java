@@ -2,7 +2,7 @@ package com.example.newsplatform.mapper;
 
 import com.example.newsplatform.dto.request.TermCreateRequestDto;
 import com.example.newsplatform.dto.request.TermUpdateRequestDto;
-import com.example.newsplatform.dto.response.TermDto;
+import com.example.newsplatform.dto.response.TermResponseDto;
 import com.example.newsplatform.entity.Term;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
@@ -19,12 +19,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 public interface TermMapper {
 
     /**
-     * Maps a Term entity to a TermDto for API responses.
+     * Maps a Term entity to a TermResponseDto for API responses.
      *
      * @param term The source Term entity.
-     * @return The mapped TermDto.
+     * @return The mapped TermResponseDto.
      */
-    TermDto toDto(Term term);
+    TermResponseDto toResponse(Term term);
 
     /**
      * Maps a TermCreateRequestDto to a new Term entity.
@@ -35,7 +35,7 @@ public interface TermMapper {
      */
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "newsArticles", ignore = true)
-    Term fromCreateRequest(TermCreateRequestDto request);
+    Term toEntity(TermCreateRequestDto request);
 
     /**
      * Updates an existing Term entity from a TermUpdateRequestDto.

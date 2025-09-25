@@ -71,7 +71,7 @@ Swagger/OpenAPI integration + documentation updates.
 ## Benefits
 Consistency — unified error handling and validation.
 Portability — Docker + profile-driven configs = can run anywhere.
-Security — strict separation public/admin APIs with JWT & role-based auth.
+Security — strict separation public/admin APIs with role-based auth.
 Maintainability — lean, minimal dependencies, easy updates.
 Developer Experience — Swagger, clear onboarding, simple Docker setup.
 ## Notes

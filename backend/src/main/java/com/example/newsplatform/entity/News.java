@@ -93,7 +93,7 @@ public class News {
      * Foreign key: author_id → User.id
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
+    @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     /**
