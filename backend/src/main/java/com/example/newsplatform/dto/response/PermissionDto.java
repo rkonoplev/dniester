@@ -1,12 +1,8 @@
 package com.example.newsplatform.dto.response;
 
 /**
- * DTO for Permission entity responses.
+ * DTO for representing a permission.
+ *
+ * @param name The unique name of the permission (e.g., "news:create").
  */
-public record PermissionDto(
-        Long id,
-        String name,
-        String description,
-        String resource,
-        String action
-) {}
+public record PermissionDto(String name) {}

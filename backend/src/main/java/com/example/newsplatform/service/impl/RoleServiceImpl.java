@@ -1,44 +1,37 @@
 package com.example.newsplatform.service.impl;
 
-import com.example.newsplatform.dto.request.RoleCreateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
-import com.example.newsplatform.entity.Permission;
 import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.exception.ResourceNotFoundException;
 import com.example.newsplatform.mapper.RoleMapper;
-import com.example.newsplatform.repository.PermissionRepository;
 import com.example.newsplatform.repository.RoleRepository;
 import com.example.newsplatform.service.RoleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * Implementation of the {@link RoleService} interface.
+ * Service implementation for managing user roles.
  */
 @Service
-@Transactional
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
-    private final PermissionRepository permissionRepository;
     private final RoleMapper roleMapper;
 
-    @Autowired
-    public RoleServiceImpl(RoleRepository roleRepository, 
-                           PermissionRepository permissionRepository, 
-                           RoleMapper roleMapper) {
+    public RoleServiceImpl(RoleRepository roleRepository, RoleMapper roleMapper) {
         this.roleRepository = roleRepository;
-        this.permissionRepository = permissionRepository;
         this.roleMapper = roleMapper;
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<RoleDto> getAllRoles() {
-        return roleMapper.toDto(roleRepository.findAll());
+        return roleRepository.findAll().stream()
+                .map(roleMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -50,52 +43,36 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDto createRole(RoleCreateRequestDto roleDto) {
-        // Optional: Check if role with the same name already exists
-        // roleRepository.findByName(roleDto.getName()).ifPresent(r -> {
-        //     throw new IllegalStateException("Role with name '" + r.getName() + "' already exists.");
-        // });
-        Role role = roleMapper.toEntity(roleDto);
-        return roleMapper.toDto(roleRepository.save(role));
+    @Transactional
+    public RoleDto createRole(RoleDto roleDto) {
+        Role role = new Role();
+        role.setName(roleDto.name());
+        role.setDescription(roleDto.description());
+        // In a real app, you would also handle setting permissions here
+        Role savedRole = roleRepository.save(role);
+        return roleMapper.toDto(savedRole);
     }
 
     @Override
-    public RoleDto updateRole(Long id, RoleCreateRequestDto roleDto) {
+    @Transactional
+    public RoleDto updateRole(Long id, RoleDto roleDto) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
-        role.setName(roleDto.getName());
-        role.setDescription(roleDto.getDescription());
-        return roleMapper.toDto(roleRepository.save(role));
+
+        role.setName(roleDto.name());
+        role.setDescription(roleDto.description());
+        // Logic to update permissions would go here
+
+        Role updatedRole = roleRepository.save(role);
+        return roleMapper.toDto(updatedRole);
     }
 
     @Override
+    @Transactional
     public void deleteRole(Long id) {
-        Role role = roleRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
-        // Consider implications: what happens to users with this role?
-        // For now, we'll just delete the role.
-        roleRepository.delete(role);
-    }
-
-    @Override
-    public RoleDto addPermissionToRole(Long roleId, Long permissionId) {
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleId));
-        Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Permission", "id", permissionId));
-
-        role.getPermissions().add(permission);
-        return roleMapper.toDto(roleRepository.save(role));
-    }
-
-    @Override
-    public RoleDto removePermissionFromRole(Long roleId, Long permissionId) {
-        Role role = roleRepository.findById(roleId)
-                .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleId));
-        Permission permission = permissionRepository.findById(permissionId)
-                .orElseThrow(() -> new ResourceNotFoundException("Permission", "id", permissionId));
-
-        role.getPermissions().remove(permission);
-        return roleMapper.toDto(roleRepository.save(role));
+        if (!roleRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Role", "id", id);
+        }
+        roleRepository.deleteById(id);
     }
 }

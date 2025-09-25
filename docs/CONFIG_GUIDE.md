@@ -96,12 +96,10 @@ Note: secrets must never be committed to git. Only .env.example goes into versio
 ## Secrets Management
 
 ### Authentication Security
-- **Current**: Basic Auth with environment-based multi-user credentials
+- **Current**: Basic Auth with database-backed user credentials.
 - **Role separation**: ADMIN (full access), EDITOR (content management)
 - **Planned migration**: OAuth 2.0 + 2FA for ADMIN and EDITOR roles, replacing Basic Auth
 - **BCrypt encoding** for password security (current implementation)
-- **No database storage** of authentication credentials (security best practice)
-- User profile data stored in database, authentication handled separately
 
 ### Environment Management
 - Local: .env file (ignored by git).

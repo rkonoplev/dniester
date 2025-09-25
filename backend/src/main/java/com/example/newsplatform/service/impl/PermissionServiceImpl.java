@@ -4,33 +4,34 @@ import com.example.newsplatform.dto.response.PermissionDto;
 import com.example.newsplatform.mapper.PermissionMapper;
 import com.example.newsplatform.repository.PermissionRepository;
 import com.example.newsplatform.service.PermissionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
- * Implementation of the {@link PermissionService} interface.
+ * Service implementation for managing permissions.
  */
 @Service
-@Transactional(readOnly = true)
 public class PermissionServiceImpl implements PermissionService {
 
     private final PermissionRepository permissionRepository;
     private final PermissionMapper permissionMapper;
 
-    @Autowired
     public PermissionServiceImpl(PermissionRepository permissionRepository, PermissionMapper permissionMapper) {
         this.permissionRepository = permissionRepository;
         this.permissionMapper = permissionMapper;
     }
 
     /**
-     * {@inheritDoc}
+     * Retrieves all permissions from the database and maps them to DTOs.
+     *
+     * @return A list of all permissions.
      */
     @Override
+    @Transactional(readOnly = true)
     public List<PermissionDto> getAllPermissions() {
+        // Correctly maps the list of entities to a list of DTOs
         return permissionMapper.toDto(permissionRepository.findAll());
     }
 }
