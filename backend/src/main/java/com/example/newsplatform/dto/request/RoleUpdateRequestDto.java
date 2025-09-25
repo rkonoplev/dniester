@@ -1,14 +1,12 @@
 package com.example.newsplatform.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 /**
- * DTO for creating a new role.
- * It contains the necessary fields to define a new role in the system.
+ * DTO for updating an existing role.
+ * Fields are optional to support partial updates (PATCH-style).
  */
-public record RoleCreateRequestDto(
-        @NotBlank(message = "Role name is required")
+public record RoleUpdateRequestDto(
         @Size(max = 50, message = "Role name must not exceed 50 characters")
         String name,
 

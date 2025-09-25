@@ -1,5 +1,7 @@
 package com.example.newsplatform.service.impl;
 
+import com.example.newsplatform.dto.request.RoleCreateRequestDto;
+import com.example.newsplatform.dto.request.RoleUpdateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
 import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.exception.ResourceNotFoundException;
@@ -14,6 +16,8 @@ import java.util.stream.Collectors;
 
 /**
  * Service implementation for managing user roles.
+ * This service handles the business logic for creating, reading, updating,
+ * and deleting roles, ensuring data integrity and consistency.
  */
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -26,6 +30,10 @@ public class RoleServiceImpl implements RoleService {
         this.roleMapper = roleMapper;
     }
 
+    /**
+     * Retrieves all roles from the database.
+     * @return A list of {@link RoleDto} representing all roles.
+     */
     @Override
     @Transactional(readOnly = true)
     public List<RoleDto> getAllRoles() {
@@ -34,6 +42,12 @@ public class RoleServiceImpl implements RoleService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves a single role by its unique ID.
+     * @param id The ID of the role to find.
+     * @return The found {@link RoleDto}.
+     * @throws ResourceNotFoundException if no role with the given ID exists.
+     */
     @Override
     @Transactional(readOnly = true)
     public RoleDto getRoleById(Long id) {
@@ -42,31 +56,46 @@ public class RoleServiceImpl implements RoleService {
         return roleMapper.toDto(role);
     }
 
+    /**
+     * Creates a new role based on the provided request data.
+     * @param createRequest The DTO containing the data for the new role.
+     * @return The created {@link RoleDto}.
+     */
     @Override
     @Transactional
-    public RoleDto createRole(RoleDto roleDto) {
-        Role role = new Role();
-        role.setName(roleDto.name());
-        role.setDescription(roleDto.description());
+    public RoleDto createRole(RoleCreateRequestDto createRequest) {
+        Role role = roleMapper.fromCreateRequest(createRequest);
         // In a real app, you would also handle setting permissions here
         Role savedRole = roleRepository.save(role);
         return roleMapper.toDto(savedRole);
     }
 
+    /**
+     * Updates an existing role. Only non-null fields from the request are updated.
+     * @param id The ID of the role to update.
+     * @param updateRequest The DTO containing the fields to update.
+     * @return The updated {@link RoleDto}.
+     * @throws ResourceNotFoundException if the role is not found.
+     */
     @Override
     @Transactional
-    public RoleDto updateRole(Long id, RoleDto roleDto) {
+    public RoleDto updateRole(Long id, RoleUpdateRequestDto updateRequest) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
 
-        role.setName(roleDto.name());
-        role.setDescription(roleDto.description());
+        // Use the mapper to apply partial updates
+        roleMapper.updateEntityFromDto(updateRequest, role);
         // Logic to update permissions would go here
 
         Role updatedRole = roleRepository.save(role);
         return roleMapper.toDto(updatedRole);
     }
 
+    /**
+     * Deletes a role by its ID.
+     * @param id The ID of the role to delete.
+     * @throws ResourceNotFoundException if the role does not exist.
+     */
     @Override
     @Transactional
     public void deleteRole(Long id) {

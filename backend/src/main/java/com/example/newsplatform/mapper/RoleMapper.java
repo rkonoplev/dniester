@@ -1,44 +1,76 @@
 package com.example.newsplatform.mapper;
 
 import com.example.newsplatform.dto.request.RoleCreateRequestDto;
-import com.example.newsplatform.dto.response.PermissionDto;
+import com.example.newsplatform.dto.request.RoleUpdateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
+import com.example.newsplatform.entity.Permission;
 import com.example.newsplatform.entity.Role;
+import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.MappingConstants;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.Named;
 
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
- * Mapper for the entity {@link Role} and its DTOs.
+ * Mapper for converting between {@link Role} entity and its DTOs using MapStruct.
+ * It handles mappings for API responses, creation requests, and update requests.
  */
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = PermissionMapper.class)
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface RoleMapper {
 
     /**
-     * Converts a {@link Role} entity to a {@link RoleDto}.
+     * Maps a Role entity to a RoleDto for API responses.
      *
-     * @param role The role entity.
-     * @return The corresponding DTO.
+     * @param role The source Role entity.
+     * @return The mapped RoleDto, including role and permission names.
      */
-    @Mapping(target = "userCount", expression = "java(role.getUsers().size())")
-    @Mapping(target = "permissions", source = "permissions")
+    @Mapping(source = "permissions", target = "permissionNames", qualifiedByName = "permissionsToNames")
     RoleDto toDto(Role role);
 
     /**
-     * Converts a list of {@link Role} entities to a list of {@link RoleDto}s.
+     * Maps a RoleCreateRequestDto to a new Role entity.
+     * Ignores relationship fields and auto-generated fields like 'id'.
      *
-     * @param roles The list of role entities.
-     * @return The corresponding list of DTOs.
+     * @param createRequest The DTO containing data for the new role.
+     * @return A new Role entity ready for persistence.
      */
-    List<RoleDto> toDto(List<Role> roles);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "users", ignore = true)
+    @Mapping(target = "permissions", ignore = true)
+    Role fromCreateRequest(RoleCreateRequestDto createRequest);
 
     /**
-     * Converts a {@link RoleCreateRequestDto} to a {@link Role} entity.
+     * Updates an existing Role entity from a request DTO, ignoring null values.
+     * This method is designed for partial updates (PATCH-style behavior).
      *
-     * @param dto The DTO for creating a role.
-     * @return The corresponding entity.
+     * @param updateRequest The source DTO with potentially partial data.
+     * @param role          The target entity to be updated.
      */
-    Role toEntity(RoleCreateRequestDto dto);
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "users", ignore = true)
+    @Mapping(target = "permissions", ignore = true)
+    void updateEntityFromDto(RoleUpdateRequestDto updateRequest, @MappingTarget Role role);
+
+    /**
+     * Helper method to convert a Set of Permission entities to a Set of their names.
+     * This is used by MapStruct via the `qualifiedByName` attribute.
+     *
+     * @param permissions The set of Permission entities.
+     * @return A set of permission name strings.
+     */
+    @Named("permissionsToNames")
+    default Set<String> permissionsToNames(Set<Permission> permissions) {
+        if (permissions == null) {
+            return Set.of();
+        }
+        return permissions.stream()
+                .map(Permission::getName)
+                .collect(Collectors.toSet());
+    }
 }
