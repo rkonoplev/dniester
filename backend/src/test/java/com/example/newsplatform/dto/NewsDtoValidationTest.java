@@ -28,36 +28,28 @@ class NewsDtoValidationTest {
 
     @Test
     void whenCreateDtoIsValid_thenNoViolations() {
-        NewsCreateRequestDto dto = new NewsCreateRequestDto();
-        dto.setTitle("Valid Title");
-        dto.setContent("Valid Content");
+        NewsCreateRequestDto dto = new NewsCreateRequestDto("Valid Title", "Valid Content", "Optional teaser");
         Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
         assertEquals(0, violations.size());
     }
 
     @Test
     void whenCreateDtoTitleIsBlank_thenViolation() {
-        NewsCreateRequestDto dto = new NewsCreateRequestDto();
-        dto.setTitle("");
-        dto.setContent("Valid Content");
+        NewsCreateRequestDto dto = new NewsCreateRequestDto("", "Valid Content", null);
         Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     void whenCreateDtoContentIsBlank_thenViolation() {
-        NewsCreateRequestDto dto = new NewsCreateRequestDto();
-        dto.setTitle("Valid Title");
-        dto.setContent("");
+        NewsCreateRequestDto dto = new NewsCreateRequestDto("Valid Title", "", null);
         Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     void whenCreateDtoTitleExceedsLimit_thenViolation() {
-        NewsCreateRequestDto dto = new NewsCreateRequestDto();
-        dto.setTitle("A".repeat(256));
-        dto.setContent("Content");
+        NewsCreateRequestDto dto = new NewsCreateRequestDto("A".repeat(256), "Content", null);
         Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
@@ -66,28 +58,28 @@ class NewsDtoValidationTest {
 
     @Test
     void whenUpdateDtoIsValid_thenNoViolations() {
-        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Updated Title", "Updated content", true);
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Updated Title", "Updated content", "Updated teaser", true);
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
         assertEquals(0, violations.size());
     }
 
     @Test
     void whenUpdateDtoTitleIsBlank_thenViolation() {
-        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("", "Updated content", true);
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("", "Updated content", null, true);
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     void whenUpdateDtoTitleExceedsLimit_thenViolation() {
-        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("A".repeat(256), "Content", false);
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("A".repeat(256), "Content", null, false);
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }
 
     @Test
     void whenUpdateDtoPublishedIsNull_thenViolation() {
-        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Title", "Content", null);
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Title", "Content", null, null);
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }

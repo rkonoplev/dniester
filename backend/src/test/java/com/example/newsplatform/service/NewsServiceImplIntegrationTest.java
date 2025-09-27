@@ -2,24 +2,25 @@ package com.example.newsplatform.service;
 
 import com.example.newsplatform.dto.request.NewsCreateRequestDto;
 import com.example.newsplatform.dto.response.NewsDto;
-import com.example.newsplatform.entity.Term;
+import com.example.newsplatform.entity.News;
 import com.example.newsplatform.entity.User;
-import com.example.newsplatform.repository.TermRepository;
+import com.example.newsplatform.repository.NewsRepository;
 import com.example.newsplatform.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -30,16 +31,16 @@ class NewsServiceImplIntegrationTest {
     private NewsService newsService;
 
     @Autowired
-    private UserRepository userRepository;
+    private NewsRepository newsRepository;
 
     @Autowired
-    private TermRepository termRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     private User testUser;
-    private Term testTerm;
+    private Authentication auth;
 
     @BeforeEach
     void setUp() {
@@ -49,13 +50,8 @@ class NewsServiceImplIntegrationTest {
         testUser.setActive(true);
         userRepository.save(testUser);
 
-        testTerm = new Term();
-        testTerm.setName("Integration Test");
-        termRepository.save(testTerm);
-
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(testUser.getUsername(), "password", Collections.emptyList())
-        );
+        auth = new UsernamePasswordAuthenticationToken(testUser.getUsername(), "password", Collections.emptyList());
+        SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
     @Test
@@ -66,12 +62,29 @@ class NewsServiceImplIntegrationTest {
         request.setContent("Some content");
 
         // When
-        NewsDto saved = newsService.create(request);
+        NewsDto saved = newsService.create(request, auth);
 
         // Then
         assertNotNull(saved);
         assertNotNull(saved.getId());
         assertEquals("Integration Test Title", saved.getTitle());
         assertEquals(testUser.getId(), saved.getAuthorId());
+    }
+
+    @Test
+    void testDeleteNews() {
+        // Given
+        NewsCreateRequestDto request = new NewsCreateRequestDto();
+        request.setTitle("To Be Deleted");
+        request.setContent("Content");
+        NewsDto saved = newsService.create(request, auth);
+        Long newsId = saved.getId();
+
+        // When
+        newsService.delete(newsId, auth);
+
+        // Then
+        Optional<News> found = newsRepository.findById(newsId);
+        assertFalse(found.isPresent());
     }
 }

@@ -8,14 +8,16 @@ import jakarta.validation.constraints.Size;
  */
 public class NewsCreateRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "Title is required")
     @Size(min = 3, max = 255)
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "Content is required")
     private String content;
 
-    // Getters and Setters
+    private String teaser;
+
+    //<editor-fold desc="Getters and Setters">
     public String getTitle() {
         return title;
     }
@@ -31,4 +33,13 @@ public class NewsCreateRequestDto {
     public void setContent(String content) {
         this.content = content;
     }
+
+    public String getTeaser() {
+        return teaser;
+    }
+
+    public void setTeaser(String teaser) {
+        this.teaser = teaser;
+    }
+    //</editor-fold>
 }

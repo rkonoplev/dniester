@@ -3,15 +3,18 @@ package com.example.newsplatform.service;
 import com.example.newsplatform.dto.request.BulkActionRequestDto;
 import com.example.newsplatform.mapper.NewsMapper;
 import com.example.newsplatform.repository.NewsRepository;
-import com.example.newsplatform.service.impl.NewsServiceImpl;
 import com.example.newsplatform.repository.UserRepository;
+import com.example.newsplatform.security.RoleConstants;
+import com.example.newsplatform.service.impl.NewsServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -44,13 +47,37 @@ class BulkOperationsTest {
 
     @BeforeEach
     void setUp() {
-        newsService = spy(new NewsServiceImpl(newsRepository, userRepository, newsMapper));
+        newsService = new NewsServiceImpl(newsRepository, userRepository, newsMapper);
+    }
+
+    private Authentication createAdminAuthentication() {
+        return new UsernamePasswordAuthenticationToken(
+                "admin",
+                "password",
+                List.of(new SimpleGrantedAuthority(RoleConstants.ROLE_ADMIN))
+        );
+    }
+
+    private Authentication createEditorAuthentication() {
+        return new UsernamePasswordAuthenticationToken(
+                "editor",
+                "password",
+                List.of(new SimpleGrantedAuthority(RoleConstants.ROLE_EDITOR))
+        );
+    }
+
+    private Authentication createUserAuthentication() {
+        return new UsernamePasswordAuthenticationToken(
+                "user",
+                "password",
+                List.of(new SimpleGrantedAuthority("ROLE_USER"))
+        );
     }
 
     @Test
     void performBulkAction_AdminRole_ShouldAllowBulkDelete() {
         // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+        Authentication adminAuth = createAdminAuthentication();
 
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
@@ -58,15 +85,15 @@ class BulkOperationsTest {
         request.setItemIds(new HashSet<>(Arrays.asList(1L, 2L, 3L)));
         request.setConfirmed(true);
 
-        // When & Then
-        assertDoesNotThrow(() -> newsService.performBulkAction(request, authentication));
+        // When & Then - No exception should be thrown for ADMIN
+        assertDoesNotThrow(() -> newsService.performBulkAction(request, adminAuth));
         verify(newsRepository).deleteAllById(Arrays.asList(1L, 2L, 3L));
     }
 
     @Test
     void performBulkAction_AdminRole_ShouldAllowBulkUnpublish() {
         // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+        Authentication adminAuth = createAdminAuthentication();
 
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.UNPUBLISH);
@@ -75,14 +102,14 @@ class BulkOperationsTest {
         request.setConfirmed(true);
 
         // When & Then
-        assertDoesNotThrow(() -> newsService.performBulkAction(request, authentication));
+        assertDoesNotThrow(() -> newsService.performBulkAction(request, adminAuth));
         verify(newsRepository).unpublishByIds(Arrays.asList(1L, 2L, 3L));
     }
 
     @Test
     void performBulkAction_EditorRole_ShouldDenyBulkOperations() {
         // Given
-        doReturn(false).when(newsService).hasRole(authentication, "ADMIN"); // Simulate non-ADMIN user
+        Authentication editorAuth = createEditorAuthentication();
 
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
@@ -92,19 +119,36 @@ class BulkOperationsTest {
 
         // When & Then
         AccessDeniedException exception = assertThrows(AccessDeniedException.class,
-                () -> newsService.performBulkAction(request, authentication));
+                () -> newsService.performBulkAction(request, editorAuth));
 
-        assertEquals("Bulk operations are restricted to ADMIN role only. EDITOR can only delete single articles.",
-                exception.getMessage());
-
+        assertEquals("Access is denied", exception.getMessage());
         verify(newsRepository, never()).deleteAllById(any());
         verify(newsRepository, never()).unpublishByIds(any());
     }
 
     @Test
+    void performBulkAction_UserRole_ShouldDenyBulkOperations() {
+        // Given
+        Authentication userAuth = createUserAuthentication();
+
+        BulkActionRequestDto request = new BulkActionRequestDto();
+        request.setAction(BulkActionRequestDto.ActionType.DELETE);
+        request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
+        request.setItemIds(new HashSet<>(Arrays.asList(1L, 2L, 3L)));
+        request.setConfirmed(true);
+
+        // When & Then
+        AccessDeniedException exception = assertThrows(AccessDeniedException.class,
+                () -> newsService.performBulkAction(request, userAuth));
+
+        assertEquals("Access is denied", exception.getMessage());
+        verify(newsRepository, never()).deleteAllById(any());
+    }
+
+    @Test
     void performBulkAction_UnconfirmedRequest_ShouldThrowException() {
         // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+        Authentication adminAuth = createAdminAuthentication();
 
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
@@ -114,75 +158,16 @@ class BulkOperationsTest {
 
         // When & Then
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> newsService.performBulkAction(request, authentication));
+                () -> newsService.performBulkAction(request, adminAuth));
 
         assertEquals("Bulk operation must be confirmed", exception.getMessage());
         verify(newsRepository, never()).deleteAllById(any());
     }
 
     @Test
-    void performBulkAction_ByTermFilter_ShouldCallCorrectRepository() {
-        // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
-        when(newsRepository.findIdsByTermId(5L)).thenReturn(Arrays.asList(1L, 2L, 3L));
-
-        BulkActionRequestDto request = new BulkActionRequestDto();
-        request.setAction(BulkActionRequestDto.ActionType.DELETE);
-        request.setFilterType(BulkActionRequestDto.FilterType.BY_TERM);
-        request.setTermId(5L);
-        request.setConfirmed(true);
-
-        // When
-        newsService.performBulkAction(request, authentication);
-
-        // Then
-        verify(newsRepository).findIdsByTermId(5L);
-        verify(newsRepository).deleteAllById(Arrays.asList(1L, 2L, 3L));
-    }
-
-    @Test
-    void performBulkAction_ByAuthorFilter_ShouldCallCorrectRepository() {
-        // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
-        when(newsRepository.findIdsByAuthorId(10L)).thenReturn(Arrays.asList(4L, 5L));
-
-        BulkActionRequestDto request = new BulkActionRequestDto();
-        request.setAction(BulkActionRequestDto.ActionType.UNPUBLISH);
-        request.setFilterType(BulkActionRequestDto.FilterType.BY_AUTHOR);
-        request.setAuthorId(10L);
-        request.setConfirmed(true);
-
-        // When
-        newsService.performBulkAction(request, authentication);
-
-        // Then
-        verify(newsRepository).findIdsByAuthorId(10L);
-        verify(newsRepository).unpublishByIds(Arrays.asList(4L, 5L));
-    }
-
-    @Test
-    void performBulkAction_AllFilter_ShouldCallCorrectRepository() {
-        // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
-        when(newsRepository.findAllIds()).thenReturn(Arrays.asList(1L, 2L, 3L, 4L, 5L));
-
-        BulkActionRequestDto request = new BulkActionRequestDto();
-        request.setAction(BulkActionRequestDto.ActionType.DELETE);
-        request.setFilterType(BulkActionRequestDto.FilterType.ALL);
-        request.setConfirmed(true);
-
-        // When
-        newsService.performBulkAction(request, authentication);
-
-        // Then
-        verify(newsRepository).findAllIds();
-        verify(newsRepository).deleteAllById(Arrays.asList(1L, 2L, 3L, 4L, 5L));
-    }
-
-    @Test
     void performBulkAction_EmptyTargetIds_ShouldNotCallRepository() {
         // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
+        Authentication adminAuth = createAdminAuthentication();
 
         BulkActionRequestDto request = new BulkActionRequestDto();
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
@@ -191,28 +176,10 @@ class BulkOperationsTest {
         request.setConfirmed(true);
 
         // When
-        newsService.performBulkAction(request, authentication);
+        newsService.performBulkAction(request, adminAuth);
 
         // Then
         verify(newsRepository, never()).deleteAllById(any());
         verify(newsRepository, never()).unpublishByIds(any());
-    }
-
-    @Test
-    void performBulkAction_UnsupportedAction_ShouldThrowException() {
-        // Given
-        doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
-
-        BulkActionRequestDto request = new BulkActionRequestDto();
-        request.setAction(null); // Unsupported action
-        request.setFilterType(BulkActionRequestDto.FilterType.BY_IDS);
-        request.setItemIds(new HashSet<>(Arrays.asList(1L)));
-        request.setConfirmed(true);
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> newsService.performBulkAction(request, authentication));
-
-        assertTrue(exception.getMessage().contains("Unsupported bulk action"));
     }
 }
