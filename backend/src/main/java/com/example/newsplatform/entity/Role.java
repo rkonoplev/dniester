@@ -12,7 +12,7 @@ import java.util.Set;
 @Entity
 @Table(name = "roles")
 public class Role {
-
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +21,7 @@ public class Role {
      * The unique name of the role (e.g., "ADMIN", "EDITOR").
      * This is the authority string used by Spring Security.
      */
-    @Column(unique = true, nullable = false, length = 50)
+    @Column(nullable = false, unique = true, length = 50)
     private String name;
 
     /**
@@ -49,36 +49,43 @@ public class Role {
     )
     private Set<Permission> permissions = new HashSet<>();
 
-
+    // Constructors
+    public Role() {}
+    
+    public Role(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
+    
     //<editor-fold desc="Getters and Setters">
     public Long getId() {
         return id;
     }
-
+    
     public void setId(Long id) {
         this.id = id;
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public void setName(String name) {
         this.name = name;
     }
-
+    
     public String getDescription() {
         return description;
     }
-
+    
     public void setDescription(String description) {
         this.description = description;
     }
-
+    
     public Set<User> getUsers() {
         return users;
     }
-
+    
     public void setUsers(Set<User> users) {
         this.users = users;
     }
@@ -92,6 +99,21 @@ public class Role {
     }
     //</editor-fold>
 
+    // Helper methods
+    public void addUser(User user) {
+        this.users.add(user);
+        user.getRoles().add(this);
+    }
+    
+    public void removeUser(User user) {
+        this.users.remove(user);
+        user.getRoles().remove(this);
+    }
+
+    /**
+     * Compares Role entities by ID only.
+     * This is crucial for consistent behavior in collections and JPA contexts.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -100,13 +122,21 @@ public class Role {
         return Objects.equals(id, role.id);
     }
 
+    /**
+     * Generates a hash code based on the entity's ID.
+     * This implementation is consistent with the equals() method.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(id);
     }
-
+    
     @Override
     public String toString() {
-        return "Role{" + "id=" + id + ", name='" + name + '\'' + '}';
+        return "Role{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
     }
 }

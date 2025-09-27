@@ -1,69 +1,57 @@
 package com.example.newsplatform.service;
 
 import com.example.newsplatform.dto.request.RoleCreateRequestDto;
+import com.example.newsplatform.dto.request.RoleUpdateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
 
 import java.util.List;
+import java.util.Set;
 
 /**
- * Service interface for managing roles.
+ * Service interface for managing user roles.
+ * Defines the contract for all business logic related to roles,
+ * including creation, retrieval, updates, and deletion.
  */
 public interface RoleService {
 
     /**
-     * Retrieves all roles.
-     *
-     * @return A list of {@link RoleDto}s.
+     * Retrieves a list of all roles in the system.
+     * @return A list of {@link RoleDto}.
      */
     List<RoleDto> getAllRoles();
 
     /**
-     * Retrieves a role by its ID.
-     *
+     * Retrieves a single role by its ID.
      * @param id The ID of the role.
-     * @return The {@link RoleDto}.
+     * @return The found {@link RoleDto}.
      */
     RoleDto getRoleById(Long id);
 
     /**
+     * Finds all roles assigned to a specific user.
+     * @param userId The ID of the user.
+     * @return A set of {@link RoleDto} assigned to the user.
+     */
+    Set<RoleDto> findRolesByUserId(Long userId);
+
+    /**
      * Creates a new role.
-     *
-     * @param roleDto The DTO containing the data for the new role.
+     * @param createRequest The DTO with data for the new role.
      * @return The created {@link RoleDto}.
      */
-    RoleDto createRole(RoleCreateRequestDto roleDto);
+    RoleDto createRole(RoleCreateRequestDto createRequest);
 
     /**
      * Updates an existing role.
-     *
      * @param id The ID of the role to update.
-     * @param roleDto The DTO containing the updated data.
+     * @param updateRequest The DTO with the updated data.
      * @return The updated {@link RoleDto}.
      */
-    RoleDto updateRole(Long id, RoleCreateRequestDto roleDto);
+    RoleDto updateRole(Long id, RoleUpdateRequestDto updateRequest);
 
     /**
      * Deletes a role by its ID.
-     *
      * @param id The ID of the role to delete.
      */
     void deleteRole(Long id);
-
-    /**
-     * Adds a permission to a role.
-     *
-     * @param roleId The ID of the role.
-     * @param permissionId The ID of the permission to add.
-     * @return The updated {@link RoleDto}.
-     */
-    RoleDto addPermissionToRole(Long roleId, Long permissionId);
-
-    /**
-     * Removes a permission from a role.
-     *
-     * @param roleId The ID of the role.
-     * @param permissionId The ID of the permission to remove.
-     * @return The updated {@link RoleDto}.
-     */
-    RoleDto removePermissionFromRole(Long roleId, Long permissionId);
 }

@@ -1,6 +1,6 @@
 # Role-Based Security Implementation Guide
 
-This document outlines the implementation requirements for ADMIN and EDITOR role security in the News Platform.
+This document outlines the **correct** implementation requirements for ADMIN and EDITOR role security in the News Platform.
 
 ## Role Definitions
 
@@ -11,88 +11,88 @@ This document outlines the implementation requirements for ADMIN and EDITOR role
 - **System configuration** - manage terms, categories, settings
 - **Bulk operations** - system-wide bulk actions
 
-### EDITOR Role  
+### EDITOR Role
 - **Own content only** - can only manage articles they authored
 - **Content creation** - can create new articles (becomes author)
 - **Author-restricted operations** - edit/delete only where `author_id` matches user ID
 - **Publication control** - publish/unpublish own articles only
 - **Read-only access** - can view but not modify others' content
 
-## Security Implementation Requirements
+## Security Implementation
 
-### 1. Service Layer Security
+### 1. Service Layer Security (CORRECT IMPLEMENTATION)
 
-#### NewsService Methods - Required Authorization Checks
+#### NewsService Methods - Proper Authorization
 
 ```java
 // ADMIN: Full access, EDITOR: Own content only
+@PreAuthorize("@newsServiceImpl.canAccessNews(#id, authentication)")
 public NewsDto update(Long id, NewsUpdateRequestDto request, Authentication auth) {
-    // Check if user is ADMIN or (EDITOR and author of the article)
+    // Security check handled by @PreAuthorize
 }
 
+@PreAuthorize("@newsServiceImpl.canAccessNews(#id, authentication)")  
 public void delete(Long id, Authentication auth) {
-    // Check if user is ADMIN or (EDITOR and author of the article)  
+    // Security check handled by @PreAuthorize
 }
 
 // ADMIN: All content, EDITOR: Own content only
-public Page<NewsDto> searchAll(String search, String category, Pageable pageable, Authentication auth) {
-    // ADMIN: return all results
-    // EDITOR: filter by author_id = current user ID
+@PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
+public Page<NewsDto> findAll(Pageable pageable, Authentication auth) {
+    // Manual filtering inside method based on role
+    if (hasAdminRole(auth)) {
+        return newsRepository.findAll(pageable).map(newsMapper::toDto);
+    } else {
+        Long authorId = getCurrentUserId(auth);
+        return newsRepository.findByAuthorId(authorId, pageable).map(newsMapper::toDto);
+    }
 }
 ```
-
-#### Required Security Annotations
+### 2. Authorization Service Methods
+#### NewsServiceImpl Authorization Methods
 ```java
-@PreAuthorize("@newsService.hasRoleId(authentication, 1L) or (@newsService.hasRoleId(authentication, 2L) and @newsService.isAuthor(#id, @newsService.getCurrentUserId(authentication)))")
-public NewsDto update(Long id, NewsUpdateRequestDto request);
-
-@PreAuthorize("@newsService.hasRoleId(authentication, 1L) or (@newsService.hasRoleId(authentication, 2L) and @newsService.isAuthor(#id, @newsService.getCurrentUserId(authentication)))")  
-public void delete(Long id);
-```
-
-### 2. Controller Layer Updates
-
-#### AdminNewsController - Required Changes
-
-```java
-// Add Authentication parameter to methods
-public ResponseEntity<NewsDto> update(@PathVariable Long id, 
-                                    @RequestBody @Valid NewsDto newsDto,
-                                    Authentication authentication) {
-    // Pass authentication to service layer
+public boolean canAccessNews(Long newsId, Authentication authentication) {
+    if (hasAdminRole(authentication)) {
+        return true; // ADMIN can access any news
+    }
+    
+    if (hasEditorRole(authentication)) {
+        return isAuthor(newsId, authentication); // EDITOR can only access own news
+    }
+    
+    return false;
 }
 
-public ResponseEntity<Void> delete(@PathVariable Long id, 
-                                 Authentication authentication) {
-    // Pass authentication to service layer  
+public boolean isAuthor(Long newsId, Authentication authentication) {
+    Long currentUserId = getCurrentUserId(authentication);
+    return newsRepository.existsByIdAndAuthorId(newsId, currentUserId);
+}
+
+public boolean hasAdminRole(Authentication authentication) {
+    return hasAuthority(authentication, RoleConstants.ROLE_ADMIN);
+}
+
+public boolean hasEditorRole(Authentication authentication) {
+    return hasAuthority(authentication, RoleConstants.ROLE_EDITOR);
 }
 ```
-
 ### 3. Repository Layer Enhancements
-
-#### NewsRepository - Additional Query Methods
-
+#### NewsRepository - Author Verification
 ```java
-// For EDITOR role - find only own content
-Page<News> findByAuthorId(Long authorId, Pageable pageable);
-
 // Check if user is author of specific article
 boolean existsByIdAndAuthorId(Long id, Long authorId);
 
-// Search with author filter for EDITOR role
-@Query("SELECT n FROM News n WHERE (:authorId IS NULL OR n.author.id = :authorId) AND ...")
-Page<News> searchAllByAuthor(String search, String category, Long authorId, Pageable pageable);
+// For EDITOR role - find only own content
+Page<News> findByAuthorId(Long authorId, Pageable pageable);
 ```
-
-### 4. Security Configuration Updates
-
-#### SecurityConfig - Role-Based Access
-
+### 4. Security Configuration
+#### SecurityConfig - Proper Role Setup
 ```java
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true) // ← ENABLES @PreAuthorize
 public class SecurityConfig {
-    
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
@@ -106,85 +106,94 @@ public class SecurityConfig {
     }
 }
 ```
-
-### 5. Service Implementation Example
-
-#### NewsServiceImpl - Author Verification
-
+### Testing Strategy
+#### Unit Tests for Authorization
+##### Testing ADMIN vs EDITOR Access
 ```java
-@Service
-@Transactional
-public class NewsServiceImpl implements NewsService {
+@Test
+void findAll_AdminRole_ShouldReturnAllNews() {
+    // Given admin authentication
+    Authentication adminAuth = createAdminAuthentication();
     
-    public boolean isAuthor(Long newsId, Long authorId) {
-        return newsRepository.existsByIdAndAuthorId(newsId, authorId);
-    }
+    // When
+    var result = newsService.findAll(pageable, adminAuth);
     
-    @PreAuthorize("@newsService.hasRoleId(authentication, 1L) or (@newsService.hasRoleId(authentication, 2L) and @newsService.isAuthor(#id, @newsService.getCurrentUserId(authentication)))")
-    public NewsDto update(Long id, NewsUpdateRequestDto request) {
-        // Implementation with security check
-        News existing = newsRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("News not found with id " + id));
-            
-        // Update logic...
-        return NewsMapper.toDto(updated);
-    }
+    // Then - should return all news
+    assertEquals(3, result.getContent().size());
+}
+
+@Test
+void findAll_EditorRole_ShouldReturnOnlyOwnNews() {
+    // Given editor authentication  
+    Authentication editorAuth = createEditorAuthentication();
     
-    public Page<NewsDto> searchAll(String search, String category, Pageable pageable, Authentication auth) {
-        if (hasRoleId(auth, 1L)) { // ADMIN role ID = 1
-            return newsRepository.searchAll(search, category, pageable).map(NewsMapper::toDto);
-        } else if (hasRoleId(auth, 2L)) { // EDITOR role ID = 2
-            Long authorId = getCurrentUserId(auth);
-            return newsRepository.searchAllByAuthor(search, category, authorId, pageable).map(NewsMapper::toDto);
-        }
-        throw new AccessDeniedException("Insufficient permissions");
-    }
+    // When
+    var result = newsService.findAll(pageable, editorAuth);
+    
+    // Then - should return only editor's news
+    assertEquals(1, result.getContent().size());
 }
 ```
+##### Testing Author-Based Security
+```java
+@Test
+void update_EditorRole_ShouldAllowUpdatingOwnNews() {
+    // Editor tries to update their own news - should succeed
+    assertDoesNotThrow(() -> newsService.update(2L, request, editorAuth));
+}
 
-## Testing Requirements
+@Test 
+void update_EditorRole_ShouldDenyUpdatingOthersNews() {
+    // Editor tries to update other's news - should fail
+    assertThrows(AccessDeniedException.class, 
+        () -> newsService.update(1L, request, editorAuth));
+}
+```
+#### Common Patterns
+##### 1. Role Checking
+```java
+// Use Spring Security expressions in @PreAuthorize
+@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN') or hasRole('EDITOR')")
+```
+##### 2. Custom Authorization Logic
+```java
+// For complex rules, use bean references
+@PreAuthorize("@newsServiceImpl.canAccessNews(#id, authentication)")
+```
+##### 3. Manual Role Checking in Service Methods
+```java
+if (hasAdminRole(authentication)) {
+    // ADMIN logic
+} else if (hasEditorRole(authentication)) {
+    // EDITOR logic
+} else {
+    throw new AccessDeniedException("Insufficient permissions");
+}
+```
+#### Role Constants
+Always use constants from RoleConstants class:
 
-### Security Test Cases
+```java
+import com.example.newsplatform.security.RoleConstants;
 
-1. **ADMIN Role Tests**
-   - Can access all endpoints
-   - Can modify any content
-   - Can perform bulk operations
+// CORRECT
+hasAuthority(authentication, RoleConstants.ROLE_ADMIN)
 
-2. **EDITOR Role Tests**  
-   - Can create new content
-   - Can only edit own content
-   - Cannot edit others' content (403 Forbidden)
-   - Cannot access user management endpoints
-   - Cannot perform system-wide bulk operations
+// INCorrect - hardcoded strings
+hasAuthority(authentication, "ROLE_ADMIN")
+```
+#### Summary
+The corrected implementation uses:
 
-3. **Authorization Tests**
-   - Verify `@PreAuthorize` annotations work correctly
-   - Test author verification logic
-   - Test role-based filtering in search results
+Spring Security's built-in role checking (hasRole())
 
-## Implementation Checklist
+Custom authorization methods for complex rules (@bean.method())
 
-- [x] Add `Authentication` parameters to controller methods
-- [x] Implement `@PreAuthorize` annotations on service methods  
-- [x] Add author verification methods to service layer
-- [x] Create role-based repository query methods
-- [x] Update security configuration for method-level security
-- [x] Add comprehensive security tests
-- [ ] Update API documentation with role restrictions
-- [ ] Implement proper error handling for authorization failures
-- [ ] Implement getCurrentUserId() method in service layer (currently returns null - needs proper implementation)
-- [ ] Implement hasRoleId() method to check roles by ID instead of name
-- [ ] Implement getCurrentUserRoleIds() method to get user's role IDs from authentication
-- [ ] Add integration tests for controller security
+Repository-level author verification (existsByIdAndAuthorId)
 
-## Related Files to Update
+Consistent role constants via RoleConstants class
 
-- `AdminNewsController.java` - Add authentication parameters
-- `NewsServiceImpl.java` - Add authorization checks  
-- `NewsRepository.java` - Add author-based queries
-- `SecurityConfig.java` - Enable method security
-- Integration tests - Add role-based test cases
-- API documentation - Update with role restrictions
+Comprehensive testing of all authorization scenarios
 
-This implementation ensures that EDITOR users can only manage content they have authored, while ADMIN users maintain full system access.
+This approach eliminates the previous contradictions and provides a clean, maintainable security implementation.

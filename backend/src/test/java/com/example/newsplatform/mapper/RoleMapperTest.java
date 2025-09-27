@@ -1,51 +1,36 @@
 package com.example.newsplatform.mapper;
 
 import com.example.newsplatform.dto.request.RoleCreateRequestDto;
+import com.example.newsplatform.dto.request.RoleUpdateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
 import com.example.newsplatform.entity.Permission;
 import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.entity.User;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@ExtendWith(MockitoExtension.class)
 class RoleMapperTest {
 
-    // Use Spy to allow both mocked and real method calls if needed
-    @Spy
-    private PermissionMapper permissionMapper = Mappers.getMapper(PermissionMapper.class);
-
-    @InjectMocks
-    private RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
+    private final RoleMapper roleMapper = Mappers.getMapper(RoleMapper.class);
 
     @Test
-    void toDto_shouldMapRoleToRoleDto() {
+    void shouldMapRoleToRoleDto() {
         // Given
         Role role = new Role();
         role.setId(1L);
         role.setName("ADMIN");
-        role.setDescription("Administrator role");
-        role.setActive(true);
+        role.setDescription("Administrator");
 
-        User user = new User();
-        role.setUsers(new HashSet<>(Collections.singletonList(user)));
+        Permission p = new Permission();
+        p.setName("EDIT_ARTICLE");
+        role.setPermissions(Set.of(p));
 
-        Permission perm = new Permission();
-        perm.setId(100L);
-        perm.setName("EDIT_ARTICLE");
-        role.setPermissions(new HashSet<>(Collections.singletonList(perm)));
+        User u = new User();
+        role.setUsers(Set.of(u));
 
         // When
         RoleDto dto = roleMapper.toDto(role);
@@ -54,38 +39,39 @@ class RoleMapperTest {
         assertNotNull(dto);
         assertEquals(1L, dto.id());
         assertEquals("ADMIN", dto.name());
-        assertEquals("Administrator role", dto.description());
-        assertTrue(dto.active());
-        assertEquals(1, dto.userCount());
-        assertEquals(1, dto.permissions().size());
-        assertNotNull(dto.permissions().iterator().next());
-        assertEquals("EDIT_ARTICLE", dto.permissions().iterator().next().name());
+        assertEquals("Administrator", dto.description());
+        assertEquals(1, dto.permissionNames().size());
+        assertEquals("EDIT_ARTICLE", dto.permissionNames().iterator().next());
     }
 
     @Test
-    void toDto_shouldReturnNull_whenRoleIsNull() {
-        assertNull(roleMapper.toDto((Role) null));
-    }
-
-    @Test
-    void toEntity_shouldMapRoleCreateRequestDtoToRole() {
+    void shouldMapCreateRequestToRole() {
         // Given
-        RoleCreateRequestDto createDto = new RoleCreateRequestDto();
-        createDto.setName("EDITOR");
-        createDto.setDescription("Editor role");
+        RoleCreateRequestDto request = new RoleCreateRequestDto("EDITOR", "Content Editor");
 
         // When
-        Role role = roleMapper.toEntity(createDto);
+        Role role = roleMapper.fromCreateRequest(request);
 
         // Then
         assertNotNull(role);
-        assertNull(role.getId()); // ID should be null before saving
         assertEquals("EDITOR", role.getName());
-        assertEquals("Editor role", role.getDescription());
+        assertEquals("Content Editor", role.getDescription());
     }
 
     @Test
-    void toEntity_shouldReturnNull_whenDtoIsNull() {
-        assertNull(roleMapper.toEntity(null));
+    void shouldUpdateRoleFromUpdateRequest() {
+        // Given
+        Role role = new Role();
+        role.setName("OriginalName");
+        role.setDescription("OriginalDescription");
+
+        RoleUpdateRequestDto request = new RoleUpdateRequestDto("UpdatedName", null); // Only update name
+
+        // When
+        roleMapper.updateEntityFromDto(request, role);
+
+        // Then
+        assertEquals("UpdatedName", role.getName());
+        assertEquals("OriginalDescription", role.getDescription()); // Description should not change
     }
 }

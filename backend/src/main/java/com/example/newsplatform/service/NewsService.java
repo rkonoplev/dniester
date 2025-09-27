@@ -10,24 +10,49 @@ import org.springframework.security.core.Authentication;
 
 import java.util.List;
 
+/**
+ * Service interface for managing news articles.
+ * Defines the contract for all news-related business operations, including
+ * public-facing queries and administrative actions.
+ */
 public interface NewsService {
 
-    Page<NewsDto> searchAll(String search, String category, Pageable pageable);
+    // === Public, Read-Only Methods ===
 
-    Page<NewsDto> searchPublished(String search, String category, Pageable pageable);
+    Page<NewsDto> findAllPublished(Pageable pageable);
 
-    NewsDto getPublishedById(Long id);
+    NewsDto findPublishedById(Long id);
 
-    Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable);
+    Page<NewsDto> findByTermId(Long termId, Pageable pageable);
 
-    Page<NewsDto> getPublishedByTermIds(List<Long> termIds, Pageable pageable);
+    Page<NewsDto> findByTermIds(List<Long> termIds, Pageable pageable);
 
-    NewsDto create(NewsCreateRequestDto createRequest);
 
-    NewsDto update(Long id, NewsUpdateRequestDto updateRequest);
+    // === Admin/Authenticated Methods ===
 
-    void delete(Long id);
+    Page<NewsDto> findAllForUser(Pageable pageable, Authentication authentication);
+
+    NewsDto findById(Long id, Authentication authentication);
+
+    NewsDto create(NewsCreateRequestDto request, Authentication authentication);
+
+    NewsDto update(Long id, NewsUpdateRequestDto request, Authentication authentication);
+
+    void delete(Long id, Authentication authentication);
+
+
+    // === Bulk Operations ===
 
     BulkActionRequestDto.BulkActionResult performBulkAction(BulkActionRequestDto request, Authentication authentication);
 
+
+    // === Authorization Helper Methods (for internal use in @PreAuthorize) ===
+
+    boolean canAccessNews(Long newsId, Authentication authentication);
+
+    boolean isAuthor(Long newsId, Authentication authentication);
+
+    boolean hasAdminRole(Authentication authentication);
+
+    boolean hasEditorRole(Authentication authentication);
 }

@@ -1,83 +1,113 @@
 package com.example.newsplatform.controller;
 
 import com.example.newsplatform.dto.request.RoleCreateRequestDto;
+import com.example.newsplatform.dto.request.RoleUpdateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
-import com.example.newsplatform.security.RequireRole;
 import com.example.newsplatform.service.RoleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
- * REST controller for managing roles.
+ * REST controller for managing user roles.
+ * Endpoints are secured and require ADMIN privileges.
  */
 @RestController
-@RequestMapping("/api/roles")
-@Tag(name = "Roles", description = "API for managing user roles and permissions")
+@RequestMapping("/api/admin/roles")
+@Tag(name = "Role Management API", description = "Endpoints for managing user roles")
+@SecurityRequirement(name = "basicAuth")
 public class RoleController {
 
     private final RoleService roleService;
 
-    @Autowired
     public RoleController(RoleService roleService) {
         this.roleService = roleService;
     }
 
+    /**
+     * Retrieves a list of all available roles.
+     * Pagination is omitted as the number of roles is expected to be small.
+     *
+     * @return A list of all roles.
+     */
     @GetMapping
     @Operation(summary = "Get all roles")
-    @RequireRole("ADMIN")
     public ResponseEntity<List<RoleDto>> getAllRoles() {
-        return ResponseEntity.ok(roleService.getAllRoles());
+        List<RoleDto> roles = roleService.getAllRoles();
+        return ResponseEntity.ok(roles);
     }
 
+    /**
+     * Retrieves a single role by its unique ID.
+     *
+     * @param id The ID of the role.
+     * @return The found role DTO.
+     */
     @GetMapping("/{id}")
-    @Operation(summary = "Get a role by ID")
-    @RequireRole("ADMIN")
+    @Operation(summary = "Get role by ID")
     public ResponseEntity<RoleDto> getRoleById(@PathVariable Long id) {
-        return ResponseEntity.ok(roleService.getRoleById(id));
+        RoleDto role = roleService.getRoleById(id);
+        return ResponseEntity.ok(role);
     }
 
+    /**
+     * Creates a new role.
+     *
+     * @param createRequest The DTO containing the data for the new role.
+     * @return The created role DTO with a 201 Created status.
+     */
     @PostMapping
     @Operation(summary = "Create a new role")
-    @RequireRole("ADMIN")
-    public ResponseEntity<RoleDto> createRole(@Valid @RequestBody RoleCreateRequestDto roleDto) {
-        RoleDto createdRole = roleService.createRole(roleDto);
-        return new ResponseEntity<>(createdRole, HttpStatus.CREATED);
+    public ResponseEntity<RoleDto> createRole(@RequestBody @Valid RoleCreateRequestDto createRequest) {
+        RoleDto savedRole = roleService.createRole(createRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(savedRole);
     }
 
+    /**
+     * Updates an existing role.
+     *
+     * @param id            The ID of the role to update.
+     * @param updateRequest The DTO containing the fields to update.
+     * @return The updated role DTO.
+     */
     @PutMapping("/{id}")
     @Operation(summary = "Update an existing role")
-    @RequireRole("ADMIN")
-    public ResponseEntity<RoleDto> updateRole(@PathVariable Long id, @Valid @RequestBody RoleCreateRequestDto roleDto) {
-        return ResponseEntity.ok(roleService.updateRole(id, roleDto));
+    public ResponseEntity<RoleDto> updateRole(@PathVariable Long id,
+                                              @RequestBody @Valid RoleUpdateRequestDto updateRequest) {
+        RoleDto updatedRole = roleService.updateRole(id, updateRequest);
+        return ResponseEntity.ok(updatedRole);
     }
 
+    /**
+     * Deletes a role by its ID.
+     *
+     * @param id The ID of the role to delete.
+     * @return A 204 No Content response on success.
+     */
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a role")
-    @RequireRole("ADMIN")
     public ResponseEntity<Void> deleteRole(@PathVariable Long id) {
         roleService.deleteRole(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/{roleId}/permissions/{permissionId}")
-    @Operation(summary = "Add a permission to a role")
-    @RequireRole("ADMIN")
-    public ResponseEntity<RoleDto> addPermissionToRole(@PathVariable Long roleId, @PathVariable Long permissionId) {
-        return ResponseEntity.ok(roleService.addPermissionToRole(roleId, permissionId));
-    }
-
-    @DeleteMapping("/{roleId}/permissions/{permissionId}")
-    @Operation(summary = "Remove a permission from a role")
-    @RequireRole("ADMIN")
-    public ResponseEntity<RoleDto> removePermissionFromRole(@PathVariable Long roleId, 
-                                                            @PathVariable Long permissionId) {
-        return ResponseEntity.ok(roleService.removePermissionFromRole(roleId, permissionId));
+    /**
+     * Retrieves all roles assigned to a specific user.
+     *
+     * @param userId The ID of the user.
+     * @return A set of roles assigned to the user.
+     */
+    @GetMapping("/user/{userId}")
+    @Operation(summary = "Get roles for a specific user")
+    public ResponseEntity<Set<RoleDto>> getRolesByUserId(@PathVariable Long userId) {
+        Set<RoleDto> roles = roleService.findRolesByUserId(userId);
+        return ResponseEntity.ok(roles);
     }
 }

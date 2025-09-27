@@ -32,7 +32,8 @@ class NewsMapperTest {
         News news = new News();
         news.setId(1L);
         news.setTitle("Test Title");
-        news.setContent("Test Content");
+        news.setBody("Test Content");
+        news.setTeaser("Test Teaser");
         news.setPublished(true);
         news.setPublicationDate(LocalDateTime.now());
         news.setAuthor(author);
@@ -45,7 +46,8 @@ class NewsMapperTest {
         assertNotNull(dto);
         assertEquals(news.getId(), dto.getId());
         assertEquals(news.getTitle(), dto.getTitle());
-        assertEquals(news.getContent(), dto.getContent());
+        assertEquals(news.getBody(), dto.getBody());
+        assertEquals(news.getTeaser(), dto.getTeaser());
         assertEquals(news.isPublished(), dto.isPublished());
         assertEquals(author.getId(), dto.getAuthorId());
         assertEquals(author.getUsername(), dto.getAuthorName());
@@ -59,6 +61,7 @@ class NewsMapperTest {
         NewsCreateRequestDto req = new NewsCreateRequestDto();
         req.setTitle("New Article");
         req.setContent("Article content.");
+        req.setTeaser("Article teaser.");
 
         // When
         News entity = newsMapper.toEntity(req);
@@ -66,6 +69,7 @@ class NewsMapperTest {
         // Then
         assertNotNull(entity);
         assertEquals(req.getTitle(), entity.getTitle());
-        assertEquals(req.getContent(), entity.getContent());
+        assertEquals(req.getContent(), entity.getBody());
+        assertEquals(req.getTeaser(), entity.getTeaser());
     }
 }

@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class NewsServiceImpl implements NewsService {
@@ -38,18 +37,14 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
-    public Page<NewsDto> searchAll(String search, String category, Pageable pageable) {
-        return newsRepository.searchAll(search, category, pageable).map(newsMapper::toDto);
-    }
-
-    @Override
-    public Page<NewsDto> searchPublished(String search, String category, Pageable pageable) {
-        return newsRepository.searchPublished(search, category, pageable).map(newsMapper::toDto);
+    @Transactional(readOnly = true)
+    public Page<NewsDto> findAllPublished(Pageable pageable) {
+        return newsRepository.findByPublished(true, pageable).map(newsMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public NewsDto getPublishedById(Long id) {
+    public NewsDto findPublishedById(Long id) {
         News news = newsRepository.findByIdAndPublished(id, true)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
         return newsMapper.toDto(news);
@@ -57,56 +52,68 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NewsDto> getPublishedByTermId(Long termId, Pageable pageable) {
-        return newsRepository.findByTerms_IdAndPublished(termId, true, pageable).map(newsMapper::toDto);
+    public Page<NewsDto> findByTermId(Long termId, Pageable pageable) {
+        return newsRepository.findByTerms_IdAndPublished(termId, true, pageable)
+                .map(newsMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Page<NewsDto> getPublishedByTermIds(List<Long> termIds, Pageable pageable) {
-        return newsRepository.findByTerms_IdInAndPublished(termIds, true, pageable).map(newsMapper::toDto);
+    public Page<NewsDto> findByTermIds(List<Long> termIds, Pageable pageable) {
+        return newsRepository.findByTerms_IdInAndPublished(termIds, true, pageable)
+                .map(newsMapper::toDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<NewsDto> findAllForUser(Pageable pageable, Authentication authentication) {
+        if (hasAdminRole(authentication)) {
+            return newsRepository.findAll(pageable).map(newsMapper::toDto);
+        } else if (hasEditorRole(authentication)) {
+            User currentUser = getCurrentUser(authentication);
+            return newsRepository.findByAuthorId(currentUser.getId(), pageable).map(newsMapper::toDto);
+        }
+        return Page.empty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public NewsDto findById(Long id, Authentication authentication) {
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
+        if (!canAccessNews(id, authentication)) {
+            throw new AccessDeniedException("You do not have permission to view this article.");
+        }
+        return newsMapper.toDto(news);
     }
 
     @Override
     @Transactional
-    public NewsDto create(NewsCreateRequestDto createRequest) {
-        Authentication authentication = getAuthenticatedUser();
-        String currentUsername = authentication.getName();
-        User author = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", currentUsername));
-
-        News news = newsMapper.toEntity(createRequest);
+    public NewsDto create(NewsCreateRequestDto request, Authentication authentication) {
+        User author = getCurrentUser(authentication);
+        News news = newsMapper.toEntity(request);
         news.setAuthor(author);
-
         News savedNews = newsRepository.save(news);
         return newsMapper.toDto(savedNews);
     }
 
     @Override
     @Transactional
-    public NewsDto update(Long id, NewsUpdateRequestDto updateRequest) {
+    public NewsDto update(Long id, NewsUpdateRequestDto request, Authentication authentication) {
         News existingNews = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
-
-        Authentication authentication = getAuthenticatedUser();
         verifyOwnershipOrAdmin(authentication, existingNews);
-
-        // Use the mapper to update the entity from the DTO
-        newsMapper.updateEntityFromDto(updateRequest, existingNews);
-
+        newsMapper.updateEntityFromDto(request, existingNews);
         News updatedNews = newsRepository.save(existingNews);
         return newsMapper.toDto(updatedNews);
     }
 
     @Override
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, Authentication authentication) {
         News newsToDelete = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
-
-        Authentication authentication = getAuthenticatedUser();
         verifyOwnershipOrAdmin(authentication, newsToDelete);
-
         newsRepository.delete(newsToDelete);
     }
 
@@ -114,9 +121,8 @@ public class NewsServiceImpl implements NewsService {
     @Transactional
     public BulkActionRequestDto.BulkActionResult performBulkAction(BulkActionRequestDto request, Authentication authentication) {
         if (!hasRole(authentication, "ADMIN")) {
-            throw new AccessDeniedException("Bulk operations are restricted to ADMIN role only. EDITOR can only delete single articles.");
+            throw new AccessDeniedException("Bulk operations are restricted to ADMIN role only.");
         }
-
         if (!request.isConfirmed()) {
             throw new IllegalArgumentException("Bulk operation must be confirmed");
         }
@@ -124,9 +130,7 @@ public class NewsServiceImpl implements NewsService {
         List<Long> targetIds = new ArrayList<>();
         switch (request.getFilterType()) {
             case BY_IDS:
-                if (request.getItemIds() != null) {
-                    targetIds.addAll(request.getItemIds());
-                }
+                if (request.getItemIds() != null) targetIds.addAll(request.getItemIds());
                 break;
             case BY_TERM:
                 targetIds.addAll(newsRepository.findIdsByTermId(request.getTermId()));
@@ -143,10 +147,6 @@ public class NewsServiceImpl implements NewsService {
             return new BulkActionRequestDto.BulkActionResult(0);
         }
 
-        if (request.getAction() == null) {
-            throw new IllegalArgumentException("Unsupported bulk action");
-        }
-
         switch (request.getAction()) {
             case DELETE:
                 newsRepository.deleteAllById(targetIds);
@@ -157,44 +157,54 @@ public class NewsServiceImpl implements NewsService {
             default:
                 throw new IllegalArgumentException("Unsupported bulk action: " + request.getAction());
         }
-
         return new BulkActionRequestDto.BulkActionResult(targetIds.size());
     }
 
-    public boolean hasRole(Authentication authentication, String roleName) {
-        if (authentication == null || roleName == null) {
-            return false;
+    @Override
+    public boolean canAccessNews(Long newsId, Authentication authentication) {
+        if (hasAdminRole(authentication)) {
+            return true;
         }
-        String authorityName = ROLE_PREFIX + roleName.toUpperCase();
+        return isAuthor(newsId, authentication);
+    }
+
+    @Override
+    public boolean isAuthor(Long newsId, Authentication authentication) {
+        if (newsId == null || authentication == null) return false;
+        User currentUser = getCurrentUser(authentication);
+        return newsRepository.existsByIdAndAuthorId(newsId, currentUser.getId());
+    }
+
+    @Override
+    public boolean hasAdminRole(Authentication authentication) {
+        return hasAuthority(authentication, "ADMIN");
+    }
+
+    @Override
+    public boolean hasEditorRole(Authentication authentication) {
+        return hasAuthority(authentication, "EDITOR");
+    }
+
+    private boolean hasAuthority(Authentication authentication, String roleName) {
+        if (authentication == null) return false;
+        String authorityName = ROLE_PREFIX + roleName;
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authorityName));
     }
 
-    private void verifyOwnershipOrAdmin(Authentication authentication, News news) {
-        if (hasRole(authentication, "ADMIN")) {
-            return; // Admins can do anything
-        }
-
-        String currentUsername = authentication.getName();
-        User author = news.getAuthor();
-
-        if (author == null || !author.getUsername().equals(currentUsername)) {
-            throw new AccessDeniedException("Access Denied: You are not the author of this article.");
-        }
-
-        // For added security, especially if usernames can change, check by ID if the principal is a User object
-        Object principal = authentication.getPrincipal();
-        if (principal instanceof org.springframework.security.core.userdetails.User) {
-            // In a real app, you'd resolve your custom UserDetails object here
-            // For now, the username check is sufficient.
-        }
+    private User getCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 
-    private Authentication getAuthenticatedUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated() || "anonymousUser".equals(authentication.getPrincipal())) {
-            throw new AccessDeniedException("Access Denied: User is not authenticated.");
+    private void verifyOwnershipOrAdmin(Authentication authentication, News news) {
+        if (hasAdminRole(authentication)) {
+            return;
         }
-        return authentication;
+        User currentUser = getCurrentUser(authentication);
+        if (news.getAuthor() == null || !news.getAuthor().getId().equals(currentUser.getId())) {
+            throw new AccessDeniedException("Access Denied: You are not the author of this article.");
+        }
     }
 }
