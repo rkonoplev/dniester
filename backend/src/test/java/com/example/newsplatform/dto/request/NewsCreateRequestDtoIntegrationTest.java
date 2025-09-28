@@ -56,12 +56,12 @@ public class NewsCreateRequestDtoIntegrationTest {
         dto.setContent("Integration test body content.");
 
         // When
-        NewsDto result = newsService.create(dto);
+        NewsDto result = newsService.create(dto, SecurityContextHolder.getContext().getAuthentication());
 
         // Then
         assertNotNull(result.getId());
         assertEquals("Integration Test Title", result.getTitle());
-        assertEquals("Integration test body content.", result.getContent());
+        assertEquals("Integration test body content.", result.getBody());
         assertEquals(author.getId(), result.getAuthorId());
     }
 }

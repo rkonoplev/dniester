@@ -29,35 +29,40 @@ public class AdminNewsController {
     }
 
     @GetMapping
-    @Operation(summary = "Find all news", description = "Finds all news articles, respecting user roles (ADMIN sees all, EDITOR sees own).")
+    @Operation(summary = "Find all news",
+            description = "Finds all news articles, respecting user roles (ADMIN sees all, EDITOR sees own).")
     public Page<NewsDto> findAll(Pageable pageable, Authentication authentication) {
         return newsService.findAllForUser(pageable, authentication);
     }
 
     @PostMapping
     @Operation(summary = "Create a new article")
-    public ResponseEntity<NewsDto> create(@RequestBody @Valid NewsCreateRequestDto createRequest, Authentication authentication) {
+    public ResponseEntity<NewsDto> create(@RequestBody @Valid NewsCreateRequestDto createRequest,
+        Authentication authentication) {
         NewsDto created = newsService.create(createRequest, authentication);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("/{id}")
     @Operation(summary = "Update an article")
-    public ResponseEntity<NewsDto> update(@PathVariable Long id, @RequestBody @Valid NewsUpdateRequestDto updateRequest, Authentication authentication) {
+    public ResponseEntity<NewsDto> update(@PathVariable Long id,
+        @RequestBody @Valid NewsUpdateRequestDto updateRequest, Authentication authentication) {
         NewsDto updated = newsService.update(id, updateRequest, authentication);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete an article")
-    public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
+    public ResponseEntity<Void> delete(@PathVariable Long id,
+        Authentication authentication) {
         newsService.delete(id, authentication);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/bulk")
     @Operation(summary = "Bulk operations on articles")
-    public ResponseEntity<BulkActionRequestDto.BulkActionResult> performBulkAction(@RequestBody @Valid BulkActionRequestDto request, Authentication authentication) {
+    public ResponseEntity<BulkActionRequestDto.BulkActionResult> performBulkAction(
+        @RequestBody @Valid BulkActionRequestDto request, Authentication authentication) {
         BulkActionRequestDto.BulkActionResult result = newsService.performBulkAction(request, authentication);
         return ResponseEntity.ok(result);
     }

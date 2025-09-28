@@ -27,7 +27,7 @@ class RoleMapperTest {
 
         Permission p = new Permission();
         p.setName("EDIT_ARTICLE");
-        role.setPermissions(Set.of(p));
+        role.setPermissions(Set.of(p)); // Initialize the set
 
         User u = new User();
         role.setUsers(Set.of(u));
@@ -47,7 +47,9 @@ class RoleMapperTest {
     @Test
     void shouldMapCreateRequestToRole() {
         // Given
-        RoleCreateRequestDto request = new RoleCreateRequestDto("EDITOR", "Content Editor");
+        RoleCreateRequestDto request = new RoleCreateRequestDto();
+        request.setName("EDITOR");
+        request.setDescription("Content Editor");
 
         // When
         Role role = roleMapper.fromCreateRequest(request);
@@ -65,7 +67,9 @@ class RoleMapperTest {
         role.setName("OriginalName");
         role.setDescription("OriginalDescription");
 
-        RoleUpdateRequestDto request = new RoleUpdateRequestDto("UpdatedName", null); // Only update name
+        RoleUpdateRequestDto request = new RoleUpdateRequestDto();
+        request.setName("UpdatedName");
+        // Description is left null to test partial update
 
         // When
         roleMapper.updateEntityFromDto(request, role);

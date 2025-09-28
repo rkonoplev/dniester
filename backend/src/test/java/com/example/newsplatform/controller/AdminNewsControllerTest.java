@@ -11,16 +11,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,18 +40,17 @@ class AdminNewsControllerTest {
 
     @BeforeEach
     void setUp() {
-        sampleNewsDto = new NewsDto(1L, "Test Title", "Test Content", true, LocalDateTime.now(), 10L, "author", Collections.emptySet());
-    }
-
-    @Test
-    void searchAll_ShouldReturnPageOfNews() {
-        Page<NewsDto> page = new PageImpl<>(List.of(sampleNewsDto));
-        when(newsService.searchAll(any(), any(), any(PageRequest.class))).thenReturn(page);
-
-        Page<NewsDto> result = controller.searchAll("test", "cat", PageRequest.of(0, 10));
-
-        assertEquals(1, result.getTotalElements());
-        assertEquals("Test Title", result.getContent().get(0).getTitle());
+        sampleNewsDto = new NewsDto(
+            1L,
+            "Test Title",
+            "Test Content",
+            null,
+            LocalDateTime.now(),
+            true,
+            10L,
+            "author",
+            Collections.emptySet()
+        );
     }
 
     @Test
@@ -63,9 +58,10 @@ class AdminNewsControllerTest {
         NewsCreateRequestDto createRequest = new NewsCreateRequestDto();
         createRequest.setTitle("Test Title");
         createRequest.setContent("Test Content");
-        when(newsService.create(any(NewsCreateRequestDto.class))).thenReturn(sampleNewsDto);
 
-        ResponseEntity<NewsDto> response = controller.create(createRequest);
+        when(newsService.create(any(NewsCreateRequestDto.class), eq(auth))).thenReturn(sampleNewsDto);
+
+        ResponseEntity<NewsDto> response = controller.create(createRequest, auth);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
         assertEquals("Test Title", response.getBody().getTitle());
@@ -73,10 +69,10 @@ class AdminNewsControllerTest {
 
     @Test
     void update_ShouldReturnUpdatedNews() {
-        NewsUpdateRequestDto updateRequest = new NewsUpdateRequestDto("Updated Title", "Updated Content", true);
-        when(newsService.update(eq(1L), any(NewsUpdateRequestDto.class))).thenReturn(sampleNewsDto);
+        NewsUpdateRequestDto updateRequest = new NewsUpdateRequestDto("Updated Title", "Updated Content", null, true);
+        when(newsService.update(eq(1L), any(NewsUpdateRequestDto.class), eq(auth))).thenReturn(sampleNewsDto);
 
-        ResponseEntity<NewsDto> response = controller.update(1L, updateRequest);
+        ResponseEntity<NewsDto> response = controller.update(1L, updateRequest, auth);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Test Title", response.getBody().getTitle());
@@ -84,9 +80,9 @@ class AdminNewsControllerTest {
 
     @Test
     void delete_ShouldReturnNoContent() {
-        ResponseEntity<Void> response = controller.delete(1L);
+        ResponseEntity<Void> response = controller.delete(1L, auth);
 
-        verify(newsService).delete(1L);
+        verify(newsService).delete(eq(1L), eq(auth));
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
     }
 
@@ -94,7 +90,7 @@ class AdminNewsControllerTest {
     void performBulkAction_ShouldReturnResult() {
         BulkActionRequestDto request = new BulkActionRequestDto();
         BulkActionRequestDto.BulkActionResult actionResult = new BulkActionRequestDto.BulkActionResult(5);
-        when(newsService.performBulkAction(request, auth)).thenReturn(actionResult);
+        when(newsService.performBulkAction(eq(request), eq(auth))).thenReturn(actionResult);
 
         ResponseEntity<BulkActionRequestDto.BulkActionResult> response = controller.performBulkAction(request, auth);
 

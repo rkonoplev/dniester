@@ -39,7 +39,7 @@ public interface NewsMapper {
      */
     @Mapping(target = "body", source = "content")
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "teaser", ignore = true) // Teaser is not set on creation
+    @Mapping(target = "teaser", source = "teaser")
     @Mapping(target = "publicationDate", ignore = true)
     @Mapping(target = "published", ignore = true)
     @Mapping(target = "author", ignore = true)

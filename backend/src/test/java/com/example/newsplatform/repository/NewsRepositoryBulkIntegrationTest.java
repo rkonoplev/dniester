@@ -65,7 +65,7 @@ class NewsRepositoryBulkIntegrationTest {
         // Create news articles
         News news1 = new News();
         news1.setTitle("Tech News 1");
-        news1.setContent("Technology content");
+        news1.setBody("Technology content");
         news1.setAuthor(author1);
         news1.setPublished(true);
         news1.getTerms().add(termTech);
@@ -73,7 +73,7 @@ class NewsRepositoryBulkIntegrationTest {
 
         News news2 = new News();
         news2.setTitle("Sports News");
-        news2.setContent("Sports content");
+        news2.setBody("Sports content");
         news2.setAuthor(author2);
         news2.setPublished(true);
         news2.getTerms().add(termSports);
@@ -81,7 +81,7 @@ class NewsRepositoryBulkIntegrationTest {
 
         News news3 = new News();
         news3.setTitle("Tech News 2");
-        news3.setContent("More technology content");
+        news3.setBody("More technology content");
         news3.setAuthor(author1);
         news3.setPublished(true);
         news3.getTerms().add(termTech);

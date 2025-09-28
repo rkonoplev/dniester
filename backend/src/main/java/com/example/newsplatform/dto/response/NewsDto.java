@@ -23,7 +23,9 @@ public class NewsDto {
     //<editor-fold desc="Constructors, Getters, Setters">
     public NewsDto() {}
 
-    public NewsDto(Long id, String title, String body, String teaser, LocalDateTime publicationDate, boolean published, Long authorId, String authorName, Set<String> termNames) {
+    public NewsDto(Long id, String title, String body, String teaser,
+        LocalDateTime publicationDate, boolean published, Long authorId,
+        String authorName, Set<String> termNames) {
         this.id = id;
         this.title = title;
         this.body = body;
