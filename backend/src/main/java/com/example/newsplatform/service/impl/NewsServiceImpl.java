@@ -121,7 +121,9 @@ public class NewsServiceImpl implements NewsService {
     @Transactional
     public BulkActionRequestDto.BulkActionResult performBulkAction(BulkActionRequestDto request, Authentication authentication) {
         if (!hasRole(authentication, "ADMIN")) {
-            throw new AccessDeniedException("Bulk operations are restricted to ADMIN role only.");
+            throw new AccessDeniedException(
+                    "Bulk operations are restricted to ADMIN role only. "
+                            + "EDITOR can only delete single articles.");
         }
         if (!request.isConfirmed()) {
             throw new IllegalArgumentException("Bulk operation must be confirmed");
@@ -185,17 +187,23 @@ public class NewsServiceImpl implements NewsService {
         return hasAuthority(authentication, "EDITOR");
     }
 
+    /**
+     * Retrieves the current authenticated user from the database.
+     * Visibility is protected to allow spying in tests.
+     * @param authentication The current user's authentication object.
+     * @return The fetched {@link User} entity.
+     */
+    protected User getCurrentUser(Authentication authentication) {
+        String username = authentication.getName();
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
+    }
+
     private boolean hasAuthority(Authentication authentication, String roleName) {
         if (authentication == null) return false;
         String authorityName = ROLE_PREFIX + roleName;
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authorityName));
-    }
-
-    private User getCurrentUser(Authentication authentication) {
-        String username = authentication.getName();
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));
     }
 
     private void verifyOwnershipOrAdmin(Authentication authentication, News news) {
