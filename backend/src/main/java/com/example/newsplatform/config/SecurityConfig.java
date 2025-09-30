@@ -1,5 +1,6 @@
 package com.example.newsplatform.config;
 
+import com.example.newsplatform.security.DatabaseUserDetailsService;
 import com.example.newsplatform.security.RoleConstants;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,18 +18,25 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
+    private final DatabaseUserDetailsService userDetailsService;
+
+    public SecurityConfig(DatabaseUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/admin/**").hasAnyRole(RoleConstants.ADMIN, RoleConstants.EDITOR)
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .httpBasic(Customizer.withDefaults())
-            .csrf(AbstractHttpConfigurer::disable)
-            .build();
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/public/**").permitAll()
+                        .requestMatchers("/api/admin/**").hasAnyRole(RoleConstants.ADMIN, RoleConstants.EDITOR)
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .httpBasic(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
+                .userDetailsService(userDetailsService) // ✅ Use DB-based auth
+                .build();
     }
 
     @Bean

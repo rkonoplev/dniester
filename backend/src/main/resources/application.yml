@@ -1,14 +1,13 @@
 # =========================================================
 # application.yml
 # Base configuration. No profile activated by default.
-# The correct profile is chosen via SPRING_PROFILES_ACTIVE or @ActiveProfiles in tests.
+# The correct profile is chosen via SPRING_PROFILES_ACTIVE
+# environment variable, command-line args, or @ActiveProfiles in tests.
 # =========================================================
 
 spring:
   application:
     name: news-platform
-  profiles:
-    active: test
 
 server:
   port: 8080
@@ -16,3 +15,4 @@ server:
 logging:
   level:
     root: INFO
+    com.example.newsplatform: DEBUG

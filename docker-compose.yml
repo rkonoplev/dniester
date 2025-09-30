@@ -1,45 +1,45 @@
-# =========================================================
-# docker-compose.yml
-# Local development orchestration.
-# Runs Spring Boot app (backend) and MySQL 8.0 database
-# =========================================================
-
 version: '3.8'
-
 services:
-  app:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.dev
-    container_name: news-app
-    ports:
-      - "${SPRING_LOCAL_PORT:-8080}:8080"  # default to 8080 if not set
-    volumes:
-      - ./backend:/app
-    env_file:
-      - .env.dev
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-newsdb}?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
-      SPRING_DATASOURCE_USERNAME: ${MYSQL_USER:-root}
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD:-root}
-      SPRING_PROFILES_ACTIVE: local
-    depends_on:
-      - mysql
-
-  mysql:
+  news-mysql:
     image: mysql:8.0
     container_name: news-mysql
     restart: always
-    ports:
-      - "${DATABASE_LOCAL_PORT:-3306}:3306"
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-newsdb}
-      MYSQL_USER: ${MYSQL_USER:-root}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-dniester}
+    ports:
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
-      - ./db-dumps:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  news-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: news-app
+    restart: always
+    depends_on:
+      news-mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:mysql://news-mysql:3306/${MYSQL_DATABASE:-dniester}?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend:/app/backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
 volumes:
   mysql_data:
