@@ -93,7 +93,8 @@ npm start
 ## Documentation
 Full developer and deployment documentation is available in the [docs/](docs/) folder:
 
-- **[Complete Project Information](docs/TASK_DESCRIPTION.md)** - Comprehensive project overview and technical documentation
+- **[Complete Project Information](docs/TASK_DESCRIPTION.md)** - Comprehensive project overview 
+  and technical documentation
 - **[Quick Start (Russian)](docs/QUICK_START_RU.md)** - Быстрый старт для русскоязычных разработчиков
 - [Developer Guide](docs/DEVELOPER_GUIDE.md)
 - [Developer Guide (RU)](docs/DEVELOPER_GUIDE_RU.md)
@@ -130,6 +131,33 @@ cp .env.dev.example .env.dev
 ```
 Edit .env.dev to adjust MySQL root password, database name, or admin username/password if needed.
 Note: Do not commit this file — it is excluded via .gitignore.
+
+### Two Startup Scenarios
+
+The platform supports two distinct ways to begin:
+
+#### A. Migrate from Drupal 6 (Use existing content)
+If you have a legacy Drupal 6 site, follow the full migration process in 
+**[Migration Guide (EN)](docs/MIGRATION_DRUPAL6.md)** or **[Migration Guide (RU)](docs/MIGRATION_DRUPAL6_RU.md)**.
+This will produce a `db_data/clean_schema.sql` file containing all your articles and users.
+After starting the services (step 3), import this file:
+```bash
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+```
+You can then log in to the admin panel using your 
+**original Drupal credentials**.
+
+#### B. Start from scratch (New project or development)
+For a new project or local development, you can start with a clean database.
+After starting the services (step 3), create a default admin user:
+
+```bash
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/init_admin.sql
+```
+Important: Before running this command, open db_data/init_admin.sql and replace 
+the placeholder password hash with a real BCrypt hash of your chosen password (e.g., admin). 
+
+You can then log in with the default credentials (admin / admin).
 
 ### 3. Start services with Docker Compose
    ```bash
