@@ -72,6 +72,4 @@ public class AuthorizationService {
         // ✅ IMPLEMENTED: verify authorship via repository
         return newsRepository.existsByIdAndAuthorId(newsId, currentUserId);
     }
-
-/**
- * Check if user can access news (ADMIN or EDITOR who
+}

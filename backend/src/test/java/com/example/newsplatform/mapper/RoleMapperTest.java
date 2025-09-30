@@ -9,6 +9,7 @@ import com.example.newsplatform.entity.User;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,7 +28,7 @@ class RoleMapperTest {
 
         Permission p = new Permission();
         p.setName("EDIT_ARTICLE");
-        role.setPermissions(Set.of(p)); // Initialize the set
+        role.setPermissions(Set.of(p)); // Initialize the set to avoid NPE
 
         User u = new User();
         role.setUsers(Set.of(u));

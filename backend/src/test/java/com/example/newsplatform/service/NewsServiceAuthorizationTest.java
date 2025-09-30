@@ -68,8 +68,12 @@ class NewsServiceAuthorizationTest {
         anotherUser.setId(3L);
         anotherUser.setUsername("another");
 
-        adminAuth = new UsernamePasswordAuthenticationToken("admin", "pass", List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
-        editorAuth = new UsernamePasswordAuthenticationToken("editor", "pass", List.of(new SimpleGrantedAuthority("ROLE_EDITOR")));
+        adminAuth = new UsernamePasswordAuthenticationToken("admin", "pass",
+                List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+        );
+        editorAuth = new UsernamePasswordAuthenticationToken("editor", "pass",
+                List.of(new SimpleGrantedAuthority("ROLE_EDITOR"))
+        );
 
         ownNews = new News();
         ownNews.setId(10L);
@@ -92,14 +96,14 @@ class NewsServiceAuthorizationTest {
 
     @Test
     void isAuthor_ShouldReturnTrueForAuthor() {
-        doReturn(editorUser).when(newsService).getCurrentUser(editorAuth);
+        when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.existsByIdAndAuthorId(10L, 2L)).thenReturn(true);
         assertTrue(newsService.isAuthor(10L, editorAuth));
     }
 
     @Test
     void isAuthor_ShouldReturnFalseForNonAuthor() {
-        doReturn(editorUser).when(newsService).getCurrentUser(editorAuth);
+        when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.existsByIdAndAuthorId(11L, 2L)).thenReturn(false);
         assertFalse(newsService.isAuthor(11L, editorAuth));
     }
@@ -114,7 +118,7 @@ class NewsServiceAuthorizationTest {
 
     @Test
     void findAllForUser_EditorRole_ShouldReturnOnlyOwnNews() {
-        doReturn(editorUser).when(newsService).getCurrentUser(editorAuth);
+        when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.findByAuthorId(2L, Pageable.unpaged())).thenReturn(new PageImpl<>(List.of(ownNews)));
         Page<NewsDto> result = newsService.findAllForUser(Pageable.unpaged(), editorAuth);
         assertEquals(1, result.getTotalElements());
@@ -143,7 +147,7 @@ class NewsServiceAuthorizationTest {
 
     @Test
     void update_EditorRole_ShouldAllowUpdatingOwnNews() {
-        doReturn(editorUser).when(newsService).getCurrentUser(editorAuth);
+        when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.findById(10L)).thenReturn(Optional.of(ownNews));
         NewsUpdateRequestDto request = new NewsUpdateRequestDto("T", "C", "T", true);
         assertDoesNotThrow(() -> newsService.update(10L, request, editorAuth));
@@ -152,7 +156,7 @@ class NewsServiceAuthorizationTest {
 
     @Test
     void update_EditorRole_ShouldDenyUpdatingOthersNews() {
-        doReturn(editorUser).when(newsService).getCurrentUser(editorAuth);
+        when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.findById(11L)).thenReturn(Optional.of(othersNews));
         NewsUpdateRequestDto request = new NewsUpdateRequestDto("T", "C", "T", true);
         assertThrows(AccessDeniedException.class, () -> newsService.update(11L, request, editorAuth));
@@ -161,7 +165,7 @@ class NewsServiceAuthorizationTest {
 
     @Test
     void delete_EditorRole_ShouldAllowDeletingOwnNews() {
-        doReturn(editorUser).when(newsService).getCurrentUser(editorAuth);
+        when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.findById(10L)).thenReturn(Optional.of(ownNews));
         assertDoesNotThrow(() -> newsService.delete(10L, editorAuth));
         verify(newsRepository).delete(ownNews);

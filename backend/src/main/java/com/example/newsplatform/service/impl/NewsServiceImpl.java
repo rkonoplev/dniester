@@ -188,6 +188,18 @@ public class NewsServiceImpl implements NewsService {
     }
 
     /**
+     * A generic role-checking helper method.
+     * This is a convenience method for internal service logic.
+     *
+     * @param authentication The user's authentication object.
+     * @param roleName       The name of the role to check (e.g., "ADMIN").
+     * @return True if the user has the specified role.
+     */
+    public boolean hasRole(Authentication authentication, String roleName) {
+        return hasAuthority(authentication, roleName);
+    }
+
+    /**
      * Retrieves the current authenticated user from the database.
      * Visibility is protected to allow spying in tests.
      * @param authentication The current user's authentication object.
