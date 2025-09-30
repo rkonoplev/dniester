@@ -4,6 +4,24 @@ This directory contains SQL scripts and database files used for migrating from D
 
 ## 📁 Files Overview
 
+### Development & Initialization Scripts (Safe for Git)
+
+#### `init_admin.sql` (NEW)
+- **Purpose**: Creates a default admin user for **local development from a clean database**.
+- **Created**: For developer onboarding and clean-slate scenarios.
+- **Function**:
+    - Ensures the `ADMIN` role exists.
+    - Creates a user `admin` with a configurable password (BCrypt hash).
+    - Assigns the `ADMIN` role to the user.
+- **Usage**: Run this script after starting a fresh MySQL instance to get immediate admin access.
+- **Security**: **For local development ONLY**. Contains a placeholder password hash that must be replaced before use.
+
+#### `create_admin_user.sql` (LEGACY / ALTERNATE)
+- **Purpose**: An alternative script for creating an admin user, often used during initial project setup or migration verification.
+- **Status**: Functionally similar to `init_admin.sql` but may contain different default values or comments.
+- **Usage**: Can be used interchangeably with `init_admin.sql` for local development setup.
+- **Note**: Prefer `init_admin.sql` for new setups as it is the standardized script.
+
 ### Migration Scripts (Safe for Git)
 
 #### `migrate_from_drupal6_universal.sql` (3.2K)

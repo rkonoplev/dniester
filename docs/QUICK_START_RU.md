@@ -27,6 +27,39 @@ docker compose --env-file .env.dev up -d
 - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 - **Админка**: логин `admin`, пароль `admin`
 
+## Два сценария запуска
+
+Проект поддерживает два основных сценария запуска:
+
+### Сценарий 1: Миграция из Drupal 6 (существующие данные)
+Если у вас есть старый сайт на Drupal 6, вы можете перенести все статьи, пользователей и категории в новую платформу.
+1.  Следуйте полной инструкции в **[Миграция с Drupal 6](MIGRATION_DRUPAL6_RU.md)**.
+2.  В результате вы получите файл `db_data/clean_schema.sql` со всеми данными.
+3.  Запустите проект:
+    ```bash
+    docker compose --env-file .env.dev up -d
+    ```
+4.  Импортируйте мигрированные данные (если еще не сделано):
+    ```bash
+    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+    ```
+5.  Готово! Ваши администраторы из Drupal могут войти со своими старыми логинами и паролями.
+
+### Сценарий 2: Начало с чистого листа (новый проект)
+Идеально подходит для новых проектов или разработки.
+1.  Убедитесь, что у вас чистая база данных:
+    ```bash
+    docker compose down -v
+    docker compose --env-file .env.dev up -d
+    ```
+2.  Spring Boot автоматически создаст пустые таблицы (`users`, `roles`, `content` и т.д.).
+3.  Создайте тестового администратора:
+    ```bash
+    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/init_admin.sql
+    ```
+    > **Важно**: Перед первым запуском откройте `db_data/init_admin.sql` и замените заглушку пароля на настоящий BCrypt-хэш от пароля `admin`.
+4.  Теперь вы можете войти в админку с логином `admin` и паролем `admin`.
+
 ## Разработка
 
 ### Запуск тестов

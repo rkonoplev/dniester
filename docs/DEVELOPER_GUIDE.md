@@ -271,6 +271,42 @@ curl -u admin:password -i "http://localhost:8080/api/admin/news"
 ```
 ---
 
+## Starting Scenarios
+
+The News Platform supports two distinct starting scenarios for administrators and developers.
+
+### Scenario 1: Migrate from Drupal 6 (Legacy Data)
+
+This is the primary scenario for projects with an existing Drupal 6 installation.
+
+1.  Follow the complete migration process outlined in **[Migration Drupal6 → News Platform](MIGRATION_DRUPAL6.md)**.
+2.  This process produces the `db_data/clean_schema.sql` file, which contains all your legacy news, users, and taxonomy.
+3.  Start the application stack:
+    ```bash
+    docker compose --env-file .env.dev up -d
+    ```
+4.  **No additional setup is needed.** Your migrated admin users (from Drupal) can log in with their original credentials.
+
+### Scenario 2: Start from Scratch (Clean Database)
+
+This scenario is ideal for new projects or development environments.
+
+1.  Ensure you have a clean database. If you have existing data, wipe it:
+    ```bash
+    docker compose down -v
+    ```
+2.  Start the database and application:
+    ```bash
+    docker compose --env-file .env.dev up -d
+    ```
+    Spring Boot will automatically create the required tables (`users`, `roles`, `content`, etc.) using Hibernate DDL.
+3.  **Create a default admin user** by running the initialization script:
+    ```bash
+    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/init_admin.sql
+    ```
+    > **Important**: Before running this script, open `db_data/init_admin.sql` and replace the placeholder password hash with a real BCrypt hash of your chosen password (e.g., `admin`). You can generate a hash using a temporary Java class or an online BCrypt generator (use cost factor 12).
+4.  You can now log in to the admin panel with the credentials you configured in the script (default: `admin` / `admin`).
+
 ## Daily Workflow
 
 **Do not need to import** `clean_schema.sql` every time you restart your computer.
