@@ -63,3 +63,7 @@ This directory contains all project documentation, organized into specific guide
 - [Code Style Setup](./CODE_STYLE_SETUP.md)  
   Complete guide for automatic code formatting in IntelliJ IDEA with 120-character line length,  
   actions on save configuration, Checkstyle integration, and troubleshooting tips.
+
+- [Code Style Setup (RU)](./CODE_STYLE_SETUP_RU.md)  
+  Полное руководство по автоматическому форматированию кода в IntelliJ IDEA с длиной строки 120 символов,  
+  настройка действий при сохранении, интеграция Checkstyle и советы по устранению неполадок.

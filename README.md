@@ -32,24 +32,6 @@ Database: MySQL
 | `└── docs/`            | Documentation                      |
 
 
----
-## Code Style Configuration
-
-This project uses consistent Java code formatting with **120 character line length**. The configuration is automatically applied when you open the project in IntelliJ IDEA.
-
-**📋 For detailed setup instructions, see [CODE_STYLE_SETUP.md](docs/CODE_STYLE_SETUP.md)**
-
-### Quick Setup
-- Code style settings are automatically loaded from `.idea/codeStyles/`
-- Automatic formatting on save is configured in `.idea/actionsOnSave.xml`
-- Code quality checks via Checkstyle: `./gradlew checkstyleMain`
-
-### Key Features
-- **Line length**: 120 characters with automatic wrapping
-- **Format on save**: Automatic code formatting when you save files
-- **Import optimization**: Unused imports removed automatically
-- **Quality checks**: Checkstyle integration for code standards
-
 ## Backend Quick Start
 
 **Requirements:**
@@ -129,6 +111,8 @@ Full developer and deployment documentation is available in the [docs/](docs/) f
 - [Database Schema](docs/DATABASE_SCHEMA.md)
 - [Database Migration Scripts](db_data/README.md)
 - [Rate Limiting Guide](docs/RATE_LIMITING.md)
+- [Code Style Setup](docs/CODE_STYLE_SETUP.md)
+- [Code Style Setup (RU)](docs/CODE_STYLE_SETUP_RU.md)
 ---
 ## Environment Setup
 
@@ -213,6 +197,11 @@ Contributions, issues, and feature requests are welcome! But not yet now. :-)
 
 - Check the [issues](../../issues) page to see current tasks or report a bug.
 - Open a [Pull Request](../../pulls) to propose changes.
+
+### Code Style
+This project uses consistent Java code formatting with **120 character line length**. 
+
+**📋 For detailed setup instructions, see [CODE_STYLE_SETUP.md](docs/CODE_STYLE_SETUP.md)**
 
 Before submitting PRs, please:
 - Follow the project’s coding style and guidelines
