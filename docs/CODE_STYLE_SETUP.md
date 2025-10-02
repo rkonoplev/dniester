@@ -1,81 +1,81 @@
-# Настройка автоматического форматирования кода
+# Code Style Setup Guide
 
-## Что настроено
+## What's Configured
 
 ### 1. IntelliJ IDEA Code Style
-- **Файлы**: `.idea/codeStyles/Project.xml`, `.idea/codeStyles/codeStyleConfig.xml`
-- **Настройки**: 120 символов в строке, автоматический перенос при вводе
-- **Применение**: Автоматически при открытии проекта
+- **Files**: `.idea/codeStyles/Project.xml`, `.idea/codeStyles/codeStyleConfig.xml`
+- **Settings**: 120 character line length, automatic wrapping on typing
+- **Application**: Automatically applied when opening the project
 
 ### 2. Actions on Save
-- **Файл**: `.idea/actionsOnSave.xml`
-- **Действия**: Автоматическое форматирование, оптимизация импортов, перестановка кода
-- **Применение**: При сохранении файлов (Ctrl+S / Cmd+S)
+- **File**: `.idea/actionsOnSave.xml`
+- **Actions**: Automatic formatting, import optimization, code rearrangement
+- **Trigger**: On file save (Ctrl+S / Cmd+S)
 
 ### 3. Checkstyle
-- **Файл**: `backend/config/checkstyle/checkstyle.xml`
-- **Назначение**: Проверка качества кода (не форматирование!)
-- **Запуск**: `./gradlew checkstyleMain checkstyleTest`
+- **File**: `backend/config/checkstyle/checkstyle.xml`
+- **Purpose**: Code quality checks (not formatting!)
+- **Usage**: `./gradlew checkstyleMain checkstyleTest`
 
-## Как включить автоматическое форматирование
+## How to Enable Automatic Formatting
 
-### В IntelliJ IDEA:
+### In IntelliJ IDEA:
 
-1. **Проверьте настройки проекта**:
+1. **Verify project settings**:
    - `File → Settings → Editor → Code Style → Scheme = "Project"`
-   - Должно быть установлено автоматически
+   - Should be set automatically
 
-2. **Включите Actions on Save** (если не работает автоматически):
+2. **Enable Actions on Save** (if not working automatically):
    - `File → Settings → Tools → Actions on Save`
-   - Включите:
+   - Enable:
      - ✅ Reformat code
      - ✅ Optimize imports  
      - ✅ Rearrange code
-   - В поле "File path patterns": `**/*.java`
+   - File path patterns: `**/*.java`
 
-3. **Проверьте автоматический перенос строк**:
+3. **Check automatic line wrapping**:
    - `File → Settings → Editor → Code Style → Java → Wrapping and Braces`
-   - "Wrap on typing" должно быть включено
+   - "Wrap on typing" should be enabled
 
-## Как использовать
+## Usage
 
-### Автоматическое форматирование:
-- **При сохранении**: Код автоматически форматируется при Ctrl+S (Cmd+S)
-- **Вручную**: Ctrl+Alt+L (Cmd+Alt+L) для форматирования
+### Automatic formatting:
+- **On save**: Code automatically formats on Ctrl+S (Cmd+S)
+- **Manual**: Ctrl+Alt+L (Cmd+Alt+L) to format code
 
-### Проверка качества кода:
+### Code quality checks:
 ```bash
-# Проверить основной код
+# Check main code
 ./gradlew checkstyleMain
 
-# Проверить тесты  
+# Check tests  
 ./gradlew checkstyleTest
 
-# Проверить всё
+# Check everything
 ./gradlew check
 ```
 
-## Разделение ответственности
+## Responsibility Separation
 
-| Инструмент | Назначение | Когда работает |
-|------------|------------|----------------|
-| **IntelliJ IDEA** | Форматирование кода (длина строк, отступы, переносы) | При сохранении / Ctrl+Alt+L |
-| **Checkstyle** | Проверка качества кода (неиспользуемые импорты, стиль именования) | При сборке проекта |
+| Tool | Purpose | When it works |
+|------|---------|---------------|
+| **IntelliJ IDEA** | Code formatting (line length, indentation, wrapping) | On save / Ctrl+Alt+L |
+| **Checkstyle** | Code quality checks (unused imports, naming style) | During project build |
 
-## Что исправлено
+## What's Fixed
 
-1. ✅ **Убрано дублирование**: Checkstyle больше не проверяет длину строк (это делает IntelliJ)
-2. ✅ **Автоматическое форматирование**: Настроено через `actionsOnSave.xml`
-3. ✅ **Перенос при вводе**: Включен `WRAP_ON_TYPING` в настройках проекта
-4. ✅ **Git tracking**: Все файлы настроек добавлены в репозиторий
+1. ✅ **Removed duplication**: Checkstyle no longer checks line length (IntelliJ handles this)
+2. ✅ **Automatic formatting**: Configured via `actionsOnSave.xml`
+3. ✅ **Wrap on typing**: Enabled `WRAP_ON_TYPING` in project settings
+4. ✅ **Git tracking**: All configuration files added to repository
 
-## Устранение неполадок
+## Troubleshooting
 
-### Если автоматическое форматирование не работает:
-1. Перезапустите IntelliJ IDEA
-2. Проверьте `File → Settings → Tools → Actions on Save`
-3. Убедитесь, что схема кода = "Project"
+### If automatic formatting doesn't work:
+1. Restart IntelliJ IDEA
+2. Check `File → Settings → Tools → Actions on Save`
+3. Ensure code scheme = "Project"
 
-### Если Checkstyle выдает много ошибок:
-- Это нормально! Checkstyle проверяет качество, а не форматирование
-- Исправляйте ошибки постепенно или настройте более мягкие правила
+### If Checkstyle shows many errors:
+- This is normal! Checkstyle checks quality, not formatting
+- Fix errors gradually or configure more lenient rules
