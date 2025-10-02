@@ -33,6 +33,26 @@ Database: MySQL
 
 
 ---
+## Code Style Configuration
+
+This project uses consistent Java code formatting with **120 character line length**. The configuration is automatically applied when you open the project in IntelliJ IDEA.
+
+### Automatic Setup
+- Code style settings are located in `.idea/codeStyles/`
+- IntelliJ IDEA will automatically use the project code style
+- Verify: `File → Settings → Editor → Code Style → Scheme = "Project"`
+
+### Manual Formatting
+- **Reformat code**: `Ctrl+Alt+L` (Win/Linux) or `Cmd+Alt+L` (Mac)
+- **Reformat on save**: Enable in `Settings → Tools → Actions on Save → Reformat code`
+
+### Key Formatting Rules
+- **Line length**: 120 characters
+- **Wrap if long** for method chains and parameters
+- **Consistent braces** and indentation
+- **Auto-formatting** for imports and blank lines
+
+All team members will automatically use the same code style configuration.
 
 ## Backend Quick Start
 
