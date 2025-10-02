@@ -33,7 +33,7 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * @return An Optional containing the found role with its permissions initialized, or empty if not found.
      */
     @EntityGraph(attributePaths = "permissions")
-    Optional<Role> findByNameWithPermissions(String name);
+    Optional<Role> findRoleWithPermissionsByName(String name);
 
     /**
      * Finds all roles associated with a given user ID and eagerly fetches their permissions.
@@ -43,5 +43,5 @@ public interface RoleRepository extends JpaRepository<Role, Long> {
      * @return A set of roles for the specified user, with permissions initialized.
      */
     @EntityGraph(attributePaths = "permissions")
-    Set<Role> findByUsers_Id(Long userId);
+    Set<Role> findByUsersId(Long userId);
 }

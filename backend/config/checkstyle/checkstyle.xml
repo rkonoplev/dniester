@@ -2,31 +2,32 @@
         "https://checkstyle.sourceforge.io/dtds/configuration_1_3.dtd">
 
 <!--
-    Custom Checkstyle configuration for the news-platform project.
-    Enforces clean, consistent Java code style with a focus on:
-    - UTF-8 encoding
-    - Maximum line length (120 chars)
-    - Exclusions for package/import and URLs
-    - Error-level severity to fail the build on violations
+    Checkstyle configuration for news-platform project.
+    Focuses on code quality checks that IntelliJ cannot auto-fix.
+    Line length and formatting are handled by IntelliJ IDEA.
 -->
 <module name="Checker">
-    <!-- Global properties -->
     <property name="charset" value="UTF-8" />
     <property name="severity" value="error" />
     <property name="fileExtensions" value="java" />
 
-    <!-- Enforce maximum line length of 120 characters -->
-    <module name="LineLength">
-        <property name="max" value="120" />
-        <!-- Ignore lines with package, import, or URLs -->
-        <property name="ignorePattern" value="^package.*|^import.*|a href|href|http://|https://|ftp://"/>
-    </module>
-
-    <!-- TreeWalker: Core code style checks will go here in the future -->
     <module name="TreeWalker">
-        <!-- Example placeholder for future checks -->
-        <!-- <module name="UnusedImports"/> -->
-        <!-- <module name="WhitespaceAfter"/> -->
-        <!-- <module name="MissingJavadocMethod"/> -->
+        <!-- Code quality checks -->
+        <module name="UnusedImports" />
+        <module name="RedundantImport" />
+        <module name="IllegalImport" />
+        <module name="AvoidStarImport" />
+        
+        <!-- Naming conventions -->
+        <module name="PackageName" />
+        <module name="TypeName" />
+        <module name="MethodName" />
+        <module name="ConstantName" />
+        
+        <!-- Code structure -->
+        <module name="EmptyBlock" />
+        <module name="LeftCurly" />
+        <module name="RightCurly" />
+        <module name="NeedBraces" />
     </module>
 </module>

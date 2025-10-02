@@ -53,14 +53,14 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findByTermId(Long termId, Pageable pageable) {
-        return newsRepository.findByTerms_IdAndPublished(termId, true, pageable)
+        return newsRepository.findByTermsIdAndPublished(termId, true, pageable)
                 .map(newsMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findByTermIds(List<Long> termIds, Pageable pageable) {
-        return newsRepository.findByTerms_IdInAndPublished(termIds, true, pageable)
+        return newsRepository.findByTermsIdInAndPublished(termIds, true, pageable)
                 .map(newsMapper::toDto);
     }
 

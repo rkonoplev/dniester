@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,14 +26,14 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     Optional<News> findByIdAndPublished(Long id, boolean published);
 
     /**
-     * Corrected method name to query by the 'id' property of the 'terms' collection.
+     * Find news by term ID and publication status.
      */
-    Page<News> findByTerms_IdAndPublished(Long termId, boolean published, Pageable pageable);
+    Page<News> findByTermsIdAndPublished(Long termId, boolean published, Pageable pageable);
 
     /**
-     * Corrected method name to query by the 'id' property of the 'terms' collection.
+     * Find news by multiple term IDs and publication status.
      */
-    Page<News> findByTerms_IdInAndPublished(List<Long> termIds, boolean published, Pageable pageable);
+    Page<News> findByTermsIdInAndPublished(List<Long> termIds, boolean published, Pageable pageable);
 
     Page<News> findByAuthorId(Long authorId, Pageable pageable);
 
@@ -51,6 +52,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     List<Long> findIdsByAuthorId(@Param("authorId") Long authorId);
 
     @Modifying
+    @Transactional
     @Query("UPDATE News n SET n.published = false WHERE n.id IN :ids")
     void unpublishByIds(@Param("ids") List<Long> ids);
 }

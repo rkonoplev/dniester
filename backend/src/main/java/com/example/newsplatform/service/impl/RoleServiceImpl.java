@@ -50,7 +50,7 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(readOnly = true)
     public Set<RoleDto> findRolesByUserId(Long userId) {
-        return roleRepository.findByUsers_Id(userId).stream()
+        return roleRepository.findByUsersId(userId).stream()
                 .map(roleMapper::toDto)
                 .collect(Collectors.toSet());
     }
