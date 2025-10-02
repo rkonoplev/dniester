@@ -117,6 +117,9 @@ public class News {
         LocalDateTime now = LocalDateTime.now();
         createdAt = now;
         updatedAt = now;
+        if (publicationDate == null) {
+            publicationDate = now;
+        }
     }
 
     @PreUpdate

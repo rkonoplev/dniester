@@ -29,6 +29,7 @@ build/
 !.idea/codeStyles/
 !.idea/codeStyles/codeStyleConfig.xml
 !.idea/codeStyles/Project.xml
+!.idea/actionsOnSave.xml
 
 # IntelliJ IDEA workspace files
 *.iws

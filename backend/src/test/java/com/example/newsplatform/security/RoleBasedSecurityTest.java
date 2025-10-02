@@ -48,11 +48,15 @@ class RoleBasedSecurityTest {
 
         adminUser = new User();
         adminUser.setUsername("admin");
+        adminUser.setPassword("password");
+        adminUser.setActive(true);
         adminUser.setRoles(Set.of(adminRole));
         userRepository.save(adminUser);
 
         editorUser = new User();
         editorUser.setUsername("editor");
+        editorUser.setPassword("password");
+        editorUser.setActive(true);
         editorUser.setRoles(Set.of(editorRole));
         userRepository.save(editorUser);
 

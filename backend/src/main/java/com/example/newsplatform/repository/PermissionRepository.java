@@ -23,27 +23,28 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
     Optional<Permission> findByName(String name);
 
     /**
-     * Find permissions by resource type.
+     * Find permissions by resource type (extracted from name pattern "resource:action").
      */
-    List<Permission> findByResource(String resource);
+    @Query("SELECT p FROM Permission p WHERE p.name LIKE CONCAT(:resource, ':%')")
+    List<Permission> findByResource(@Param("resource") String resource);
 
     /**
-     * Find permissions by action type.
+     * Find permissions by action type (extracted from name pattern "resource:action").
      */
-    List<Permission> findByAction(String action);
+    @Query("SELECT p FROM Permission p WHERE p.name LIKE CONCAT('%:', :action)")
+    List<Permission> findByAction(@Param("action") String action);
 
     /**
-     * Search permissions by name or description.
+     * Search permissions by name.
      */
-    @Query("SELECT p FROM Permission p WHERE " +
-           "LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
-           "LOWER(p.description) LIKE LOWER(CONCAT('%', :search, '%'))")
+    @Query("SELECT p FROM Permission p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Permission> searchPermissions(@Param("search") String search, Pageable pageable);
 
     /**
-     * Find permissions by resource and action.
+     * Find permissions by resource and action (exact match for "resource:action" pattern).
      */
-    Optional<Permission> findByResourceAndAction(String resource, String action);
+    @Query("SELECT p FROM Permission p WHERE p.name = CONCAT(:resource, ':', :action)")
+    Optional<Permission> findByResourceAndAction(@Param("resource") String resource, @Param("action") String action);
 
     /**
      * Check if permission exists by name.

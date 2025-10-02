@@ -59,3 +59,7 @@ This directory contains all project documentation, organized into specific guide
 
 - [Rate Limiting Guide](./RATE_LIMITING.md)  
   IP-based rate limiting implementation with Bucket4j, configuration options, testing procedures, and production considerations.
+
+- [Code Style Setup](./CODE_STYLE_SETUP.md)  
+  Complete guide for automatic code formatting in IntelliJ IDEA with 120-character line length,  
+  actions on save configuration, Checkstyle integration, and troubleshooting tips.
