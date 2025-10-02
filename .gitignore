@@ -106,3 +106,50 @@ config-local.yml
 !/db_data/detect_custom_fields.sql
 !/db_data/migrate_cck_fields.sql
 !/db_data/migrate_from_drupal6_universal.sql
+# IntelliJ IDEA - exclude everything except code style settings
+.idea/*
+!.idea/codeStyles/
+!.idea/codeStyles/codeStyleConfig.xml
+!.idea/codeStyles/Project.xml
+
+# IntelliJ IDEA workspace files
+*.iws
+*.iml
+modules.xml
+workspace.xml
+
+# Other IntelliJ files
+.idea/libraries/
+.idea/shelf/
+.idea/tasks.xml
+.idea/vcs.xml
+.idea/dictionaries/
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/uiDesigner.xml
+
+# IntelliJ IDEA - exclude everything except code style settings
+.idea/*
+!.idea/codeStyles/
+!.idea/codeStyles/codeStyleConfig.xml
+!.idea/codeStyles/Project.xml
+
+# IntelliJ IDEA workspace files
+*.iws
+*.iml
+modules.xml
+workspace.xml
+
+# Other IntelliJ files
+.idea/libraries/
+.idea/shelf/
+.idea/tasks.xml
+.idea/vcs.xml
+.idea/dictionaries/
+.idea/compiler.xml
+.idea/jarRepositories.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/uiDesigner.xml
