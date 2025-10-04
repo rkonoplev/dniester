@@ -135,8 +135,8 @@ Contributions are welcome! This is an open source project designed to serve the 
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-This project was developed by Roman Konoplev with the assistance of AI tools.
-All code is original and licensed under MIT.
+See [DISCLAIMER.md](docs/en/DISCLAIMER.md) for legal information and warranty disclaimers.
+See [NOTICE.md](docs/en/NOTICE.md) for third-party licenses and attributions.
 
 ---
 
