@@ -75,18 +75,37 @@ public class GlobalExceptionHandler {
     }
 
     /**
-     * Handles custom not-found exceptions (404).
+     * Handles all BaseException subclasses with consistent error codes.
      */
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponseDto> handleNotFoundException(
-            NotFoundException ex, WebRequest request) {
+    @ExceptionHandler(BaseException.class)
+    public ResponseEntity<ErrorResponseDto> handleBaseException(
+            BaseException ex, WebRequest request) {
+
+        ErrorResponseDto error = buildErrorResponse(
+                Instant.now(),
+                ex.getHttpStatus(),
+                ex.getMessage(),
+                request.getDescription(false),
+                null,
+                ex.getErrorCode()
+        );
+        return ResponseEntity.status(ex.getHttpStatus()).body(error);
+    }
+    
+    /**
+     * Handles legacy ResourceNotFoundException for backward compatibility.
+     */
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(
+            ResourceNotFoundException ex, WebRequest request) {
 
         ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
                 HttpStatus.NOT_FOUND,
                 ex.getMessage(),
                 request.getDescription(false),
-                null
+                null,
+                "RESOURCE_NOT_FOUND"
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
@@ -131,6 +150,11 @@ public class GlobalExceptionHandler {
     private ErrorResponseDto buildErrorResponse(
             Instant timestamp, HttpStatus status, String message, String path, List<String> details) {
         return new ErrorResponseDto(timestamp, status.value(), message, path, details);
+    }
+    
+    private ErrorResponseDto buildErrorResponse(
+            Instant timestamp, HttpStatus status, String message, String path, List<String> details, String errorCode) {
+        return new ErrorResponseDto(timestamp, status.value(), message, path, details, errorCode);
     }
 
     private String formatFieldError(FieldError error) {
