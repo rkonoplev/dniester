@@ -135,6 +135,9 @@ Contributions are welcome! This is an open source project designed to serve the 
 
 MIT License - see [LICENSE](LICENSE) for details.
 
+This project was developed by Roman Konoplev with the assistance of AI tools.
+All code is original and licensed under MIT.
+
 ---
 
 **Phoebe CMS** - Empowering modern media with headless flexibility and professional-grade features.
