@@ -1,6 +1,6 @@
 # Documentation
 
-This directory contains all English project documentation for **Dniester Headless CMS**.
+This directory contains all English project documentation for **Phoebe CMS**.
 
 > **Русская документация**: See [../ru/](../ru/) for Russian documentation.
 
@@ -87,7 +87,7 @@ This directory contains all English project documentation for **Dniester Headles
 
 ## 🌐 Headless CMS Benefits
 
-This documentation supports **Dniester's hybrid headless approach**:
+This documentation supports **Phoebe's hybrid headless approach**:
 
 - **API-First**: Complete REST API documentation for custom frontend development
 - **Reference Implementation**: Guides for using the provided Angular frontend

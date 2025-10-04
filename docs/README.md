@@ -1,6 +1,6 @@
 # Documentation
 
-This directory contains all project documentation for **Dniester Headless CMS**.
+This directory contains all project documentation for **Phoebe Headless CMS**.
 
 ## 📁 Structure
 
@@ -23,11 +23,11 @@ Complete documentation in English for international developers and teams.
 
 ---
 
-## 🎯 Dniester Headless CMS
+## 🎯 Phoebe Headless CMS
 
-**Dniester** is an open source headless CMS designed specifically for news agencies, digital media,  
-and professional editorial teams. It follows a hybrid headless approach, providing both a powerful  
-API and an optional reference frontend.
+**Phoebe** is an open source headless CMS designed specifically for news agencies, digital media, and
+professional editorial teams. It follows a hybrid headless approach, providing both a powerful API and an
+optional reference frontend.
 
 ### Key Benefits
 - **API-First**: Complete REST API for custom frontend development
