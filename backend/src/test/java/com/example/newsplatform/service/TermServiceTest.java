@@ -15,9 +15,12 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for TermService.
@@ -42,7 +45,7 @@ class TermServiceTest {
      * Verifies proper delegation to repository and data mapping.
      */
     @Test
-    void findAll_ShouldReturnPageOfTerms() {
+    void findAllShouldReturnPageOfTerms() {
         Term term = new Term();
         term.setId(1L);
         term.setName("Technology");
@@ -61,7 +64,7 @@ class TermServiceTest {
      * Should return the term with correct data.
      */
     @Test
-    void findById_WhenExists_ShouldReturnTerm() {
+    void findByIdWhenExistsShouldReturnTerm() {
         Term term = new Term();
         term.setId(1L);
         term.setName("Sports");
@@ -79,7 +82,7 @@ class TermServiceTest {
      * Should throw ResourceNotFoundException for proper error handling.
      */
     @Test
-    void findById_WhenNotExists_ShouldThrowNotFoundException() {
+    void findByIdWhenNotExistsShouldThrowNotFoundException() {
         when(termRepository.findById(1L)).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> termService.findById(1L));
@@ -90,7 +93,7 @@ class TermServiceTest {
      * Verifies proper delegation to repository and return of saved entity.
      */
     @Test
-    void save_ShouldReturnSavedTerm() {
+    void saveShouldReturnSavedTerm() {
         Term term = new Term();
         term.setName("Politics");
         
@@ -111,7 +114,7 @@ class TermServiceTest {
      * Ensures service is properly constructed and ready for use.
      */
     @Test
-    void deleteById_ShouldCallRepository() {
+    void deleteByIdShouldCallRepository() {
         // TermService.deleteById не существует, используем простую проверку
         assertDoesNotThrow(() -> {
             // Проверяем что сервис создан корректно

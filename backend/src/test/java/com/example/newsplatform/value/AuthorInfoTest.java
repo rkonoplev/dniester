@@ -2,7 +2,9 @@ package com.example.newsplatform.value;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for AuthorInfo value object.
@@ -16,7 +18,7 @@ class AuthorInfoTest {
      * Verifies ID, username, and display name are properly stored.
      */
     @Test
-    void constructor_ShouldCreateAuthorInfo() {
+    void constructorShouldCreateAuthorInfo() {
         AuthorInfo info = new AuthorInfo(1L, "john_doe", "John Doe");
 
         assertEquals(1L, info.id());
@@ -29,7 +31,7 @@ class AuthorInfoTest {
      * Value objects should be equal when all fields match.
      */
     @Test
-    void equals_WithSameValues_ShouldReturnTrue() {
+    void equalsWithSameValuesShouldReturnTrue() {
         AuthorInfo info1 = new AuthorInfo(1L, "john_doe", "John Doe");
         AuthorInfo info2 = new AuthorInfo(1L, "john_doe", "John Doe");
 
@@ -42,7 +44,7 @@ class AuthorInfoTest {
      * Should not be equal when any field differs.
      */
     @Test
-    void equals_WithDifferentValues_ShouldReturnFalse() {
+    void equalsWithDifferentValuesShouldReturnFalse() {
         AuthorInfo info1 = new AuthorInfo(1L, "john_doe", "John Doe");
         AuthorInfo info2 = new AuthorInfo(2L, "jane_doe", "Jane Doe");
 
@@ -54,7 +56,7 @@ class AuthorInfoTest {
      * Useful for debugging and logging author information.
      */
     @Test
-    void toString_ShouldContainAllFields() {
+    void toStringShouldContainAllFields() {
         AuthorInfo info = new AuthorInfo(1L, "john_doe", "John Doe");
         String result = info.toString();
 

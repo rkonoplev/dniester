@@ -1,4 +1,4 @@
-name: Optimized Hybrid Java CI with Gradle, GitLeaks, PMD
+name: Optimized Hybrid Java CI with Gradle, GitLeaks, Checkstyle, PMD
 
 on:
   push:
@@ -72,8 +72,8 @@ jobs:
           SPRING_PROFILES_ACTIVE: ci
         run: cd backend && ./gradlew clean build test jacocoTestReport --no-daemon --warning-mode all
 
-      - name: Static Analysis (PMD only)
-        run: cd backend && ./gradlew pmdMain pmdTest --no-daemon --warning-mode all
+      - name: Static Analysis (Checkstyle + PMD)
+        run: cd backend && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --no-daemon --warning-mode all
 
       - name: Upload test reports
         if: always()

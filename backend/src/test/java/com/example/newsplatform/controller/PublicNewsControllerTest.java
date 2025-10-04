@@ -29,7 +29,7 @@ class PublicNewsControllerTest {
     private PublicNewsController controller;
 
     @Test
-    void findAllPublished_ShouldReturnPageOfNews() {
+    void findAllPublishedShouldReturnPageOfNews() {
         NewsDto newsDto = new NewsDto(
             1L,
             "Public Title",
@@ -51,7 +51,7 @@ class PublicNewsControllerTest {
     }
 
     @Test
-    void findPublishedById_ShouldReturnSingleNews() {
+    void findPublishedByIdShouldReturnSingleNews() {
         NewsDto newsDto = new NewsDto(
             1L,
             "Single News",

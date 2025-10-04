@@ -15,8 +15,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RoleSecurityAspectTest {
@@ -49,7 +50,7 @@ class RoleSecurityAspectTest {
     }
 
     @Test
-    void checkRole_shouldProceed_whenUserHasRole() throws Throwable {
+    void checkRoleShouldProceedWhenUserHasRole() throws Throwable {
         mockAuthentication("ADMIN");
         when(requireRole.value()).thenReturn("ADMIN");
 
@@ -59,7 +60,7 @@ class RoleSecurityAspectTest {
     }
 
     @Test
-    void checkRole_shouldThrowException_whenUserDoesNotHaveRole() {
+    void checkRoleShouldThrowExceptionWhenUserDoesNotHaveRole() {
         mockAuthentication("EDITOR");
         when(requireRole.value()).thenReturn("ADMIN"); // Requires ADMIN but user is EDITOR
 
@@ -69,7 +70,7 @@ class RoleSecurityAspectTest {
     }
 
     @Test
-    void checkAnyRole_shouldProceed_whenUserHasOneOfRoles() throws Throwable {
+    void checkAnyRoleShouldProceedWhenUserHasOneOfRoles() throws Throwable {
         mockAuthentication("EDITOR");
         when(requireAnyRole.value()).thenReturn(new String[]{"ADMIN", "EDITOR"});
 
@@ -79,7 +80,7 @@ class RoleSecurityAspectTest {
     }
 
     @Test
-    void checkAllRoles_shouldThrowException_whenUserDoesNotHaveAllRoles() {
+    void checkAllRolesShouldThrowExceptionWhenUserDoesNotHaveAllRoles() {
         mockAuthentication("ADMIN");
         when(requireAllRoles.value()).thenReturn(new String[]{"ADMIN", "SUPER_ADMIN"});
 
@@ -89,7 +90,7 @@ class RoleSecurityAspectTest {
     }
 
     @Test
-    void checkSecurity_shouldThrowException_whenNoAuthentication() {
+    void checkSecurityShouldThrowExceptionWhenNoAuthentication() {
         when(requireRole.value()).thenReturn("ADMIN");
         assertThrows(AccessDeniedException.class, () -> {
             roleSecurityAspect.checkRole(joinPoint, requireRole);

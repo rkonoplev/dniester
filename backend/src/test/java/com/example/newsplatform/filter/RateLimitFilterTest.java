@@ -19,7 +19,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RateLimitFilterTest {
@@ -50,7 +52,7 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void doFilterInternal_WhenTokensAvailable_ShouldAllowRequest() throws ServletException, IOException {
+    void doFilterInternalWhenTokensAvailableShouldAllowRequest() throws ServletException, IOException {
         when(request.getRemoteAddr()).thenReturn("192.168.1.1");
         when(request.getRequestURI()).thenReturn("/api/public/news");
         when(rateLimitConfig.getPublicBucket("192.168.1.1")).thenReturn(bucket);
@@ -66,7 +68,7 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void doFilterInternal_WhenRateLimitExceeded_ShouldRejectRequest() throws ServletException, IOException {
+    void doFilterInternalWhenRateLimitExceededShouldRejectRequest() throws ServletException, IOException {
         StringWriter stringWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stringWriter);
         
@@ -85,7 +87,7 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void doFilterInternal_WhenAdminEndpoint_ShouldUseAdminBucket() throws ServletException, IOException {
+    void doFilterInternalWhenAdminEndpointShouldUseAdminBucket() throws ServletException, IOException {
         when(request.getRemoteAddr()).thenReturn("192.168.1.1");
         when(request.getRequestURI()).thenReturn("/api/admin/news");
         when(rateLimitConfig.getAdminBucket("192.168.1.1")).thenReturn(bucket);
@@ -100,7 +102,7 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void doFilterInternal_WhenPublicEndpoint_ShouldUsePublicBucket() throws ServletException, IOException {
+    void doFilterInternalWhenPublicEndpointShouldUsePublicBucket() throws ServletException, IOException {
         when(request.getRemoteAddr()).thenReturn("192.168.1.1");
         when(request.getRequestURI()).thenReturn("/api/public/news");
         when(rateLimitConfig.getPublicBucket("192.168.1.1")).thenReturn(bucket);
@@ -115,7 +117,7 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void getClientIpAddress_WhenXForwardedForPresent_ShouldReturnFirstIP() throws ServletException, IOException {
+    void getClientIpAddressWhenXForwardedForPresentShouldReturnFirstIP() throws ServletException, IOException {
         when(request.getHeader("X-Forwarded-For")).thenReturn("203.0.113.1, 192.168.1.1");
         when(request.getRequestURI()).thenReturn("/api/public/news");
         when(rateLimitConfig.getPublicBucket("203.0.113.1")).thenReturn(bucket);
@@ -129,7 +131,7 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void getClientIpAddress_WhenXRealIPPresent_ShouldReturnXRealIP() throws ServletException, IOException {
+    void getClientIpAddressWhenXRealIPPresentShouldReturnXRealIP() throws ServletException, IOException {
         when(request.getHeader("X-Forwarded-For")).thenReturn(null);
         when(request.getHeader("X-Real-IP")).thenReturn("203.0.113.2");
         when(request.getRequestURI()).thenReturn("/api/public/news");
@@ -144,7 +146,7 @@ class RateLimitFilterTest {
     }
 
     @Test
-    void getClientIpAddress_WhenNoProxyHeaders_ShouldReturnRemoteAddr() throws ServletException, IOException {
+    void getClientIpAddressWhenNoProxyHeadersShouldReturnRemoteAddr() throws ServletException, IOException {
         when(request.getHeader("X-Forwarded-For")).thenReturn(null);
         when(request.getHeader("X-Real-IP")).thenReturn(null);
         when(request.getRemoteAddr()).thenReturn("192.168.1.100");

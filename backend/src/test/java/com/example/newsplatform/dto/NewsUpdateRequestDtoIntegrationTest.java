@@ -48,7 +48,7 @@ class NewsUpdateRequestDtoIntegrationTest {
     }
 
     @Test
-    void updateNews_WithPartialDto_ShouldUpdateOnlyProvidedFields() {
+    void updateNewsWithPartialDtoShouldUpdateOnlyProvidedFields() {
         // Given: An existing news article
         NewsCreateRequestDto createDto = new NewsCreateRequestDto();
         createDto.setTitle("Original Title");

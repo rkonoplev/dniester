@@ -17,9 +17,13 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class BulkOperationsTest {
@@ -41,7 +45,7 @@ class BulkOperationsTest {
     }
 
     @Test
-    void performBulkAction_AdminRole_ShouldAllowBulkDelete() {
+    void performBulkActionAdminRoleShouldAllowBulkDelete() {
         // Given
         doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
         BulkActionRequestDto request = new BulkActionRequestDto();
@@ -56,7 +60,7 @@ class BulkOperationsTest {
     }
 
     @Test
-    void performBulkAction_AdminRole_ShouldAllowBulkUnpublish() {
+    void performBulkActionAdminRoleShouldAllowBulkUnpublish() {
         // Given
         doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
         BulkActionRequestDto request = new BulkActionRequestDto();
@@ -71,7 +75,7 @@ class BulkOperationsTest {
     }
 
     @Test
-    void performBulkAction_EditorRole_ShouldDenyBulkOperations() {
+    void performBulkActionEditorRoleShouldDenyBulkOperations() {
         // Given
         doReturn(false).when(newsService).hasRole(authentication, "ADMIN");
         BulkActionRequestDto request = new BulkActionRequestDto();
@@ -86,7 +90,7 @@ class BulkOperationsTest {
     }
 
     @Test
-    void performBulkAction_UserRole_ShouldDenyBulkOperations() {
+    void performBulkActionUserRoleShouldDenyBulkOperations() {
         // Given
         doReturn(false).when(newsService).hasRole(authentication, "ADMIN");
         BulkActionRequestDto request = new BulkActionRequestDto();
@@ -100,7 +104,7 @@ class BulkOperationsTest {
     }
 
     @Test
-    void performBulkAction_UnconfirmedRequest_ShouldThrowException() {
+    void performBulkActionUnconfirmedRequestShouldThrowException() {
         // Given
         doReturn(true).when(newsService).hasRole(authentication, "ADMIN");
         BulkActionRequestDto request = new BulkActionRequestDto();

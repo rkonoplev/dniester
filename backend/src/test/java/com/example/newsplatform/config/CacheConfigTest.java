@@ -8,7 +8,8 @@ import org.springframework.cache.CacheManager;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {CacheConfig.class})
@@ -18,18 +19,18 @@ class CacheConfigTest {
     private CacheManager cacheManager;
 
     @Test
-    void cacheManager_ShouldBeConfigured() {
+    void cacheManagerShouldBeConfigured() {
         assertNotNull(cacheManager, "CacheManager should be configured");
     }
 
     @Test
-    void cacheManager_ShouldCreateCaches() {
+    void cacheManagerShouldCreateCaches() {
         assertNotNull(cacheManager.getCache("news-by-id"), "'news-by-id' cache should exist");
         assertNotNull(cacheManager.getCache("news-by-term"), "'news-by-term' cache should exist");
     }
 
     @Test
-    void cache_ShouldStoreAndRetrieveValues() {
+    void cacheShouldStoreAndRetrieveValues() {
         Cache cache = cacheManager.getCache("news-by-id");
         assertNotNull(cache);
 
