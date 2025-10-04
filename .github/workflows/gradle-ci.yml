@@ -1,4 +1,4 @@
-name: Optimized Hybrid Java CI with Gradle, GitLeaks, Checkstyle, PMD
+name: Optimized Hybrid Java CI with Gradle, GitLeaks, PMD
 
 on:
   push:

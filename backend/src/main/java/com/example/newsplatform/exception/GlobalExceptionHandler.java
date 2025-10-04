@@ -30,7 +30,7 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Handles uncaught exceptions (500 - Internal Server Error).
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleAllExceptions(Exception ex, WebRequest request) {
-        logger.error("Unexpected error", ex);
+        LOGGER.error("Unexpected error", ex);
 
         ErrorResponseDto error = buildErrorResponse(
                 Instant.now(),
