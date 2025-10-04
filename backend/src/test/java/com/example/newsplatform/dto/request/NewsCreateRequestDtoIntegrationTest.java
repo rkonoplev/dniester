@@ -49,7 +49,7 @@ public class NewsCreateRequestDtoIntegrationTest {
     }
 
     @Test
-    void whenCreateNewsWithValidDto_thenNewsIsCreated() {
+    void whenCreateNewsWithValidDtoThenNewsIsCreated() {
         // Given
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setTitle("Integration Test Title");

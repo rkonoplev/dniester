@@ -16,8 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.Collections;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -75,7 +74,7 @@ public class SecurityAspectIntegrationTest {
     }
 
     @Test
-    void requireAnyRole_WithValidRole_ShouldSucceed() {
+    void requireAnyRoleWithValidRoleShouldSucceed() {
         Authentication auth = createAuthentication(adminUser);
         SecurityContextHolder.getContext().setAuthentication(auth);
 
@@ -87,7 +86,7 @@ public class SecurityAspectIntegrationTest {
     }
 
     @Test
-    void requireAnyRole_WithoutValidRole_ShouldFail() {
+    void requireAnyRoleWithoutValidRoleShouldFail() {
         Authentication auth = createAuthentication(editorUser);
         SecurityContextHolder.getContext().setAuthentication(auth);
 

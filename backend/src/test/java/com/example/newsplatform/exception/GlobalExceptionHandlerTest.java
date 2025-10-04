@@ -13,8 +13,10 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests for GlobalExceptionHandler.
@@ -38,7 +40,7 @@ class GlobalExceptionHandlerTest {
      * Should return HTTP 500 with generic error message for security.
      */
     @Test
-    void handleAllExceptions_ShouldReturn500() {
+    void handleAllExceptionsShouldReturn500() {
         Exception exception = new RuntimeException("Test error");
 
         ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleAllExceptions(exception, webRequest);
@@ -53,7 +55,7 @@ class GlobalExceptionHandlerTest {
      * Should return HTTP 400 with detailed field error messages.
      */
     @Test
-    void handleValidationExceptions_ShouldReturn400() {
+    void handleValidationExceptionsShouldReturn400() {
         MethodArgumentNotValidException exception = mock(MethodArgumentNotValidException.class);
         BindingResult bindingResult = mock(BindingResult.class);
         FieldError fieldError = new FieldError("object", "field", "Field is required");
@@ -74,7 +76,7 @@ class GlobalExceptionHandlerTest {
      * Should return HTTP 404 with specific error message.
      */
     @Test
-    void handleNotFoundException_ShouldReturn404() {
+    void handleNotFoundExceptionShouldReturn404() {
         NotFoundException exception = new NotFoundException("Resource not found");
 
         ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleNotFoundException(exception, webRequest);
@@ -89,7 +91,7 @@ class GlobalExceptionHandlerTest {
      * Should return HTTP 403 with access denied message.
      */
     @Test
-    void handleAccessDeniedException_ShouldReturn403() {
+    void handleAccessDeniedExceptionShouldReturn403() {
         AccessDeniedException exception = new AccessDeniedException("Access denied");
 
         ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleAccessDeniedException(exception, webRequest);
@@ -104,7 +106,7 @@ class GlobalExceptionHandlerTest {
      * Should return HTTP 400 with specific error details.
      */
     @Test
-    void handleIllegalArgumentException_ShouldReturn400() {
+    void handleIllegalArgumentExceptionShouldReturn400() {
         IllegalArgumentException exception = new IllegalArgumentException("Invalid argument");
 
         ResponseEntity<ErrorResponseDto> response = 

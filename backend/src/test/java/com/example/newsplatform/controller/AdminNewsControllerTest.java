@@ -54,7 +54,7 @@ class AdminNewsControllerTest {
     }
 
     @Test
-    void create_ShouldReturnCreatedNews() {
+    void createShouldReturnCreatedNews() {
         NewsCreateRequestDto createRequest = new NewsCreateRequestDto();
         createRequest.setTitle("Test Title");
         createRequest.setContent("Test Content");
@@ -68,7 +68,7 @@ class AdminNewsControllerTest {
     }
 
     @Test
-    void update_ShouldReturnUpdatedNews() {
+    void updateShouldReturnUpdatedNews() {
         NewsUpdateRequestDto updateRequest = new NewsUpdateRequestDto("Updated Title", "Updated Content", null, true, null);
         when(newsService.update(eq(1L), any(NewsUpdateRequestDto.class), eq(auth))).thenReturn(sampleNewsDto);
 
@@ -79,7 +79,7 @@ class AdminNewsControllerTest {
     }
 
     @Test
-    void delete_ShouldReturnNoContent() {
+    void deleteShouldReturnNoContent() {
         ResponseEntity<Void> response = controller.delete(1L, auth);
 
         verify(newsService).delete(eq(1L), eq(auth));
@@ -87,7 +87,7 @@ class AdminNewsControllerTest {
     }
 
     @Test
-    void performBulkAction_ShouldReturnResult() {
+    void performBulkActionShouldReturnResult() {
         BulkActionRequestDto request = new BulkActionRequestDto();
         BulkActionRequestDto.BulkActionResult actionResult = new BulkActionRequestDto.BulkActionResult(5);
         when(newsService.performBulkAction(eq(request), eq(auth))).thenReturn(actionResult);

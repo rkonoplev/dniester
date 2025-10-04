@@ -4,7 +4,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for BulkOperationResult value object.
@@ -18,7 +20,7 @@ class BulkOperationResultTest {
      * Verifies affected count, processed IDs, failed IDs, and message storage.
      */
     @Test
-    void constructor_ShouldCreateBulkOperationResult() {
+    void constructorShouldCreateBulkOperationResult() {
         Set<Long> processedIds = Set.of(1L, 2L, 3L);
         Set<Long> failedIds = Set.of();
         BulkOperationResult result = new BulkOperationResult(3, processedIds, failedIds, "DELETE completed");
@@ -34,7 +36,7 @@ class BulkOperationResultTest {
      * Results should be equal when all operation data matches.
      */
     @Test
-    void equals_WithSameValues_ShouldReturnTrue() {
+    void equalsWithSameValuesShouldReturnTrue() {
         Set<Long> ids = Set.of(1L, 2L);
         Set<Long> failed = Set.of();
         BulkOperationResult result1 = new BulkOperationResult(2, ids, failed, "DELETE");
@@ -49,7 +51,7 @@ class BulkOperationResultTest {
      * Should not be equal when operation outcomes differ.
      */
     @Test
-    void equals_WithDifferentValues_ShouldReturnFalse() {
+    void equalsWithDifferentValuesShouldReturnFalse() {
         BulkOperationResult result1 = new BulkOperationResult(2, Set.of(1L, 2L), Set.of(), "DELETE");
         BulkOperationResult result2 = new BulkOperationResult(3, Set.of(1L, 2L, 3L), Set.of(), "UNPUBLISH");
 
@@ -61,7 +63,7 @@ class BulkOperationResultTest {
      * Useful for logging bulk operation outcomes and debugging.
      */
     @Test
-    void toString_ShouldContainAllFields() {
+    void toStringShouldContainAllFields() {
         BulkOperationResult result = new BulkOperationResult(2, Set.of(1L, 2L), Set.of(), "DELETE");
         String resultString = result.toString();
 

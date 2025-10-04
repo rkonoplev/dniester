@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -56,7 +58,7 @@ class NewsServiceImplIntegrationTest {
     }
 
     @Test
-    void createNews_shouldSaveAndReturnDto() {
+    void createNewsShouldSaveAndReturnDto() {
         // Given
         NewsCreateRequestDto request = new NewsCreateRequestDto();
         request.setTitle("Integration Test Title");

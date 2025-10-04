@@ -4,7 +4,10 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for PublicationStatus value object.
@@ -18,7 +21,7 @@ class PublicationStatusTest {
      * Verifies publication flag, scheduled date, and status are stored.
      */
     @Test
-    void constructor_ShouldCreatePublicationStatus() {
+    void constructorShouldCreatePublicationStatus() {
         LocalDateTime now = LocalDateTime.now();
         PublicationStatus status = new PublicationStatus(true, now, "PUBLISHED");
 
@@ -32,7 +35,7 @@ class PublicationStatusTest {
      * Should create unpublished status with null date and DRAFT status.
      */
     @Test
-    void draft_ShouldCreateDraftStatus() {
+    void draftShouldCreateDraftStatus() {
         PublicationStatus status = PublicationStatus.draft();
 
         assertFalse(status.published());
@@ -45,7 +48,7 @@ class PublicationStatusTest {
      * Should create published status with specified date and PUBLISHED status.
      */
     @Test
-    void published_ShouldCreatePublishedStatus() {
+    void publishedShouldCreatePublishedStatus() {
         LocalDateTime now = LocalDateTime.now();
         PublicationStatus status = PublicationStatus.published(now);
 
@@ -59,7 +62,7 @@ class PublicationStatusTest {
      * Should create unpublished status with future date and SCHEDULED status.
      */
     @Test
-    void scheduled_ShouldCreateScheduledStatus() {
+    void scheduledShouldCreateScheduledStatus() {
         LocalDateTime future = LocalDateTime.now().plusDays(1);
         PublicationStatus status = PublicationStatus.scheduled(future);
 
@@ -73,7 +76,7 @@ class PublicationStatusTest {
      * Should be equal when all publication fields match.
      */
     @Test
-    void equals_WithSameValues_ShouldReturnTrue() {
+    void equalsWithSameValuesShouldReturnTrue() {
         LocalDateTime now = LocalDateTime.now();
         PublicationStatus status1 = new PublicationStatus(true, now, "PUBLISHED");
         PublicationStatus status2 = new PublicationStatus(true, now, "PUBLISHED");

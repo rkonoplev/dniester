@@ -2,7 +2,10 @@ package com.example.newsplatform.value;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for PaginationInfo value object.
@@ -16,7 +19,7 @@ class PaginationInfoTest {
      * Verifies all pagination metadata is properly stored.
      */
     @Test
-    void constructor_ShouldCreatePaginationInfo() {
+    void constructorShouldCreatePaginationInfo() {
         PaginationInfo info = new PaginationInfo(0, 10, 100L, 10, true, false);
 
         assertEquals(0, info.currentPage());
@@ -32,7 +35,7 @@ class PaginationInfoTest {
      * Records should be equal when all fields match.
      */
     @Test
-    void equals_WithSameValues_ShouldReturnTrue() {
+    void equalsWithSameValuesShouldReturnTrue() {
         PaginationInfo info1 = new PaginationInfo(0, 10, 100L, 10, true, false);
         PaginationInfo info2 = new PaginationInfo(0, 10, 100L, 10, true, false);
 
@@ -45,7 +48,7 @@ class PaginationInfoTest {
      * Records should not be equal when any field differs.
      */
     @Test
-    void equals_WithDifferentValues_ShouldReturnFalse() {
+    void equalsWithDifferentValuesShouldReturnFalse() {
         PaginationInfo info1 = new PaginationInfo(0, 10, 100L, 10, true, false);
         PaginationInfo info2 = new PaginationInfo(1, 10, 100L, 10, true, true);
 
@@ -57,7 +60,7 @@ class PaginationInfoTest {
      * Useful for debugging and logging pagination state.
      */
     @Test
-    void toString_ShouldContainAllFields() {
+    void toStringShouldContainAllFields() {
         PaginationInfo info = new PaginationInfo(0, 10, 100L, 10, true, false);
         String result = info.toString();
 

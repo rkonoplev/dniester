@@ -4,7 +4,10 @@ import io.github.bucket4j.Bucket;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RateLimitConfigTest {
 
@@ -16,7 +19,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void getPublicBucket_ShouldReturnSameBucketForSameIP() {
+    void getPublicBucketShouldReturnSameBucketForSameIP() {
         String ipAddress = "192.168.1.1";
         
         Bucket bucket1 = rateLimitConfig.getPublicBucket(ipAddress);
@@ -26,7 +29,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void getPublicBucket_ShouldReturnDifferentBucketsForDifferentIPs() {
+    void getPublicBucketShouldReturnDifferentBucketsForDifferentIPs() {
         String ip1 = "192.168.1.1";
         String ip2 = "192.168.1.2";
         
@@ -37,7 +40,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void getAdminBucket_ShouldReturnSameBucketForSameIP() {
+    void getAdminBucketShouldReturnSameBucketForSameIP() {
         String ipAddress = "192.168.1.1";
         
         Bucket bucket1 = rateLimitConfig.getAdminBucket(ipAddress);
@@ -47,7 +50,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void getAdminBucket_ShouldReturnDifferentBucketsForDifferentIPs() {
+    void getAdminBucketShouldReturnDifferentBucketsForDifferentIPs() {
         String ip1 = "192.168.1.1";
         String ip2 = "192.168.1.2";
         
@@ -58,7 +61,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void getPublicAndAdminBuckets_ShouldReturnDifferentBucketsForSameIP() {
+    void getPublicAndAdminBucketsShouldReturnDifferentBucketsForSameIP() {
         String ipAddress = "192.168.1.1";
         
         Bucket publicBucket = rateLimitConfig.getPublicBucket(ipAddress);
@@ -68,7 +71,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void publicBucket_ShouldHave100TokensInitially() {
+    void publicBucketShouldHave100TokensInitially() {
         String ipAddress = "192.168.1.1";
         
         Bucket bucket = rateLimitConfig.getPublicBucket(ipAddress);
@@ -77,7 +80,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void adminBucket_ShouldHave50TokensInitially() {
+    void adminBucketShouldHave50TokensInitially() {
         String ipAddress = "192.168.1.1";
         
         Bucket bucket = rateLimitConfig.getAdminBucket(ipAddress);
@@ -86,7 +89,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void publicBucket_ShouldConsumeTokens() {
+    void publicBucketShouldConsumeTokens() {
         String ipAddress = "192.168.1.1";
         
         Bucket bucket = rateLimitConfig.getPublicBucket(ipAddress);
@@ -97,7 +100,7 @@ class RateLimitConfigTest {
     }
 
     @Test
-    void adminBucket_ShouldConsumeTokens() {
+    void adminBucketShouldConsumeTokens() {
         String ipAddress = "192.168.1.1";
         
         Bucket bucket = rateLimitConfig.getAdminBucket(ipAddress);
