@@ -11,9 +11,6 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
-import java.util.Set;
-import java.util.stream.Collectors;
-
 /**
  * Mapper for converting between User entity and various User DTOs using MapStruct.
  */
