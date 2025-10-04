@@ -27,17 +27,33 @@ public class ErrorResponseDto {
         this.errors = errors != null ? List.copyOf(errors) : null;
     }
 
-    public Instant getTimestamp() { return timestamp; }
-    public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+    }
 
-    public int getStatus() { return status; }
-    public void setStatus(int status) { this.status = status; }
+    public int getStatus() {
+        return status;
+    }
+    public void setStatus(int status) {
+        this.status = status;
+    }
 
-    public String getMessage() { return message; }
-    public void setMessage(String message) { this.message = message; }
+    public String getMessage() {
+        return message;
+    }
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-    public String getDetails() { return details; }
-    public void setDetails(String details) { this.details = details; }
+    public String getDetails() {
+        return details;
+    }
+    public void setDetails(String details) {
+        this.details = details;
+    }
 
     /** Returns unmodifiable list to prevent external modification. */
     public List<String> getErrors() {
