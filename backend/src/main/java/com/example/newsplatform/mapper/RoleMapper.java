@@ -3,16 +3,12 @@ package com.example.newsplatform.mapper;
 import com.example.newsplatform.dto.request.RoleCreateRequestDto;
 import com.example.newsplatform.dto.request.RoleUpdateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
-import com.example.newsplatform.entity.Permission;
 import com.example.newsplatform.entity.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.ReportingPolicy;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring", 
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,

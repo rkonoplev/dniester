@@ -4,17 +4,12 @@ import com.example.newsplatform.dto.request.NewsCreateRequestDto;
 import com.example.newsplatform.dto.request.NewsUpdateRequestDto;
 import com.example.newsplatform.dto.response.NewsDto;
 import com.example.newsplatform.entity.News;
-import com.example.newsplatform.entity.Term;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.Named;
-
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Mapper for converting between News entity and its DTOs using MapStruct.
