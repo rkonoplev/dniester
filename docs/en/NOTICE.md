@@ -24,9 +24,11 @@ This project uses the following open-source libraries and their respective licen
 
 ## License Compatibility
 
-All dependencies are compatible with the MIT License under which this project is released. Users must comply with the terms of each dependency's license when using this software.
+All dependencies are compatible with the MIT License under which this project is released. Users must comply
+with the terms of each dependency's license when using this software.
 
-For complete license texts and terms, please refer to the individual library documentation and license files.
+For complete license texts and terms, please refer to the individual library documentation and license
+files.
 
 ---
 
