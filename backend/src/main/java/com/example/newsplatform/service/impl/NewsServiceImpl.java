@@ -17,7 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -217,7 +217,9 @@ public class NewsServiceImpl implements NewsService {
     }
 
     private boolean hasAuthority(Authentication authentication, String roleName) {
-        if (authentication == null) return false;
+        if (authentication == null) {
+            return false;
+        }
         String authorityName = ROLE_PREFIX + roleName;
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authorityName));
