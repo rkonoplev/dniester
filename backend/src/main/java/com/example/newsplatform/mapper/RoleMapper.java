@@ -5,7 +5,9 @@ import com.example.newsplatform.dto.request.RoleUpdateRequestDto;
 import com.example.newsplatform.dto.response.RoleDto;
 import com.example.newsplatform.entity.Permission;
 import com.example.newsplatform.entity.Role;
-import org.mapstruct.*;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import java.util.Set;
 import java.util.stream.Collectors;

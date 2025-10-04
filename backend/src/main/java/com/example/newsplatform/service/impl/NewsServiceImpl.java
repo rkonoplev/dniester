@@ -137,7 +137,9 @@ public class NewsServiceImpl implements NewsService {
         List<Long> targetIds = new ArrayList<>();
         switch (request.getFilterType()) {
             case BY_IDS:
-                if (request.getItemIds() != null) targetIds.addAll(request.getItemIds());
+                if (request.getItemIds() != null) {
+                    targetIds.addAll(request.getItemIds());
+                }
                 break;
             case BY_TERM:
                 targetIds.addAll(newsRepository.findIdsByTermId(request.getTermId()));
@@ -177,7 +179,9 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public boolean isAuthor(Long newsId, Authentication authentication) {
-        if (newsId == null || authentication == null) return false;
+        if (newsId == null || authentication == null) {
+            return false;
+        }
         User currentUser = getCurrentUser(authentication);
         return newsRepository.existsByIdAndAuthorId(newsId, currentUser.getId());
     }
