@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
 @Mapper(componentModel = "spring", 
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface RoleMapper {
+public interface RoleMapper extends BaseMapper {
 
-    @Mapping(target = "permissionNames", source = "permissions")
+    @Mapping(target = "permissionNames", source = "permissions", qualifiedByName = "permissionsToNames")
     RoleDto toDto(Role role);
     
     @Mapping(target = "id", ignore = true)
@@ -32,12 +32,5 @@ public interface RoleMapper {
     @Mapping(target = "permissions", ignore = true)
     void updateEntityFromDto(RoleUpdateRequestDto dto, @MappingTarget Role role);
     
-    default Set<String> mapPermissionsToNames(Set<Permission> permissions) {
-        if (permissions == null) {
-            return Set.of();
-        }
-        return permissions.stream()
-                .map(Permission::getName)
-                .collect(Collectors.toSet());
-    }
+
 }

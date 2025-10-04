@@ -1,6 +1,6 @@
 # Documentation
 
-This directory contains all project documentation for **Phoebe Headless CMS**.
+This directory contains all project documentation for **Phoebe CMS**.
 
 ## 📁 Structure
 
@@ -16,7 +16,7 @@ Complete documentation in English for international developers and teams.
 
 **[→ Browse English Docs](en/)**
 
-### 🇷🇺 Русская документация  
+### 🇷🇺 Русская документация
 Полная документация на русском языке для русскоязычных разработчиков и команд.
 
 **[→ Перейти к русской документации](ru/)**

@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
  * Handles mapping for responses, creation, and updates.
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface NewsMapper {
+public interface NewsMapper extends BaseMapper {
 
     /**
      * Maps a News entity to a NewsDto for API responses.
@@ -65,16 +65,5 @@ public interface NewsMapper {
     @Mapping(target = "version", ignore = true)
     void updateEntityFromDto(NewsUpdateRequestDto dto, @MappingTarget News entity);
 
-    /**
-     * Helper method to convert a Set of Term entities to a Set of their names.
-     */
-    @Named("termsToNames")
-    default Set<String> termsToNames(Set<Term> terms) {
-        if (terms == null) {
-            return Set.of();
-        }
-        return terms.stream()
-                .map(Term::getName)
-                .collect(Collectors.toSet());
-    }
+
 }
