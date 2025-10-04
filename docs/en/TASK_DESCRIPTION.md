@@ -1,10 +1,10 @@
 # Complete Project Information
 
 ## Project Overview
-**Name**: Dniester — Headless CMS for News Agencies & Digital Media  
-**Type**: Open Source Headless Content Management System (Hybrid Architecture)  
-**Migration**: Drupal 6 → Modern Headless Spring Boot + Optional Angular Frontend  
-**Status**: Headless Backend production-ready, Reference Frontend planned  
+**Name**: Phoebe — Headless CMS for News Agencies & Digital Media  
+**Type**: Open Source Headless Content Management System (Hybrid Architecture)
+**Migration**: Drupal 6 → Modern Headless Spring Boot + Optional Angular Frontend
+**Status**: Headless Backend production-ready, Reference Frontend planned
 **License**: MIT (Open Source)  
 
 ## Technology Stack
@@ -38,7 +38,7 @@
 
 ## Hybrid Headless Architecture
 
-**Dniester** follows a **Hybrid Headless** approach, providing maximum flexibility:
+**Phoebe** follows a **Hybrid Headless** approach, providing maximum flexibility:
 
 - **Headless Core**: Complete REST API for custom frontend development
 - **Reference Frontend**: Optional Angular application for quick deployment
@@ -47,7 +47,7 @@
 
 ## Project Structure
 ```
-dniester/
+phoebe/
 ├── backend/                    # Headless Spring Boot API
 │   ├── src/main/java/com/example/newsplatform/
 │   │   ├── config/            # Security, Test, Rate Limit, Cache configurations
@@ -314,4 +314,5 @@ ADMIN_PASSWORD=<dev_admin_password>
 - Organizations migrating from legacy platforms like Drupal
 - Teams wanting to start with a reference implementation and customize later
 
-This document provides complete context for understanding Dniester's headless architecture, current capabilities, and vision for modern media content management.
+This document provides complete context for understanding Phoebe's headless architecture, current
+capabilities, and vision for modern media content management.

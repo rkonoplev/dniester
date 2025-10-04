@@ -1,14 +1,14 @@
-# Dniester — Headless CMS for News Agencies & Digital Media
+# Phoebe — Headless CMS for News Agencies & Digital Media
 
 [![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)  
 [![codecov](https://codecov.io/gh/rkonoplev/news-platform/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/rkonoplev/news-platform)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
-> **Dniester CMS** — Open source headless content management system engineered for news agencies and digital  
-> media organizations. Features hybrid architecture with powerful REST API, optional Angular frontend, and  
+> **Phoebe CMS** — Open source headless content management system engineered for news agencies and digital
+> media organizations. Features hybrid architecture with powerful REST API, optional Angular frontend, and
 > enterprise-grade security for modern journalism workflows.
 
-**Open Source Headless CMS** designed specifically for news agencies, digital media, and professional  
+**Open Source Headless CMS** designed specifically for news agencies, digital media, and professional
 editorial teams.
 
 ## 🎯 Why Headless?
@@ -23,10 +23,10 @@ Headless architecture is the modern standard for professional media organization
 
 ## 🏗️ Hybrid Architecture
 
-Dniester follows a **Hybrid Headless** approach:
+Phoebe follows a **Hybrid Headless** approach:
 
 ```
-dniester/
+phoebe/
 ├── backend/          ← Spring Boot API (headless core)
 ├── frontend/         ← Angular reference UI (optional)
 └── docs/             ← Documentation: "use our frontend or build your own"
@@ -137,4 +137,4 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
-**Dniester CMS** - Empowering modern media with headless flexibility and professional-grade features.
+**Phoebe CMS** - Empowering modern media with headless flexibility and professional-grade features.
