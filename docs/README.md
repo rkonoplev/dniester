@@ -1,69 +1,34 @@
 # Documentation
 
-This directory contains all project documentation, organized into specific guides.
+This directory contains all project documentation for **Dniester Headless CMS**.
+
+## 📁 Structure
+
+- **[en/](en/)** - English documentation
+- **[ru/](ru/)** - Russian documentation (Русская документация)
 
 ---
 
-- **[Complete Project Information](./TASK_DESCRIPTION.md)**  
-  Comprehensive project overview designed for new developers. Contains complete architecture,  
-  technology stack, database schema, API endpoints, configuration details, and development workflow.  
-  Perfect for quickly understanding the entire project structure and technical decisions.
+## 🌐 Language Selection
 
-- **[Quick Start (Russian)](./QUICK_START_RU.md)**  
-  Краткая инструкция по запуску проекта для русскоязычных разработчиков. Включает быстрый старт,  
-  решение типовых проблем и основные команды для разработки.
+### 🇺🇸 English Documentation
+Complete documentation in English for international developers and teams.
 
-- [Developer Guide](./DEVELOPER_GUIDE.md)  
-  Daily workflow for developers, local commands, how to run builds/tests in IntelliJ,  
-  working without Docker, and CI/CD expectations.
+**[→ Browse English Docs](en/)**
 
-- [Developer Guide (RU)](./DEVELOPER_GUIDE_RU.md)  
-  Russian version of the developer guide: local workflow, Gradle/IDE commands,  
-  CI/CD explanation with proper markdown formatting for better readability.
+### 🇷🇺 Русская документация  
+Полная документация на русском языке для русскоязычных разработчиков и команд.
 
-- [Architecture Migration](./ARCHITECTURE_MIGRATION.md)  
-  Overview of the migration from Drupal 6 → modern Spring Boot & Docker, completed steps, and next actions.
+**[→ Перейти к русской документации](ru/)**
 
-- [Configuration Guide](./CONFIG_GUIDE.md)  
-  Spring profiles matrix (`local`, `dev`, `test`, `ci`, `prod`), `application-*.yml` files, `.env` usage, and secrets handling.
+---
 
-- [Docker Guide](./DOCKER_GUIDE.md)  
-  Local development with `docker-compose`, production builds with Dockerfile, override files, and Render deployment notes.
+## 🎯 Dniester Headless CMS
 
-- [CI/CD & Security](./CI_CD_SECURITY.md)  
-  GitHub Actions workflow (`gradle-ci.yml`), automated testing, code quality tools (Checkstyle, PMD, JaCoCo), GitLeaks…
+**Dniester** is an open source headless CMS designed specifically for news agencies, digital media, and professional editorial teams. It follows a hybrid headless approach, providing both a powerful API and an optional reference frontend.
 
-- [Technical Specification](./TECHNICAL_SPEC.md)  
-  Functional and non-functional requirements, architecture layers, technology stack, and planned future enhancements.
-
-- [Frontend Specification](./FRONTEND_SPEC.md)  
-  Frontend technical specification with Angular, Angular Material, responsive design, SEO requirements, and theming guidelines.
-
-- [Admin Panel Specification](./ADMIN_PANEL_SPEC.md)  
-  Technical requirements for the admin panel interface including role management, news management, taxonomy terms, bulk actions, and security validation.
-
-- [Role Security Implementation](./ROLE_SECURITY_IMPLEMENTATION.md)  
-  Comprehensive guide for implementing ADMIN and EDITOR role restrictions with author-based security.
-
-- [API Usage Guide](./API_USAGE.md)  
-  Example requests with `curl`, Makefile shortcuts for testing API endpoints, and usage instructions for developers & QA.
-
-- [Migration Drupal6 → News Platform (EN)](./MIGRATION_DRUPAL6.md)  
-  Full migration guide in English with all steps and TL;DR commands.
-
-- [Migration Drupal6 → News Platform (RU)](./MIGRATION_DRUPAL6_RU.md)  
-  Russian migration guide with proper markdown formatting for better readability.
-
-- [Database Schema](./DATABASE_SCHEMA.md)  
-  Final MySQL 8 schema after migration, with ER model, DDL, and example queries.
-
-- [Rate Limiting Guide](./RATE_LIMITING.md)  
-  IP-based rate limiting implementation with Bucket4j, configuration options, testing procedures, and production considerations.
-
-- [Code Style Setup](./CODE_STYLE_SETUP.md)  
-  Complete guide for automatic code formatting in IntelliJ IDEA with 120-character line length,  
-  actions on save configuration, Checkstyle integration, and troubleshooting tips.
-
-- [Code Style Setup (RU)](./CODE_STYLE_SETUP_RU.md)  
-  Полное руководство по автоматическому форматированию кода в IntelliJ IDEA с длиной строки 120 символов,  
-  настройка действий при сохранении, интеграция Checkstyle и советы по устранению неполадок.
+### Key Benefits
+- **API-First**: Complete REST API for custom frontend development
+- **Reference Implementation**: Optional Angular frontend for quick deployment
+- **Flexibility**: Choose between headless-only or full-stack deployment
+- **Professional Media**: Designed for news agencies and digital media organizations

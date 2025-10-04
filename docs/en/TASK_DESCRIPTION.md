@@ -1,10 +1,11 @@
 # Complete Project Information
 
 ## Project Overview
-**Name**: News Platform  
-**Type**: Modern news publishing platform (monorepo)  
-**Migration**: Drupal 6 → Spring Boot + Angular  
-**Status**: Backend production-ready, Frontend planned  
+**Name**: Dniester — Headless CMS for News Agencies & Digital Media  
+**Type**: Open Source Headless Content Management System (Hybrid Architecture)  
+**Migration**: Drupal 6 → Modern Headless Spring Boot + Optional Angular Frontend  
+**Status**: Headless Backend production-ready, Reference Frontend planned  
+**License**: MIT (Open Source)  
 
 ## Technology Stack
 
@@ -19,12 +20,14 @@
 - **Testing**: JUnit 5, Integration tests with H2
 - **Migration**: Flyway (disabled in favor of Hibernate DDL)
 
-### Frontend (Planned)
+### Reference Frontend (Optional)
 - **Framework**: Angular with Angular Universal
+- **Purpose**: Reference implementation for small media organizations
 - **Design**: Google News–inspired responsive layout
 - **SEO**: Static URLs, SSR, JSON-LD, OpenGraph metadata
-- **Branding**: Custom color palette (dark blue, red, white)
+- **Branding**: Customizable theme system
 - **Features**: Search, dark mode, push notifications (planned)
+- **Note**: Professional teams can build custom frontends using the headless API
 
 ### Infrastructure
 - **Containerization**: Docker + Docker Compose
@@ -33,10 +36,19 @@
 - **Database**: MySQL with Docker
 - **Rate Limiting**: Bucket4j with IP-based buckets
 
+## Hybrid Headless Architecture
+
+**Dniester** follows a **Hybrid Headless** approach, providing maximum flexibility:
+
+- **Headless Core**: Complete REST API for custom frontend development
+- **Reference Frontend**: Optional Angular application for quick deployment
+- **API-First**: All functionality accessible via REST endpoints
+- **No Vendor Lock-in**: Use our frontend or build your own
+
 ## Project Structure
 ```
-news-platform/
-├── backend/                    # Spring Boot application
+dniester/
+├── backend/                    # Headless Spring Boot API
 │   ├── src/main/java/com/example/newsplatform/
 │   │   ├── config/            # Security, Test, Rate Limit, Cache configurations
 │   │   ├── controller/        # REST endpoints (Admin + Public)
@@ -52,7 +64,7 @@ news-platform/
 │   │   ├── application*.yml  # Environment configurations
 │   │   └── static/           # Static resources
 │   └── src/test/             # Unit + Integration tests
-├── frontend/                  # Future Angular application
+├── frontend/                  # Reference Angular UI (optional)
 ├── docs/                     # Documentation
 ├── .github/workflows/        # CI/CD pipelines
 ├── docker-compose.yml        # Development environment
@@ -80,19 +92,26 @@ news-platform/
 - **Fields**: id, name
 - **Relationships**: ManyToMany → User
 
-## API Endpoints
+## Headless API Endpoints
 
-### Public API (`/api/public/news`) - Rate Limited: 100 req/min per IP
+### Public Content API (`/api/public/news`) - Rate Limited: 100 req/min per IP
 - `GET /` - Search published news (pagination, filters)
 - `GET /{id}` - Get published article by ID
 - `GET /term/{termId}` - Get news by specific term ID (pagination)
 - `GET /terms?termIds=1,3,5` - Get news by multiple term IDs (pagination)
 
-### Admin API (`/api/admin/news`) - Requires ADMIN role, Rate Limited: 50 req/min per IP
+### Content Management API (`/api/admin/news`) - Requires ADMIN role, Rate Limited: 50 req/min per IP
 - `GET /` - Search all news (published + unpublished)
 - `POST /` - Create new article
 - `PUT /{id}` - Update existing article
 - `DELETE /{id}` - Delete article
+
+### Use Cases for Headless API
+- **Custom Frontends**: Build with React, Vue, Angular, or any framework
+- **Mobile Applications**: Native iOS/Android apps
+- **Third-Party Integrations**: Telegram bots, email newsletters
+- **Multi-Platform Publishing**: Websites, AMP pages, social media
+- **Analytics & Advertising**: Connect with external services
 
 ### Pagination Support
 - **Parameters**: `page=0&size=10&sort=publicationDate,desc`
@@ -194,30 +213,33 @@ news-platform/
 - **Security**: Overridden with permissive config
 - **Data**: Auto-generated test entities
 
-## Current Status & Next Steps
+## Current Status & Roadmap
 
-### Completed
+### ✅ Completed (Headless Core)
+- **Headless API**: Complete REST API with OpenAPI/Swagger documentation
 - **Backend Core**: Spring Boot 3.x with Java 21
 - **Database**: MySQL 8.0 with H2 for tests
-- **Security**: Spring Security with Basic Auth
-- **API**: RESTful endpoints with OpenAPI/Swagger
-- **Pagination**: Term-based filtering with configurable page sizes
-- **Caching**: High-performance in-memory caching with Caffeine to reduce database load.
-- **Rate Limiting**: IP-based throttling (100 req/min public, 50 req/min admin)
+- **Security**: Spring Security with configurable authentication
+- **Content Management**: Full CRUD operations via API
+- **Pagination**: Advanced filtering and pagination support
+- **Caching**: High-performance in-memory caching with Caffeine
+- **Rate Limiting**: IP-based API protection with Bucket4j
 - **CI/CD**: GitHub Actions with automated testing
 - **Docker**: Development environment with Docker Compose
-- **Migration**: Drupal 6 data migration scripts and documentation
+- **Migration**: Drupal 6 → Headless CMS migration tools
+- **Open Source**: MIT license for community use
 
-### In Progress
-- Documentation updates
-- Code quality refinements
-- Performance optimizations
+### 🚧 In Progress
+- **Documentation**: Headless API integration guides
+- **Reference Frontend**: Angular implementation
+- **Performance**: API optimization for high-traffic scenarios
 
-### Planned
-- **Frontend**: Angular with Angular Universal
-- **Authentication**: OAuth 2.0 + 2FA for ADMIN and EDITOR roles
-- **Features**: Advanced search, file uploads, push notifications
-- **Production**: Deployment and monitoring setup
+### 🎯 Planned
+- **Authentication**: OAuth 2.0 + 2FA for enhanced security
+- **Advanced Features**: File uploads, advanced search, webhooks
+- **Integrations**: Third-party service connectors
+- **Deployment**: Cloud-native deployment guides
+- **Community**: Plugin system for extensions
 
 ## Known Issues & Technical Debt
 
@@ -267,14 +289,29 @@ ADMIN_PASSWORD=<dev_admin_password>
 
 ## Key Design Decisions
 
-1. **Monorepo Structure**: Backend and frontend in single repository
-2. **JPA over MyBatis**: Hibernate for ORM with automatic schema generation
-3. **H2 for Testing**: In-memory database for fast test execution
-4. **Rate Limiting**: Bucket4j for IP-based request throttling
-5. **Docker First**: Development environment prioritizes containerization
-6. **Migration Strategy**: Drupal 6 → MySQL 5.7 → normalization → MySQL 8.0
-7. **Basic Auth**: Simple authentication suitable for admin interface
-8. **REST over GraphQL**: Traditional REST API with OpenAPI documentation
-9. **Gradle over Maven**: Build tool choice for dependency management
+1. **Hybrid Headless Architecture**: API-first with optional reference frontend
+2. **Open Source**: MIT license for community adoption and contribution
+3. **Media-Focused**: Designed specifically for news agencies and digital media
+4. **API-First**: All functionality accessible via REST endpoints
+5. **No Vendor Lock-in**: Freedom to choose any frontend technology
+6. **Professional Grade**: Enterprise-ready security, caching, and rate limiting
+7. **Migration-Friendly**: Tools for migrating from legacy CMS platforms
+8. **Docker First**: Containerized development and deployment
+9. **Modern Stack**: Java 21, Spring Boot 3.x, MySQL 8.0
+10. **Community-Driven**: Extensible architecture for plugins and integrations
 
-This document provides complete context for understanding the project architecture, current state, and technical decisions made during development.
+## Target Audience
+
+### Professional Editorial Teams
+- News agencies requiring custom frontend solutions
+- Digital media companies with existing mobile apps
+- Organizations needing multi-platform content distribution
+- Teams requiring integration with analytics and advertising platforms
+
+### Small Media Organizations
+- Local newspapers needing quick deployment
+- Startups requiring cost-effective CMS solutions
+- Organizations migrating from legacy platforms like Drupal
+- Teams wanting to start with a reference implementation and customize later
+
+This document provides complete context for understanding Dniester's headless architecture, current capabilities, and vision for modern media content management.

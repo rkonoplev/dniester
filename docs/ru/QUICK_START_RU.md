@@ -99,10 +99,10 @@ docker compose up -d    # создаст чистую базу
 
 ## Дополнительная документация
 
-- **[Полное описание проекта](TASK_DESCRIPTION.md)** - архитектура, технологии, API
-- **[Руководство разработчика](DEVELOPER_GUIDE.md)** - детальная настройка IDE
-- **[Docker Guide](DOCKER_GUIDE.md)** - продвинутая работа с контейнерами
-- **[Миграция с Drupal 6 (RU)](MIGRATION_DRUPAL6_RU.txt)** - процесс миграции
+- **[Полное описание проекта](TASK_DESCRIPTION_RU.md)** - архитектура, технологии, API
+- **[Руководство разработчика](DEVELOPER_GUIDE_RU.md)** - детальная настройка IDE
+- **[Docker Guide](../en/DOCKER_GUIDE.md)** - продвинутая работа с контейнерами
+- **[Миграция с Drupal 6 (RU)](MIGRATION_DRUPAL6_RU.md)** - процесс миграции
 
 ## CI/CD
 
