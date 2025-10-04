@@ -228,6 +228,8 @@ phoebe/
 - **Docker**: Development environment with Docker Compose
 - **Migration**: Drupal 6 → Headless CMS migration tools
 - **Open Source**: MIT license for community use
+- **Code Quality**: Eliminated code duplication in mappers with BaseMapper
+- **Error Handling**: Consistent exception system with standardized error codes
 
 ### 🚧 In Progress
 - **Documentation**: Headless API integration guides
@@ -253,8 +255,6 @@ phoebe/
 - Pagination improvements for large datasets
 
 ### Code Quality
-- Reduce code duplication in mappers
-- Improve error handling consistency
 - Add more comprehensive validation
 
 ## Environment Variables
