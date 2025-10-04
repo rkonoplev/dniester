@@ -72,18 +72,67 @@ class GlobalExceptionHandlerTest {
     }
 
     /**
-     * Test handling of custom NotFoundException.
-     * Should return HTTP 404 with specific error message.
+     * Test handling of BaseException subclasses.
+     * Should return appropriate HTTP status with error code.
      */
     @Test
-    void handleNotFoundExceptionShouldReturn404() {
+    void handleBaseExceptionShouldReturnCorrectStatusAndErrorCode() {
         NotFoundException exception = new NotFoundException("Resource not found");
 
-        ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleNotFoundException(exception, webRequest);
+        ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleBaseException(exception, webRequest);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
         assertEquals("Resource not found", response.getBody().getMessage());
         assertEquals(404, response.getBody().getStatus());
+        assertEquals("NOT_FOUND", response.getBody().getErrorCode());
+    }
+
+    /**
+     * Test handling of ValidationException.
+     * Should return HTTP 400 with validation error code.
+     */
+    @Test
+    void handleValidationExceptionShouldReturn400WithErrorCode() {
+        ValidationException exception = new ValidationException("Invalid input");
+
+        ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleBaseException(exception, webRequest);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Invalid input", response.getBody().getMessage());
+        assertEquals(400, response.getBody().getStatus());
+        assertEquals("VALIDATION_ERROR", response.getBody().getErrorCode());
+    }
+
+    /**
+     * Test handling of BusinessException.
+     * Should return HTTP 409 with business error code.
+     */
+    @Test
+    void handleBusinessExceptionShouldReturn409WithErrorCode() {
+        BusinessException exception = new BusinessException("Business rule violated");
+
+        ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleBaseException(exception, webRequest);
+
+        assertEquals(HttpStatus.CONFLICT, response.getStatusCode());
+        assertEquals("Business rule violated", response.getBody().getMessage());
+        assertEquals(409, response.getBody().getStatus());
+        assertEquals("BUSINESS_ERROR", response.getBody().getErrorCode());
+    }
+
+    /**
+     * Test handling of legacy ResourceNotFoundException.
+     * Should return HTTP 404 with legacy error code for backward compatibility.
+     */
+    @Test
+    void handleResourceNotFoundExceptionShouldReturn404WithLegacyErrorCode() {
+        ResourceNotFoundException exception = new ResourceNotFoundException("Legacy resource not found");
+
+        ResponseEntity<ErrorResponseDto> response = exceptionHandler.handleResourceNotFoundException(exception, webRequest);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Legacy resource not found", response.getBody().getMessage());
+        assertEquals(404, response.getBody().getStatus());
+        assertEquals("RESOURCE_NOT_FOUND", response.getBody().getErrorCode());
     }
 
     /**
