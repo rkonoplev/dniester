@@ -18,9 +18,9 @@ import java.util.stream.Collectors;
  * Mapper for converting between User entity and various User DTOs using MapStruct.
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface UserMapper {
+public interface UserMapper extends BaseMapper {
 
-    @Mapping(source = "roles", target = "roleNames")
+    @Mapping(source = "roles", target = "roleNames", qualifiedByName = "rolesToNames")
     UserDto toDto(User entity);
 
     @Mapping(target = "id", ignore = true)
@@ -36,13 +36,5 @@ public interface UserMapper {
     @Mapping(target = "roles", ignore = true)
     void updateEntity(@MappingTarget User entity, UserUpdateRequestDto request);
 
-    default Set<String> rolesToRoleNames(Set<com.example.newsplatform.entity.Role> roles) {
-        if (roles == null || roles.isEmpty()) {
-            // Default to a non-privileged role for safety
-            return Set.of("EDITOR");
-        }
-        return roles.stream()
-                .map(com.example.newsplatform.entity.Role::getName)
-                .collect(Collectors.toSet());
-    }
+
 }

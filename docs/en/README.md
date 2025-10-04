@@ -69,7 +69,7 @@ This directory contains all English project documentation for **Phoebe CMS**.
   Final MySQL 8 schema for the headless CMS, with ER model, DDL,  
   and example queries for content management.
 
-- **[Migration Drupal6 → Dniester CMS](./MIGRATION_DRUPAL6.md)**  
+- **[Migration Drupal6 → Phoebe CMS](./MIGRATION_DRUPAL6.md)**  
   Complete migration guide from legacy Drupal 6 to modern headless architecture  
   with all steps and TL;DR commands.
 
