@@ -15,6 +15,7 @@ public class ErrorResponseDto {
     private String message;
     private String details;
     private List<String> errors;
+    private String errorCode;
 
     public ErrorResponseDto() {}
 
@@ -23,8 +24,16 @@ public class ErrorResponseDto {
         this.status = status;
         this.message = message;
         this.details = details;
-        // defensive copy
         this.errors = errors != null ? List.copyOf(errors) : null;
+    }
+    
+    public ErrorResponseDto(Instant timestamp, int status, String message, String details, List<String> errors, String errorCode) {
+        this.timestamp = timestamp;
+        this.status = status;
+        this.message = message;
+        this.details = details;
+        this.errors = errors != null ? List.copyOf(errors) : null;
+        this.errorCode = errorCode;
     }
 
     public Instant getTimestamp() {
@@ -62,5 +71,13 @@ public class ErrorResponseDto {
 
     public void setErrors(List<String> errors) {
         this.errors = errors != null ? List.copyOf(errors) : null;
+    }
+    
+    public String getErrorCode() {
+        return errorCode;
+    }
+    
+    public void setErrorCode(String errorCode) {
+        this.errorCode = errorCode;
     }
 }
