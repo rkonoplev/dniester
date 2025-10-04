@@ -3,6 +3,8 @@ package com.example.newsplatform.dto.request;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Set;
+
 /**
  * DTO for updating an existing news article.
  * All fields are optional to support partial updates (PATCH-style).
@@ -18,5 +20,7 @@ public record NewsUpdateRequestDto(
         String teaser,
 
         @NotNull(message = "Publication status must be provided")
-        Boolean isPublished
+        Boolean isPublished,
+
+        Set<Long> termIds
 ) {}

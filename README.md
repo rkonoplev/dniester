@@ -152,9 +152,9 @@ For a new project or local development, you can start with a clean database.
 After starting the services (step 3), create a default admin user:
 
 ```bash
-docker exec -i news-mysql mysql -uroot -proot dniester < db_data/init_admin.sql
+docker exec -i news-mysql mysql -uroot -proot dniester < db_data/create_admin_user.sql
 ```
-Important: Before running this command, open db_data/init_admin.sql and replace 
+Important: Before running this command, open db_data/create_admin_user.sql and replace 
 the placeholder password hash with a real BCrypt hash of your chosen password (e.g., admin). 
 
 You can then log in with the default credentials (admin / admin).

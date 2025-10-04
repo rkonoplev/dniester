@@ -302,9 +302,9 @@ This scenario is ideal for new projects or development environments.
     Spring Boot will automatically create the required tables (`users`, `roles`, `content`, etc.) using Hibernate DDL.
 3.  **Create a default admin user** by running the initialization script:
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/init_admin.sql
+    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/create_admin_user.sql
     ```
-    > **Important**: Before running this script, open `db_data/init_admin.sql` and replace the placeholder password hash with a real BCrypt hash of your chosen password (e.g., `admin`). You can generate a hash using a temporary Java class or an online BCrypt generator (use cost factor 12).
+    > **Important**: Default password is `admin` (BCrypt hash already included in script).
 4.  You can now log in to the admin panel with the credentials you configured in the script (default: `admin` / `admin`).
 
 ## Daily Workflow

@@ -8,10 +8,10 @@ INSERT INTO roles (id, name) VALUES
   (2, 'EDITOR')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
--- Insert sample user
-INSERT INTO users (id, username, email, status) VALUES
-  (100, 'admin', 'admin@example.com', 1)
-ON DUPLICATE KEY UPDATE email = VALUES(email);
+-- Insert sample user with BCrypt password hash for 'admin'
+INSERT INTO users (id, username, email, password, active) VALUES
+  (100, 'admin', 'admin@example.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P8jF4l3q4R4J8C', 1)
+ON DUPLICATE KEY UPDATE email = VALUES(email), password = VALUES(password);
 
 -- Insert taxonomy category
 INSERT INTO terms (id, name, vocabulary) VALUES

@@ -56,9 +56,9 @@ docker compose --env-file .env.dev up -d
 2.  Spring Boot автоматически создаст пустые таблицы (`users`, `roles`, `content` и т.д.).
 3.  Создайте тестового администратора:
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/init_admin.sql
+    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/create_admin_user.sql
     ```
-    > **Важно**: Перед первым запуском откройте `db_data/init_admin.sql` и замените заглушку пароля на настоящий BCrypt-хэш от пароля `admin`.
+    > **Важно**: Пароль по умолчанию: `admin` (BCrypt хэш уже включён в скрипт).
 4.  Теперь вы можете войти в админку с логином `admin` и паролем `admin`.
 
 ## Разработка

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Arrays;
@@ -27,6 +28,9 @@ class NewsRepositoryBulkIntegrationTest {
 
     @Autowired
     private TermRepository termRepository;
+
+    @Autowired
+    private TestEntityManager entityManager;
 
     private User author1;
     private User author2;
@@ -97,6 +101,8 @@ class NewsRepositoryBulkIntegrationTest {
         // When
         List<Long> idsToUnpublish = Arrays.asList(allIds.get(0), allIds.get(2));
         newsRepository.unpublishByIds(idsToUnpublish);
+        entityManager.flush();
+        entityManager.clear();
 
         // Then
         Optional<News> unpublishedNews1 = newsRepository.findById(idsToUnpublish.get(0));

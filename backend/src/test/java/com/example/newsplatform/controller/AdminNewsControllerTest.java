@@ -69,7 +69,7 @@ class AdminNewsControllerTest {
 
     @Test
     void update_ShouldReturnUpdatedNews() {
-        NewsUpdateRequestDto updateRequest = new NewsUpdateRequestDto("Updated Title", "Updated Content", null, true);
+        NewsUpdateRequestDto updateRequest = new NewsUpdateRequestDto("Updated Title", "Updated Content", null, true, null);
         when(newsService.update(eq(1L), any(NewsUpdateRequestDto.class), eq(auth))).thenReturn(sampleNewsDto);
 
         ResponseEntity<NewsDto> response = controller.update(1L, updateRequest, auth);

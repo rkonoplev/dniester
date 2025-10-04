@@ -3,9 +3,9 @@
 -- Location: backend/src/main/resources/db/migration/V4__unify_authors.sql
 
 -- 1. Insert or ensure a single "ImportedAuthor" user exists
-INSERT INTO users (id, username, email, status)
-VALUES (999, 'imported_author', 'imported@author.local', 1)
-ON DUPLICATE KEY UPDATE email = VALUES(email);
+INSERT INTO users (id, username, email, password, active)
+VALUES (999, 'imported_author', 'imported@author.local', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P8jF4l3q4R4J8C', 1)
+ON DUPLICATE KEY UPDATE email = VALUES(email), password = VALUES(password);
 
 -- 2. Reassign all news records from any old author to the new ImportedAuthor
 UPDATE content

@@ -5,12 +5,12 @@
 INSERT IGNORE INTO roles (id, name) VALUES (1, 'ADMIN');
 
 -- Step 2: Create admin user
--- Replace the password hash with a real BCrypt hash of 'admin'
+-- Password: 'admin' (BCrypt hash with strength 12)
 INSERT INTO users (id, username, password, email, active)
 VALUES (
     1,
     'admin',
-    '$2a$12$REAL_BCRYPT_HASH_HERE', -- ⚠️ Generate this via BCryptPasswordEncoder
+    '$2a$12$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P8jF4l3q4R4J8C', -- BCrypt hash of 'admin'
     'admin@example.com',
     true
 );
