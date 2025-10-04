@@ -38,4 +38,4 @@ and verified to comply with open-source licensing standards to the best of the a
 
 ---
 
-*Last updated: January 2025*
+*Last updated: October 2025*
