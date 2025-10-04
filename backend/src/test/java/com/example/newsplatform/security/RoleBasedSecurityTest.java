@@ -4,6 +4,7 @@ import com.example.newsplatform.entity.News;
 import com.example.newsplatform.entity.Role;
 import com.example.newsplatform.entity.User;
 import com.example.newsplatform.repository.NewsRepository;
+import com.example.newsplatform.repository.RoleRepository;
 import com.example.newsplatform.repository.UserRepository;
 import com.example.newsplatform.security.AuthorVerification;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,6 +33,9 @@ class RoleBasedSecurityTest {
     private UserRepository userRepository;
 
     @Autowired
+    private RoleRepository roleRepository;
+
+    @Autowired
     private AuthorVerification authorVerification;
 
     private User adminUser;
@@ -42,12 +46,15 @@ class RoleBasedSecurityTest {
     void setUp() {
         Role adminRole = new Role();
         adminRole.setName("ADMIN");
+        roleRepository.save(adminRole);
 
         Role editorRole = new Role();
         editorRole.setName("EDITOR");
+        roleRepository.save(editorRole);
 
         adminUser = new User();
         adminUser.setUsername("admin");
+        adminUser.setEmail("admin@test.com");
         adminUser.setPassword("password");
         adminUser.setActive(true);
         adminUser.setRoles(Set.of(adminRole));
@@ -55,6 +62,7 @@ class RoleBasedSecurityTest {
 
         editorUser = new User();
         editorUser.setUsername("editor");
+        editorUser.setEmail("editor@test.com");
         editorUser.setPassword("password");
         editorUser.setActive(true);
         editorUser.setRoles(Set.of(editorRole));
@@ -62,6 +70,7 @@ class RoleBasedSecurityTest {
 
         editorsNews = new News();
         editorsNews.setTitle("Editor's News");
+        editorsNews.setBody("Content");
         editorsNews.setAuthor(editorUser);
         newsRepository.save(editorsNews);
 
@@ -85,6 +94,8 @@ class RoleBasedSecurityTest {
 
         // Create another user's news
         News otherNews = new News();
+        otherNews.setTitle("Admin News");
+        otherNews.setBody("Admin Content");
         otherNews.setAuthor(adminUser);
         newsRepository.save(otherNews);
 

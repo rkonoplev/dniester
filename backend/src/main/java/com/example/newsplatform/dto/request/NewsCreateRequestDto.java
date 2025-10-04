@@ -3,6 +3,8 @@ package com.example.newsplatform.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.Set;
+
 /**
  * DTO for creating a new news article.
  */
@@ -16,6 +18,8 @@ public class NewsCreateRequestDto {
     private String content;
 
     private String teaser;
+
+    private Set<Long> termIds;
 
     //<editor-fold desc="Getters and Setters">
     public String getTitle() {
@@ -40,6 +44,14 @@ public class NewsCreateRequestDto {
 
     public void setTeaser(String teaser) {
         this.teaser = teaser;
+    }
+
+    public Set<Long> getTermIds() {
+        return termIds;
+    }
+
+    public void setTermIds(Set<Long> termIds) {
+        this.termIds = termIds;
     }
     //</editor-fold>
 }

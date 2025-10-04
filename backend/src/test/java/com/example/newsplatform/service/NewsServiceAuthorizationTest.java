@@ -149,7 +149,7 @@ class NewsServiceAuthorizationTest {
     void update_EditorRole_ShouldAllowUpdatingOwnNews() {
         when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.findById(10L)).thenReturn(Optional.of(ownNews));
-        NewsUpdateRequestDto request = new NewsUpdateRequestDto("T", "C", "T", true);
+        NewsUpdateRequestDto request = new NewsUpdateRequestDto("T", "C", "T", true, null);
         assertDoesNotThrow(() -> newsService.update(10L, request, editorAuth));
         verify(newsRepository).save(ownNews);
     }
@@ -158,7 +158,7 @@ class NewsServiceAuthorizationTest {
     void update_EditorRole_ShouldDenyUpdatingOthersNews() {
         when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.findById(11L)).thenReturn(Optional.of(othersNews));
-        NewsUpdateRequestDto request = new NewsUpdateRequestDto("T", "C", "T", true);
+        NewsUpdateRequestDto request = new NewsUpdateRequestDto("T", "C", "T", true, null);
         assertThrows(AccessDeniedException.class, () -> newsService.update(11L, request, editorAuth));
         verify(newsRepository, never()).save(any());
     }

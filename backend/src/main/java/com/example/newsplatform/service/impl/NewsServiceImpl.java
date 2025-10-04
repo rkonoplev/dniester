@@ -11,6 +11,8 @@ import com.example.newsplatform.mapper.NewsMapper;
 import com.example.newsplatform.repository.NewsRepository;
 import com.example.newsplatform.repository.UserRepository;
 import com.example.newsplatform.service.NewsService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
@@ -44,6 +46,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "news-by-id", key = "#id")
     public NewsDto findPublishedById(Long id) {
         News news = newsRepository.findByIdAndPublished(id, true)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
@@ -99,6 +102,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "news-by-id", key = "#id")
     public NewsDto update(Long id, NewsUpdateRequestDto request, Authentication authentication) {
         News existingNews = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
@@ -110,6 +114,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "news-by-id", key = "#id")
     public void delete(Long id, Authentication authentication) {
         News newsToDelete = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));

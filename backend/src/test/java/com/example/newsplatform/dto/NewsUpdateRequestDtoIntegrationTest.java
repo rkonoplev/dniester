@@ -60,7 +60,8 @@ class NewsUpdateRequestDtoIntegrationTest {
                 "Updated Title",
                 savedNews.getBody(),
                 savedNews.getTeaser(),
-                savedNews.isPublished()
+                savedNews.isPublished(),
+                null
         );
         NewsDto updatedNews = newsService.update(savedNews.getId(), updateDto, SecurityContextHolder.getContext().getAuthentication());
 

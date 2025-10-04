@@ -24,7 +24,7 @@ public class DatabaseUserDetailsService implements UserDetailsService {
 
         return org.springframework.security.core.userdetails.User.builder()
             .username(user.getUsername())
-            .password("{noop}dummy") // No password - handled externally
+            .password(user.getPassword()) // Use real password from database
             .authorities(user.getRoles().stream()
                 .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
                 .collect(Collectors.toList()))
