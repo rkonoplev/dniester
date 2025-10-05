@@ -110,6 +110,10 @@ CREATE TABLE content_terms (
 
 ### Default Users & Passwords
 
+**⚠️ Important**: These are passwords for logging into the website (CMS web interface), not MySQL database passwords.
+
+The documentation describes user credentials for the Phoebe CMS system for logging into the CMS:
+
 #### For Clean Database (New Installation)
 After running migrations V1-V6 on a fresh database:
 
