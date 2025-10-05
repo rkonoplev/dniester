@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,7 +28,7 @@ class ValidationTest {
     }
 
     @Test
-    void newsCreateRequestDto_shouldValidateTitle() {
+    void newsCreateRequestDtoShouldValidateTitle() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setContent("Valid content");
 
@@ -52,7 +51,7 @@ class ValidationTest {
     }
 
     @Test
-    void newsCreateRequestDto_shouldValidateTeaser() {
+    void newsCreateRequestDtoShouldValidateTeaser() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setTitle("Valid Title");
         dto.setContent("Valid content");
@@ -76,7 +75,7 @@ class ValidationTest {
     }
 
     @Test
-    void userCreateRequestDto_shouldValidateEmail() {
+    void userCreateRequestDtoShouldValidateEmail() {
         UserCreateRequestDto dto = new UserCreateRequestDto();
         dto.setUsername("validuser");
 
@@ -99,7 +98,7 @@ class ValidationTest {
     }
 
     @Test
-    void userCreateRequestDto_shouldValidateUsername() {
+    void userCreateRequestDtoShouldValidateUsername() {
         UserCreateRequestDto dto = new UserCreateRequestDto();
         dto.setEmail("user@example.com");
 
