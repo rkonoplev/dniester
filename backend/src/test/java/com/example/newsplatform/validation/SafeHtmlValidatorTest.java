@@ -28,7 +28,7 @@ class SafeHtmlValidatorTest {
 
     @Test
     void testAllowedTags() {
-        String content = "<b>Bold</b> <i>Italic</i> <strong>Strong</strong>";
+        String content = "<p><b>Bold</b> <i>Italic</i> <strong>Strong</strong></p>";
         assertTrue(validator.isValid(content, null));
     }
 

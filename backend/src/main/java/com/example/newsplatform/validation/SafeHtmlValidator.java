@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class SafeHtmlValidator implements ConstraintValidator<SafeHtml, String> {
 
     private static final Set<String> ALLOWED_TAGS = Set.of(
-        "img", "b", "i", "a", "u", "strong", "em", "iframe", "div"
+        "img", "b", "i", "a", "u", "strong", "em", "iframe", "div", "p"
     );
 
     private static final Pattern HTML_TAG_PATTERN = Pattern.compile("</?([a-zA-Z][a-zA-Z0-9]*)[^>]*>");
