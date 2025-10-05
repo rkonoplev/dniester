@@ -10,6 +10,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -30,6 +31,7 @@ public class Role {
      * The unique name of the role (e.g., "ADMIN", "EDITOR").
      * This is the authority string used by Spring Security.
      */
+    @NotBlank(message = "Role name is required")
     @Column(nullable = false, unique = true, length = 50)
     private String name;
 

@@ -52,19 +52,21 @@ public class News {
      * Article title. Must not be null.
      */
     @NotBlank(message = "Title is required")
-    @Size(max = 255, message = "Title must not exceed 255 characters")
-    @Column(nullable = false, length = 255)
+    @Size(max = 50, message = "Title must not exceed 50 characters")
+    @Column(nullable = false, length = 50)
     private String title;
 
     /**
-     * Main article body (full text). Stored as TEXT in DB.
+     * Main article body (full text). Stored as LONGTEXT in DB.
      */
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "LONGTEXT")
     private String body;
 
     /**
      * Short preview or lead text shown in lists. Optional.
+     * Allows safe HTML tags: img, b, i, a, u, strong, em
      */
+    @Size(max = 250, message = "Teaser must not exceed 250 characters")
     @Column(columnDefinition = "TEXT")
     private String teaser;
 
