@@ -123,7 +123,7 @@ After running migration scripts + `update_migrated_users.sql`:
 | Username | Password | Role | Email | Purpose |
 |----------|----------|------|-------|----------|
 | `admin` | `admin` | ADMIN | admin@phoebe.local | System administrator |
-| All migrated users | `changeme123` | - | user{id}@migrated.local | Legacy users (must reset password) |
+| All migrated users | `changeme123` | - | user{id}@migrated.local | Legacy users (must reset) |
 
 ### Password Security
 - All passwords are stored as **BCrypt hashes** (strength 10-12)

@@ -76,7 +76,7 @@ CREATE TABLE content (
     body TEXT,                                   -- Полный текст статьи
     teaser TEXT,                                 -- Краткое описание/анонс
     publication_date DATETIME NOT NULL,
-    published BOOLEAN NOT NULL DEFAULT FALSE,    -- Добавлено в V2: состояние черновик/опубликовано
+    published BOOLEAN NOT NULL DEFAULT FALSE,    -- Добавлено в V2: черновик/опубликовано
     created_at DATETIME,                         -- Аудит: время создания
     updated_at DATETIME,                         -- Аудит: последнее изменение
     version BIGINT,                              -- Оптимистичная блокировка
@@ -123,7 +123,7 @@ CREATE TABLE content_terms (
 | Имя пользователя | Пароль | Роль | Email | Назначение |
 |------------------|--------|------|-------|------------|
 | `admin` | `admin` | ADMIN | admin@phoebe.local | Системный администратор |
-| Все мигрированные пользователи | `changeme123` | - | user{id}@migrated.local | Унаследованные пользователи (должны сменить пароль) |
+| Все мигрированные пользователи | `changeme123` | - | user{id}@migrated.local | Унаследованные (должны сменить пароль) |
 
 ### Безопасность паролей
 - Все пароли хранятся как **BCrypt хеши** (сила 10-12)
