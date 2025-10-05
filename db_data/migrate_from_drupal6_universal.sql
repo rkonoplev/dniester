@@ -25,13 +25,19 @@ SET FOREIGN_KEY_CHECKS = 1;
 -- 1. USERS
 CREATE TABLE users (
   id INT PRIMARY KEY,
-  username VARCHAR(100),
-  email VARCHAR(255),
-  status TINYINT
+  username VARCHAR(100) NOT NULL,
+  email VARCHAR(255) NOT NULL UNIQUE,
+  password VARCHAR(255) NOT NULL,
+  active BOOLEAN NOT NULL DEFAULT true
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-INSERT INTO users (id, username, email, status)
-SELECT uid, name, mail, status
+INSERT INTO users (id, username, email, password, active)
+SELECT 
+  uid, 
+  name, 
+  COALESCE(NULLIF(mail, ''), CONCAT('user', uid, '@migrated.local')),
+  '$2a$12$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P8jF4l3q4R4J8C', -- BCrypt 'admin'
+  CASE WHEN status = 1 THEN true ELSE false END
 FROM a264971_dniester.users
 WHERE uid > 0;
 
@@ -58,24 +64,33 @@ SELECT uid, rid FROM a264971_dniester.users_roles;
 -- 3. CONTENT (universal)
 CREATE TABLE content (
   id INT PRIMARY KEY,
-  title VARCHAR(255),
-  body TEXT,
+  title VARCHAR(50) NOT NULL,
+  body LONGTEXT,
   teaser TEXT,
-  publication_date DATETIME,
-  author_id INT,
+  publication_date DATETIME NOT NULL,
+  published BOOLEAN NOT NULL DEFAULT false,
+  created_at DATETIME,
+  updated_at DATETIME,
+  version BIGINT,
+  author_id INT NOT NULL,
   FOREIGN KEY (author_id) REFERENCES users(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
-INSERT INTO content (id, title, body, teaser, publication_date, author_id)
+INSERT INTO content (id, title, body, teaser, publication_date, published, created_at, updated_at, version, author_id)
 SELECT
   n.nid,
-  n.title,
+  LEFT(n.title, 50),
   nr.body,
-  nr.teaser,
+  LEFT(nr.teaser, 250),
   FROM_UNIXTIME(n.created),
+  CASE WHEN n.status = 1 THEN true ELSE false END,
+  FROM_UNIXTIME(n.created),
+  FROM_UNIXTIME(n.changed),
+  1,
   n.uid
 FROM a264971_dniester.node n
-LEFT JOIN a264971_dniester.node_revisions nr ON n.vid = nr.vid;
+LEFT JOIN a264971_dniester.node_revisions nr ON n.vid = nr.vid
+WHERE n.uid IS NOT NULL;
 
 -- 4. TAXONOMY
 CREATE TABLE terms (
