@@ -10,6 +10,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -22,15 +25,19 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Username is required")
     @Column(unique = true, nullable = false)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
-    @Column(unique = true)
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email must be valid")
+    @Column(unique = true, nullable = false)
     private String email;
 
+    @NotNull
     @Column(nullable = false)
     private boolean active = true;
 

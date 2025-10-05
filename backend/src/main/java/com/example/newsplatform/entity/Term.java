@@ -10,6 +10,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotBlank;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -43,6 +44,7 @@ public class Term {
      * Display name of the term (e.g., "Sports", "Breaking News").
      * Must not be null.
      */
+    @NotBlank(message = "Term name is required")
     @Column(nullable = false, length = 255)
     private String name;
 
@@ -50,7 +52,8 @@ public class Term {
      * Grouping namespace for terms (e.g., 'category', 'tag').
      * Helps organize terms into vocabularies.
      */
-    @Column(length = 100)
+    @NotBlank(message = "Vocabulary is required")
+    @Column(nullable = false, length = 100)
     private String vocabulary;
 
     /**

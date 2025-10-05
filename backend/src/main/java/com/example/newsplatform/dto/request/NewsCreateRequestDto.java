@@ -1,5 +1,6 @@
 package com.example.newsplatform.dto.request;
 
+import com.example.newsplatform.validation.SafeHtml;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -11,12 +12,14 @@ import java.util.Set;
 public class NewsCreateRequestDto {
 
     @NotBlank(message = "Title is required")
-    @Size(min = 3, max = 255)
+    @Size(max = 50, message = "Title must not exceed 50 characters")
     private String title;
 
     @NotBlank(message = "Content is required")
     private String content;
 
+    @Size(max = 250, message = "Teaser must not exceed 250 characters")
+    @SafeHtml(message = "Teaser contains unsafe HTML tags")
     private String teaser;
 
     private Set<Long> termIds;
