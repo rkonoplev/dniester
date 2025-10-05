@@ -24,6 +24,7 @@ Protects against XSS attacks while allowing safe HTML content and automatic YouT
 - `i`, `em` - Italic/emphasized text
 - `a` - Links
 - `u` - Underlined text
+- `p` - Paragraphs
 - `iframe` - YouTube embeds (auto-generated)
 - `div` - Container for responsive YouTube embeds
 
