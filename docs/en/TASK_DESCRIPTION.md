@@ -245,17 +245,43 @@ phoebe/
 
 ## Known Issues & Technical Debt
 
-### Security
-- CORS configuration needs refinement for production
-- **OAuth 2.0 + 2FA migration planned**: Replace Basic Auth with OAuth 2.0 and two-factor authentication for ADMIN and EDITOR roles
-- Input validation and sanitization improvements
+### ✅ Resolved
+- ~~Code duplication in mappers~~ → Implemented BaseMapper
+- ~~Missing permissions system~~ → Added permissions system with V5/V6 migrations
+- ~~Inconsistent error handling~~ → Global exception handler implemented
+- ~~Missing database migration docs~~ → DATABASE_MIGRATION_GUIDE.md created
+- ~~CMS vs MySQL password confusion~~ → Documentation clarified
 
-### Performance
-- Database query optimization needed
-- Pagination improvements for large datasets
+### 🔄 In Progress
+- **Reference Angular Frontend**: Basic structure created, requires component implementation
+- **API Performance**: Query optimization for high-traffic scenarios
 
-### Code Quality
-- Add more comprehensive validation
+### 🎯 Future Technical Debt
+
+#### Security (High Priority)
+- **OAuth 2.0 + JWT**: Replace Basic Auth with modern authentication
+- **2FA for ADMIN/EDITOR**: Two-factor authentication for critical roles
+- **Production CORS**: Configuration for multi-domain frontends
+- **User-based Rate Limiting**: Supplement IP-based restrictions
+
+#### Functionality (Medium Priority)
+- **File Upload**: Support for images and media in articles
+- **Advanced Search**: Full-text search with Elasticsearch/Lucene
+- **Webhooks**: Event notifications for integrations
+- **Content Versioning**: Article change history
+- **Publication Scheduler**: Delayed article publishing
+
+#### Performance (Medium Priority)
+- **Distributed Caching**: Redis for multi-instance deployments
+- **Database Optimization**: Indexes for complex queries
+- **Cursor Pagination**: For very large datasets
+- **CDN Integration**: For static resources
+
+#### DevOps (Low Priority)
+- **Kubernetes Manifests**: For cloud-native deployments
+- **Monitoring**: Prometheus + Grafana metrics
+- **Structured Logging**: ELK stack integration
+- **Backup Automation**: Regular database backups
 
 ## Environment Variables
 
