@@ -69,6 +69,10 @@ This directory contains all English project documentation for **Phoebe CMS**.
   Final MySQL 8 schema for the headless CMS, with ER model, DDL,  
   and example queries for content management.
 
+- **[Database Migration & Setup Guide](./DATABASE_MIGRATION_GUIDE.md)**  
+  Complete database setup guide including migration scripts, default credentials,  
+  Spring Boot migrations (V1-V6), and troubleshooting for both clean and migrated installations.
+
 - **[Migration Drupal6 → Phoebe CMS](./MIGRATION_DRUPAL6.md)**  
   Complete migration guide from legacy Drupal 6 to modern headless architecture  
   with all steps and TL;DR commands.
