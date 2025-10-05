@@ -79,26 +79,10 @@ npm start
 
 ## 📚 Documentation
 
-### English Documentation
-- **[Complete Project Information](docs/en/TASK_DESCRIPTION.md)** - Comprehensive project overview
-- [Developer Guide](docs/en/DEVELOPER_GUIDE.md) - Development workflow and setup
-- [API Usage Guide](docs/en/API_USAGE.md) - REST API examples and usage
-- [Architecture Migration](docs/en/ARCHITECTURE_MIGRATION.md) - Technical architecture details
-- [Configuration Guide](docs/en/CONFIG_GUIDE.md) - Environment and configuration setup
-- [Authentication Guide](docs/en/AUTHENTICATION_GUIDE.md) - Security and authentication
-- [Docker Guide](docs/en/DOCKER_GUIDE.md) - Docker deployment and development
-- [Technical Specification](docs/en/TECHNICAL_SPEC.md) - Technical requirements and specifications
-- [Frontend Specification](docs/en/FRONTEND_SPEC.md) - Reference frontend specifications
-- [Database Schema](docs/en/DATABASE_SCHEMA.md) - Database structure and migrations
-- [Input Validation Guide](docs/en/VALIDATION_GUIDE.md) - Comprehensive validation and content processing
+Comprehensive documentation covering installation, development, API usage, and deployment.
 
-### Russian Documentation (Русская документация)
-- **[Полная информация о проекте](docs/ru/TASK_DESCRIPTION_RU.md)** - Подробный обзор проекта
-- [Руководство разработчика](docs/ru/DEVELOPER_GUIDE_RU.md) - Процесс разработки и настройка
-- [Быстрый старт](docs/ru/QUICK_START_RU.md) - Быстрый запуск для разработчиков
-- [Настройка стиля кода](docs/ru/CODE_STYLE_SETUP_RU.md) - Настройка форматирования кода
-- [Миграция с Drupal6](docs/ru/MIGRATION_DRUPAL6_RU.md) - Руководство по миграции
-- [Руководство по валидации](docs/ru/VALIDATION_GUIDE_RU.md) - Валидация и обработка контента
+- **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications
+- **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке
 
 ## 🌟 Use Cases
 
