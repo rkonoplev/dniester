@@ -1,191 +1,239 @@
-# Database Schema – News Platform
+# Database Schema – Phoebe CMS
 
-This document describes the **final MySQL 8 database schema** used by the News Platform project.  
-It has been normalized from the legacy Drupal 6 database into a modern schema compatible with **Spring Boot + JPA/Hibernate**.
+This document describes the **current MySQL 8 database schema** used by Phoebe CMS.  
+The schema supports both **clean installations** and **migrated data from Drupal 6**.
 
-The schema is designed to support:
-- User & role management (migrated from Drupal),
-- Unified `content` storage (articles, news, pages),
-- Taxonomy system (categories/terms),
-- Publish/unpublish workflow,
-- Audit fields for tracking creation and modifications.
+## Schema Features
 
----
-
-## Entity-Relationship (ER) Model – Overview
-
-- **users**: System users imported from Drupal.
-- **roles**: User roles (Admin, Editor, etc.).
-- **user_roles**: Many-to-many mapping between `users` and `roles`.
-- **content**: Unified table for all news/articles.
-- **terms**: Taxonomy terms (categories, tags, vocabularies).
-- **content_terms**: Many-to-many mapping between content and terms.
+- **User Management**: Authentication with role-based access control
+- **Permissions System**: Granular permissions assigned to roles
+- **Content Management**: Unified storage for news articles and content
+- **Taxonomy System**: Categories and tags with flexible vocabularies
+- **Publication Workflow**: Draft/published states with audit trails
+- **Migration Support**: Handles legacy Drupal 6 data transformation
 
 ---
 
-## DDL – Final Schema
+## Current Database Schema (After All Migrations V1-V6)
 
 ```sql
 -- ======================================
--- USERS
+-- USERS TABLE
 -- ======================================
 CREATE TABLE users (
-    id BIGINT PRIMARY KEY,                       -- Drupal uid
-    username VARCHAR(100) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    status TINYINT(1) NOT NULL                   -- 1 = active, 0 = blocked
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,              -- BCrypt hashed passwords
+    email VARCHAR(255) UNIQUE,
+    active BOOLEAN NOT NULL DEFAULT TRUE         -- true = active, false = blocked
 );
 
 -- ======================================
--- ROLES
+-- ROLES TABLE
 -- ======================================
 CREATE TABLE roles (
-    id BIGINT PRIMARY KEY,                       -- Drupal rid
-    name VARCHAR(100) NOT NULL UNIQUE
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE,            -- 'ADMIN', 'EDITOR', etc.
+    description VARCHAR(255)                     -- Role description (added in V5)
 );
 
 -- ======================================
--- USER_ROLES (link table, M:N)
+-- PERMISSIONS TABLE (Added in V5)
+-- ======================================
+CREATE TABLE permissions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE            -- 'news:read', 'users:create', etc.
+);
+
+-- ======================================
+-- USER_ROLES (Many-to-Many)
 -- ======================================
 CREATE TABLE user_roles (
     user_id BIGINT NOT NULL,
     role_id BIGINT NOT NULL,
-    PRIMARY KEY(user_id, role_id),
-    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY(role_id) REFERENCES roles(id) ON DELETE CASCADE
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
 -- ======================================
--- CONTENT (NEWS/ARTICLES)
+-- ROLE_PERMISSIONS (Many-to-Many, Added in V5)
+-- ======================================
+CREATE TABLE role_permissions (
+    role_id BIGINT NOT NULL,
+    permission_id BIGINT NOT NULL,
+    PRIMARY KEY (role_id, permission_id),
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE,
+    FOREIGN KEY (permission_id) REFERENCES permissions(id) ON DELETE CASCADE
+);
+
+-- ======================================
+-- CONTENT TABLE (News Articles)
 -- ======================================
 CREATE TABLE content (
-    id BIGINT PRIMARY KEY,                       -- Drupal nid
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    body TEXT,                                   -- full article body
-    teaser TEXT,                                 -- short summary
-    publication_date DATETIME NOT NULL,          -- Drupal created → DATETIME
-
-    author_id BIGINT,                            -- FK → users.id
-    created_at DATETIME NOT NULL,                -- audit auto-set
-    updated_at DATETIME NOT NULL,                -- audit auto-set
-    published TINYINT(1) NOT NULL DEFAULT 0,     -- 0 = draft, 1 = published
-
-    FOREIGN KEY(author_id) REFERENCES users(id) ON DELETE SET NULL
+    body TEXT,                                   -- Full article content
+    teaser TEXT,                                 -- Article summary/excerpt
+    publication_date DATETIME NOT NULL,
+    published BOOLEAN NOT NULL DEFAULT FALSE,    -- Added in V2: draft/published state
+    created_at DATETIME,                         -- Audit: creation timestamp
+    updated_at DATETIME,                         -- Audit: last modification
+    version BIGINT,                              -- Optimistic locking
+    author_id BIGINT NOT NULL,                   -- FK to users.id
+    FOREIGN KEY (author_id) REFERENCES users(id)
 );
 
 -- ======================================
--- TERMS (TAXONOMY)
+-- TERMS TABLE (Taxonomy)
 -- ======================================
 CREATE TABLE terms (
-    id BIGINT PRIMARY KEY,                       -- Drupal tid
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    vocabulary VARCHAR(100)                      -- Drupal vocabulary name
+    vocabulary VARCHAR(100),                     -- 'category', 'tag', etc.
+    UNIQUE (name, vocabulary)
 );
 
 -- ======================================
--- CONTENT_TERMS (link table, M:N content ↔ terms)
+-- CONTENT_TERMS (Many-to-Many)
 -- ======================================
 CREATE TABLE content_terms (
     content_id BIGINT NOT NULL,
     term_id BIGINT NOT NULL,
-    PRIMARY KEY(content_id, term_id),
-    FOREIGN KEY(content_id) REFERENCES content(id) ON DELETE CASCADE,
-    FOREIGN KEY(term_id) REFERENCES terms(id) ON DELETE CASCADE
+    PRIMARY KEY (content_id, term_id),
+    FOREIGN KEY (content_id) REFERENCES content(id) ON DELETE CASCADE,
+    FOREIGN KEY (term_id) REFERENCES terms(id) ON DELETE CASCADE
 );
 ```
-## ER Diagram (ASCII Representation)
 
-          +-------------------+
-          |      users        |
-          +-------------------+
-          | id (PK)           |
-          | username          |
-          | email             |
-          | status            |
-          +-------------------+
-                  | 1
-                  |
-                  | * (many news articles per user)
-                  v
-          +-------------------+
-          |      content      |   (mapped to News entity)
-          +-------------------+
-          | id (PK)           |
-          | title             |
-          | body              |
-          | teaser            |
-          | publication_date  |
-          | author_id (FK)    |
-          | created_at        |
-          | updated_at        |
-          | published         |
-          +-------------------+
-                  ^
-                  | *
-                  | *
-          +-------------------+
-          |      terms        |
-          +-------------------+
-          | id (PK)           |
-          | name              |
-          | vocabulary        |
-          +-------------------+
+## Authentication & Access Control
 
-Relations:
-users (1) ---- (*) content   → One user can author many articles.
-content (*) ---- (*) terms   → Many-to-many relation via content_terms.
+### Default Users & Passwords
 
+#### For Clean Database (New Installation)
+After running migrations V1-V6 on a fresh database:
 
-          +-------------------+
-          |      roles        |
-          +-------------------+
-          | id (PK)           |
-          | name              |
-          +-------------------+
-                  ^
-                  | *
-                  | *
-          +-------------------+
-          |   user_roles      |   Join table
-          +-------------------+
-          | user_id (FK)      |
-          | role_id (FK)      |
-          +-------------------+
-                  ^
-                  | *
-                  | 1
-          +-------------------+
-          |      users        |
-          +-------------------+
+| Username | Password | Role | Email | Purpose |
+|----------|----------|------|-------|----------|
+| `admin` | `admin` | ADMIN | admin@example.com | System administrator |
 
+#### For Migrated Database (From Drupal 6)
+After running migration scripts + `update_migrated_users.sql`:
 
-## Example Queries (cheatsheet)
+| Username | Password | Role | Email | Purpose |
+|----------|----------|------|-------|----------|
+| `admin` | `admin` | ADMIN | admin@phoebe.local | System administrator |
+| All migrated users | `changeme123` | - | user{id}@migrated.local | Legacy users (must reset password) |
+
+### Password Security
+- All passwords are stored as **BCrypt hashes** (strength 10-12)
+- Migrated users **must change password** on first login
+- Admin password should be changed immediately in production
+
+### Permission System
+
+The system uses **resource:action** permission naming:
+
+| Permission | Description |
+|------------|-------------|
+| `news:read` | View news articles |
+| `news:create` | Create new articles |
+| `news:update` | Edit existing articles |
+| `news:delete` | Delete articles |
+| `news:publish` | Publish/unpublish articles |
+| `users:read` | View user accounts |
+| `users:create` | Create new users |
+| `users:update` | Edit user accounts |
+| `users:delete` | Delete users |
+| `roles:*` | Role management permissions |
+| `terms:*` | Taxonomy management permissions |
+
+### Default Role Permissions
+
+**ADMIN Role:**
+- All permissions (full system access)
+
+**EDITOR Role:**
+- `news:read`, `news:create`, `news:update`, `news:publish`
+- `terms:read`
+
+## Migration History
+
+| Migration | Purpose | Changes |
+|-----------|---------|----------|
+| V1 | Initial schema | Core tables: users, roles, content, terms |
+| V2 | Publication workflow | Added `published` column to content |
+| V3 | Sample data | Default admin user and test content |
+| V4 | User unification | Consolidated migrated authors |
+| V5 | Permissions system | Added permissions and role_permissions tables |
+| V6 | Setup permissions | Populated default permissions and role assignments |
+
+## Example Queries
 
 ```sql
--- list all published news articles
-SELECT id, title, publication_date
-FROM content
-WHERE published = 1
-ORDER BY publication_date DESC;
+-- List all published articles with authors
+SELECT c.title, c.publication_date, u.username as author
+FROM content c
+JOIN users u ON c.author_id = u.id
+WHERE c.published = TRUE
+ORDER BY c.publication_date DESC;
 
--- fetch all categories for one article
-SELECT t.name
-FROM terms t
-JOIN content_terms ct ON t.id = ct.term_id
-WHERE ct.content_id = 42;
-
--- list all active users and their roles
-SELECT u.username, r.name AS role
+-- Get user permissions through roles
+SELECT u.username, p.name as permission
 FROM users u
 JOIN user_roles ur ON u.id = ur.user_id
 JOIN roles r ON ur.role_id = r.id
-WHERE u.status = 1;
+JOIN role_permissions rp ON r.id = rp.role_id
+JOIN permissions p ON rp.permission_id = p.id
+WHERE u.active = TRUE;
+
+-- Find articles by category
+SELECT c.title, t.name as category
+FROM content c
+JOIN content_terms ct ON c.id = ct.content_id
+JOIN terms t ON ct.term_id = t.id
+WHERE t.vocabulary = 'category' AND t.name = 'General';
 ```
 
-## Notes
-- content is the main entity (News in JPA code).
-- The `published` column (added in Flyway migration V2) implements explicit publish/unpublish workflow.
-- Audit fields (created_at, updated_at) are managed automatically in JPA via entity lifecycle hooks.
-- Categories/tags are stored in terms, linked via content_terms.
+## Database Setup Instructions
 
+### For New Installation (Clean Database)
 
+1. **Start MySQL 8.0**:
+   ```bash
+   docker compose up -d
+   ```
+
+2. **Run Spring Boot** (auto-applies migrations V1-V6):
+   ```bash
+   cd backend
+   ./gradlew bootRun --args='--spring.profiles.active=local'
+   ```
+
+3. **First Login**:
+   - Username: `admin`
+   - Password: `admin`
+   - **⚠️ Change password immediately!**
+
+### For Migrated Database (From Drupal 6)
+
+1. **Import Drupal 6 data** (if available)
+2. **Run migration scripts**:
+   ```bash
+   mysql phoebe_db < db_data/migrate_from_drupal6_universal.sql
+   mysql phoebe_db < db_data/update_migrated_users.sql
+   ```
+
+3. **Start application** (applies remaining migrations)
+4. **First Login Options**:
+   - Admin: username `admin`, password `admin`
+   - Migrated users: their original username, password `changeme123`
+
+### Security Checklist
+
+- [ ] Change default admin password
+- [ ] Force password reset for all migrated users
+- [ ] Review and adjust role permissions
+- [ ] Enable HTTPS in production
+- [ ] Configure proper database credentials
+- [ ] Set up backup procedures
