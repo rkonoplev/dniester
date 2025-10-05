@@ -49,6 +49,7 @@ class NewsServiceImplIntegrationTest {
     void setUp() {
         testUser = new User();
         testUser.setUsername("integration_user");
+        testUser.setEmail("integration@test.com");
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setActive(true);
         userRepository.save(testUser);

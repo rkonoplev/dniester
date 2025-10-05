@@ -38,6 +38,7 @@ class NewsUpdateRequestDtoIntegrationTest {
     void setUp() {
         testUser = new User();
         testUser.setUsername("test_updater");
+        testUser.setEmail("updater@test.com");
         testUser.setPassword(passwordEncoder.encode("password"));
         testUser.setActive(true);
         userRepository.save(testUser);

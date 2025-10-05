@@ -47,12 +47,14 @@ public class SecurityAspectIntegrationTest {
 
         adminUser = new User();
         adminUser.setUsername("sec_admin");
+        adminUser.setEmail("admin@test.com");
         adminUser.setPassword("pass");
         adminUser.setRoles(Set.of(adminRole));
         userRepository.save(adminUser);
 
         editorUser = new User();
         editorUser.setUsername("sec_editor");
+        editorUser.setEmail("editor@test.com");
         editorUser.setPassword("pass");
         editorUser.setRoles(Set.of(editorRole));
         userRepository.save(editorUser);

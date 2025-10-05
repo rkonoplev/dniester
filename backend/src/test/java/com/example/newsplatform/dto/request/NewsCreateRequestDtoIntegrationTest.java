@@ -39,6 +39,7 @@ public class NewsCreateRequestDtoIntegrationTest {
     void setUp() {
         author = new User();
         author.setUsername("creator_user");
+        author.setEmail("creator@test.com");
         author.setPassword(passwordEncoder.encode("password"));
         author.setActive(true);
         userRepository.save(author);
