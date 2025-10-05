@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import com.example.newsplatform.validation.SafeHtml;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
@@ -58,7 +59,9 @@ public class News {
 
     /**
      * Main article body (full text). Stored as LONGTEXT in DB.
+     * Allows safe HTML tags and YouTube embed code.
      */
+    @SafeHtml(message = "Body contains unsafe HTML content")
     @Column(columnDefinition = "LONGTEXT")
     private String body;
 
@@ -66,6 +69,7 @@ public class News {
      * Short preview or lead text shown in lists. Optional.
      * Allows safe HTML tags: img, b, i, a, u, strong, em
      */
+    @SafeHtml(message = "Teaser contains unsafe HTML content")
     @Size(max = 250, message = "Teaser must not exceed 250 characters")
     @Column(columnDefinition = "TEXT")
     private String teaser;
