@@ -48,6 +48,19 @@ This directory contains SQL scripts and database files used for migrating from D
 - **Usage**: Run on Drupal 6 database to understand field structure
 - **Technical Value**: Shows database introspection techniques
 
+#### `update_migrated_users.sql` (1.2K)
+- **Purpose**: Post-migration cleanup script for user accounts
+- **Created**: To fix user data issues after main migration
+- **Function**:
+  - Updates users with missing/invalid emails to use `user{id}@migrated.local` format
+  - Sets default password `changeme123` for all migrated users (forces password reset)
+  - Ensures admin user (ID 999) exists with proper credentials
+  - Creates ADMIN role and assigns it to admin user
+  - Provides migration summary statistics
+- **Usage**: Run AFTER `migrate_from_drupal6_universal.sql` to clean up user data
+- **Security**: All migrated users get temporary password requiring reset on first login
+- **Technical Value**: Demonstrates post-migration data cleanup and validation
+
 ### Data Files (Excluded from Git)
 
 #### `clean_schema.sql` (289M) - **Not in Git**
@@ -86,7 +99,13 @@ The migration process follows this sequence:
    mysql clean_db < migrate_cck_fields.sql
    ```
 
-4. **Verification**
+4. **User Data Cleanup**
+   ```sql
+   -- Fix user accounts after migration
+   mysql clean_db < update_migrated_users.sql
+   ```
+
+5. **Verification**
    ```sql
    -- Verify data integrity and counts
    SELECT COUNT(*) FROM content;
