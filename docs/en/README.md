@@ -83,6 +83,10 @@ This directory contains all English project documentation for **Phoebe CMS**.
   Complete guide for automatic code formatting in IntelliJ IDEA with 120-character line length,  
   actions on save configuration, Checkstyle integration, and troubleshooting tips.
 
+- **[Input Validation Guide](./VALIDATION_GUIDE.md)**  
+  Comprehensive validation and content processing guide including SafeHtml validation,  
+  YouTube embed support, XSS protection, and entity validation rules.
+
 ## 📋 Legal Information
 
 - **[Legal Disclaimer](./DISCLAIMER.md)**  

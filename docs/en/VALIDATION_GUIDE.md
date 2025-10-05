@@ -2,7 +2,9 @@
 
 ## Overview
 
-Phoebe CMS implements comprehensive input validation and content processing to ensure data integrity, security, and user experience. This guide covers all validation mechanisms, HTML sanitization, and YouTube content processing.
+Phoebe CMS implements comprehensive input validation and content processing to ensure data integrity,
+security, and user experience. This guide covers all validation mechanisms, HTML sanitization, and
+YouTube content processing.
 
 ## Validation Architecture
 
