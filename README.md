@@ -90,6 +90,7 @@ npm start
 - [Technical Specification](docs/en/TECHNICAL_SPEC.md) - Technical requirements and specifications
 - [Frontend Specification](docs/en/FRONTEND_SPEC.md) - Reference frontend specifications
 - [Database Schema](docs/en/DATABASE_SCHEMA.md) - Database structure and migrations
+- [Input Validation Guide](docs/en/VALIDATION_GUIDE.md) - Comprehensive validation and content processing
 
 ### Russian Documentation (Русская документация)
 - **[Полная информация о проекте](docs/ru/TASK_DESCRIPTION_RU.md)** - Подробный обзор проекта
@@ -97,6 +98,7 @@ npm start
 - [Быстрый старт](docs/ru/QUICK_START_RU.md) - Быстрый запуск для разработчиков
 - [Настройка стиля кода](docs/ru/CODE_STYLE_SETUP_RU.md) - Настройка форматирования кода
 - [Миграция с Drupal6](docs/ru/MIGRATION_DRUPAL6_RU.md) - Руководство по миграции
+- [Руководство по валидации](docs/ru/VALIDATION_GUIDE_RU.md) - Валидация и обработка контента
 
 ## 🌟 Use Cases
 
