@@ -342,6 +342,16 @@ Many‑to‑many mapping between users and roles.
 
 Taxonomy terms and mapping table for content↔terms.
 
+**Archive Data Preservation:**
+- ✅ **All Drupal 6 terms HAD vocabularies** - they migrate correctly with original vocabulary names
+- ✅ **Vocabulary names preserved**: "category", "tags", "topics" etc. from Drupal 6 structure
+- ✅ **Term relationships maintained**: All news-term associations preserved via `content_terms`
+- ✅ **No data loss**: Complete taxonomy structure migrated from Drupal 6
+
+**Two Database Scenarios:**
+- **Migrated from Drupal 6**: Archive terms retain original vocabulary classifications
+- **Clean installation**: New terms created with flexible vocabulary grouping (e.g., "category")
+
 #### 5. Custom Fields (CCK)
 **Source:** Drupal `content_type_*` tables (if present).  
 **Target:** `custom_fields` (generic key→value model).  

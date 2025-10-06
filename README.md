@@ -121,8 +121,11 @@ Contributions are welcome! This is an open source project designed to serve the 
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-See [DISCLAIMER.md](docs/en/DISCLAIMER.md) for legal information and warranty disclaimers.
-See [NOTICE.md](docs/en/NOTICE.md) for third-party licenses and attributions.
+## Legal Notice
+
+This project is distributed under the MIT License.  
+All source code is authored and reviewed by Roman Konoplev.  
+Some parts may have been assisted by AI tools, but all code has been verified to comply with open-source licensing standards.
 
 ---
 
