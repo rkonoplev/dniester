@@ -38,6 +38,7 @@ class HomeControllerTest {
         when(mockProbe.isConsumed()).thenReturn(true);
         when(mockBucket.tryConsumeAndReturnRemaining(1)).thenReturn(mockProbe);
         when(rateLimitConfig.getPublicBucket(anyString())).thenReturn(mockBucket);
+        when(rateLimitConfig.getAdminBucket(anyString())).thenReturn(mockBucket);
     }
 
     @Test
