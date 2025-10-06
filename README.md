@@ -1,7 +1,9 @@
 # Phoebe — Headless CMS for News Agencies & Digital Media
 
-[![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)  
-[![codecov](https://codecov.io/gh/rkonoplev/news-platform/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/rkonoplev/news-platform)  
+[![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](
+https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)  
+[![codecov](https://codecov.io/gh/rkonoplev/news-platform/graph/badge.svg?token=YOUR_TOKEN)](
+https://codecov.io/gh/rkonoplev/news-platform)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
 > **Phoebe CMS** — Open source headless content management system engineered for news agencies and digital
@@ -125,7 +127,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 This project is distributed under the MIT License.  
 All source code is authored and reviewed by Roman Konoplev.  
-Some parts may have been assisted by AI tools, but all code has been verified to comply with open-source licensing standards.
+Some parts may have been assisted by AI tools, but all code has been verified to comply with open-source 
+licensing standards.
 
 ---
 
