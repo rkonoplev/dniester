@@ -2,7 +2,7 @@
 
 [![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](
 https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)  
-[![codecov](https://codecov.io/gh/rkonoplev/news-platform/graph/badge.svg?token=YOUR_TOKEN)](
+[![codecov](https://codecov.io/gh/rkonoplev/phoebe/graph/badge.svg?token=YOUR_TOKEN)](
 https://codecov.io/gh/rkonoplev/news-platform)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
