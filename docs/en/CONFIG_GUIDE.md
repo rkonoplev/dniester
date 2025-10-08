@@ -11,7 +11,7 @@
 - [Best Practices](#best-practices)
 
 
-This document explains the configuration strategy for the News Platform backend.  
+This document explains the configuration strategy for Phoebe CMS backend.  
 Spring Boot profiles, YAML configuration files, and environment variables are used to keep the system secure, portable, and consistent across environments.
 
 ---

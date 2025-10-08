@@ -12,7 +12,7 @@
 - [Best Practices](#best-practices)
 
 
-This document explains how to work with Docker in the News Platform project, both for local development
+This document explains how to work with Docker in Phoebe CMS, both for local development
 and production deployment.
 
 ---

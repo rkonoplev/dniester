@@ -10,7 +10,7 @@ import java.util.Set;
  * All fields are optional to support partial updates (PATCH-style).
  */
 public record NewsUpdateRequestDto(
-        @Size(min = 3, max = 255, message = "Title must be between 3 and 255 characters")
+        @Size(min = 3, max = 50, message = "Title must be between 3 and 50 characters")
         String title,
 
         // This field maps to the 'body' of the News entity

@@ -1,6 +1,6 @@
 # CI/CD & Security Guide
 
-This document describes the **continuous integration pipeline**, quality tools, and security practices used in the News Platform project.
+This document describes the **continuous integration pipeline**, quality tools, and security practices used in Phoebe CMS project.
 
 ---
 

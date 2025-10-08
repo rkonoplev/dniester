@@ -120,7 +120,7 @@ hosting platform (e.g., Render, AWS) or a secrets manager. For more details on p
 **[Docker Guide](DOCKER_GUIDE.md)**.
 
 ## Migration from Drupal 6
-For complete migration instructions, see [Migration Drupal6 → News Platform](MIGRATION_DRUPAL6.md).
+For complete migration instructions, see [Migration Drupal6 → Phoebe CMS](MIGRATION_DRUPAL6.md).
 
 
 ## Backend Layer Structure
@@ -186,7 +186,7 @@ This project uses several tools for code and security assurance.
 ---
 ## Running the Project
 
-After migrating the database and producing `clean_schema.sql`, you can run the full News Platform stack
+After migrating the database and producing `clean_schema.sql`, you can run the full Phoebe CMS stack
 (MySQL + Spring Boot) or only the database for verification.
 
 ### Option A. Run only the database (MySQL check)
@@ -273,13 +273,13 @@ curl -u admin:password -i "http://localhost:8080/api/admin/news"
 
 ## Starting Scenarios
 
-The News Platform supports two distinct starting scenarios for administrators and developers.
+Phoebe CMS supports two distinct starting scenarios for administrators and developers.
 
 ### Scenario 1: Migrate from Drupal 6 (Legacy Data)
 
 This is the primary scenario for projects with an existing Drupal 6 installation.
 
-1.  Follow the complete migration process outlined in **[Migration Drupal6 → News Platform](MIGRATION_DRUPAL6.md)**.
+1.  Follow the complete migration process outlined in **[Migration Drupal6 → Phoebe CMS](MIGRATION_DRUPAL6.md)**.
 2.  This process produces the `db_data/clean_schema.sql` file, which contains all your legacy news, users, and taxonomy.
 3.  Start the application stack:
     ```bash

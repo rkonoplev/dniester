@@ -1,7 +1,7 @@
 # Rate Limiting Implementation
 
 ## Overview
-The News Platform implements IP-based rate limiting using Bucket4j to prevent API abuse and ensure fair resource usage.
+Phoebe CMS implements IP-based rate limiting using Bucket4j to prevent API abuse and ensure fair resource usage.
 
 ## Configuration
 

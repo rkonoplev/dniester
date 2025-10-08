@@ -72,7 +72,7 @@ class NewsDtoValidationTest {
 
     @Test
     void whenUpdateDtoTitleExceedsLimitThenViolation() {
-        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("A".repeat(256), "Content", null, false, null);
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("A".repeat(51), "Content", null, false, null);
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
         assertFalse(violations.isEmpty());
     }

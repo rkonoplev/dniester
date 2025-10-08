@@ -5,7 +5,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+
 import java.util.Objects;
 
 /**
@@ -21,13 +23,12 @@ public class Permission {
     private Long id;
 
     /**
-     * The unique name of the permission, following a "resource:action" convention.
+     * Unique name of the permission, following a "resource:action" convention.
      * Example: "news:read", "news:write", "users:manage".
      */
     @Column(unique = true, nullable = false, length = 100)
     private String name;
 
-    //<editor-fold desc="Getters and Setters">
     public Long getId() {
         return id;
     }
@@ -43,22 +44,58 @@ public class Permission {
     public void setName(String name) {
         this.name = name;
     }
-    //</editor-fold>
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Permission that = (Permission) o;
-        return Objects.equals(id, that.id);
+    /**
+     * Hook method called before entity update.
+     * Can be overridden in tests or extended for audit logic.
+     */
+    protected void onUpdate() {
+        // No-op by default
     }
 
+    /**
+     * JPA lifecycle callback that triggers before entity update.
+     * Delegates to onUpdate() for testability and extensibility.
+     */
+    @PreUpdate
+    private void preUpdate() {
+        onUpdate();
+    }
+
+    /**
+     * Equality is based on ID if both entities are persisted.
+     * If not persisted, falls back to comparing unique name.
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Permission)) return false;
+        Permission that = (Permission) o;
+
+        if (id != null && that.id != null) {
+            return Objects.equals(id, that.id);
+        }
+
+        return Objects.equals(name, that.name);
+    }
+
+    /**
+     * Hash code is based on ID if available, otherwise on name.
+     * Ensures consistency with equals() implementation.
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return id != null ? Objects.hash(id) : Objects.hash(name);
+    }
+
+    /**
+     * String representation for logging and debugging.
+     */
+    @Override
+    public String toString() {
+        return "Permission{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 }

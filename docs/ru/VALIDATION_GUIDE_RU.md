@@ -163,6 +163,7 @@ public void processNewsContent(News news) {
 - `User.java` - Валидация пользовательских аккаунтов
 - `Term.java` - Валидация терминов таксономии
 - `Role.java` - Валидация пользовательских ролей
+- `Permissions.java` - Валидация разрешений
 
 ## Лучшие практики
 

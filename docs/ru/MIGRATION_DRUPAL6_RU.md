@@ -1,4 +1,4 @@
-# ИНСТРУКЦИЯ ПО МИГРАЦИИ: Drupal 6 → News Platform (Spring Boot + MySQL 8)
+# ИНСТРУКЦИЯ ПО МИГРАЦИИ: Drupal 6 → Phoebe CMS (Spring Boot + MySQL 8)
 
 ## ШАГ 1. Запуск временного MySQL 5.7 для дампа Drupal 6
 

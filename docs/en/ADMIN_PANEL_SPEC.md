@@ -1,6 +1,6 @@
 # Technical Specification for the Admin Panel
 
-This document outlines the technical requirements for the News Platform admin panel interface.
+This document outlines the technical requirements for Phoebe CMS admin panel interface.
 
 ---
 
@@ -8,7 +8,7 @@ This document outlines the technical requirements for the News Platform admin pa
 
 ### 1.1 Role-Based Access Control
 
-The News Platform uses a two-role system: **ADMIN** (full access) and **EDITOR** (own content only).
+Phoebe CMS uses a two-role system: **ADMIN** (full access) and **EDITOR** (own content only).
 
 **Implementation Details**: See [Role Security Implementation Guide](./ROLE_SECURITY_IMPLEMENTATION.md) for complete security requirements and code examples.
 
@@ -106,7 +106,7 @@ The News Platform uses a two-role system: **ADMIN** (full access) and **EDITOR**
 
 ### 6.3 Authentication Security
 - **Current authentication:** Spring Security with Basic Auth
-- **Planned migration:** OAuth 2.0 + 2FA for all roles (ADMIN, EDITOR, USER)
+- **Planned migration:** OAuth 2.0 + 2FA for all roles (ADMIN, EDITOR)
 - **Password management:** Managed separately from user profile data
 - **Admin access:** Controlled through application configuration, not user self-registration
 

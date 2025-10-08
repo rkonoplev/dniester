@@ -16,67 +16,78 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
- * Entity representing a taxonomy term, such as a category or tag.
- * Terms are used to classify content (e.g., News articles) and grouped by vocabulary.
+ * Entity representing a taxonomy term used to classify news content.
  *
- * Example:
- * - Name: "Technology", Vocabulary: "category"
- * - Name: "Urgent", Vocabulary: "tag"
+ * Each term belongs to a specific vocabulary (for example: "category" or "tag")
+ * and can be associated with multiple news articles.
  *
- * This entity is linked to News via a many-to-many relationship.
- * The owning side is {@link News#terms}, so this side uses mappedBy.
+ * Examples:
+ * - Vocabulary "category": terms "Politics", "Technology"
+ * - Vocabulary "tag": terms "Breaking", "Exclusive"
+ *
+ * This entity corresponds conceptually to Drupal’s taxonomy term.
  */
 @Entity
-@Table(name = "terms",
-        indexes = @Index(name = "idx_term_name", columnList = "name"),
-        uniqueConstraints = @UniqueConstraint(columnNames = {"name", "vocabulary"}))
+@Table(
+        name = "terms",
+        indexes = {
+                @Index(name = "idx_term_name", columnList = "name")
+        },
+        uniqueConstraints = {
+                @UniqueConstraint(columnNames = {"name", "vocabulary"})
+        }
+)
 public class Term {
 
     /**
-     * Unique identifier for the term.
-     * May correspond to external system IDs (e.g., Drupal tid).
+     * Unique identifier of the term.
+     * May correspond to a legacy taxonomy ID if migrated from another system.
      */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
-     * Display name of the term (e.g., "Sports", "Breaking News").
-     * Must not be null.
+     * Display name of the term (e.g. "Science", "Sports").
+     * Must not be blank.
      */
     @NotBlank(message = "Term name is required")
     @Column(nullable = false, length = 255)
     private String name;
 
     /**
-     * Grouping namespace for terms (e.g., 'category', 'tag').
-     * Helps organize terms into vocabularies.
+     * Vocabulary that groups related terms.
+     * For example: "category", "tag", or "region".
      */
     @NotBlank(message = "Vocabulary is required")
     @Column(nullable = false, length = 100)
     private String vocabulary;
 
     /**
-     * Bidirectional many-to-many relationship with News.
-     * This is the inverse (mapped) side — the owning side is in {@link News}.
+     * Articles associated with this term.
      *
-     * Contains all news articles associated with this term.
+     * This side is the inverse of the many-to-many relation.
+     * The owning side is defined in News.terms.
      */
     @ManyToMany(mappedBy = "terms", fetch = FetchType.LAZY)
     private Set<News> newsArticles = new HashSet<>();
 
-    // === Constructors ===
-
+    /** Default constructor required by JPA. */
     public Term() {
     }
 
+    /**
+     * Constructs a Term with the specified values.
+     *
+     * @param id          identifier (nullable before persistence)
+     * @param name        term name
+     * @param vocabulary  vocabulary name
+     */
     public Term(Long id, String name, String vocabulary) {
         this.id = id;
         this.name = name;
         this.vocabulary = vocabulary;
     }
-
-    // === Getters and Setters ===
 
     public Long getId() {
         return id;
@@ -110,31 +121,30 @@ public class Term {
         this.newsArticles = newsArticles;
     }
 
-    // === equals & hashCode ===
-
     /**
-     * Compares terms by identity (ID and vocabulary).
-     * Useful for collections and JPA consistency.
+     * Equality is based on the entity identifier.
+     * Two terms are considered equal if their non-null IDs are equal.
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Term term = (Term) o;
         return id != null && Objects.equals(id, term.id);
     }
 
+    /**
+     * Returns a constant hash code based on the entity class.
+     * Recommended pattern for JPA entities with generated identifiers.
+     */
     @Override
     public int hashCode() {
         return getClass().hashCode();
     }
 
-    // === toString ===
-
+    /**
+     * Returns a readable string representation for debugging and logs.
+     */
     @Override
     public String toString() {
         return "Term{" +

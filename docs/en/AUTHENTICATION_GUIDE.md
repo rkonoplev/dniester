@@ -1,6 +1,6 @@
 # Authentication Guide
 
-This document explains the authentication architecture and security practices for the News Platform.
+This document explains the authentication architecture and security practices for Phoebe CMS.
 
 ---
 
