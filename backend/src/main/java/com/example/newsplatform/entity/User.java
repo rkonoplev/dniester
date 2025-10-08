@@ -18,8 +18,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.example.newsplatform.entity.Role;
-
 /**
  * Represents a system user with login credentials, email, active status, and assigned roles.
  */
@@ -140,8 +138,12 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         User user = (User) o;
         return Objects.equals(id, user.id);
     }
