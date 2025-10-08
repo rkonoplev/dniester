@@ -3,7 +3,7 @@
 [![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](
 https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)  
 [![codecov](https://codecov.io/gh/rkonoplev/phoebe/graph/badge.svg?token=YOUR_TOKEN)](
-https://codecov.io/gh/rkonoplev/news-platform)  
+https://codecov.io/gh/rkonoplev/phoebe)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
 > **Phoebe CMS** — Open source headless content management system engineered for news agencies and digital
