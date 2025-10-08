@@ -5,10 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+
+import com.example.newsplatform.entity.Role;
 
 /**
  * Represents a specific permission in the system (e.g., "news:create", "users:delete").
@@ -22,12 +27,21 @@ public class Permission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Unique name of the permission, following a "resource:action" convention.
-     * Example: "news:read", "news:write", "users:manage".
-     */
     @Column(unique = true, nullable = false, length = 100)
     private String name;
+
+    @ManyToMany(mappedBy = "permissions")
+    private Set<Role> roles = new HashSet<>();
+
+    // === Constructors ===
+
+    public Permission() {}
+
+    public Permission(String name) {
+        this.name = name;
+    }
+
+    // === Getters & Setters ===
 
     public Long getId() {
         return id;
@@ -45,52 +59,53 @@ public class Permission {
         this.name = name;
     }
 
-    /**
-     * Hook method called before entity update.
-     * Can be overridden in tests or extended for audit logic.
-     */
-    protected void onUpdate() {
-        // No-op by default
+    public Set<Role> getRoles() {
+        return roles;
     }
 
-    /**
-     * JPA lifecycle callback that triggers before entity update.
-     * Delegates to onUpdate() for testability and extensibility.
-     */
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    // === Helper methods ===
+
+    public void addRole(Role role) {
+        this.roles.add(role);
+        role.getPermissions().add(this);
+    }
+
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+        role.getPermissions().remove(this);
+    }
+
+    // === Lifecycle hooks ===
+
     @PreUpdate
     private void preUpdate() {
-        onUpdate();
+        // placeholder for audit logic if needed
     }
 
-    /**
-     * Equality is based on ID if both entities are persisted.
-     * If not persisted, falls back to comparing unique name.
-     */
+    // === equals & hashCode ===
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Permission)) return false;
         Permission that = (Permission) o;
-
         if (id != null && that.id != null) {
             return Objects.equals(id, that.id);
         }
-
         return Objects.equals(name, that.name);
     }
 
-    /**
-     * Hash code is based on ID if available, otherwise on name.
-     * Ensures consistency with equals() implementation.
-     */
     @Override
     public int hashCode() {
         return id != null ? Objects.hash(id) : Objects.hash(name);
     }
 
-    /**
-     * String representation for logging and debugging.
-     */
+    // === toString ===
+
     @Override
     public String toString() {
         return "Permission{" +
