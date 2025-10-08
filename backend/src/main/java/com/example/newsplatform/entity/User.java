@@ -13,10 +13,16 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import com.example.newsplatform.entity.Role;
+
+/**
+ * Represents a system user with login credentials, email, active status, and assigned roles.
+ */
 @Entity
 @Table(name = "users")
 public class User {
@@ -49,7 +55,19 @@ public class User {
     )
     private Set<Role> roles = new HashSet<>();
 
-    // Getters
+    // === Constructors ===
+
+    public User() {}
+
+    public User(String username, String password, String email, boolean active) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.active = active;
+    }
+
+    // === Getters ===
+
     public Long getId() {
         return id;
     }
@@ -74,7 +92,8 @@ public class User {
         return roles;
     }
 
-    // Setters
+    // === Setters ===
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -99,14 +118,30 @@ public class User {
         this.roles = roles;
     }
 
+    // === Helper Methods ===
+
+    /**
+     * Adds a role to the user and maintains bidirectional relationship.
+     */
+    public void addRole(Role role) {
+        this.roles.add(role);
+        role.getUsers().add(this);
+    }
+
+    /**
+     * Removes a role from the user and maintains bidirectional relationship.
+     */
+    public void removeRole(Role role) {
+        this.roles.remove(role);
+        role.getUsers().remove(this);
+    }
+
+    // === equals & hashCode ===
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
         return Objects.equals(id, user.id);
     }
@@ -115,6 +150,8 @@ public class User {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    // === toString ===
 
     @Override
     public String toString() {
