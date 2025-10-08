@@ -127,8 +127,12 @@ public class Term {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Term term = (Term) o;
         return id != null && Objects.equals(id, term.id);
     }

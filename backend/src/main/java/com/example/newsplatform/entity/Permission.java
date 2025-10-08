@@ -13,8 +13,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.example.newsplatform.entity.Role;
-
 /**
  * Represents a specific permission in the system (e.g., "news:create", "users:delete").
  * Permissions are assigned to roles to grant granular access control.
@@ -90,8 +88,12 @@ public class Permission {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Permission)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Permission)) {
+            return false;
+        }
         Permission that = (Permission) o;
         if (id != null && that.id != null) {
             return Objects.equals(id, that.id);

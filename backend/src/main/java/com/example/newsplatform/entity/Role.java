@@ -16,9 +16,6 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-import com.example.newsplatform.entity.User;
-import com.example.newsplatform.entity.Permission;
-
 /**
  * Represents a user role (e.g., ADMIN, EDITOR) used for authorization in the system.
  */
@@ -125,8 +122,12 @@ public class Role {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Role role = (Role) o;
         return Objects.equals(id, role.id);
     }
