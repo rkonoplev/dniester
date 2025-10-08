@@ -1,4 +1,4 @@
-# Migration Guide: Drupal 6 → News Platform
+# Migration Guide: Drupal 6 → Phoebe CMS
 
 ## Table of Contents
 - [Overview](#overview)
@@ -22,7 +22,7 @@
 
 
 ## Overview
-This guide covers migrating from Drupal 6 to the modern News Platform (Spring Boot + MySQL 8).
+This guide covers migrating from Drupal 6 to the modern Phoebe CMS (Spring Boot + MySQL 8).
 
 **Process:** Drupal 6 dump → MySQL 5.7 container → normalize with SQL scripts → MySQL 8.0
 
@@ -302,7 +302,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 
 ## Database Schema Mapping
 
-After normalizing the dump, the following entities and tables exist in the clean `dniester` schema. These form the core database for the News Platform.
+After normalizing the dump, the following entities and tables exist in the clean `dniester` schema. These form the core database for Phoebe CMS.
 
 #### 1. Users
 **Source:** Drupal `users`  
@@ -465,7 +465,7 @@ For detailed information about all migration scripts and files, see [Database Mi
 
 - **clean_schema.sql**  
   Final export after applying `migrate_from_drupal6_universal.sql` (and optionally `migrate_cck_fields.sql`).  
-  This is the schema and data used in MySQL 8.0 by the News Platform application.
+  This is the schema and data used in MySQL 8.0 by Phoebe CMS.
 
 ### Verifying Custom Fields
 Run the following in MySQL 5.7 (Drupal container):
@@ -508,4 +508,4 @@ docker stop news-mysql-drupal6
 ```bash
 docker compose -f docker-compose.drupal.yml down -v
 ```
-After cleanup, only MySQL 8.0 (news-mysql) and its volume (news-platform_mysql_data) should remain for further work with the News Platform.
+After cleanup, only MySQL 8.0 (news-mysql) and its volume (news-platform_mysql_data) should remain for further work with Phoebe CMS.

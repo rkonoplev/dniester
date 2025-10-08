@@ -93,11 +93,13 @@ public class News {
     /**
      * Timestamp when the record was first created.
      */
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     /**
      * Timestamp when the record was last updated.
      */
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     /**
@@ -144,7 +146,15 @@ public class News {
 
     @PreUpdate
     public void onUpdate() {
-        updatedAt = LocalDateTime.now();
+        onUpdate(LocalDateTime.now());
+    }
+
+    /**
+     * Overloaded method for testing purposes.
+     * Allows setting a fixed update time.
+     */
+    public void onUpdate(LocalDateTime updateTime) {
+        this.updatedAt = updateTime;
     }
 
     // === Getters and Setters ===
@@ -233,13 +243,10 @@ public class News {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof News news)) {
-            return false;
-        }
-        return Objects.equals(id, news.id);
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        News news = (News) o;
+        return id != null && id.equals(news.id);
     }
 
     @Override

@@ -19,7 +19,7 @@
 - [Alternative API Documentation: Swagger UI](#alternative-api-documentation-swagger-ui)
 
 
-This guide provides practical examples for testing the News Platform API endpoints using **curl**.
+This guide provides practical examples for testing Phoebe CMS API endpoints using **curl**.
 
 ## Rate Limiting
 

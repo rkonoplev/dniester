@@ -1,6 +1,6 @@
 # Role-Based Security Implementation Guide
 
-This document outlines the **correct** implementation requirements for ADMIN and EDITOR role security in the News Platform.
+This document outlines the **correct** implementation requirements for ADMIN and EDITOR role security in Phoebe CMS.
 
 ## Role Definitions
 

@@ -155,6 +155,7 @@ public void processNewsContent(News news) {
 
 ### Entity Classes
 - `News.java` - News article validation
+- `Permission.java` - Permission validation
 - `User.java` - User account validation
 - `Term.java` - Taxonomy term validation
 - `Role.java` - User role validation
