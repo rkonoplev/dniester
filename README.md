@@ -1,7 +1,7 @@
 # Phoebe — Headless CMS for News Agencies & Digital Media
 
-[![Java CI with Gradle](https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml/badge.svg)](
-https://github.com/rkonoplev/news-platform/actions/workflows/gradle-ci.yml)  
+[![Java CI with Gradle](https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml/badge.svg)](
+https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)  
 [![codecov](https://codecov.io/gh/rkonoplev/phoebe/graph/badge.svg?token=YOUR_TOKEN)](
 https://codecov.io/gh/rkonoplev/phoebe)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
