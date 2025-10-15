@@ -38,6 +38,10 @@ FROM roles r, permissions p
 WHERE r.name = 'EDITOR' 
 AND p.name IN ('news:read', 'news:create', 'news:update', 'news:publish', 'terms:read');
 
--- Assign ADMIN role to existing admin user (ID 100)
-INSERT IGNORE INTO user_roles (user_id, role_id) 
-SELECT 100, id FROM roles WHERE name = 'ADMIN';
+-- Assign ADMIN role to existing admin user (ID 100) [PostgreSQL-safe]
+INSERT INTO user_roles (user_id, role_id)
+SELECT 100, r.id FROM roles r
+WHERE r.name = 'ADMIN'
+AND NOT EXISTS (
+    SELECT 1 FROM user_roles ur WHERE ur.user_id = 100 AND ur.role_id = r.id
+);
