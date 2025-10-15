@@ -1,7 +1,13 @@
 package com.example.newsplatform.entity;
 
+import com.example.newsplatform.validation.SafeHtml;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,34 +15,38 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import com.example.newsplatform.validation.SafeHtml;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
  * Entity representing a news article.
- * Maps to the "content" database table (legacy Drupal schema).
+ * Maps to the "content" table (legacy Drupal schema).
  *
- * Contains core article data, publication status, timestamps, author reference,
- * and taxonomy terms (categories/tags) via many-to-many relationship.
+ * The model is designed to work well with both MySQL and PostgreSQL:
+ * - Large text fields use @Lob instead of vendor-specific columnDefinition.
+ * - Indexes are defined for common filters and sorts.
+ * - Auditing is enabled for createdAt and updatedAt.
  */
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 @Table(
         name = "content",
         indexes = {
                 @Index(name = "idx_news_title", columnList = "title"),
                 @Index(name = "idx_news_published", columnList = "published"),
-                @Index(name = "idx_news_publication_date", columnList = "publication_date")
+                @Index(name = "idx_news_publication_date", columnList = "publication_date"),
+                @Index(name = "idx_news_author", columnList = "author_id"),
+                @Index(name = "idx_news_published_pubdate", columnList = "published, publication_date")
         }
 )
 public class News {
@@ -58,25 +68,30 @@ public class News {
     private String title;
 
     /**
-     * Main article body (full text). Stored as LONGTEXT in DB.
-     * Allows safe HTML tags and YouTube embed code.
+     * Main article body (full text).
+     * Stored as LOB for portability across MySQL and PostgreSQL.
+     * Lazy loading for performance. Lazy on basic types requires bytecode
+     * enhancement in Hibernate to be truly lazy.
      */
     @SafeHtml(message = "Body contains unsafe HTML content")
-    @Column(columnDefinition = "LONGTEXT")
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     private String body;
 
     /**
-     * Short preview or lead text shown in lists. Optional.
-     * Allows safe HTML tags: img, b, i, a, u, strong, em
+     * Short teaser or lead text for lists.
+     * Stored as LOB for portability. Limited by validation to 250 characters.
+     * Lazy loading to avoid pulling large text into listings.
      */
     @SafeHtml(message = "Teaser contains unsafe HTML content")
     @Size(max = 250, message = "Teaser must not exceed 250 characters")
-    @Column(columnDefinition = "TEXT")
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     private String teaser;
 
     /**
      * Scheduled or actual publication date and time.
-     * Corresponds to original "created" timestamp in Drupal.
+     * Defaults to current timestamp on create if not provided.
      */
     @Column(name = "publication_date", nullable = false)
     private LocalDateTime publicationDate;
@@ -92,13 +107,17 @@ public class News {
 
     /**
      * Timestamp when the record was first created.
+     * Managed by Spring Data JPA Auditing.
      */
+    @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     /**
      * Timestamp when the record was last updated.
+     * Managed by Spring Data JPA Auditing.
      */
+    @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -111,18 +130,16 @@ public class News {
     // === Relationships ===
 
     /**
-     * Author of the news article (User who created it).
-     * Foreign key: author_id → User.id
+     * Author of the news article.
+     * Foreign key: author_id -> users.id
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
     private User author;
 
     /**
-     * Taxonomy terms associated with this news (e.g., categories, tags).
+     * Taxonomy terms associated with this news (categories, tags).
      * Stored in join table "content_terms".
-     *
-     * Example: ["Technology", "Urgent"]
      */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -130,31 +147,20 @@ public class News {
             joinColumns = @JoinColumn(name = "content_id"),
             inverseJoinColumns = @JoinColumn(name = "term_id")
     )
+    @BatchSize(size = 50)
     private Set<Term> terms = new HashSet<>();
 
-    // === Lifecycle Callbacks ===
-
-    @PrePersist
-    public void onCreate() {
-        LocalDateTime now = LocalDateTime.now();
-        createdAt = now;
-        updatedAt = now;
-        if (publicationDate == null) {
-            publicationDate = now;
-        }
-    }
-
-    @PreUpdate
-    public void onUpdate() {
-        onUpdate(LocalDateTime.now());
-    }
+    // === Lifecycle Callback ===
 
     /**
-     * Overloaded method for testing purposes.
-     * Allows setting a fixed update time.
+     * Ensures publicationDate is set on create if it is not provided.
+     * Auditing will populate createdAt and updatedAt automatically.
      */
-    public void onUpdate(LocalDateTime updateTime) {
-        this.updatedAt = updateTime;
+    @PrePersist
+    public void onCreate() {
+        if (publicationDate == null) {
+            publicationDate = LocalDateTime.now();
+        }
     }
 
     // === Getters and Setters ===
@@ -238,28 +244,35 @@ public class News {
     // === equals & hashCode ===
 
     /**
-     * Compares News entities by ID only (database identity).
-     * Important for JPA consistency and collection handling.
+     * Equality is based on non-null identifier. This is proxy-friendly and
+     * safe for JPA collections.
      */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof News other)) {
             return false;
         }
-        News news = (News) o;
-        return id != null && id.equals(news.id);
+        return id != null && id.equals(other.getId());
     }
 
+    /**
+     * Hash code is stable for transient instances and becomes id-based after
+     * persistence.
+     */
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return (id == null) ? getClass().hashCode() : id.hashCode();
     }
 
     // === toString ===
 
+    /**
+     * Safe string representation for logs and debugging.
+     * Does not trigger loading of lazy collections.
+     */
     @Override
     public String toString() {
         return "News{" +
@@ -267,7 +280,7 @@ public class News {
                 ", title='" + title + '\'' +
                 ", published=" + published +
                 ", publicationDate=" + publicationDate +
-                ", author=" + (author != null ? author.getId() : "null") +
+                ", author=" + (author != null ? author.getId() : null) +
                 '}';
     }
 }
