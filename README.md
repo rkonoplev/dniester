@@ -72,7 +72,7 @@ npm start
 - **Headless API**: Complete REST API for content management
 - **Content Management**: Full CRUD operations for news articles
 - **Taxonomy System**: Categories and tags with flexible filtering
-- **User Management**: Role-based access (ADMIN, EDITOR, AUTHOR)
+- **User Management**: Role-based access (ADMIN, EDITOR)
 - **Security**: Spring Security with configurable authentication
 - **Performance**: High-performance caching with Caffeine
 - **Rate Limiting**: IP-based protection with Bucket4j
