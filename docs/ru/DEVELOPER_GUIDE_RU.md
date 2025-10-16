@@ -93,16 +93,20 @@
 ### Как это работает
 
 Пути к скриптам Flyway настраиваются в зависимости от активного профиля Spring. Это определяется
-в соответствующем файле `application-{profile}.properties`.
+в соответствующем файле `application-{profile}.yml`.
 
-Например, в `application-mysql.properties`:
-```properties
-spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/mysql
+Например, в `application-mysql.yml`:
+```yaml
+spring:
+  flyway:
+    locations: classpath:db/migration/common,classpath:db/migration/mysql
 ```
 
-А в `application-postgresql.properties`:
-```properties
-spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/postgresql
+А в `application-postgresql.yml`:
+```yaml
+spring:
+  flyway:
+    locations: classpath:db/migration/common,classpath:db/migration/postgresql
 ```
 
 Такая конфигурация позволяет Flyway комбинировать общие и специфичные для СУБД миграции, гарантируя

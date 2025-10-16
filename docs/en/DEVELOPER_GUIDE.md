@@ -138,16 +138,20 @@ PostgreSQL), the migration scripts are organized into vendor-specific directorie
 
 ### How It Works
 Flyway's script locations are configured based on the active Spring profile. This is set in the corresponding
-`application-{profile}.properties` file.
+`application-{profile}.yml` file.
 
-For example, in `application-mysql.properties`:
-```properties
-spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/mysql
+For example, in `application-mysql.yml`:
+```yaml
+spring:
+  flyway:
+    locations: classpath:db/migration/common,classpath:db/migration/mysql
 ```
 
-And in `application-postgresql.properties`:
-```properties
-spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/postgresql
+And in `application-postgresql.yml`:
+```yaml
+spring:
+  flyway:
+    locations: classpath:db/migration/common,classpath:db/migration/postgresql
 ```
 
 This setup allows Flyway to combine common and database-specific migrations, ensuring the schema is correctly
