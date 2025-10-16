@@ -39,7 +39,7 @@ public class Role {
     private Long id;
 
     /**
-     * Role name (e.g., ADMIN, EDITOR, USER). Stored in UPPER_CASE.
+     * Role name (e.g., ADMIN, EDITOR). Stored in UPPER_CASE.
      */
     @NotBlank(message = "Role name is required")
     @Size(max = 50)
