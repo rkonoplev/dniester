@@ -7,6 +7,7 @@
 - [Development Environment](#development-environment)
 - [Production Environment](#production-environment)
 - [Migration from Drupal 6](#migration-from-drupal-6)
+- [Database Migrations (Flyway)](#database-migrations-flyway)
 - [Backend Layer Structure](#backend-layer-structure)
 - [Code Quality & Security Tools](#code-quality--security-tools)
     - [Local Analysis](#local-analysis)
@@ -121,6 +122,36 @@ hosting platform (e.g., Render, AWS) or a secrets manager. For more details on p
 
 ## Migration from Drupal 6
 For complete migration instructions, see [Migration Drupal6 → Phoebe CMS](MIGRATION_DRUPAL6.md).
+
+## Database Migrations (Flyway)
+
+The project uses Flyway to manage database schema evolution. To support multiple database systems (MySQL and
+PostgreSQL), the migration scripts are organized into vendor-specific directories.
+
+### Directory Structure
+- `src/main/resources/db/migration/common/`: Contains migration scripts that are compatible with all supported
+  databases. These are always executed.
+- `src/main/resources/db/migration/mysql/`: Contains scripts with MySQL-specific syntax. These are only executed
+  when the `mysql` Spring profile is active.
+- `src/main/resources/db/migration/postgresql/`: Contains scripts with PostgreSQL-specific syntax, executed only
+  when the `postgresql` profile is active.
+
+### How It Works
+Flyway's script locations are configured based on the active Spring profile. This is set in the corresponding
+`application-{profile}.properties` file.
+
+For example, in `application-mysql.properties`:
+```properties
+spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/mysql
+```
+
+And in `application-postgresql.properties`:
+```properties
+spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/postgresql
+```
+
+This setup allows Flyway to combine common and database-specific migrations, ensuring the schema is correctly
+applied for the target environment.
 
 
 ## Backend Layer Structure

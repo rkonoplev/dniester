@@ -77,6 +77,39 @@
 
 ---
 
+## Миграции базы данных (Flyway)
+
+Проект использует Flyway для управления изменениями схемы БД. Для поддержки нескольких СУБД (MySQL и PostgreSQL)
+скрипты миграций организованы в отдельных директориях для каждого вендора.
+
+### Структура директорий
+- `src/main/resources/db/migration/common/`: Содержит общие скрипты, совместимые со всеми поддерживаемыми СУБД.
+  Эти миграции выполняются всегда.
+- `src/main/resources/db/migration/mysql/`: Содержит скрипты со специфичным синтаксисом для MySQL.
+  Выполняются только при активном профиле Spring `mysql`.
+- `src/main/resources/db/migration/postgresql/`: Содержит скрипты для PostgreSQL. Выполняются только при
+  активном профиле `postgresql`.
+
+### Как это работает
+
+Пути к скриптам Flyway настраиваются в зависимости от активного профиля Spring. Это определяется
+в соответствующем файле `application-{profile}.properties`.
+
+Например, в `application-mysql.properties`:
+```properties
+spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/mysql
+```
+
+А в `application-postgresql.properties`:
+```properties
+spring.flyway.locations=classpath:db/migration/common,classpath:db/migration/postgresql
+```
+
+Такая конфигурация позволяет Flyway комбинировать общие и специфичные для СУБД миграции, гарантируя
+корректное применение схемы для целевой среды.
+
+---
+
 ## ШПАРГАЛКА ПО РАБОТЕ С MYSQL В КОНТЕЙНЕРЕ
 
 ### Подключение в интерактивный режим:

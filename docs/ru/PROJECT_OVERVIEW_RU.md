@@ -12,7 +12,7 @@
 ### Headless Backend (Готов к продакшену)
 - **Фреймворк**: Spring Boot 3.x
 - **Язык**: Java 21
-- **База данных**: MySQL 8.0 (H2 для тестов)
+- **База данных**: MySQL 8.0, PostgreSQL 12+ (H2 для тестов)
 - **Безопасность**: Spring Security с настраиваемой аутентификацией
 - **API**: REST с документацией OpenAPI/Swagger
 - **Кэширование**: Caffeine (In-Memory)
@@ -34,7 +34,7 @@
 - **Контейнеризация**: Docker + Docker Compose
 - **CI/CD**: GitHub Actions
 - **Качество кода**: Checkstyle, PMD, JaCoCo coverage
-- **База данных**: MySQL с Docker
+- **База данных**: MySQL или PostgreSQL с Docker
 - **Безопасность**: GitLeaks сканирование секретов
 
 ## Гибридная Headless архитектура

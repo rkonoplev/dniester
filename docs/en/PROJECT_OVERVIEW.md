@@ -49,7 +49,7 @@ phoebe/
 ### Backend (Production Ready)
 - **Framework**: Spring Boot 3.x
 - **Language**: Java 21
-- **Database**: MySQL 8.0 (H2 for tests)
+- **Database**: MySQL 8.0, PostgreSQL 12+ (H2 for tests)
 - **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned)
 - **API**: REST with OpenAPI/Swagger documentation
 - **Caching**: Caffeine (In-Memory)
@@ -68,7 +68,7 @@ phoebe/
 - **Containerization**: Docker + Docker Compose
 - **CI/CD**: GitHub Actions
 - **Code Quality**: Checkstyle, JaCoCo coverage
-- **Database**: MySQL with Docker
+- **Database**: MySQL or PostgreSQL with Docker
 
 ## Core Entities & API Overview
 

@@ -14,6 +14,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -21,32 +22,25 @@ import java.util.Set;
  * Permissions are assigned to roles to grant granular access control.
  *
  * Notes:
- * - Name is normalized to lowercase and trimmed for consistent uniqueness across databases.
- * - Equality is id-based to be proxy-friendly and safe for JPA collections.
+ * - The name is normalized to lowercase and trimmed for consistent uniqueness.
+ * - Equality is based on id when available, otherwise on name.
  */
 @Entity
 @Table(name = "permissions")
 public class Permission {
 
-    /**
-     * Unique identifier of the permission.
-     */
+    /** Unique identifier of the permission. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /**
-     * Unique permission name (e.g., "news:create").
-     */
+    /** Unique permission name (e.g., "news:create"). */
     @NotBlank(message = "Permission name is required")
     @Size(max = 100)
     @Column(unique = true, nullable = false, length = 100)
     private String name;
 
-    /**
-     * Roles that include this permission (inverse side).
-     * The owning side is Role.permissions.
-     */
+    /** Roles that include this permission (inverse side). */
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     private Set<Role> roles = new HashSet<>();
 
@@ -61,9 +55,7 @@ public class Permission {
 
     // === Normalization ===
 
-    /**
-     * Normalizes the name by trimming and lowercasing (ROOT).
-     */
+    /** Normalizes the name by trimming and lowercasing (ROOT). */
     @PrePersist
     @PreUpdate
     private void normalize() {
@@ -98,7 +90,7 @@ public class Permission {
         this.roles = roles;
     }
 
-    // === Helper methods (bidirectional consistency, null-safe, idempotent) ===
+    // === Helper methods (bidirectional consistency, null-safe) ===
 
     public void addRole(Role role) {
         if (role == null) {
@@ -119,7 +111,7 @@ public class Permission {
     }
 
     // === equals & hashCode ===
-    // Proxy-friendly equals and stable hash: class-hash when id is null, id-hash after persistence.
+    // Proxy-friendly; falls back to name when id is null.
 
     @Override
     public boolean equals(Object o) {
@@ -129,12 +121,15 @@ public class Permission {
         if (!(o instanceof Permission other)) {
             return false;
         }
-        return id != null && id.equals(other.getId());
+        if (id != null && other.id != null) {
+            return id.equals(other.id);
+        }
+        return Objects.equals(name, other.name);
     }
 
     @Override
     public int hashCode() {
-        return (id == null) ? getClass().hashCode() : id.hashCode();
+        return (id != null) ? id.hashCode() : Objects.hash(name);
     }
 
     // === toString ===
