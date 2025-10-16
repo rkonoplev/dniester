@@ -1,6 +1,8 @@
 package com.example.newsplatform.entity;
 
-import com.example.newsplatform.validation.SafeHtml;
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -20,22 +22,12 @@ import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import org.hibernate.annotations.BatchSize;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 /**
- * Entity representing a news article.
- * Maps to the "content" table (legacy Drupal schema).
- *
- * Portability:
- * - Large text fields use @Lob instead of vendor-specific column definitions (works on MySQL and PostgreSQL).
- * - Indexes cover common filters and sorts.
- * - Spring Data JPA Auditing populates createdAt and updatedAt.
+ * Entity representing a news article. Designed for portability and auditing.
  */
 @Entity
 @EntityListeners(AuditingEntityListener.class)
@@ -51,5 +43,180 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 )
 public class News {
 
-/**
- *
+    /** Unique identifier for the news article. */
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    /** Article title. */
+    @NotBlank(message = "Title is required")
+    @Size(max = 50, message = "Title must not exceed 50 characters")
+    @Column(nullable = false, length = 50)
+    private String title;
+
+    /** Full body text of the article. Lazy loading for performance. */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private String body;
+
+    /** Short teaser text for listing views. */
+    @Size(max = 250, message = "Teaser must not exceed 250 characters")
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private String teaser;
+
+    /** Scheduled or actual publication date. */
+    @Column(name = "publication_date", nullable = false)
+    private LocalDateTime publicationDate;
+
+    /** Whether the article is publicly visible. */
+    @Column(nullable = false)
+    private boolean published = false;
+
+    /** Creation timestamp (managed by auditing). */
+    @CreatedDate
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    /** Update timestamp (managed by auditing). */
+    @LastModifiedDate
+    @Column(name = "updated_at", nullable = false)
+    private LocalDateTime updatedAt;
+
+    /** Version for optimistic locking. */
+    @Version
+    private Long version;
+
+    /** Author of the news article. */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
+    /** Terms associated with the article (tags, categories). */
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "content_terms",
+            joinColumns = @JoinColumn(name = "content_id"),
+            inverseJoinColumns = @JoinColumn(name = "term_id")
+    )
+    private Set<Term> terms = new HashSet<>();
+
+    /** Sets publicationDate if not provided manually before persist. */
+    @PrePersist
+    private void onCreate() {
+        if (publicationDate == null) {
+            publicationDate = LocalDateTime.now();
+        }
+    }
+
+    // Getters
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public String getBody() {
+        return body;
+    }
+
+    public String getTeaser() {
+        return teaser;
+    }
+
+    public LocalDateTime getPublicationDate() {
+        return publicationDate;
+    }
+
+    public boolean isPublished() {
+        return published;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public Set<Term> getTerms() {
+        return terms;
+    }
+
+    // Setters
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setBody(String body) {
+        this.body = body;
+    }
+
+    public void setTeaser(String teaser) {
+        this.teaser = teaser;
+    }
+
+    public void setPublicationDate(LocalDateTime publicationDate) {
+        this.publicationDate = publicationDate;
+    }
+
+    public void setPublished(boolean published) {
+        this.published = published;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+    public void setTerms(Set<Term> terms) {
+        this.terms = terms;
+    }
+
+    // equals & hashCode (proxy-friendly, id-based)
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof News other)) {
+            return false;
+        }
+        return id != null && id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return (id == null) ? getClass().hashCode() : id.hashCode();
+    }
+
+    // toString
+
+    @Override
+    public String toString() {
+        return "News{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", published=" + published +
+                ", publicationDate=" + publicationDate +
+                ", author=" + (author != null ? author.getId() : null) +
+                '}';
+    }
+}

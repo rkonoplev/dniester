@@ -213,12 +213,15 @@ public class User {
         if (!(o instanceof User other)) {
             return false;
         }
-        return id != null && id.equals(other.getId());
+        if (id != null && other.id != null) {
+            return id.equals(other.id);
+        }
+        return java.util.Objects.equals(username, other.username);
     }
 
     @Override
     public int hashCode() {
-        return (id == null) ? getClass().hashCode() : id.hashCode();
+        return (id != null) ? id.hashCode() : java.util.Objects.hash(username);
     }
 
     // === toString ===

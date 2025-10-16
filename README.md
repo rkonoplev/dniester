@@ -76,7 +76,7 @@ npm start
 - **Security**: Spring Security with configurable authentication
 - **Performance**: High-performance caching with Caffeine
 - **Rate Limiting**: IP-based protection with Bucket4j
-- **Database**: MySQL 8.0 with H2 for testing
+- **Multi-Database Support**: Works with MySQL 8.0 and PostgreSQL 12+
 - **CI/CD**: GitHub Actions pipeline with automated testing
 
 ## 📚 Documentation
@@ -103,21 +103,13 @@ Comprehensive documentation covering installation, development, API usage, and d
 ## 🛠️ Technology Stack
 
 - **Backend**: Java 21, Spring Boot 3.x, Spring Security
-- **Database**: MySQL 8.0 (H2 for testing)
+- **Database**: MySQL 8.0, PostgreSQL 12+ (H2 for testing)
 - **Caching**: Caffeine
 - **Rate Limiting**: Bucket4j
 - **Documentation**: OpenAPI/Swagger
 - **Testing**: JUnit 5, TestContainers
 - **CI/CD**: GitHub Actions
 - **Reference Frontend**: Angular (planned)
-
-## 🤝 Contributing
-
-Contributions are welcome! This is an open source project designed to serve the media community.
-
-- Check the [issues](../../issues) page for current tasks
-- Open a [Pull Request](../../pulls) to propose changes
-- Follow our [Code Style Guide](docs/en/CODE_STYLE_SETUP.md)
 
 ## 📄 License
 

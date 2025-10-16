@@ -249,18 +249,26 @@ After migration, users will have:
 
 ## Spring Boot Migrations
 
-### Automatic Migrations (V1-V6)
+### Automatic Migrations (Flyway)
 
-The application automatically applies these migrations:
+The application uses Flyway to automatically manage schema evolution. To support multiple database systems, scripts
+are organized into common and vendor-specific directories.
 
-| Migration | Purpose | Changes |
-|-----------|---------|---------|
-| V1 | Initial schema | Core tables: users, roles, content, terms |
-| V2 | Publication workflow | Added `published` column to content |
-| V3 | Sample data | **Default admin user and test content** |
-| V4 | User unification | Consolidated migrated authors |
-| V5 | Permissions system | Added permissions and role_permissions tables |
-| V6 | Setup permissions | Populated default permissions and role assignments |
+- `db/migration/common`: Scripts compatible with all supported databases.
+- `db/migration/mysql`: Scripts for MySQL only.
+- `db/migration/postgresql`: Scripts for PostgreSQL only.
+
+Flyway's locations are configured via Spring profiles, allowing it to combine common and DB-specific migrations.
+
+| Migration | Purpose | Changes | Location |
+|-----------|---------|---------|----------|
+| V1 | Initial schema | Core tables: users, roles, content, terms | `common` |
+| V2 | Publication workflow | Added `published` column to content | `common` |
+| V3 | Sample data | **Default admin user and test content** | `common` |
+| V4 | User unification | Consolidated migrated authors | `common` |
+| V5 | Permissions system | Added permissions and role_permissions tables | `common` |
+| V6 | Setup permissions | Populated default permissions and role assignments | `mysql`, `postgresql` |
+| V7 | Add unique constraints | Added unique constraints and indexes to join tables | `mysql`, `postgresql` |
 
 ### Migration V3 Default Data
 
