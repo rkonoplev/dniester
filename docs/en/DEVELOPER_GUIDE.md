@@ -140,7 +140,7 @@ PostgreSQL), the migration scripts are organized into vendor-specific directorie
 Flyway's script locations are configured based on the active Spring profile. This is set in the corresponding
 `application-{profile}.yml` file.
 
-For example, in `application-mysql.yml`:
+The configuration in `application-mysql.yml` is:
 ```yaml
 spring:
   flyway:

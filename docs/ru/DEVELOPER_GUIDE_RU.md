@@ -95,7 +95,7 @@
 Пути к скриптам Flyway настраиваются в зависимости от активного профиля Spring. Это определяется
 в соответствующем файле `application-{profile}.yml`.
 
-Например, в `application-mysql.yml`:
+Конфигурация в `application-mysql.yml` выглядит так:
 ```yaml
 spring:
   flyway:
