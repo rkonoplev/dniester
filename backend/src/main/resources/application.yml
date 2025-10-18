@@ -15,4 +15,4 @@ server:
 logging:
   level:
     root: INFO
-    com.example.newsplatform: DEBUG
+    com.example.phoebe: DEBUG

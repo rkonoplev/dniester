@@ -99,3 +99,8 @@ config-local.yml
 !/db_data/detect_custom_fields.sql
 !/db_data/migrate_cck_fields.sql
 !/db_data/migrate_from_drupal6_universal.sql
+
+/backend/logs/
+
+# Ignore application log files
+/backend/logs/

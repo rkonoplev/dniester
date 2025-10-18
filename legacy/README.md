@@ -7,7 +7,7 @@ the migration from Drupal 6 to the Spring Boot News Platform.
 
 ### `DatabaseProperties.java`
 Legacy Spring Boot configuration class used during Drupal 6 migration. This file:
-- **Original location**: `backend/src/main/java/com/example/newsplatform/config/DatabaseProperties.java`
+- **Original location**: `backend/src/main/java/com/example/phoebe/config/DatabaseProperties.java`
 - Defined custom database connection pool settings for migration workload
 - Provided extended connection timeouts for large data transfers
 - Enabled SQL logging for debugging migration queries
@@ -44,7 +44,7 @@ Production override configuration for Docker Compose. This file provides:
 
 ### `ExampleTest.java`
 Legacy placeholder test file from early development. This file:
-- **Original location**: `backend/src/test/java/com/example/newsplatform/ExampleTest.java`
+- **Original location**: `backend/src/test/java/com/example/phoebe/ExampleTest.java`
 - Simple JUnit 5 test with `assertTrue(true)` assertion
 - Created as initial test structure during project setup
 - **Status**: OBSOLETE - Replaced by comprehensive unit and integration tests

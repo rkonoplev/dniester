@@ -25,6 +25,6 @@ spring:
 
 logging:
   level:
-    com.example.newsplatform: INFO
+    com.example.phoebe: INFO
     org.springframework.security: WARN
     org.springframework.jdbc.core: ERROR
