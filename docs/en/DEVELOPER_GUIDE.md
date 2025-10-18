@@ -22,14 +22,16 @@
 This document explains how developers should work with the project locally (IntelliJ IDEA, Gradle, Docker)
 and what checks will be automatically run in GitHub Actions (CI/CD).
 
+> For definitions of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
+
 ---
 
 ## Requirements
 
 To work with the Phoebe CMS project, ensure you have the following installed:
 
-- **JDK 21+**: The Java Development Kit version 21 or newer.
-- **Docker & Docker Compose**: For managing local development environment containers.
+- **JDK 21+**: The Java Development Kit, version 21 or newer.
+- **Docker & Docker Compose**: These tools are essential for managing the local development environment, including database containers.
 - **Git**: For version control and interacting with the project repository.
 
 ---
@@ -180,7 +182,7 @@ For local development, you'll primarily interact with your chosen database via D
 4.  **Stopping Docker Services**:
     To stop all services and free up resources:
     ```bash
-    docker compose down
+docker compose down
     ```
     **Important**: Using `docker compose down -v` will completely remove your database data volumes. Only use this command if you intend to wipe all data and start with a fresh database. Otherwise, your data will persist across `docker compose up` and `down` cycles.
 
