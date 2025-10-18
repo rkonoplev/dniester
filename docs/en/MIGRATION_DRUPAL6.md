@@ -9,6 +9,7 @@ system to the modern headless Phoebe CMS architecture using Docker and MySQL.
 - [Complete Migration Guide](#complete-migration-guide)
 - [Complete Migration Pipeline](#complete-migration-pipeline)
 - [Description of Data Structure After Migration](#description-of-data-structure-after-migration)
+- [Running the Project After Migration](#running-the-project-after-migration)
 - [Troubleshooting](#troubleshooting)
 - [Reference](#reference)
 
@@ -52,25 +53,57 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 Old Drupal version dumps may be incompatible with the latest MySQL versions due to syntax differences.
 Therefore, we use a temporary MySQL 5.7 container to ensure compatibility.
 
+**Launch:**
 ```bash
 # Launch the container in the background. The docker-compose.drupal.yml file is specifically
 # configured for this task.
 docker compose -f docker-compose.drupal.yml up -d
+```
 
+**Logs:**
+```bash
 # Monitor logs to ensure the server has started successfully
 docker logs -f news-mysql-drupal6
 ```
 
-### Step 2: Import and Normalize Data
+**Connect (for verification):**
+```bash
+docker exec -it news-mysql-drupal6 mysql -u root -p
+# password: root
+```
+
+**Check Source Drupal 6 Database:**
+```sql
+SHOW DATABASES;
+USE a264971_dniester;
+SHOW TABLES;
+```
+
+### Step 2: Export Original Data and Import into New Database
 
 Now we load the original Drupal dump into our temporary database and apply SQL scripts to
 transform it.
 
+**Export Original Dump:**
 ```bash
-# Import the original dump (e.g., drupal6_fixed.sql) into the 'dniester' database
+# Export the original dump (e.g., drupal6_fixed.sql) from the a264971_dniester database
 # inside our temporary container.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
+```
 
+**Import into Clean `dniester` Database:**
+```bash
+# Import the original dump into the 'dniester' database inside our temporary container.
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
+```
+
+**Verify Imported Tables:**
+```sql
+SHOW TABLES;
+```
+
+**Apply Normalization Scripts:**
+```bash
 # Apply the main normalization script. It creates new tables and transfers cleaned
 # data from old Drupal tables.
 docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
@@ -94,12 +127,22 @@ docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/cle
 
 The temporary environment is no longer needed. We stop it and launch the project's main database.
 
+**Stop Temporary Environment:**
 ```bash
 # Stop and completely remove the temporary container and its volume.
 docker compose -f docker-compose.drupal.yml down -v
+```
 
+**Launch Target MySQL 8.0:**
+```bash
 # Launch the main MySQL 8.0 container, which will be used by the application.
 docker compose -f docker-compose.yml up -d mysql
+```
+
+**Check MySQL 8.0 Logs:**
+```bash
+docker logs news-mysql
+# You should see something like: [Entrypoint]: Creating database dniester
 ```
 
 ### Step 5: Import Final Dump into MySQL 8.0
@@ -114,12 +157,19 @@ docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sq
 
 The final step is to ensure that all data has been successfully transferred to the new database.
 
+**Verify Tables:**
+```bash
+docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;" dniester
+```
+
+**Verify Record Counts:**
 ```bash
 # Check the number of articles in the content table
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 
 # Check the number of users
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM users;" dniester
+# Expected: ~12186 rows (12172 story + 14 book) for content.
 ```
 
 ---
@@ -162,13 +212,131 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 After executing the normalization scripts, data from Drupal 6 will be transformed into a new,
 more structured schema.
 
-- **Users (`users`)**: Basic user information (login, email, status).
-- **Roles (`roles`)**: Roles such as ADMIN, EDITOR.
-- **Content (`content`)**: All content types (articles, pages, books) are unified into one table.
-- **Taxonomy (`terms`)**: Terms (categories, tags) with preserved original vocabularies (`vocabulary`).
-- **Join Tables**: `user_roles`, `content_terms`, `role_permissions` for managing relationships.
+### 1. Users (`users`)
+- **Source**: Drupal `users`
+- **Target Table**: `users`
+- **Fields Imported**:
+  - `uid` → `id` (Primary Key)
+  - `name` → `username`
+  - `mail` → `email`
+  - `status` → `active` (BOOLEAN: `1` = active, `0` = blocked)
 
-> For a complete description of the final schema, refer to the [Database Guide](./DATABASE_GUIDE.md).
+### 2. Roles (`roles`) and User-Role Link (`user_roles`)
+- **Source**: Drupal `role`, `users_roles`
+- **Target Tables**:
+  - `roles` (id, name)
+  - `user_roles` (user_id, role_id)
+- **Description**: Many-to-many relationship between users and roles.
+
+### 3. Content (`content`)
+- **Source**: `node`, `node_revisions`
+- **Target Table**: `content` (unified table, no `type` field anymore)
+- **Fields Imported**:
+  - `nid` → `id`
+  - `title` → `title`
+  - `body` → `body`
+  - `teaser` → `teaser`
+  - `created` (UNIX timestamp) → `publication_date` (DATETIME)
+  - `uid` → `author_id` (Foreign Key to `users.id`)
+
+> **Important**: Different Drupal content types (`story`, `page`, `book`) are now merged and stored in a single `content` table.
+
+### 4. Taxonomy (`terms`, `content_terms`)
+- **Source**: `term_data`, `vocabulary`, `term_node`
+- **Target Tables**:
+  - `terms` (id, name, vocabulary)
+  - `content_terms` (content_id, term_id)
+- **Description**: Taxonomy system with vocabulary grouping and a mapping table for content-term relationships.
+
+### 5. Custom CCK Fields (`custom_fields`)
+- **Source**: Drupal `content_type_*` tables (if present).
+- **Target Table**: `custom_fields` (generic key→value model).
+- **Fields Imported**:
+  - `nid` → `content_id`
+  - Column name → `field_name`
+  - Column value → `field_value`
+
+### Final Tables in Clean Schema:
+- `users`
+- `roles`
+- `user_roles`
+- `content`
+- `terms`
+- `content_terms`
+- `custom_fields`
+
+---
+
+## Running the Project After Migration
+
+Once the `clean_schema.sql` database has been successfully imported into MySQL 8.0, you can launch the Phoebe CMS project.
+
+### Option A — Database Only (for Data Verification)
+
+If you only need to verify data in MySQL without running the Spring Boot application:
+
+1.  **Stop Old Environment (if running):**
+    ```bash
+    docker compose -f docker-compose.yml down -v
+    ```
+
+2.  **Bring Up MySQL Only:**
+    ```bash
+    docker compose -f docker-compose.yml up -d mysql
+    ```
+
+3.  **Check MySQL Logs:**
+    ```bash
+    docker logs -f news-mysql
+    ```
+
+4.  **Import Database (if not already loaded):**
+    ```bash
+    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+    ```
+
+5.  **Verify Database Content:**
+    ```bash
+    docker exec -it news-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
+    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+    ```
+
+### Option B — Full Environment (MySQL + Spring Boot Backend)
+
+To run the entire application:
+
+1.  **Ensure `.env.dev` file is configured with settings:**
+    ```dotenv
+    MYSQL_ROOT_PASSWORD=root
+    MYSQL_DATABASE=dniester
+    SPRING_LOCAL_PORT=8080
+    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+    SPRING_DATASOURCE_USERNAME=root
+    SPRING_DATASOURCE_PASSWORD=root
+    ```
+
+2.  **Launch Services:**
+    ```bash
+    docker compose --env-file .env.dev up -d
+    ```
+    This will launch:
+    - `news-mysql`: MySQL 8 database with data
+    - `news-app`: Spring Boot application
+
+3.  **Import Database (if necessary):**
+    ```bash
+    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+    ```
+
+4.  **Verify Database:**
+    ```bash
+    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+    ```
+
+5.  **Check Application Logs:**
+    ```bash
+    docker logs -f news-app
+    ```
 
 ---
 
@@ -176,17 +344,17 @@ more structured schema.
 
 ### UTF-8 / Cyrillic Encoding Issues
 
-If you encounter errors like `ERROR 1366 (HY000): Incorrect string value: '\xD0\x98\xD0\xBD...' for column 'title'`, it means that MySQL created your target table with an incorrect default collation (e.g., `latin1`). By default, MySQL 5.7 (and sometimes 8.0 depending on configuration) might use `latin1` unless explicitly specified.
+If you encounter errors like `ERROR 1366 (HY000): Incorrect string value: '\xD0\x98\xD0\xBD...' for column 'title'`, it means that your database created the target table with an incorrect default collation (e.g., `latin1`). By default, MySQL 5.7 (and sometimes 8.0, depending on configuration) might use `latin1` unless explicitly specified.
 
 #### Step 1: Check Table Encoding
 Inside your MySQL container (e.g., `news-mysql-drupal6` or `news-mysql`):
 ```sql
 SHOW CREATE TABLE a264971_dniester.node \G
 ```
-Usually, Drupal 6 tables are `DEFAULT CHARSET=utf8`. Now, check your new `content` table (it likely has `DEFAULT CHARSET=latin1`).
+Typically, Drupal 6 tables have `DEFAULT CHARSET=utf8`. Now, check your new `content` table (it likely has `DEFAULT CHARSET=latin1`).
 
 #### Step 2: Recreate the Target Table with UTF-8
-If you find encoding issues, you might need to drop and re-create the affected table with the correct character set and collation. For example, for the `content` table:
+If you find encoding issues, you might need to drop and recreate the affected table with the correct character set and collation. For example, for the `content` table:
 
 ```sql
 DROP TABLE IF EXISTS content;
@@ -218,7 +386,7 @@ Sometimes, after container initialization, authentication issues with the `root`
 docker stop news-mysql
 ```
 
-#### Step 2: Start a Temporary Container with `skip-grant-tables`
+#### Step 2: Start a Temporary Container with `--skip-grant-tables`
 This allows you to connect to MySQL without password authentication.
 ```bash
 docker run -it --rm \
