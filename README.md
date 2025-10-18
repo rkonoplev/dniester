@@ -9,8 +9,8 @@ https://codecov.io/gh/rkonoplev/phoebe)
 > **Phoebe CMS** is a flexible, open-source headless content management system engineered for high-performance
 > content delivery and modern development workflows.
 
-**Phoebe CMS** is a modern, API-first content management system designed for developers and content creators who
-need flexibility and performance.
+**Phoebe CMS** is a modern, API-first content management system designed for developers and content creators
+who need flexibility and performance.
 
 ## 🎯 Why Headless?
 
@@ -116,9 +116,8 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Legal Notice
 
 This project is distributed under the MIT License.  
-All source code is authored and reviewed by Roman Konoplev.  
-Some parts may have been assisted by AI tools, but all code has been verified to comply with open-source 
-licensing standards.
+All source code is authored and reviewed by Roman Konoplev. Some parts may have been assisted by AI tools,
+but all code has been verified to comply with open-source licensing standards.
 
 ---
 
