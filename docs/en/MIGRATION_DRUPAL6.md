@@ -9,6 +9,7 @@ system to the modern headless Phoebe CMS architecture using Docker and MySQL.
 - [Complete Migration Guide](#complete-migration-guide)
 - [Description of Data Structure After Migration](#description-of-data-structure-after-migration)
 - [Troubleshooting](#troubleshooting)
+- [Reference](#reference)
 
 ---
 
@@ -147,3 +148,97 @@ default encoding (e.g., `latin1`). Ensure all tables are created with `utf8mb4` 
 Sometimes, after container initialization, authentication issues with the `root` user may arise.
 In this case, a manual password reset using the `--skip-grant-tables` flag might be necessary.
 Detailed instructions can be found in the [Setup Guide](./SETUP_GUIDE.md).
+
+---
+
+## Reference
+
+### Legacy Files Relocation
+
+After successful migration completion, several files that were used during the migration process
+have been moved to the `legacy/` folder for historical reference:
+
+- **`DatabaseProperties.java`**: Custom database configuration class used during migration.
+- **`Makefile`**: Legacy API testing utility with outdated endpoints.
+- **`docker-compose.drupal.yml`**: Temporary Docker setup for MySQL 5.7 compatibility.
+- **`docker-compose.override.yml`**: Production Docker configuration with security enhancements.
+- **`ExampleTest.java`**: Initial placeholder test file from early development.
+
+These files are preserved for reference and understanding the migration evolution.
+See `legacy/README.md` for detailed descriptions.
+
+### Migration SQL Files
+
+During the migration process, several SQL scripts have been created and used. Each has a specific purpose:
+
+For detailed information about all migration scripts and files, see [Database Migration Scripts](../db_data/README.md).
+
+- **`drupal6_fixed.sql`**:
+  Cleaned snapshot of the original Drupal 6 database (`a264971_dniester`) imported into the
+  temporary MySQL 5.7 instance. Purpose: normalize database name and ensure compatibility.
+
+- **`migrate_from_drupal6_universal.sql`**:
+  Main migration script. It creates a new clean schema (`users`, `roles`, `user_roles`, `content`,
+  `terms`, `content_terms`) and moves normalized data from the old Drupal tables. Core of the migration.
+
+- **`detect_custom_fields.sql`**:
+  Optional helper script. Runs queries against `information_schema` to detect if there are any
+  `content_type_*` tables with additional CCK fields. Note: If this script selects rows, it means
+  you had custom fields. If the result set is empty, you had **no CCK custom fields** in your Drupal 6 dump.
+
+- **`migrate_cck_fields.sql`**:
+  Optional script. Only needed if CCK fields exist. It copies fields from `content_type_*` tables
+  into the generic `custom_fields` table (key → value model). If you had no CCK, this script can be ignored.
+
+- **`clean_schema.sql`**:
+  Final export after applying `migrate_from_drupal6_universal.sql` (and optionally `migrate_cck_fields.sql`).
+  This is the schema and data used in MySQL 8.0 by Phoebe CMS.
+
+### Verifying Custom Fields
+
+Run the following in MySQL 5.7 (Drupal container):
+```sql
+SHOW TABLES LIKE 'content_type%';
+```
+If you see rows like `content_type_article`, `content_type_news`, etc., you had custom CCK fields.
+If nothing is returned, you did not use Drupal CCK, therefore the `custom_fields` table will remain
+empty and can be ignored.
+
+### Checking Custom Fields in New Database
+
+If the original Drupal 6 container has already been stopped or deleted, you cannot inspect
+`content_type_*` tables anymore. However, you can still verify whether any CCK fields were migrated
+by checking the `custom_fields` table in your new `dniester` schema.
+
+Run:
+
+```sql
+SELECT COUNT(*) FROM custom_fields;
+```
+If the result is 0, you had no custom CCK fields or migration of them was skipped.
+If the result is greater than 0, you had custom fields in Drupal 6, and they were migrated into
+`custom_fields` as key→value records.
+
+### Post-Migration Cleanup
+
+After completing the migration and successfully importing `clean_schema.sql` into MySQL 8.0,
+you can clean up the temporary Drupal 6 environment.
+
+#### Docker volumes
+
+- **`news-platform_mysql_data`**: Keep this volume (used by MySQL 8.0: `news-mysql`).
+- **`news-platform_mysql_data_drupal6`**: Can be safely removed (leftover from Drupal 6 migration).
+
+#### Options
+
+**Option A — Just stop Drupal 6 container (keep volume just in case):**
+```bash
+docker stop news-mysql-drupal6
+```
+
+**Option B — Completely remove Drupal 6 container and volume (recommended after successful export):**
+```bash
+docker compose -f docker-compose.drupal.yml down -v
+```
+After cleanup, only MySQL 8.0 (`news-mysql`) and its volume (`news-platform_mysql_data`) should remain
+for further work with Phoebe CMS.
