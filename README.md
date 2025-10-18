@@ -40,26 +40,24 @@ phoebe/
 
 ## 🚀 Quick Start
 
+To get started quickly with Phoebe CMS, follow these high-level steps. For detailed instructions, refer to the dedicated guides.
+
 **Requirements:**
 - JDK 21+
 - Docker & Docker Compose
-- Gradle (or use `./gradlew` wrapper)
+- Git (for cloning the repository)
 
-### 1. Start backend dependencies (MySQL) via Docker Compose:
-```bash
-docker compose up -d
-```
+### 1. Initial Setup (First Time)
+For cloning the repository, setting up environment variables, and running the project for the very first time (including migration or clean installation), please see the comprehensive **[Setup Guide](docs/en/SETUP_GUIDE.md)**.
 
-### 2. Start the Spring Boot application:
-```bash
-cd backend
-./gradlew bootRun --args='--spring.profiles.active=local'
-```
+### 2. Daily Development Workflow
+For daily development tasks, including starting/stopping services, running the Spring Boot application, executing tests, and troubleshooting, refer to the **[Developer Guide](docs/en/DEVELOPER_GUIDE.md)**.
 
-**API entrypoint**: http://localhost:8080  
-**Swagger UI**: http://localhost:8080/swagger-ui/index.html
+**Key endpoints after starting services:**
+- **API entrypoint**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 
-### 3. Optional: Start reference frontend (when implemented):
+### 3. Optional: Start Reference Frontend (when implemented)
 ```bash
 cd frontend
 npm install
@@ -84,6 +82,7 @@ Comprehensive documentation covering installation, development, API usage, and d
 
 - **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications.
 - **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке.
+- **[📖 Glossary](docs/en/GLOSSARY.md)** - Definitions of key terms and technologies used throughout the documentation.
 
 ## 🌟 Use Cases
 
