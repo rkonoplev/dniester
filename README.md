@@ -6,18 +6,19 @@ https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)
 https://codecov.io/gh/rkonoplev/phoebe)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
-> **Phoebe CMS** is a flexible, open-source headless content management system engineered for high-performance
-> content delivery and modern development workflows.
+> **Phoebe CMS** is a flexible, open-source headless content management system engineered for
+> high-performance content delivery and modern development workflows.
 
-**Phoebe CMS** is a modern, API-first content management system designed for developers and content creators
-who need flexibility and performance.
+**Phoebe CMS** is a modern, API-first content management system designed for developers and content
+creators who need flexibility and performance.
 
 ## 🎯 Why Headless?
 
 Headless architecture is the modern standard for professional organizations that need:
 
 - **Design Control**: Complete freedom over frontend design and user experience.
-- **Multi-Platform Publishing**: Deliver content to websites, mobile apps, and any other digital platform.
+- **Multi-Platform Publishing**: Deliver content to websites, mobile apps, and any other digital
+  platform.
 - **Third-Party Integrations**: Easily connect analytics, marketing, and other tools.
 - **Scalability**: An API-first approach built for future growth.
 - **Flexibility**: Avoid being locked into a single frontend solution.
@@ -40,7 +41,8 @@ phoebe/
 
 ## 🚀 Quick Start
 
-To get started quickly with Phoebe CMS, follow these high-level steps. For detailed instructions, refer to the dedicated guides.
+To get started quickly with Phoebe CMS, follow these high-level steps. For detailed instructions,
+refer to the dedicated guides.
 
 **Requirements:**
 - JDK 21+
@@ -48,16 +50,20 @@ To get started quickly with Phoebe CMS, follow these high-level steps. For detai
 - Git (for cloning the repository)
 
 ### 1. Initial Setup (First Time)
-For cloning the repository, setting up environment variables, and running the project for the very first time (including migration or clean installation), please see the comprehensive **[Setup Guide](docs/en/SETUP_GUIDE.md)**.
+For cloning the repository, setting up environment variables, and running the project for the very
+first time (including migration or clean installation), please see the comprehensive
+**[Setup Guide](docs/en/SETUP_GUIDE.md)**.
 
 ### 2. Daily Development Workflow
-For daily development tasks, including starting/stopping services, running the Spring Boot application, executing tests, and troubleshooting, refer to the **[Developer Guide](docs/en/DEVELOPER_GUIDE.md)**.
+For daily development tasks, including starting/stopping services, running the Spring Boot
+application, executing tests, and troubleshooting, refer to the
+**[Developer Guide](docs/en/DEVELOPER_GUIDE.md)**.
 
 **Key endpoints after starting services:**
 - **API entrypoint**: http://localhost:8080
 - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 
-### 3. Optional: Start Reference Frontend (when implemented)
+### 3. Optional: Start Reference Frontend (when implemented):
 ```bash
 cd frontend
 npm install
@@ -82,7 +88,8 @@ Comprehensive documentation covering installation, development, API usage, and d
 
 - **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications.
 - **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке.
-- **[📖 Glossary](docs/en/GLOSSARY.md)** - Definitions of key terms and technologies used throughout the documentation.
+- **[📖 Glossary](docs/en/GLOSSARY.md)** - Definitions of key terms and technologies used throughout
+  the documentation.
 
 ## 🌟 Use Cases
 
