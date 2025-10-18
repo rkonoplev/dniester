@@ -1,4 +1,4 @@
-package com.example.newsplatform;
+package com.example.phoebe;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

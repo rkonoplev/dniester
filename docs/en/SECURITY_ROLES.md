@@ -175,13 +175,14 @@ if (hasAdminRole(authentication)) {
 Always use constants from RoleConstants class:
 
 ```java
-import com.example.newsplatform.security.RoleConstants;
+import com.example.phoebe.security.RoleConstants;
 
 // CORRECT
+
 hasAuthority(authentication, RoleConstants.ROLE_ADMIN)
 
-// INCorrect - hardcoded strings
-hasAuthority(authentication, "ROLE_ADMIN")
+        // INCorrect - hardcoded strings
+        hasAuthority(authentication, "ROLE_ADMIN")
 ```
 #### Summary
 The corrected implementation uses:

@@ -1,4 +1,4 @@
-# Phoebe — Headless CMS for News Agencies & Digital Media
+# Phoebe — Open Source Headless CMS
 
 [![Java CI with Gradle](https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml/badge.svg)](
 https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)  
@@ -6,22 +6,21 @@ https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)
 https://codecov.io/gh/rkonoplev/phoebe)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
-> **Phoebe CMS** — Open source headless content management system engineered for news agencies and digital
-> media organizations. Features hybrid architecture with powerful REST API, optional Angular frontend, and
-> enterprise-grade security for modern journalism workflows.
+> **Phoebe CMS** is a flexible, open-source headless content management system engineered for high-performance
+> content delivery and modern development workflows.
 
-**Open Source Headless CMS** designed specifically for news agencies, digital media, and professional
-editorial teams.
+**Phoebe CMS** is a modern, API-first content management system designed for developers and content creators who
+need flexibility and performance.
 
 ## 🎯 Why Headless?
 
-Headless architecture is the modern standard for professional media organizations that need:
+Headless architecture is the modern standard for professional organizations that need:
 
-- **Design Control**: Complete freedom over frontend design and user experience
-- **Multi-Platform Publishing**: Mobile apps, Telegram bots, email newsletters, AMP pages
-- **Third-Party Integrations**: Analytics, advertising, push notifications, social media
-- **Scalability**: API-first approach for future growth
-- **Flexibility**: Not locked into a single frontend solution
+- **Design Control**: Complete freedom over frontend design and user experience.
+- **Multi-Platform Publishing**: Deliver content to websites, mobile apps, and any other digital platform.
+- **Third-Party Integrations**: Easily connect analytics, marketing, and other tools.
+- **Scalability**: An API-first approach built for future growth.
+- **Flexibility**: Avoid being locked into a single frontend solution.
 
 ## 🏗️ Hybrid Architecture
 
@@ -35,9 +34,9 @@ phoebe/
 ```
 
 **Benefits:**
-- **Professional Teams**: Use only the API → maximum flexibility
-- **Small Media**: Deploy everything "out of the box" → simplicity
-- **No Vendor Lock-in**: You're not tied to our frontend, but we provide a starting template
+- **Professional Teams**: Use only the API for maximum flexibility.
+- **Startups & Small Teams**: Deploy everything "out of the box" for simplicity.
+- **No Vendor Lock-in**: You're not tied to our frontend, but we provide a starting template.
 
 ## 🚀 Quick Start
 
@@ -69,36 +68,35 @@ npm start
 
 ## 🔧 Key Features
 
-- **Headless API**: Complete REST API for content management
-- **Content Management**: Full CRUD operations for news articles
-- **Taxonomy System**: Categories and tags with flexible filtering
-- **User Management**: Role-based access (ADMIN, EDITOR)
-- **Security**: Spring Security with configurable authentication
-- **Performance**: High-performance caching with Caffeine
-- **Rate Limiting**: IP-based protection with Bucket4j
-- **Multi-Database Support**: Works with MySQL 8.0 and PostgreSQL 12+
-- **CI/CD**: GitHub Actions pipeline with automated testing
+- **Headless API**: Complete REST API for content management.
+- **Content Management**: Full CRUD operations for any content type.
+- **Taxonomy System**: Categories and tags with flexible filtering.
+- **User Management**: Role-based access (ADMIN, EDITOR).
+- **Security**: Spring Security with configurable authentication.
+- **Performance**: High-performance caching with Caffeine.
+- **Rate Limiting**: IP-based protection with Bucket4j.
+- **Multi-Database Support**: Works with MySQL 8.0 and PostgreSQL 12+.
+- **CI/CD**: GitHub Actions pipeline with automated testing.
 
 ## 📚 Documentation
 
 Comprehensive documentation covering installation, development, API usage, and deployment.
 
-- **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications
-- **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке
+- **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications.
+- **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке.
 
 ## 🌟 Use Cases
 
-### For Professional Editorial Teams
-- Build custom frontends with your design system
-- Integrate with existing mobile apps
-- Create Telegram bots and email newsletters
-- Connect analytics and advertising platforms
-- Implement custom workflows and approval processes
+### For Development Teams & Agencies
+- Build custom frontends with any modern framework (React, Vue, Angular, etc.).
+- Integrate content into existing mobile applications.
+- Power digital experiences, from websites to IoT devices.
+- Connect analytics and advertising platforms seamlessly.
 
-### For Small Media Organizations
-- Use the reference frontend for quick deployment
-- Customize the provided Angular template
-- Scale up to custom solutions as you grow
+### For Businesses & Organizations
+- Use the reference frontend for a quick and robust website deployment.
+- Customize the provided Angular template to match your brand.
+- Scale up to custom solutions as your organization grows.
 
 ## 🛠️ Technology Stack
 
@@ -124,4 +122,4 @@ licensing standards.
 
 ---
 
-**Phoebe CMS** - Empowering modern media with headless flexibility and professional-grade features.
+**Phoebe CMS** - Empowering modern development with headless flexibility and professional-grade features.
