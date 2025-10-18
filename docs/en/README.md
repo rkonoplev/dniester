@@ -11,12 +11,15 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Project Overview](./PROJECT_OVERVIEW.md)**  
   A comprehensive overview of the project, its architecture, technology stack, and goals.
 
+- **[Glossary](./GLOSSARY.md)**  
+  Definitions of key terms and technologies used throughout the documentation.
+
 - **[Setup Guide](./SETUP_GUIDE.md)**  
   Step-by-step instructions for the initial project setup, covering both migration from
-  Drupal and a clean installation with MySQL or PostgreSQL.
+  Drupal and a clean installation with MySQL or PostgreSQL, including system requirements.
 
 - **[Developer Guide](./DEVELOPER_GUIDE.md)**  
-  The daily workflow for developers, local commands, and CI/CD expectations.
+  The daily workflow for developers, local commands, CI/CD expectations, code formatting, and troubleshooting common issues.
 
 - **[API Reference](./API_REFERENCE.md)**  
   Complete REST API documentation with `curl` examples for frontend integration.
@@ -54,7 +57,7 @@ This directory contains all English project documentation for **Phoebe CMS**.
   Complete database documentation, including schema, setup, and migration scripts.
 
 - **[Migration Drupal6 → Phoebe CMS](./MIGRATION_DRUPAL6.md)**  
-  A complete guide for migrating from a legacy Drupal 6 site.
+  A complete guide for migrating from a legacy Drupal 6 site, covering detailed steps, troubleshooting, and post-migration cleanup.
 
 ## 🛠️ Development Tools
 
