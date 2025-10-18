@@ -3,6 +3,25 @@
 This guide describes how to set up and run the Phoebe CMS project for the first time. There are two main
 scenarios: migrating existing data from Drupal 6 or starting with a clean database.
 
+## Initial Project Setup
+
+Before proceeding with any scenario, you need to clone the repository and set up your environment variables.
+
+1.  **Clone the repository**:
+    ```bash
+    git clone https://github.com/rkonoplev/news-platform.git
+    cd news-platform
+    ```
+
+2.  **Configure Environment Variables**:
+    Copy the example environment file to create your local development environment configuration:
+    ```bash
+    cp .env.dev.example .env.dev
+    ```
+    You will then edit `.env.dev` to match your specific database and application settings as described in the scenarios below.
+
+---
+
 ## Scenario 1: Migration from Drupal 6 (MySQL Only)
 
 This scenario is for porting an existing Drupal 6 database. The entire migration process is built
@@ -17,7 +36,7 @@ final `clean_schema.sql` file.
 
 1.  **Docker Compose**: Ensure the `mysql` service is active in your `docker-compose.yml` file.
 
-2.  **Environment Variables**: Create a `.env.dev` file in the project root and specify your MySQL credentials.
+2.  **Environment Variables**: Open `.env.dev` (created in the initial setup) and specify your MySQL credentials.
     ```dotenv
     SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
     SPRING_DATASOURCE_USERNAME=root
@@ -75,7 +94,7 @@ Open your `docker-compose.yml` file and ensure only one database service is acti
 
 ### Step 3: Configure Environment Variables (`.env.dev`)
 
-Create a `.env.dev` file and provide the correct datasource URL for your chosen database.
+Open `.env.dev` (created in the initial setup) and provide the correct datasource URL for your chosen database.
 
 - **For MySQL**:
   ```dotenv

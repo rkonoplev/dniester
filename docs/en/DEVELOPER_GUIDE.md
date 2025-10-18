@@ -1,6 +1,7 @@
 # Developer Guide – Local Workflow and CI/CD Expectations
 
 ## Table of Contents
+- [Requirements](#requirements)
 - [Local Development Workflow](#local-development-workflow)
 - [Setting Up Code Autoformatter](#setting-up-code-autoformatter)
 - [Before Pushing to GitHub](#before-pushing-to-github)
@@ -14,11 +15,22 @@
 - [Code Quality & Security Tools](#code-quality--security-tools)
 - [Common Development Commands](#common-development-commands)
 - [Daily Workflow](#daily-workflow)
+- [Troubleshooting](#troubleshooting)
 - [MySQL Handy Commands Cheat Sheet](#mysql-handy-commands-cheat-sheet)
 
 
 This document explains how developers should work with the project locally (IntelliJ IDEA, Gradle, Docker)
 and what checks will be automatically run in GitHub Actions (CI/CD).
+
+---
+
+## Requirements
+
+To work with the Phoebe CMS project, ensure you have the following installed:
+
+- **JDK 21+**: The Java Development Kit version 21 or newer.
+- **Docker & Docker Compose**: For managing local development environment containers.
+- **Git**: For version control and interacting with the project repository.
 
 ---
 
@@ -159,7 +171,13 @@ For local development, you'll primarily interact with your chosen database via D
     ```
     On the first run, Flyway will automatically create the entire table structure in your database based on the active profile.
 
-3.  **Stopping Docker Services**:
+3.  **Checking Application Status**:
+    After startup, you can verify the application is running and accessible:
+    - **API is available at**: `http://localhost:8080`
+    - **Swagger UI for API testing**: `http://localhost:8080/swagger-ui/index.html`
+    - **Admin Login (for initial setup)**: username `admin`, password `admin`
+
+4.  **Stopping Docker Services**:
     To stop all services and free up resources:
     ```bash
     docker compose down
@@ -239,6 +257,29 @@ This project uses several tools for code and security assurance.
 ### Rules
 - Use `docker compose up -d` every morning → your data is still there.
 - Do NOT run `docker compose down -v` unless you want to wipe all data and re-import.
+
+---
+
+## Troubleshooting
+
+This section addresses common issues you might encounter during development.
+
+### Tests Not Running (MySQL Conflict)
+- Ensure that `spring.profiles.active: local` is **not** present in your `application.yml`.
+- In `application-test.yml`, Flyway should be disabled.
+- Run tests with a clean build: `./gradlew clean test`
+
+### Resetting the Database
+To completely wipe all database data and start with a fresh database:
+```bash
+docker compose down -v  # This command will remove all data volumes
+docker compose up -d    # This will create a clean database
+```
+
+### Port Conflicts
+- **MySQL**: Default port 3306 (may conflict with a locally installed MySQL server).
+- **Spring Boot**: Default port 8080.
+- Stop local services that might be using these ports, or change the ports in your `.env.dev` file.
 
 ---
 
