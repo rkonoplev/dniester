@@ -1,5 +1,7 @@
 # Руководство по аутентификации
 
+> Для определения ключевых терминов и технологий, пожалуйста, обратитесь к **[Глоссарию](./GLOSSARY_RU.md)**.
+
 Этот документ объясняет архитектуру аутентификации и практики безопасности в Phoebe CMS.
 
 ---
@@ -66,10 +68,6 @@ curl -u admin:secureAdminPassword \
 ### Доступ редактора
 ```bash
 # Редактор может просматривать все новости, но редактировать только свои
-curl -u editor:secureEditorPassword \
-  http://localhost:8080/api/admin/news
-
-# Редактор может создавать новые статьи
 curl -u editor:secureEditorPassword \
   -H "Content-Type: application/json" \
   -d '{"title":"Моя статья","content":"Содержимое"}' \

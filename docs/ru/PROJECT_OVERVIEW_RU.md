@@ -1,5 +1,7 @@
 # Обзор проекта Phoebe CMS
 
+> Для определения ключевых терминов и технологий, пожалуйста, обратитесь к **[Глоссарию](./GLOSSARY_RU.md)**.
+
 ## Обзор проекта
 **Название**: Phoebe — Open Source Headless CMS
 **Тип**: Open Source Headless система управления контентом (гибридная архитектура)
@@ -57,7 +59,7 @@ phoebe/
 │   │   ├── exception/        # Пользовательские исключения + глобальный обработчик
 │   │   ├── filter/           # Фильтр ограничения запросов
 │   │   ├── mapper/           # Маппинг Entity-DTO
-│   │   ├── repository/       # JPA репозитории
+│   │   └── repository/       # JPA репозитории
 │   │   └── service/          # Бизнес-логика
 │   ├── src/main/resources/
 │   │   ├── db/migration/     # Spring Boot миграции

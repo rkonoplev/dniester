@@ -1,5 +1,7 @@
 # Руководство по Docker
 
+> Для определения ключевых терминов и технологий, пожалуйста, обратитесь к **[Глоссарию](./GLOSSARY_RU.md)**.
+
 ## Содержание
 - [Локальная разработка с Docker Compose](#локальная-разработка-с-docker-compose)
   - [Понимание `docker-compose.yml` и `docker-compose.override.yml`](#понимание-docker-composeyml-и-docker-composeoverrideyml)
