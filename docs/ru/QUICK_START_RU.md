@@ -1,6 +1,4 @@
-# Быстрый старт (шпаргалка)
-
-Эта страница — краткая инструкция для разработчика для **ежедневной работы** с уже настроенным проектом.
+Краткая инструкция для разработчиков для **ежедневной работы** с уже настроенным проектом.
 
 > **Важно**: Для **первоначальной настройки** проекта, пожалуйста, следуйте подробному
 > [Руководству по установке](./SETUP_GUIDE_RU.md).
@@ -11,6 +9,8 @@
 - JDK 21+
 - Docker & Docker Compose
 - Git
+
+---
 
 ## Ежедневный рабочий процесс
 
@@ -24,9 +24,10 @@ docker compose --env-file .env.dev up -d
 
 ### 2. Проверка статуса
 
-- **Проверить контейнеры**: `docker ps`
-- **API доступен по адресу**: http://localhost:8080
-- **Swagger UI для тестирования API**: http://localhost:8080/swagger-ui/index.html
+- **Проверить контейнеры**: `docker ps` → должны быть `news-app` и `news-mysql`
+- **API**: http://localhost:8080
+- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
+- **Админка**: логин `admin`, пароль `admin`
 
 ### 3. Остановка окружения
 
@@ -46,7 +47,7 @@ docker compose down
 
 ### Запуск тестов
 ```bash
-./gradlew test
+./gradlew clean test
 ```
 
 ### Сборка проекта
@@ -54,10 +55,30 @@ docker compose down
 ./gradlew build
 ```
 
-### Проверка стиля кода
+### Проверка качества кода
 ```bash
-./gradlew checkstyleMain
+./gradlew checkstyleMain checkstyleTest
 ```
+
+---
+
+## Решение проблем
+
+### Тесты не запускаются (конфликт с MySQL)
+- Проверь, что в `application.yml` **нет** `spring.profiles.active: local`
+- В `application-test.yml` должен быть отключён Flyway
+- Запускай тесты с чистой сборкой: `./gradlew clean test`
+
+### Сброс базы данных
+```bash
+docker compose down -v  # удалит все данные
+docker compose up -d    # создаст чистую базу
+```
+
+### Проблемы с портами
+- MySQL: порт 3306 (может конфликтовать с локальным MySQL)
+- Spring Boot: порт 8080
+- Останови локальные сервисы или измени порты в `.env.dev`
 
 ---
 
@@ -66,3 +87,21 @@ docker compose down
 - **[Руководство по установке](./SETUP_GUIDE_RU.md)**: Пошаговая инструкция для первого запуска.
 - **[Руководство разработчика](./DEVELOPER_GUIDE_RU.md)**: Детальная настройка IDE и описание рабочего процесса.
 - **[Обзор проекта](./PROJECT_OVERVIEW_RU.md)**: Полная информация об архитектуре и технологиях.
+- **[Docker Guide](../en/DOCKER_GUIDE.md)**: Продвинутая работа с контейнерами.
+- **[Миграция с Drupal 6 (RU)](MIGRATION_DRUPAL6_RU.md)**: Процесс миграции.
+
+---
+
+## CI/CD
+
+- **GitHub Actions**: автоматически запускается профиль `ci` с H2.
+- **Тесты**: выполняются на каждый push и PR.
+- **Качество кода**: Checkstyle, JaCoCo coverage.
+
+---
+
+## Продакшн
+
+- Используется `docker-compose.override.yml` с секретами.
+- Профиль `prod` с настоящей MySQL.
+- Переменные окружения через Docker secrets.
