@@ -3,6 +3,8 @@
 This detailed step-by-step guide describes the content migration process from a legacy Drupal 6
 system to the modern headless Phoebe CMS architecture using Docker and MySQL.
 
+> For definitions of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
+
 ## Table of Contents
 - [Overall Process Flow](#overall-process-flow)
 - [Quick Version (TL;DR)](#quick-version-tldr)
@@ -330,7 +332,7 @@ To run the entire application:
 
 4.  **Verify Database:**
     ```bash
-    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
     ```
 
 5.  **Check Application Logs:**

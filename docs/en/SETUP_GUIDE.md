@@ -3,6 +3,18 @@
 This guide describes how to set up and run the Phoebe CMS project for the first time. There are two main
 scenarios: migrating existing data from Drupal 6 or starting with a clean database.
 
+> For definitions of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
+
+## Requirements
+
+To successfully set up and run the Phoebe CMS project, you will need the following software installed on your system:
+
+-   **JDK 21+**: The Java Development Kit, version 21 or newer. This is required to build and run the Spring Boot backend application.
+-   **Docker & Docker Compose**: These tools are essential for managing the local development environment, including database containers.
+-   **Git**: For cloning the project repository and managing version control.
+
+---
+
 ## Initial Project Setup
 
 Before proceeding with any scenario, you need to clone the repository and set up your environment variables.
@@ -129,7 +141,7 @@ Open `.env.dev` (created in the initial setup) and provide the correct datasourc
     ./gradlew bootRun --args='--spring.profiles.active=local,mysql'
 
     # For PostgreSQL
-    ./gradlew bootRun --args='--spring.profiles.active=local,postgresql'
+    # ./gradlew bootRun --args='--spring.profiles.active=local,postgresql'
     ```
 
 On the first run, Flyway will automatically create the entire table structure in your database.
