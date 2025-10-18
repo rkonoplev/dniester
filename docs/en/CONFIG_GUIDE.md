@@ -20,8 +20,7 @@ Spring Boot profiles, YAML configuration files, and environment variables are us
 
 All application configuration is located under:
 
-backend/src/main/resources/
-
+`backend/src/main/resources/`
 
 - `application.yml` — base (global defaults, no secrets)
 - `application-<profile>.yml` — profile-specific configuration overrides
@@ -32,33 +31,36 @@ Spring Boot chooses configuration based on the active profile (`SPRING_PROFILES_
 
 ## Spring Profiles Matrix
 
-| Profile | File                     | Database          | Schema Strategy      | Usage                                                                 |
-|---------|--------------------------|-------------------|----------------------|----------------------------------------------------------------------|
-| `local` | `application-local.yml`  | MySQL (Docker)    | `update`             | Local dev with `docker-compose`; uses `.env` for DB credentials.      |
-| `dev`   | `application-dev.yml`    | MySQL/Postgres    | `update`             | Dev / staging; secrets injected via ENV (CI/CD).                      |
-| `test`  | `application-test.yml`   | H2 (in-memory)    | `create-drop`        | Local & IDE tests; schema recreated automatically.                    |
-| `ci`    | `application-ci.yml`     | H2 (in-memory)    | `create-drop`        | GitHub Actions CI; fast & isolated builds without external DB.        |
-| `prod`  | `application-prod.yml`   | Cloud DB (MySQL/PG)| `none`              | Production (Render); config provided via Secrets (ENV/Secret Files).  |
+| Profile | File | Database | Schema Strategy | Usage |
+|---|---|---|---|---|
+| `local` | `application-local.yml` | MySQL (Docker) | `update` | Local dev with `docker-compose`; uses `.env` for DB credentials. |
+| `dev` | `application-dev.yml` | Vendor-Specific | `update` | Dev/staging; combined with `mysql` or `postgresql` profile. |
+| `test` | `application-test.yml` | H2 (in-memory) | `create-drop` | Local & IDE tests; schema recreated automatically. |
+| `ci` | `application-ci.yml` | H2 (in-memory) | `create-drop` | GitHub Actions CI; fast & isolated builds without external DB. |
+| `prod` | `application-prod.yml` | Vendor-Specific | `validate` | Production; combined with a vendor profile. Secrets via ENV. |
+| `mysql` | `application-mysql.yml` | MySQL | `validate` | **Vendor profile.** Sets Flyway location for MySQL. |
+| `postgresql`|`application-postgresql.yml`| PostgreSQL | `validate` | **Vendor profile.** Sets Flyway location for PostgreSQL. |
+| `security` | `application-security.yml` | - | - | Activates or overrides security-specific settings. |
 
-**Note**: All profiles include rate limiting configuration (100 req/min public, 50 req/min admin).
+**Note**: Profiles can be combined. For example, a production environment would use `prod,mysql` or `prod,postgresql`.
 
 ---
 
 ## Running with Profiles
 
-Profiles can be set with either `SPRING_PROFILES_ACTIVE` environment variable or JVM arg:
+Profiles can be set with the `SPRING_PROFILES_ACTIVE` environment variable or a JVM argument.
 
 ```bash
-# Run with dev profile
-SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
+# Run with a combined dev and mysql profile
+SPRING_PROFILES_ACTIVE=dev,mysql ./gradlew bootRun
 
-# Run tests with CI profile
+# Run tests with the CI profile
 SPRING_PROFILES_ACTIVE=ci ./gradlew test
 
-# Run production docker container
-docker run -d -e SPRING_PROFILES_ACTIVE=prod --env-file .env.dev news-platform:latest
+# Example for a production Docker container
+docker run -d -e SPRING_PROFILES_ACTIVE=prod,postgresql --env-file .env.prod news-platform:latest
 ```
-If no profile is specified, local is used as default.
+If no profile is specified, `local` is typically used as the default.
 
 ## Environment Variables & .env
 Local Development (.env)

@@ -70,6 +70,13 @@ phoebe/
 - **Code Quality**: Checkstyle, JaCoCo coverage
 - **Database**: MySQL or PostgreSQL with Docker
 
+## Configuration Profiles
+
+The project uses Spring Boot profiles to manage configuration across different environments (local, test, production).
+Each profile is represented by a separate `application-{profile}.yml` file.
+
+A detailed description of all profiles and their settings is available in the [Configuration Guide](CONFIG_GUIDE.md).
+
 ## Core Entities & API Overview
 
 ### Database Entities
@@ -180,7 +187,7 @@ phoebe/
 - ~~CMS vs MySQL password confusion~~ → Documentation clarified
 
 ### 🔄 In Progress
-- **Reference Angular Frontend**: Basic structure created, requires component implementation
+- **Reference Frontend**: Basic structure created, requires component implementation
 - **API Performance**: Query optimization for high-traffic scenarios
 
 ### 🎯 Future Technical Debt
