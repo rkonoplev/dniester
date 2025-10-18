@@ -2,7 +2,9 @@
 
 ## Table of Contents
 - [Local Development Workflow](#local-development-workflow)
+- [Setting Up Code Autoformatter](#setting-up-code-autoformatter)
 - [Before Pushing to GitHub](#before-pushing-to-github)
+- [What CI/CD Does (on GitHub Actions)](#what-cicd-does-on-github-actions)
 - [Summary](#summary)
 - [Project Setup](#project-setup)
 - [Development Environment](#development-environment)
@@ -39,6 +41,32 @@ static analysis, security scanning, and code coverage are performed in GitHub Ac
   ./gradlew checkstyleMain checkstyleTest
   ```
 
+---
+
+## Setting Up Code Autoformatter
+
+The project enforces a consistent Java code formatting style with a line length of **120 characters**.
+The configuration is located in `.idea/codeStyles/` and is automatically applied when you open the project in IntelliJ IDEA.
+
+#### Automatic Setup
+- Formatting settings are automatically picked up by IntelliJ IDEA.
+- Verify this by navigating to: `File → Settings → Editor → Code Style → Scheme = "Project"`.
+
+#### Usage
+- **Format Code**: Use `Ctrl+Alt+L` (Windows/Linux) or `Cmd+Alt+L` (Mac) to reformat the current file or selected code.
+- **Format on Save**: Enable this feature for automatic formatting when saving files:
+  `Settings → Tools → Actions on Save → Reformat code`.
+
+#### Key Rules
+- **Line Length**: 120 characters.
+- **Wrap on Typing**: Long method chains and parameters are automatically wrapped.
+- **Consistent Style**: Uniform bracket and indentation style.
+- **Auto-formatting**: Imports and empty lines are automatically managed.
+
+All developers on the team use these identical formatting settings to ensure code consistency.
+
+---
+
 ## Before Pushing to GitHub
 
 Before committing and pushing, check at least:
@@ -47,12 +75,18 @@ Before committing and pushing, check at least:
 - All **tests pass** (`./gradlew test`)
 - Code style checks pass (optional but strongly recommended)
 
-That’s usually enough — **GitHub Actions CI** will run additional steps:
+---
 
-- Full Gradle build + unit tests.  
-- Static analysis with Checkstyle and PMD.  
-- JaCoCo coverage report + Codecov upload.  
-- GitLeaks secrets scanning.
+## What CI/CD Does (on GitHub Actions)
+
+After pushing your changes, the following automated checks will be performed by GitHub Actions:
+- Full Gradle build + unit tests.
+- Static code analysis: Checkstyle and PMD.
+- Test coverage report (JaCoCo) + upload to Codecov.
+- GitLeaks secret scanning.
+- Integration with GitHub Security (Code scanning alerts).
+
+---
 
 ## Summary
 
@@ -61,6 +95,8 @@ Run **unit tests and build locally** before pushing.
 Let **CI/CD (GitHub Actions)** handle static analysis, coverage, and security.
 
 This approach ensures fast, resource-light local development, while CI validates everything in the cloud.
+
+> **Note:** Authentication migration to OAuth 2.0 + 2FA for all roles (ADMIN, EDITOR) is planned.
 
 ---
 
@@ -93,6 +129,43 @@ To stop all services:
 docker compose down
 ```
 
+### Database Setup and Application Startup
+
+For local development, you'll primarily interact with your chosen database via Docker.
+
+1.  **Start Database Containers**: 
+    To start your database (MySQL or PostgreSQL, depending on your `docker-compose.yml` configuration and `.env.dev` settings), use:
+    ```bash
+    # To start all services defined in docker-compose.yml (including database)
+    docker compose --env-file .env.dev up -d
+    ```
+    If you only want to start a specific database service (e.g., MySQL):
+    ```bash
+    docker compose --env-file .env.dev up -d mysql
+    # Or for PostgreSQL:
+    # docker compose --env-file .env.dev up -d postgres
+    ```
+
+2.  **Run the Application**:
+    Once your database container is running, you can start the Spring Boot application. Ensure you activate the correct Spring profile corresponding to your chosen database.
+    ```bash
+    cd backend
+
+    # For MySQL:
+    ./gradlew bootRun --args='--spring.profiles.active=local,mysql'
+
+    # For PostgreSQL:
+    # ./gradlew bootRun --args='--spring.profiles.active=local,postgresql'
+    ```
+    On the first run, Flyway will automatically create the entire table structure in your database based on the active profile.
+
+3.  **Stopping Docker Services**:
+    To stop all services and free up resources:
+    ```bash
+    docker compose down
+    ```
+    **Important**: Using `docker compose down -v` will completely remove your database data volumes. Only use this command if you intend to wipe all data and start with a fresh database. Otherwise, your data will persist across `docker compose up` and `down` cycles.
+
 ## Production Environment
 
 The production environment should be deployed using a CI/CD pipeline. The setup uses the base `docker-compose.yml`
@@ -124,14 +197,14 @@ applied for the target environment.
 
 ## Backend Layer Structure
 
-- `controller` — REST API controllers (Public + Admin)
-- `service` — Business logic layer
-- `repository` — JPA data access layer
-- `dto` — Data Transfer Objects
-- `mapper` — Entity ↔ DTO mapping
-- `entity` — JPA entities
-- `config` — Security, rate limiting, test configurations
-- `filter` — Rate limiting filter
+- `controller` — REST API controllers (Public + Admin): Handles incoming HTTP requests and returns responses.
+- `service` — Business logic layer: Contains the core application logic and orchestrates operations.
+- `repository` — JPA data access layer: Manages interactions with the database.
+- `dto` — Data Transfer Objects: Objects used to transfer data between layers, often for API requests/responses.
+- `mapper` — Entity ↔ DTO mapping: Converts between JPA entities and DTOs.
+- `entity` — JPA entities: Represents tables in the database.
+- `config` — Security, rate limiting, test configurations: Defines application-wide settings.
+- `filter` — Rate limiting filter: Intercepts requests to enforce rate limits.
 
 ---
 
