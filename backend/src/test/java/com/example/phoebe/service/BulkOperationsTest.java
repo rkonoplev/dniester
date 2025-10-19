@@ -56,7 +56,8 @@ class BulkOperationsTest {
 
         // When & Then
         assertDoesNotThrow(() -> newsService.performBulkAction(request, authentication));
-        verify(newsRepository).deleteAllById(List.of(1L, 2L, 3L));
+        // Verify that the optimized batch method is called
+        verify(newsRepository).deleteAllByIdInBatch(List.of(1L, 2L, 3L));
     }
 
     @Test
@@ -86,7 +87,8 @@ class BulkOperationsTest {
 
         // When & Then
         assertThrows(AccessDeniedException.class, () -> newsService.performBulkAction(request, authentication));
-        verify(newsRepository, never()).deleteAllById(any());
+        // Verify that no batch delete operation was ever called
+        verify(newsRepository, never()).deleteAllByIdInBatch(any());
     }
 
     @Test
