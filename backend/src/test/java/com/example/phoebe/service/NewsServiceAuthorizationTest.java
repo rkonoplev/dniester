@@ -153,11 +153,25 @@ class NewsServiceAuthorizationTest {
 
     @Test
     void updateEditorRoleShouldAllowUpdatingOwnNews() {
+        // Given
         when(userRepository.findByUsername("editor")).thenReturn(Optional.of(editorUser));
         when(newsRepository.findById(10L)).thenReturn(Optional.of(ownNews));
-        NewsUpdateRequestDto request = new NewsUpdateRequestDto("T", "C", "T", true, null);
-        assertDoesNotThrow(() -> newsService.update(10L, request, editorAuth));
-        verify(newsRepository).save(ownNews);
+        NewsUpdateRequestDto request = new NewsUpdateRequestDto("New Title", "New Content", "New Teaser", true, null);
+
+        // Mock the mapper to return a DTO that reflects the update
+        NewsDto updatedDto = new NewsDto();
+        updatedDto.setId(10L);
+        updatedDto.setTitle("New Title");
+        when(newsMapper.toDto(any(News.class))).thenReturn(updatedDto);
+
+        // When
+        NewsDto resultDto = newsService.update(10L, request, editorAuth);
+
+        // Then
+        // Verify that the mapper's update method was called, not the repository's save method
+        verify(newsMapper).updateEntityFromDto(request, ownNews);
+        verify(newsRepository, never()).save(any(News.class));
+        assertEquals("New Title", resultDto.getTitle());
     }
 
     @Test
