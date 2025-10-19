@@ -38,12 +38,24 @@ public class NewsServiceImpl implements NewsService {
         this.newsMapper = newsMapper;
     }
 
+    // --- Read Operations (Optimized with readOnly = true) ---
+
+    /**
+     * Finds all published news articles.
+     * Annotated with @Transactional(readOnly = true) to give hints to the persistence provider (Hibernate)
+     * that this transaction will not modify data. This allows for significant performance optimizations,
+     * such as skipping dirty checks and unnecessary flushes.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findAllPublished(Pageable pageable) {
         return newsRepository.findByPublished(true, pageable).map(newsMapper::toDto);
     }
 
+    /**
+     * Finds a single published news article by its ID.
+     * This method is optimized for reading and is cacheable.
+     */
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "news-by-id", key = "#id")
@@ -53,6 +65,9 @@ public class NewsServiceImpl implements NewsService {
         return newsMapper.toDto(news);
     }
 
+    /**
+     * Finds all published news articles by a specific term ID. Optimized for reading.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findByTermId(Long termId, Pageable pageable) {
@@ -60,6 +75,9 @@ public class NewsServiceImpl implements NewsService {
                 .map(newsMapper::toDto);
     }
 
+    /**
+     * Finds all published news articles by a list of term IDs. Optimized for reading.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findByTermIds(List<Long> termIds, Pageable pageable) {
@@ -67,6 +85,9 @@ public class NewsServiceImpl implements NewsService {
                 .map(newsMapper::toDto);
     }
 
+    /**
+     * Finds all news articles for a specific user role (ADMIN or EDITOR). Optimized for reading.
+     */
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findAllForUser(Pageable pageable, Authentication authentication) {
@@ -79,17 +100,27 @@ public class NewsServiceImpl implements NewsService {
         return Page.empty();
     }
 
+    /**
+     * Finds any news article by ID, intended for admin users. Optimized for reading.
+     * Authorization is checked after fetching the entity.
+     */
     @Override
     @Transactional(readOnly = true)
     public NewsDto findById(Long id, Authentication authentication) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
-        if (!canAccessNews(id, authentication)) {
+        if (!canRead(news, authentication)) {
             throw new AccessDeniedException("You do not have permission to view this article.");
         }
         return newsMapper.toDto(news);
     }
 
+    // --- Write Operations (Default read-write transaction) ---
+
+    /**
+     * Creates a new news article.
+     * This is a write operation, so it uses a default @Transactional (read-write).
+     */
     @Override
     @Transactional
     public NewsDto create(NewsCreateRequestDto request, Authentication authentication) {
@@ -100,35 +131,65 @@ public class NewsServiceImpl implements NewsService {
         return newsMapper.toDto(savedNews);
     }
 
+    /**
+     * Updates an existing news article.
+     * This is a write operation, so it uses a default @Transactional.
+     * Authorization is checked explicitly inside the method to avoid a double database fetch
+     * that would occur if using @PreAuthorize.
+     */
     @Override
     @Transactional
     @CacheEvict(value = "news-by-id", key = "#id")
     public NewsDto update(Long id, NewsUpdateRequestDto request, Authentication authentication) {
-        News existingNews = newsRepository.findById(id)
+        // 1. Fetch the entity from the database once.
+        News news = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
-        verifyOwnershipOrAdmin(authentication, existingNews);
-        newsMapper.updateEntityFromDto(request, existingNews);
-        News updatedNews = newsRepository.save(existingNews);
-        return newsMapper.toDto(updatedNews);
+
+        // 2. Perform authorization check on the fetched entity.
+        if (!canUpdateOrDelete(news, authentication)) {
+            throw new AccessDeniedException("Access Denied: You are not the author of this article or not an admin.");
+        }
+
+        // 3. Map DTO changes to the managed entity.
+        newsMapper.updateEntityFromDto(request, news);
+
+        // 4. No explicit .save() call is needed.
+        // Because the method is @Transactional, Hibernate's dirty checking mechanism will detect
+        // the changes to the 'news' entity and automatically issue an UPDATE statement upon commit.
+        return newsMapper.toDto(news);
     }
 
+    /**
+     * Deletes a news article.
+     * This is a write operation, using a default @Transactional.
+     * Authorization is checked explicitly to avoid a double database fetch.
+     */
     @Override
     @Transactional
     @CacheEvict(value = "news-by-id", key = "#id")
     public void delete(Long id, Authentication authentication) {
-        News newsToDelete = newsRepository.findById(id)
+        // 1. Fetch the entity from the database once.
+        News news = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
-        verifyOwnershipOrAdmin(authentication, newsToDelete);
-        newsRepository.delete(newsToDelete);
+
+        // 2. Perform authorization check on the fetched entity.
+        if (!canUpdateOrDelete(news, authentication)) {
+            throw new AccessDeniedException("Access Denied: You are not the author of this article or not an admin.");
+        }
+
+        // 3. Delete the entity.
+        newsRepository.delete(news);
     }
 
+    /**
+     * Performs a bulk action (DELETE or UNPUBLISH) on a set of news articles.
+     * This is a critical write operation restricted to ADMINs.
+     */
     @Override
     @Transactional
     public BulkActionRequestDto.BulkActionResult performBulkAction(BulkActionRequestDto request, Authentication authentication) {
-        if (!hasRole(authentication, "ADMIN")) {
-            throw new AccessDeniedException(
-                    "Bulk operations are restricted to ADMIN role only. "
-                            + "EDITOR can only delete single articles.");
+        if (!hasAdminRole(authentication)) {
+            throw new AccessDeniedException("Bulk operations are restricted to ADMIN role only.");
         }
         if (!request.isConfirmed()) {
             throw new IllegalArgumentException("Bulk operation must be confirmed");
@@ -158,7 +219,7 @@ public class NewsServiceImpl implements NewsService {
 
         switch (request.getAction()) {
             case DELETE:
-                newsRepository.deleteAllById(targetIds);
+                newsRepository.deleteAllByIdInBatch(targetIds); // Use batch for performance
                 break;
             case UNPUBLISH:
                 newsRepository.unpublishByIds(targetIds);
@@ -169,51 +230,44 @@ public class NewsServiceImpl implements NewsService {
         return new BulkActionRequestDto.BulkActionResult(targetIds.size());
     }
 
-    @Override
-    public boolean canAccessNews(Long newsId, Authentication authentication) {
+    // --- Authorization Helper Methods ---
+
+    /**
+     * Checks if a user can view a news article.
+     * Currently allows all authenticated users to view any article through this admin-path,
+     * but could be extended with more granular logic.
+     */
+    private boolean canRead(News news, Authentication authentication) {
+        // For now, if you can access the admin API, you can read.
+        // Public access is handled by findPublishedById.
+        return authentication != null && authentication.isAuthenticated();
+    }
+
+    /**
+     * Centralized logic to check if a user can modify or delete a news article.
+     * @return true if the user is an ADMIN or the author of the news item.
+     */
+    private boolean canUpdateOrDelete(News news, Authentication authentication) {
         if (hasAdminRole(authentication)) {
             return true;
         }
-        return isAuthor(newsId, authentication);
-    }
-
-    @Override
-    public boolean isAuthor(Long newsId, Authentication authentication) {
-        if (newsId == null || authentication == null) {
-            return false;
+        if (hasEditorRole(authentication)) {
+            User currentUser = getCurrentUser(authentication);
+            return news.getAuthor() != null && news.getAuthor().getId().equals(currentUser.getId());
         }
-        User currentUser = getCurrentUser(authentication);
-        return newsRepository.existsByIdAndAuthorId(newsId, currentUser.getId());
+        return false;
     }
 
-    @Override
+    // --- Role & User Helper Methods ---
+
     public boolean hasAdminRole(Authentication authentication) {
         return hasAuthority(authentication, "ADMIN");
     }
 
-    @Override
     public boolean hasEditorRole(Authentication authentication) {
         return hasAuthority(authentication, "EDITOR");
     }
 
-    /**
-     * A generic role-checking helper method.
-     * This is a convenience method for internal service logic.
-     *
-     * @param authentication The user's authentication object.
-     * @param roleName       The name of the role to check (e.g., "ADMIN").
-     * @return True if the user has the specified role.
-     */
-    public boolean hasRole(Authentication authentication, String roleName) {
-        return hasAuthority(authentication, roleName);
-    }
-
-    /**
-     * Retrieves the current authenticated user from the database.
-     * Visibility is protected to allow spying in tests.
-     * @param authentication The current user's authentication object.
-     * @return The fetched {@link User} entity.
-     */
     protected User getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
         return userRepository.findByUsername(username)
@@ -227,15 +281,5 @@ public class NewsServiceImpl implements NewsService {
         String authorityName = ROLE_PREFIX + roleName;
         return authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals(authorityName));
-    }
-
-    private void verifyOwnershipOrAdmin(Authentication authentication, News news) {
-        if (hasAdminRole(authentication)) {
-            return;
-        }
-        User currentUser = getCurrentUser(authentication);
-        if (news.getAuthor() == null || !news.getAuthor().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("Access Denied: You are not the author of this article.");
-        }
     }
 }

@@ -42,6 +42,6 @@
     </rule>
 
     <!-- Security -->
-    <rule ref="category/java/security.xml/SQLInjection"/>
+    <rule ref="category/java/security.xml/SecuritySQLInjection"/>
 
 </ruleset>
