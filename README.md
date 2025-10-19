@@ -88,8 +88,6 @@ Comprehensive documentation covering installation, development, API usage, and d
 
 - **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications.
 - **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке.
-- **[📖 Glossary](docs/en/GLOSSARY.md)** - Definitions of key terms and technologies used throughout
-  the documentation.
 
 ## 🌟 Use Cases
 

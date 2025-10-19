@@ -14,6 +14,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Glossary](./GLOSSARY.md)**  
   Definitions of key terms and technologies used throughout the documentation.
 
+- **[Technical Debt](./TECHNICAL_DEBT.md)**  
+  A list of known issues, planned improvements, and future work for the project.
+
 - **[Setup Guide](./SETUP_GUIDE.md)**  
   Step-by-step instructions for the initial project setup, covering both migration from
   Drupal and a clean installation with MySQL or PostgreSQL, including system requirements.
