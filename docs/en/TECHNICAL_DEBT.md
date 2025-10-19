@@ -16,7 +16,7 @@ This document tracks the technical debt, known issues, and future improvements f
 
 ## 🔄 In Progress
 
-- **Reference Angular Frontend**: Basic structure created, requires component implementation.
+- **Reference Frontend Templates (Angular & Next.js)**: Basic structures created, require component implementation.
 - **API Performance**: Query optimization for high-traffic scenarios.
 
 ---
