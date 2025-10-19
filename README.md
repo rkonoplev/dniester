@@ -30,14 +30,16 @@ Phoebe follows a **Hybrid Headless** approach:
 ```
 phoebe/
 ├── backend/          ← Spring Boot API (headless core)
-├── frontend/         ← Angular reference UI (optional)
-└── docs/             ← Documentation: "use our frontend or build your own"
+├── frontends/        ← Optional reference frontend templates
+│   ├── template-angular/
+│   └── template-nextjs/
+└── docs/             ← Documentation: "use our templates or build your own"
 ```
 
 **Benefits:**
 - **Professional Teams**: Use only the API for maximum flexibility.
-- **Startups & Small Teams**: Deploy everything "out of the box" for simplicity.
-- **No Vendor Lock-in**: You're not tied to our frontend, but we provide a starting template.
+- **Startups & Small Teams**: Deploy everything "out of the box" using a provided template.
+- **No Vendor Lock-in**: You're not tied to our frontend templates, but we provide starting points.
 
 ## 🚀 Quick Start
 
@@ -63,11 +65,21 @@ application, executing tests, and troubleshooting, refer to the
 - **API entrypoint**: http://localhost:8080
 - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 
-### 3. Optional: Start Reference Frontend (when implemented):
+### 3. Optional: Start a Reference Frontend Template
+Choose one of the provided templates and run it from its directory:
+
+**For Angular:**
 ```bash
-cd frontend
+cd frontends/template-angular
 npm install
 npm start
+```
+
+**For Next.js:**
+```bash
+cd frontends/template-nextjs
+npm install
+npm run dev
 ```
 
 ## 🔧 Key Features
@@ -98,8 +110,8 @@ Comprehensive documentation covering installation, development, API usage, and d
 - Connect analytics and advertising platforms seamlessly.
 
 ### For Businesses & Organizations
-- Use the reference frontend for a quick and robust website deployment.
-- Customize the provided Angular template to match your brand.
+- Use a reference frontend template for a quick and robust website deployment.
+- Customize one of the provided templates (Angular or Next.js) to match your brand.
 - Scale up to custom solutions as your organization grows.
 
 ## 🛠️ Technology Stack
@@ -111,7 +123,7 @@ Comprehensive documentation covering installation, development, API usage, and d
 - **Documentation**: OpenAPI/Swagger
 - **Testing**: JUnit 5, TestContainers
 - **CI/CD**: GitHub Actions
-- **Reference Frontend**: Angular (planned)
+- **Reference Frontends**: Angular & Next.js (planned)
 
 ## 📄 License
 

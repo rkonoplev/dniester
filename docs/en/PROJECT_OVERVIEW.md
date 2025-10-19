@@ -4,8 +4,8 @@
 
 **Name**: Phoebe — Open Source Headless CMS
 **Type**: Open Source Headless Content Management System (Hybrid Architecture)
-**Migration**: Drupal 6 → Modern Headless Spring Boot + Optional Angular Frontend
-**Status**: Headless Backend production-ready, Reference Frontend planned
+**Migration**: Drupal 6 → Modern Headless Spring Boot + Optional Frontend Templates
+**Status**: Headless Backend production-ready, Reference Frontend Templates planned
 **License**: MIT (Open Source)
 
 ## Business Goals
@@ -21,25 +21,16 @@
 **Phoebe** follows a **Hybrid Headless** approach, providing maximum flexibility:
 
 - **Headless Core**: Complete REST API for custom frontend development.
-- **Reference Frontend**: Optional Angular application for quick deployment.
+- **Reference Frontends**: Optional templates (Angular & Next.js) for quick deployment.
 - **API-First**: All functionality accessible via REST endpoints.
-- **No Vendor Lock-in**: Use our frontend or build your own.
+- **No Vendor Lock-in**: Use our templates or build your own frontend.
 
 ```
 phoebe/
 ├── backend/                    # Headless Spring Boot API
-│   ├── src/main/java/com/example/phoebe/
-│   │   ├── config/            # Security, Test, Rate Limit, Cache configurations
-│   │   ├── controller/        # REST endpoints (Admin + Public)
-│   │   ├── dto/              # Data Transfer Objects
-│   │   ├── entity/           # JPA entities (News, User, Term, Role)
-│   │   ├── exception/        # Custom exceptions + Global handler
-│   │   ├── filter/           # Rate limiting filter
-│   │   ├── mapper/           # Entity-DTO mapping
-│   │   ├── repository/       # JPA repositories
-│   │   └── service/          # Business logic
-│   └── src/test/             # Unit + Integration tests
-├── frontend/                  # Reference Angular UI (optional)
+├── frontends/                  # Optional reference frontend templates
+│   ├── template-angular/       # Angular reference implementation
+│   └── template-nextjs/        # Next.js (React) reference implementation
 ├── docs/                     # Documentation
 └── README.md                 # Project documentation
 ```
@@ -57,9 +48,9 @@ phoebe/
 - **Testing**: JUnit 5, Integration tests with H2
 - **Rate Limiting**: Bucket4j with IP-based buckets
 
-### Reference Frontend (Optional)
-- **Framework**: Angular with Angular Universal
-- **Purpose**: A reference implementation for rapid deployment.
+### Reference Frontends (Optional)
+- **Frameworks**: Angular with Universal (SSR) and Next.js (React) with SSR/SSG.
+- **Purpose**: Reference implementations for rapid deployment.
 - **Design**: A clean, responsive layout.
 - **SEO**: Static URLs, SSR, JSON-LD, OpenGraph metadata.
 - **Features**: Search, dark mode, push notifications (planned).
@@ -166,7 +157,7 @@ A detailed description of all profiles and their settings is available in the [C
 
 ### 🚧 In Progress
 - **Documentation**: Headless API integration guides.
-- **Reference Frontend**: Angular implementation.
+- **Reference Frontend Templates**: Implementation of Angular & Next.js templates.
 - **Performance**: API optimization for high-traffic scenarios.
 
 ### 🎯 Planned
@@ -178,7 +169,7 @@ A detailed description of all profiles and their settings is available in the [C
 
 ## Key Design Decisions
 
-1. **Hybrid Headless Architecture**: API-first with an optional reference frontend.
+1. **Hybrid Headless Architecture**: API-first with optional reference frontends.
 2. **Open Source**: MIT license for community adoption and contribution.
 3. **Flexibility-Focused**: Designed to be a universal content hub.
 4. **API-First**: All functionality is accessible via REST endpoints.
