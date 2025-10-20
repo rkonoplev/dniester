@@ -1,75 +1,26 @@
 package com.example.phoebe.service;
 
+import com.example.phoebe.entity.News;
 import com.example.phoebe.entity.User;
-import com.example.phoebe.repository.NewsRepository;
-import com.example.phoebe.repository.UserRepository;
-import com.example.phoebe.security.RoleConstants;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 /**
- * Service for handling authorization logic and role-based access control.
+ * Service interface for handling all authorization and role-based checks.
+ * This is the single source of truth for permission checks in the application.
  */
-@Service
-public class AuthorizationService {
+public interface AuthorizationService {
 
-    private final UserRepository userRepository;
-    private final NewsRepository newsRepository;
+    boolean isAdmin(Authentication authentication);
 
-    public AuthorizationService(UserRepository userRepository, NewsRepository newsRepository) {
-        this.userRepository = userRepository;
-        this.newsRepository = newsRepository;
-    }
+    boolean isEditor(Authentication authentication);
 
-    /**
-     * Check if the authenticated user has ADMIN role.
-     */
-    public boolean isAdmin(Authentication authentication) {
-        return hasAuthority(authentication, RoleConstants.ROLE_ADMIN);
-    }
+    Long getCurrentUserId(Authentication authentication);
 
-    /**
-     * Check if the authenticated user has EDITOR role.
-     */
-    public boolean isEditor(Authentication authentication) {
-        return hasAuthority(authentication, RoleConstants.ROLE_EDITOR);
-    }
+    User getCurrentUser(Authentication authentication);
 
-    /**
-     * Check if the authenticated user has a specific authority.
-     */
-    private boolean hasAuthority(Authentication authentication, String authority) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return false;
-        }
-        return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(authority::equals);
-    }
+    boolean isAuthorOfNews(Authentication authentication, News news);
 
-    /**
-     * Get the current user's ID from authentication.
-     */
-    public Long getCurrentUserId(Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return null;
-        }
-        Optional<User> user = userRepository.findByUsername(authentication.getName());
-        return user.map(User::getId).orElse(null);
-    }
+    boolean isAuthorOfNews(Authentication authentication, Long newsId);
 
-    /**
-     * Check if the current user is the author of the specified news article.
-     */
-    public boolean isAuthorOfNews(Authentication authentication, Long newsId) {
-        Long currentUserId = getCurrentUserId(authentication);
-        if (currentUserId == null || newsId == null) {
-            return false;
-        }
-        // ✅ IMPLEMENTED: verify authorship via repository
-        return newsRepository.existsByIdAndAuthorId(newsId, currentUserId);
-    }
+    boolean canUpdateOrDeleteNews(Authentication authentication, Long newsId);
 }

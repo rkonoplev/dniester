@@ -8,50 +8,74 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Service interface for managing user roles.
- * Defines the contract for all business logic related to roles,
- * including creation, retrieval, updates, and deletion.
+ * Service interface defining business operations related to Role entities.
+ * This contract ensures that the service layer always works with DTOs for external communication.
  */
 public interface RoleService {
 
     /**
-     * Retrieves a list of all roles in the system.
-     * @return A list of {@link RoleDto}.
+     * Retrieves all roles in the system.
+     *
+     * @return A list of all roles as {@link RoleDto}.
      */
     List<RoleDto> getAllRoles();
 
     /**
-     * Retrieves a single role by its ID.
+     * Retrieves a single role by its unique ID.
+     *
      * @param id The ID of the role.
-     * @return The found {@link RoleDto}.
+     * @return The found role as a {@link RoleDto}.
+     * @throws com.example.phoebe.exception.ResourceNotFoundException if the role is not found.
      */
     RoleDto getRoleById(Long id);
 
     /**
-     * Finds all roles assigned to a specific user.
-     * @param userId The ID of the user.
-     * @return A set of {@link RoleDto} assigned to the user.
-     */
-    Set<RoleDto> findRolesByUserId(Long userId);
-
-    /**
-     * Creates a new role.
-     * @param createRequest The DTO with data for the new role.
-     * @return The created {@link RoleDto}.
+     * Creates a new role based on the provided data.
+     *
+     * @param createRequest DTO containing data for the new role.
+     * @return The newly created role as a {@link RoleDto}.
      */
     RoleDto createRole(RoleCreateRequestDto createRequest);
 
     /**
      * Updates an existing role.
-     * @param id The ID of the role to update.
-     * @param updateRequest The DTO with the updated data.
-     * @return The updated {@link RoleDto}.
+     *
+     * @param id            The ID of the role to update.
+     * @param updateRequest DTO containing the updated data.
+     * @return The updated role as a {@link RoleDto}.
      */
     RoleDto updateRole(Long id, RoleUpdateRequestDto updateRequest);
 
     /**
      * Deletes a role by its ID.
+     *
      * @param id The ID of the role to delete.
      */
     void deleteRole(Long id);
+
+    /**
+     * Assigns a permission to a role.
+     *
+     * @param roleId       The ID of the role.
+     * @param permissionId The ID of the permission to assign.
+     * @return The updated role as a {@link RoleDto}.
+     */
+    RoleDto assignPermission(Long roleId, Long permissionId);
+
+    /**
+     * Removes a permission from a role.
+     *
+     * @param roleId       The ID of the role.
+     * @param permissionId The ID of the permission to remove.
+     * @return The updated role as a {@link RoleDto}.
+     */
+    RoleDto removePermission(Long roleId, Long permissionId);
+
+    /**
+     * Finds all roles associated with a given user ID.
+     *
+     * @param userId The ID of the user.
+     * @return A set of roles for the specified user as {@link RoleDto}.
+     */
+    Set<RoleDto> findRolesByUserId(Long userId);
 }

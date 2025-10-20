@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Repository for Permission entity operations.
@@ -50,4 +51,12 @@ public interface PermissionRepository extends JpaRepository<Permission, Long> {
      * Check if permission exists by name.
      */
     boolean existsByName(String name);
+
+    /**
+     * Finds all permissions associated with a given role ID.
+     * @param roleId The ID of the role.
+     * @return A set of permissions for the specified role.
+     */
+    @Query("SELECT p FROM Permission p JOIN p.roles r WHERE r.id = :roleId")
+    Set<Permission> findByRolesId(@Param("roleId") Long roleId);
 }

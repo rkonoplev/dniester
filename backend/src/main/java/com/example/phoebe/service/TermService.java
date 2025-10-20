@@ -1,60 +1,42 @@
 package com.example.phoebe.service;
 
 import com.example.phoebe.entity.Term;
-import com.example.phoebe.exception.ResourceNotFoundException;
-import com.example.phoebe.repository.TermRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Service for term management operations.
+ * Service interface for managing taxonomy terms.
  */
-@Service
-@Transactional
-public class TermService {
-
-    private final TermRepository termRepository;
-
-    @Autowired
-    public TermService(TermRepository termRepository) {
-        this.termRepository = termRepository;
-    }
-
-    public Page<Term> findAll(Pageable pageable) {
-        return termRepository.findAll(pageable);
-    }
+public interface TermService {
 
     /**
-     * Find term by ID with caching.
-     * Terms are cached for 1 hour since they rarely change.
+     * Retrieves a paginated list of all terms.
+     *
+     * @param pageable Pagination configuration.
+     * @return A {@link Page} of {@link Term}.
      */
-    @Cacheable(value = "terms", key = "#id")
-    public Term findById(Long id) {
-        return termRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Term not found with id: " + id));
-    }
+    Page<Term> findAll(Pageable pageable);
 
     /**
-     * Save term and evict cache to ensure consistency.
+     * Finds a term by its ID.
+     *
+     * @param id Term ID.
+     * @return The found {@link Term}.
      */
-    @CacheEvict(value = "terms", key = "#term.id")
-    public Term save(Term term) {
-        return termRepository.save(term);
-    }
+    Term findById(Long id);
 
     /**
-     * Delete term and evict from cache.
+     * Saves a new or existing term.
+     *
+     * @param term The {@link Term} entity to persist.
+     * @return The saved {@link Term}.
      */
-    @CacheEvict(value = "terms", key = "#id")
-    public void deleteById(Long id) {
-        if (!termRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Term not found with id: " + id);
-        }
-        termRepository.deleteById(id);
-    }
+    Term save(Term term);
+
+    /**
+     * Deletes a term by ID.
+     *
+     * @param id The ID of the term to delete.
+     */
+    void deleteById(Long id);
 }
