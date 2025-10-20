@@ -3,6 +3,8 @@ package com.example.phoebe.dto.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.util.Set;
+
 public class RoleCreateRequestDto {
 
     @NotBlank(message = "Role name is required")
@@ -11,6 +13,8 @@ public class RoleCreateRequestDto {
 
     @Size(max = 255, message = "Description must not exceed 255 characters")
     private String description;
+
+    private Set<Long> permissionIds;
 
     // Getters and setters
     public String getName() {
@@ -27,5 +31,13 @@ public class RoleCreateRequestDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Set<Long> getPermissionIds() {
+        return permissionIds;
+    }
+
+    public void setPermissionIds(Set<Long> permissionIds) {
+        this.permissionIds = permissionIds;
     }
 }

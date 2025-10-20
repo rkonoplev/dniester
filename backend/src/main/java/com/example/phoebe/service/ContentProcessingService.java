@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 /**
  * Service for processing and sanitizing content.
  * Handles YouTube link conversion and HTML sanitization.
+ * This is a utility service and does not interact with the database, so it is not transactional.
  */
 @Service
 public class ContentProcessingService {
@@ -18,7 +19,6 @@ public class ContentProcessingService {
         if (content == null || content.trim().isEmpty()) {
             return content;
         }
-        
         return SafeHtmlValidator.convertYouTubeLinks(content);
     }
 }

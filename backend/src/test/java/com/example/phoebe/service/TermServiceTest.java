@@ -3,6 +3,7 @@ package com.example.phoebe.service;
 import com.example.phoebe.entity.Term;
 import com.example.phoebe.exception.ResourceNotFoundException;
 import com.example.phoebe.repository.TermRepository;
+import com.example.phoebe.service.impl.TermServiceImpl; // Added import
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -37,7 +38,8 @@ class TermServiceTest {
 
     @BeforeEach
     void setUp() {
-        termService = new TermService(termRepository);
+        // Corrected instantiation to use the implementation class
+        termService = new TermServiceImpl(termRepository);
     }
 
     /**

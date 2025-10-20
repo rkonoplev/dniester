@@ -17,7 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
-
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,15 +56,13 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findByTermId(Long termId, Pageable pageable) {
-        return newsRepository.findByTermsIdAndPublished(termId, true, pageable)
-                .map(newsMapper::toDto);
+        return newsRepository.findByTermsIdAndPublished(termId, true, pageable).map(newsMapper::toDto);
     }
 
     @Override
     @Transactional(readOnly = true)
     public Page<NewsDto> findByTermIds(List<Long> termIds, Pageable pageable) {
-        return newsRepository.findByTermsIdInAndPublished(termIds, true, pageable)
-                .map(newsMapper::toDto);
+        return newsRepository.findByTermsIdInAndPublished(termIds, true, pageable).map(newsMapper::toDto);
     }
 
     @Override
@@ -108,8 +106,7 @@ public class NewsServiceImpl implements NewsService {
                 .orElseThrow(() -> new ResourceNotFoundException("News", "id", id));
         verifyOwnershipOrAdmin(authentication, existingNews);
         newsMapper.updateEntityFromDto(request, existingNews);
-        // No explicit .save() call is needed due to @Transactional and dirty checking.
-        // Hibernate will automatically issue an UPDATE statement upon commit.
+        // Optimization: No explicit .save() call is needed due to @Transactional and dirty checking.
         return newsMapper.toDto(existingNews);
     }
 
@@ -126,10 +123,8 @@ public class NewsServiceImpl implements NewsService {
     @Override
     @Transactional
     public BulkActionRequestDto.BulkActionResult performBulkAction(BulkActionRequestDto request, Authentication authentication) {
-        if (!hasRole(authentication, "ADMIN")) {
-            throw new AccessDeniedException(
-                    "Bulk operations are restricted to ADMIN role only. "
-                            + "EDITOR can only delete single articles.");
+        if (!hasAdminRole(authentication)) {
+            throw new AccessDeniedException("Bulk operations are restricted to ADMIN role only.");
         }
         if (!request.isConfirmed()) {
             throw new IllegalArgumentException("Bulk operation must be confirmed");
@@ -171,7 +166,7 @@ public class NewsServiceImpl implements NewsService {
         return new BulkActionRequestDto.BulkActionResult(targetIds.size());
     }
 
-    @Override
+
     public boolean canAccessNews(Long newsId, Authentication authentication) {
         if (hasAdminRole(authentication)) {
             return true;
@@ -179,7 +174,7 @@ public class NewsServiceImpl implements NewsService {
         return isAuthor(newsId, authentication);
     }
 
-    @Override
+
     public boolean isAuthor(Long newsId, Authentication authentication) {
         if (newsId == null || authentication == null) {
             return false;
@@ -188,21 +183,16 @@ public class NewsServiceImpl implements NewsService {
         return newsRepository.existsByIdAndAuthorId(newsId, currentUser.getId());
     }
 
-    @Override
+
     public boolean hasAdminRole(Authentication authentication) {
         return hasAuthority(authentication, "ADMIN");
     }
 
-    @Override
     public boolean hasEditorRole(Authentication authentication) {
         return hasAuthority(authentication, "EDITOR");
     }
 
-    public boolean hasRole(Authentication authentication, String roleName) {
-        return hasAuthority(authentication, roleName);
-    }
-
-    protected User getCurrentUser(Authentication authentication) {
+    private User getCurrentUser(Authentication authentication) {
         String username = authentication.getName();
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "username", username));

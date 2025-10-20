@@ -40,6 +40,11 @@ public class Permission {
     @Column(unique = true, nullable = false, length = 100)
     private String name;
 
+    /** A human-readable description of what the permission allows. */
+    @Size(max = 255)
+    @Column(length = 255)
+    private String description;
+
     /** Roles that include this permission (inverse side). */
     @ManyToMany(mappedBy = "permissions", fetch = FetchType.LAZY)
     private Set<Role> roles = new HashSet<>();
@@ -74,6 +79,10 @@ public class Permission {
         return name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
     public Set<Role> getRoles() {
         return roles;
     }
@@ -84,6 +93,10 @@ public class Permission {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setRoles(Set<Role> roles) {
