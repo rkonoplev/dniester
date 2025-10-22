@@ -22,7 +22,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -102,7 +105,9 @@ class BulkOperationsTest {
         request.setItemIds(new HashSet<>(Arrays.asList(1L, 2L, 3L)));
         request.setConfirmed(true);
 
-        assertDoesNotThrow(() -> newsService.performBulkAction(request, adminAuth));
+        assertDoesNotThrow(() -> {
+            newsService.performBulkAction(request, adminAuth);
+        });
 
         verify(newsRepository).deleteAllByIdInBatch(idListCaptor.capture());
         List<Long> capturedIds = idListCaptor.getValue();
@@ -123,7 +128,9 @@ class BulkOperationsTest {
         request.setItemIds(new HashSet<>(Arrays.asList(1L, 2L, 3L)));
         request.setConfirmed(true);
 
-        assertDoesNotThrow(() -> newsService.performBulkAction(request, adminAuth));
+        assertDoesNotThrow(() -> {
+            newsService.performBulkAction(request, adminAuth);
+        });
 
         verify(newsRepository).unpublishByIds(idListCaptor.capture());
         List<Long> capturedIds = idListCaptor.getValue();
@@ -144,8 +151,9 @@ class BulkOperationsTest {
         request.setItemIds(new HashSet<>(Arrays.asList(1L, 2L, 3L)));
         request.setConfirmed(true);
 
-        assertThrows(AccessDeniedException.class,
-                () -> newsService.performBulkAction(request, editorAuth));
+        assertThrows(AccessDeniedException.class, () -> {
+            newsService.performBulkAction(request, editorAuth);
+        });
 
         verify(newsRepository, never()).deleteAllByIdInBatch(anyList());
         verify(newsRepository, never()).unpublishByIds(anyList());
@@ -161,8 +169,9 @@ class BulkOperationsTest {
         request.setFilterType(BulkActionRequestDto.FilterType.ALL);
         request.setConfirmed(true);
 
-        assertThrows(AccessDeniedException.class,
-                () -> newsService.performBulkAction(request, null));
+        assertThrows(AccessDeniedException.class, () -> {
+            newsService.performBulkAction(request, null);
+        });
 
         verify(newsRepository, never()).unpublishByIds(anyList());
     }
@@ -178,8 +187,9 @@ class BulkOperationsTest {
         request.setAction(BulkActionRequestDto.ActionType.DELETE);
         request.setConfirmed(false);
 
-        assertThrows(IllegalArgumentException.class,
-                () -> newsService.performBulkAction(request, adminAuth));
+        assertThrows(IllegalArgumentException.class, () -> {
+            newsService.performBulkAction(request, adminAuth);
+        });
 
         verify(newsRepository, never()).deleteAllByIdInBatch(anyList());
     }
