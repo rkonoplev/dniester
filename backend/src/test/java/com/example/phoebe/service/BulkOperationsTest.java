@@ -22,10 +22,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -60,16 +57,41 @@ class BulkOperationsTest {
                 return List.of(new SimpleGrantedAuthority(role));
             }
 
-            @Override public Object getCredentials() { return null; }
-            @Override public Object getDetails() { return null; }
-            @Override public Object getPrincipal() { return null; }
-            @Override public boolean isAuthenticated() { return true; }
-            @Override public void setAuthenticated(boolean isAuthenticated) {}
-            @Override public String getName() { return "testUser"; }
+            @Override
+            public Object getCredentials() {
+                return null;
+            }
+
+            @Override
+            public Object getDetails() {
+                return null;
+            }
+
+            @Override
+            public Object getPrincipal() {
+                return null;
+            }
+
+            @Override
+            public boolean isAuthenticated() {
+                return true;
+            }
+
+            @Override
+            public void setAuthenticated(boolean isAuthenticated) {
+                // This method is intentionally left empty for this mock.
+            }
+
+            @Override
+            public String getName() {
+                return "testUser";
+            }
         };
     }
 
-    /** Tests that an admin can perform a bulk DELETE operation successfully. */
+    /**
+     * Tests that an admin can perform a bulk DELETE operation successfully.
+     */
     @Test
     void performBulkActionAdminRoleShouldAllowBulkDelete() {
         Authentication adminAuth = mockAuthWithRole("ROLE_ADMIN");
@@ -88,7 +110,9 @@ class BulkOperationsTest {
         assertTrue(capturedIds.containsAll(List.of(1L, 2L, 3L)));
     }
 
-    /** Tests that an admin can perform a bulk UNPUBLISH operation successfully. */
+    /**
+     * Tests that an admin can perform a bulk UNPUBLISH operation successfully.
+     */
     @Test
     void performBulkActionAdminRoleShouldAllowBulkUnpublish() {
         Authentication adminAuth = mockAuthWithRole("ROLE_ADMIN");
@@ -107,7 +131,9 @@ class BulkOperationsTest {
         assertTrue(capturedIds.containsAll(List.of(1L, 2L, 3L)));
     }
 
-    /** Tests that an editor (non-admin) is denied access to bulk operations. */
+    /**
+     * Tests that an editor (non-admin) is denied access to bulk operations.
+     */
     @Test
     void performBulkActionEditorRoleShouldDenyBulkOperations() {
         Authentication editorAuth = mockAuthWithRole("ROLE_EDITOR");
@@ -125,7 +151,9 @@ class BulkOperationsTest {
         verify(newsRepository, never()).unpublishByIds(anyList());
     }
 
-    /** Tests that unauthenticated users cannot perform bulk operations. */
+    /**
+     * Tests that unauthenticated users cannot perform bulk operations.
+     */
     @Test
     void performBulkActionUserRoleShouldDenyBulkOperations() {
         BulkActionRequestDto request = new BulkActionRequestDto();
@@ -139,7 +167,9 @@ class BulkOperationsTest {
         verify(newsRepository, never()).unpublishByIds(anyList());
     }
 
-    /** Tests that an unconfirmed request (confirmed = false) throws exception. */
+    /**
+     * Tests that an unconfirmed request (confirmed = false) throws exception.
+     */
     @Test
     void performBulkActionUnconfirmedRequestShouldThrowException() {
         Authentication adminAuth = mockAuthWithRole("ROLE_ADMIN");
