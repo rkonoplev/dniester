@@ -1,35 +1,21 @@
 plugins {
-    // Core plugin for Java projects
     id 'java'
-
-    // Static code analysis for coding style
     id 'checkstyle'
-
-    // Code coverage tool
     id 'jacoco'
-
-    // Spring Boot support
     id 'org.springframework.boot' version '3.2.0'
-
-    // Dependency management provided by Spring Boot
     id 'io.spring.dependency-management' version '1.1.4'
-
-    // Static code analysis for code quality and potential issues
     id 'pmd'
 }
 
-// Project metadata
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
-// Java configuration
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21) // Use JDK 21 for compilation
+        languageVersion = JavaLanguageVersion.of(21)
     }
 }
 
-// Extra properties for dependency versions
 ext {
     mysqlVersion = '8.3.0'
     h2Version = '2.2.224'
@@ -37,71 +23,67 @@ ext {
     mapStructVersion = '1.5.5.Final'
 }
 
-// Repositories to resolve dependencies
 repositories {
     mavenCentral()
 }
 
-// Application dependencies
+// Define a separate source set for integration tests
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/test/java/com/example/phoebe/integration')
+        resources.srcDir file('src/test/resources')
+        compileClasspath += sourceSets.main.output + sourceSets.test.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.test.output
+    }
+}
+
 dependencies {
-    // Spring Boot starters (web, persistence, security, validation)
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
-    // Databases
-    runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"  // MySQL driver for runtime
-    runtimeOnly "com.h2database:h2:${h2Version}"               // H2 for runtime (embedded)
+    runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
+    runtimeOnly "com.h2database:h2:${h2Version}"
 
-    // Developer tools
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    // Testing support
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation "com.h2database:h2:${h2Version}"       // H2 for testing
+    testImplementation "com.h2database:h2:${h2Version}"
 
-    // Swagger / OpenAPI UI
+    // Dependencies for integration tests
+    integrationTestImplementation sourceSets.test.compileClasspath
+    integrationTestRuntimeOnly sourceSets.test.runtimeClasspath
+
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
-
-    // Rate limiting
     implementation 'com.bucket4j:bucket4j-core:8.7.0'
-
-    // High-performance in-memory cache
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
 
-    // MapStruct for object mapping
     implementation "org.mapstruct:mapstruct:${mapStructVersion}"
     annotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
     testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapStructVersion}"
 }
 
-// ---------------- Checkstyle ----------------
-// Code style and formatting rules
 checkstyle {
     toolVersion = '10.12.1'
     configFile = file("${project.projectDir}/config/checkstyle/checkstyle.xml")
-    maxWarnings = 0 // Fail the build if any warnings
-    maxErrors = 0   // Fail the build if any errors
+    maxWarnings = 0
+    maxErrors = 0
 }
 
-// Configure Checkstyle reports
 tasks.withType(Checkstyle).configureEach {
     reports {
-        xml.required = true   // For CI/CD integration
-        html.required = true  // For developers (readable format)
+        xml.required = true
+        html.required = true
     }
 }
 
-// ---------------- Jacoco ----------------
-// Code coverage tool
 jacoco {
     toolVersion = "0.8.11"
 }
 
-// Task to generate Jacoco reports (HTML & XML)
 tasks.jacocoTestReport {
     dependsOn test
     reports {
@@ -111,33 +93,28 @@ tasks.jacocoTestReport {
     }
 }
 
-// Configure minimum coverage verification
 tasks.jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                counter = 'LINE'        // Count line coverage
-                value = 'COVEREDRATIO'  // Ratio of covered lines
-                minimum = 0.0           // No minimum requirement for now (can be increased later)
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.0
             }
         }
     }
 }
 
-// Ensure coverage verification runs during check phase
 tasks.check.dependsOn tasks.jacocoTestCoverageVerification
 
-// ---------------- PMD ----------------
-// Static code analysis for code quality and potential issues
 pmd {
     toolVersion = "6.55.0"
-    ignoreFailures = false // Fail the build if PMD finds violations
-    consoleOutput = true   // Print results to console
-    ruleSets = []          // Disable default rule sets
-    ruleSetFiles = files("${project.projectDir}/config/pmd/ruleset.xml") // Use custom ruleset
+    ignoreFailures = false
+    consoleOutput = true
+    ruleSets = []
+    ruleSetFiles = files("${project.projectDir}/config/pmd/ruleset.xml")
 }
 
-// Configure PMD reports
 tasks.withType(Pmd).configureEach {
     reports {
         xml.required = true
@@ -145,24 +122,33 @@ tasks.withType(Pmd).configureEach {
     }
 }
 
-// ---------------- Tests ----------------
-// Use JUnit 5 (Jupiter) for testing
+// Configure the standard 'test' task to run only unit tests
 test {
     useJUnitPlatform()
+    include '**/unit/**'
     testLogging {
         events "passed", "skipped", "failed"
         showExceptions = true
         showCauses = true
         showStackTraces = true
     }
-    finalizedBy jacocoTestReport // Generate coverage report after tests
+    finalizedBy jacocoTestReport
 }
 
-// ---------------- Integration ----------------
-// Runs all code quality tools automatically during 'check' phase
-// './gradlew check' or './gradlew build' will execute:
-// - Checkstyle
-// - PMD
-// - Jacoco coverage verification
-// - Tests
+// Create a new task for integration tests
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    include '**/integration/**'
+    testLogging {
+        events "passed", "skipped", "failed"
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
+}
+
+// Ensure integration tests run during the 'check' phase
+tasks.check.dependsOn integrationTest
+integrationTest.mustRunAfter test
+
 tasks.check.dependsOn 'checkstyleMain', 'pmdMain', 'checkstyleTest', 'pmdTest'
