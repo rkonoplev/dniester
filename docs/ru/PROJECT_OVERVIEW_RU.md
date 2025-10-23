@@ -20,7 +20,7 @@
 - **Кэширование**: Caffeine (In-Memory)
 - **Ограничение запросов**: Bucket4j с IP-based buckets
 - **Сборка**: Gradle 8.7
-- **Тестирование**: JUnit 5, интеграционные тесты с H2
+- **Тестирование**: JUnit 5 (юнит- и интеграционные тесты с H2)
 - **Миграция**: Spring Boot миграции (V1-V6)
 
 ### Референсные Frontend-шаблоны (Опционально)
@@ -52,8 +52,8 @@
 phoebe/
 ├── backend/                    # Headless Spring Boot API
 ├── frontends/                  # Опциональные референсные frontend-шаблоны
-│   ├── template-angular/       # Референсная реализация на Angular
-│   └── template-nextjs/        # Референсная реализация на Next.js (React)
+│   ├── angular/                # Референсная реализация на Angular
+│   └── nextjs/                 # Референсная реализация на Next.js (React)
 ├── docs/                     # Документация (английская и русская)
 ├── .github/workflows/        # CI/CD пайплайны
 ├── docker-compose.yml        # Среда разработки

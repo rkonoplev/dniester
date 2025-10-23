@@ -29,8 +29,8 @@
 phoebe/
 ├── backend/                    # Headless Spring Boot API
 ├── frontends/                  # Optional reference frontend templates
-│   ├── template-angular/       # Angular reference implementation
-│   └── template-nextjs/        # Next.js (React) reference implementation
+│   ├── angular/                # Angular reference implementation
+│   └── nextjs/                 # Next.js (React) reference implementation
 ├── docs/                     # Documentation
 └── README.md                 # Project documentation
 ```
@@ -45,7 +45,7 @@ phoebe/
 - **API**: REST with OpenAPI/Swagger documentation
 - **Caching**: Caffeine (In-Memory)
 - **Build**: Gradle 8.7
-- **Testing**: JUnit 5, Integration tests with H2
+- **Testing**: JUnit 5 (unit and integration tests with H2)
 - **Rate Limiting**: Bucket4j with IP-based buckets
 
 ### Reference Frontends (Optional)
@@ -58,7 +58,7 @@ phoebe/
 ### Infrastructure
 - **Containerization**: Docker + Docker Compose
 - **CI/CD**: GitHub Actions
-- **Code Quality**: Checkstyle, JaCoCo coverage
+- **Code Quality**: Checkstyle, PMD, JaCoCo coverage
 - **Database**: MySQL or PostgreSQL with Docker
 
 ## Configuration Profiles
