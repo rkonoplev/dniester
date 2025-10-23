@@ -68,7 +68,7 @@ This directory contains all English project documentation for **Phoebe CMS**.
 ## 🛠️ Development Tools
 
 - **[CI/CD Guide](./CI_CD_GUIDE.md)**  
-  The GitHub Actions workflow, automated testing, and code quality tools.
+  The GitHub Actions workflow, automated unit and integration testing, and code quality tools.
 
 - **[Code Style Setup](./CODE_STYLE_SETUP.md)**  
   A guide for automatic code formatting in IntelliJ IDEA.
