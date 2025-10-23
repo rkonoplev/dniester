@@ -48,8 +48,11 @@ This directory contains all English project documentation for **Phoebe CMS**.
 
 ## 🎨 Frontend Integration
 
-- **[Frontend Specification](./FRONTEND_SPEC.md)**  
-  Technical specification for the reference frontend.
+- **[Frontend Specification (Angular)](./FRONTEND_SPEC_ANGULAR.md)**  
+  Technical specification for the Angular-based reference implementation.
+
+- **[Frontend Specification (Next.js)](./FRONTEND_SPEC_NEXTJS.md)**  
+  Technical specification for the Next.js (React)-based reference implementation.
 
 - **[Admin Panel Specification](./ADMIN_PANEL_SPEC.md)**  
   Technical requirements for admin panel interfaces.
@@ -80,7 +83,7 @@ This directory contains all English project documentation for **Phoebe CMS**.
 This documentation supports **Phoebe's hybrid headless approach**:
 
 - **API-First**: Complete REST API documentation for custom frontend development.
-- **Reference Implementation**: Guides for using the provided Angular frontend.
+- **Reference Implementations**: Guides for using the provided Angular and Next.js applications.
 - **Flexibility**: Choose between headless-only or full-stack deployment.
 - **Professional Grade**: Enterprise-ready features for any organization.
 
