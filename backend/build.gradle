@@ -35,6 +35,9 @@ sourceSets {
         compileClasspath += sourceSets.main.output + sourceSets.test.output
         runtimeClasspath += sourceSets.main.output + sourceSets.test.output
     }
+    test {
+        java.srcDir file('src/test/java/com/example/phoebe/unit')
+    }
 }
 
 dependencies {
@@ -125,7 +128,6 @@ tasks.withType(Pmd).configureEach {
 // Configure the standard 'test' task to run only unit tests
 test {
     useJUnitPlatform()
-    include '**/unit/**'
     testLogging {
         events "passed", "skipped", "failed"
         showExceptions = true
@@ -137,8 +139,11 @@ test {
 
 // Create a new task for integration tests
 task integrationTest(type: Test) {
+    group = 'verification'
+    description = 'Runs integration tests.'
+    testClassesDirs = sourceSets.integrationTest.output.classesDirs
+    classpath = sourceSets.integrationTest.runtimeClasspath
     useJUnitPlatform()
-    include '**/integration/**'
     testLogging {
         events "passed", "skipped", "failed"
         showExceptions = true
