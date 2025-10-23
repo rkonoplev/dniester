@@ -11,12 +11,17 @@ This document tracks the technical debt, known issues, and future improvements f
 - ~~Inconsistent error handling~~ → Global exception handler implemented
 - ~~Missing database migration docs~~ → DATABASE_GUIDE.md created
 - ~~CMS vs MySQL password confusion~~ → Documentation clarified
+- **Service Layer Optimization**: Applied `@Transactional(readOnly = true)` for read methods and removed redundant `save()` calls in write methods.
+- **PMD Fix**: Corrected `SQLInjection` rule name to `JdbcSQLInjection` in `ruleset.xml`.
+- **Test Structure Refactoring**: Separated tests into unit and integration, configured Gradle for their distinct execution.
+- **Compilation Errors Fixed**: Resolved inconsistencies across DTO, entity, repository, service, and controller layers (Role, Permission).
+- **Checkstyle Errors Fixed**: Addressed `NeedBraces` and `EmptyBlock` violations.
 
 ---
 
 ## 🔄 In Progress
 
-- **Reference Frontend Templates (Angular & Next.js)**: Basic structures created, require component implementation.
+- **Testcontainers Integration**: Implementing Testcontainers for robust integration testing with real databases.
 - **API Performance**: Query optimization for high-traffic scenarios.
 
 ---
@@ -53,3 +58,11 @@ This section outlines planned features and improvements, categorized by priority
 - **Monitoring**: Integrate with Prometheus and Grafana to provide detailed application and system metrics.
 - **Structured Logging**: Implement structured logging (e.g., with the ELK stack) for more efficient log analysis and monitoring.
 - **Backup Automation**: Develop and document a strategy for automated, regular database backups.
+
+---
+
+## 🚧 Reference Frontend Implementations
+
+- **Status**: Currently in basic structure phase. Full component implementation and API integration are required.
+- **Dependency**: Full implementation of frontends will proceed after final backend debugging, configuration, and verification.
+- **Goal**: To provide fully functional example applications in Angular and Next.js, demonstrating Phoebe CMS capabilities.
