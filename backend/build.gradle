@@ -21,6 +21,7 @@ ext {
     h2Version = '2.2.224'
     bucket4jVersion = '8.7.0'
     mapStructVersion = '1.5.5.Final'
+    testcontainersVersion = '1.19.7'
 }
 
 repositories {
@@ -58,6 +59,8 @@ dependencies {
     // Dependencies for integration tests
     integrationTestImplementation sourceSets.test.compileClasspath
     integrationTestRuntimeOnly sourceSets.test.runtimeClasspath
+    integrationTestImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
+    integrationTestImplementation "org.testcontainers:mysql:${testcontainersVersion}"
 
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.5.0'
     implementation 'com.bucket4j:bucket4j-core:8.7.0'
