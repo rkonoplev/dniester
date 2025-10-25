@@ -46,10 +46,19 @@
 
 ## 4. Functionality
 ### 4.1 SEO & URLs
-- Static, human-readable URLs for articles (`/node/{id}` format, e.g., `/node/15378`).
-- Category pages: `/category/{id}` (e.g., `/category/5` for politics).
-- SSR/SSG for indexable content.
-- JSON-LD structured data (`NewsArticle` schema).
+- **Hybrid Rendering Strategy**: Utilize Next.js's rendering capabilities to maximize performance and SEO.
+  - **Server-Side Rendering (SSR)**: For dynamic pages like the homepage and category listings, ensuring
+    content is always fresh and immediately indexable.
+  - **Static Site Generation (SSG)**: For individual article pages and static pages (`About`, `Contact`),
+    providing the fastest possible load times.
+  - **Incremental Static Regeneration (ISR)**: Optionally use ISR to rebuild static pages in the background
+    at a set interval, combining the speed of static with the freshness of dynamic content.
+- **Static URLs**: Static, human-readable URLs for articles (format `/node/{id}`, e.g., `/node/15378`)
+  and categories (`/category/{id}`).
+- **Structured Data**: Implement JSON-LD (`NewsArticle` schema) to provide rich metadata to search engines,
+  enhancing search result appearance (rich snippets).
+- **Meta Tags**: Dynamically generate `<title>`, `<meta name="description">`, and OpenGraph tags for each page to
+  ensure optimal sharing on social media and correct indexing.
 
 ### 4.2 Responsive Design
 - Mobile-first layout.

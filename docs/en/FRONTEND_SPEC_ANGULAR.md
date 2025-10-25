@@ -48,10 +48,16 @@
 ## 4. Functionality
 
 ### 4.1 SEO & URLs
-- Static, human-readable URLs for articles (format `/node/{id}`, e.g., `/node/15378`).
-- Category pages: `/category/{id}` (e.g., `/category/5` for politics).
-- SSR for indexable content via Angular Universal.
-- JSON-LD structured data (`NewsArticle` schema).
+- **Server-Side Rendering (SSR)**: Use Angular Universal to pre-render pages on the server. This ensures that
+  search engine bots receive fully-formed HTML, allowing for immediate and reliable content indexing.
+- **Static URLs**: Static, human-readable URLs for articles (format `/node/{id}`, e.g., `/node/15378`)
+  and categories (`/category/{id}`).
+- **Hydration**: After the initial server-rendered page is delivered, the client-side Angular application
+  takes over, providing a seamless, interactive user experience without a full page reload.
+- **Structured Data**: Implement JSON-LD (`NewsArticle` schema) to provide rich metadata to search engines,
+  enhancing search result appearance (rich snippets).
+- **Meta Tags**: Dynamically generate `<title>`, `<meta name="description">`, and OpenGraph tags for each page to
+  ensure optimal sharing on social media and correct indexing.
 
 ### 4.2 Responsive Design
 - Mobile-first layout.
