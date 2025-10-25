@@ -5,8 +5,11 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.MySQLContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.Duration;
 
 /**
  * Abstract base class for integration tests that require a real database.
@@ -23,7 +26,9 @@ public abstract class AbstractIntegrationTest {
      * The container is static, meaning it will be started once for all tests in the class that extends this base class.
      */
     @Container
-    private static final MySQLContainer<?> mySQLContainer = new MySQLContainer<>("mysql:8.3.0");
+    private static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.3.0")
+            .withStartupTimeout(Duration.ofSeconds(120))
+            .waitingFor(Wait.forLogMessage(".*ready for connections.*\\n", 1));
 
     /**
      * Dynamically configures the Spring Boot application properties to connect to the Testcontainer.
@@ -34,8 +39,8 @@ public abstract class AbstractIntegrationTest {
      */
     @DynamicPropertySource
     private static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", mySQLContainer::getJdbcUrl);
-        registry.add("spring.datasource.username", mySQLContainer::getUsername);
-        registry.add("spring.datasource.password", mySQLContainer::getPassword);
+        registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
+        registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
+        registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
     }
 }
