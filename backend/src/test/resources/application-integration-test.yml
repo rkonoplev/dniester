@@ -1,0 +1,19 @@
+# Spring Boot configuration for integration tests
+
+spring:
+  jpa:
+    hibernate:
+      # 'create-drop' ensures a clean schema for each test run.
+      # The database is created at the beginning and dropped at the end.
+      ddl-auto: create-drop
+    show-sql: false # Set to true for debugging SQL queries
+
+  # Defer datasource initialization until after Testcontainers has started
+  sql:
+    init:
+      mode: never
+
+  # Disable H2 console for integration tests
+  h2:
+    console:
+      enabled: false

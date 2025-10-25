@@ -4,19 +4,17 @@ import com.example.phoebe.dto.request.NewsCreateRequestDto;
 import com.example.phoebe.dto.response.NewsDto;
 import com.example.phoebe.entity.News;
 import com.example.phoebe.entity.User;
+import com.example.phoebe.integration.AbstractIntegrationTest;
 import com.example.phoebe.repository.NewsRepository;
 import com.example.phoebe.repository.UserRepository;
 import com.example.phoebe.service.NewsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -25,10 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class NewsServiceImplIntegrationTest {
+class NewsServiceImplIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
     private NewsService newsService;
