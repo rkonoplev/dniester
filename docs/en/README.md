@@ -65,6 +65,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Migration Drupal6 → Phoebe CMS](./MIGRATION_DRUPAL6.md)**  
   A complete guide for migrating from a legacy Drupal 6 site, covering detailed steps, troubleshooting, and post-migration cleanup.
 
+- **[Docker Data Backup & Recovery](./DOCKER_DATA_RECOVERY_GUIDE.md)**  
+  Inventory and backup of all project databases from Docker volumes.
+
 ## 🛠️ Development Tools
 
 - **[CI/CD Guide](./CI_CD_GUIDE.md)**  
