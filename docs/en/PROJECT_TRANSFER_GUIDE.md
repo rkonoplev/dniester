@@ -117,3 +117,6 @@ Transfer the following artifacts to the new computer:
     ```
 
 Now your project is fully transferred and ready to work on the new computer.
+
+**Note**: The Spring Boot application is typically run directly using `./gradlew bootRun`,
+rather than inside a separate Docker container.

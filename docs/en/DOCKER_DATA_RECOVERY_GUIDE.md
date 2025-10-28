@@ -18,7 +18,7 @@ which one is which.
 ### 1.1 Analysis of Projects and Their Purpose
 
 - **`phoebe` Project (Main)**
-  - **Containers**: `phoebe-app-1`, `news-mysql` (MySQL 8.0)
+  - **Container**: `news-mysql` (MySQL 8.0)
   - **Volume**: `phoebe_mysql_data`
   - **Purpose**: Your main, current project. It runs the Spring Boot application and uses the modern
     database into which the data was migrated. This is the one used for daily work.
