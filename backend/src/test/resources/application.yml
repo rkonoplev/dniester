@@ -1,0 +1,8 @@
+spring:
+  jpa:
+    hibernate:
+      # This prevents Hibernate from trying to drop tables when the Testcontainers DB is already shutting down,
+      # thus avoiding the "Communications link failure" error.
+      ddl-auto: create
+  datasource:
+    url: jdbc:tc:mysql:8.0:///dniester
