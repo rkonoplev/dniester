@@ -1,8 +1,12 @@
 # Docker Data Backup and Recovery Guide
 
 This document describes the full process of inventorying, backing up (dumping), and restoring
-all project databases stored in Docker volumes. This is essential for transferring all work
-to another computer or for creating complete backups.
+all project databases stored in Docker volumes. This is the **first step** in the process of a full
+project transfer to another computer.
+
+> **Next Step**: After creating data backups, refer to the
+> **[Full Project Transfer Guide](./PROJECT_TRANSFER_GUIDE.md)**
+> for instructions on transferring the codebase and deploying on a new machine.
 
 ---
 
@@ -124,3 +128,78 @@ After you have copied the required `.sql` files to a new computer, you can resto
    ```
 
 This procedure ensures a complete and safe transfer of all your work.
+
+---
+
+## Part 5: Deep Dive and Environment Inventory
+
+This section provides a detailed analysis of the running containers and volumes so you can
+understand exactly what you are working with.
+
+### 5.1 Analysis of Running Projects (`docker ps`)
+
+The output of `docker ps` shows two running "projects", each with its own MySQL container:
+
+| Project | Container Name | Image (Version) | Purpose |
+| :--- | :--- | :--- | :--- |
+| **`legacy`** | `news-mysql-drupal6` | `mysql:5.7` | **Helper**. For migrating from old Drupal. |
+| **`phoebe`** | `news-mysql` | `mysql:8.0` | **Main**. The current database for your application. |
+
+For daily work, you do **not** need the `legacy` (`news-mysql-drupal6`) project to be running. You can
+safely stop it with `docker compose -f legacy/docker-compose.drupal.yml down`.
+
+### 5.2 Database Exploration
+
+#### 5.2.1 Exploring the Old DB (`legacy`)
+
+1. **Connect to the container**:
+   ```bash
+   docker exec -it news-mysql-drupal6 mysql -uroot -proot
+   ```
+2. **Show databases**:
+   ```sql
+   SHOW DATABASES;
+   ```
+   You will likely see the `a264971_dniester` (old name) and `dniester` (where it was imported for cleaning) databases.
+
+3. **Show old Drupal tables**:
+   ```sql
+   USE a264971_dniester;
+   SHOW TABLES;
+   ```
+   You will see tables like `node`, `node_revisions`, `term_data`, `users`.
+
+#### 5.2.2 Exploring the New DB (`phoebe`)
+
+1. **Connect to the container**:
+   ```bash
+   docker exec -it news-mysql mysql -uroot -proot
+   ```
+2. **Show tables**:
+   ```sql
+   USE dniester;
+   SHOW TABLES;
+   ```
+   You will see tables with new names: `content`, `users`, `roles`, `permissions`, `terms`.
+
+### 5.3 Final Docker Volume Analysis (from Docker Desktop)
+
+| Volume Name | Size | Status | Purpose |
+| :--- | :--- | :--- | :--- |
+| **`phoebe_mysql_data`** | **201 MB** | **in use** | **Your new, current database (MySQL 8.0).** |
+| **`news-platform_mysql_data_drupal6`** | **982.7 MB** | - | **"Golden" archive. The very first, full Drupal 6 dump.** |
+| `news-platform_mysql_data` | 628.8 MB | - | Archive of an old project. Less important. |
+| `legacy_mysql_data_drupal6` | 210 MB | in use | Intermediate migration database. Can be deleted. |
+
+### 5.4 Summary and Recommendations
+
+- To transfer your work to another computer, you primarily need two files:
+  - `phoebe_new_db_backup.sql` (your current work)
+  - `drupal6_migration_backup_FULL.sql` (the historical archive)
+
+- The `news-platform_mysql_data` and `legacy_mysql_data_drupal6` volumes can be deleted to free up space,
+  as you already have backups of their contents.
+  ```bash
+  docker volume rm legacy_mysql_data_drupal6
+  docker volume rm news-platform_mysql_data
+  ```
