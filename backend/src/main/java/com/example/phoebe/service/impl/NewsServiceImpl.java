@@ -5,10 +5,12 @@ import com.example.phoebe.dto.request.NewsCreateRequestDto;
 import com.example.phoebe.dto.request.NewsUpdateRequestDto;
 import com.example.phoebe.dto.response.NewsDto;
 import com.example.phoebe.entity.News;
+import com.example.phoebe.entity.Term;
 import com.example.phoebe.entity.User;
 import com.example.phoebe.exception.ResourceNotFoundException;
 import com.example.phoebe.mapper.NewsMapper;
 import com.example.phoebe.repository.NewsRepository;
+import com.example.phoebe.repository.TermRepository;
 import com.example.phoebe.repository.UserRepository;
 import com.example.phoebe.service.NewsService;
 import org.springframework.cache.annotation.CacheEvict;
@@ -22,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class NewsServiceImpl implements NewsService {
@@ -29,11 +33,13 @@ public class NewsServiceImpl implements NewsService {
     private static final String ROLE_PREFIX = "ROLE_";
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
+    private final TermRepository termRepository;
     private final NewsMapper newsMapper;
 
-    public NewsServiceImpl(NewsRepository newsRepository, UserRepository userRepository, NewsMapper newsMapper) {
+    public NewsServiceImpl(NewsRepository newsRepository, UserRepository userRepository, TermRepository termRepository, NewsMapper newsMapper) {
         this.newsRepository = newsRepository;
         this.userRepository = userRepository;
+        this.termRepository = termRepository;
         this.newsMapper = newsMapper;
     }
 
@@ -93,6 +99,15 @@ public class NewsServiceImpl implements NewsService {
         User author = getCurrentUser(authentication);
         News news = newsMapper.toEntity(request);
         news.setAuthor(author);
+
+        if (request.getTermIds() != null && !request.getTermIds().isEmpty()) {
+            Set<Term> terms = request.getTermIds().stream()
+                    .map(termId -> termRepository.findById(termId)
+                            .orElseThrow(() -> new ResourceNotFoundException("Term", "id", termId)))
+                    .collect(Collectors.toSet());
+            news.setTerms(terms);
+        }
+
         News savedNews = newsRepository.save(news);
         return newsMapper.toDto(savedNews);
     }

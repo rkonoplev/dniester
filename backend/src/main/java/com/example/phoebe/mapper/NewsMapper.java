@@ -4,19 +4,24 @@ import com.example.phoebe.dto.request.NewsCreateRequestDto;
 import com.example.phoebe.dto.request.NewsUpdateRequestDto;
 import com.example.phoebe.dto.response.NewsDto;
 import com.example.phoebe.entity.News;
+import com.example.phoebe.entity.Term;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Mapper for converting between News entity and its DTOs using MapStruct.
  * Handles mapping for responses, creation, and updates.
  */
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface NewsMapper extends BaseMapper {
+public interface NewsMapper {
 
     /**
      * Maps a News entity to a NewsDto for API responses.
@@ -60,5 +65,17 @@ public interface NewsMapper extends BaseMapper {
     @Mapping(target = "version", ignore = true)
     void updateEntityFromDto(NewsUpdateRequestDto dto, @MappingTarget News entity);
 
-
+    /**
+     * Converts a Set of Term entities to a Set of their names.
+     * Returns empty set if input is null.
+     */
+    @Named("termsToNames")
+    default Set<String> termsToNames(Set<Term> terms) {
+        if (terms == null) {
+            return Set.of();
+        }
+        return terms.stream()
+                .map(Term::getName)
+                .collect(Collectors.toSet());
+    }
 }

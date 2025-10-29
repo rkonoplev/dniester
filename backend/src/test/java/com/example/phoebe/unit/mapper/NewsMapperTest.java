@@ -14,6 +14,11 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+/**
+ * Unit tests for {@link NewsMapper}.
+ * Verifies that the mapper correctly converts between News entities and their corresponding DTOs.
+ * These tests do not require a Spring context.
+ */
 class NewsMapperTest {
 
     private final NewsMapper newsMapper = Mappers.getMapper(NewsMapper.class);
