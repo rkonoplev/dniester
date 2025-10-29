@@ -5,7 +5,7 @@
 ## Table of Contents
 - [Configuration Files Location](#configuration-files-location)
 - [Test Configuration](#test-configuration)
-- [Spring Profiles Matrix](#spring-profiles-matrix)
+- [Spring Profiles Matrix](#spring-profile-matrix)
 - [Running with Profiles](#running-with-profiles)
 - [Environment Variables & .env](#environment-variables--env)
 - [Secrets Management](#secrets-management)
@@ -13,7 +13,8 @@
 
 
 This document explains the configuration strategy for the Phoebe CMS backend. It uses Spring Boot profiles,
-YAML files, and environment variables to ensure security, portability, and consistency across different environments.
+YAML files, and environment variables to ensure security, portability, and consistency across different
+environments.
 
 ---
 
@@ -24,7 +25,8 @@ The application configuration is split between two main directories:
 1.  **`backend/src/main/resources/`**
     - Contains configurations for running the main application (local, CI, production).
     - `application.yml` is the base file, containing settings common to all environments.
-    - `application-<profile>.yml` files provide specific settings for each environment, overriding the base file.
+    - `application-<profile>.yml` files provide specific settings for each environment, overriding the
+      base file.
 
 2.  **`backend/src/test/resources/`**
     - Contains configurations **only for running tests**.
@@ -32,13 +34,6 @@ The application configuration is split between two main directories:
       `main/resources` during a test run.
 
 Spring Boot selects the configuration based on the active profile (`SPRING_PROFILES_ACTIVE`).
-
-`backend/src/main/resources/`
-
-- `application.yml` — base (global defaults, no secrets)
-- `application-<profile>.yml` — profile-specific configuration overrides
-
-Spring Boot chooses configuration based on the active profile (`SPRING_PROFILES_ACTIVE`).
 
 ---
 
@@ -58,17 +53,17 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 
 ## Spring Profile Matrix
 
-| Profile            | File                               | Database         | Schema Strategy | Usage |
-|--------------------|------------------------------------|------------------|---------------|---|
-| `local`            | `application-local.yml`            | MySQL (Docker)   | `update`        | Local dev with `docker-compose`; uses `.env` for DB credentials. |
-| `dev`              | `application-dev.yml`              | Vendor-Specific  | `update`        | Dev/staging; combined with `mysql` or `postgresql` profile. |
+| Profile            | File                               | Database         | Schema Strategy | Usage                                                               |
+|:-------------------|:-----------------------------------|:-----------------|:----------------|:--------------------------------------------------------------------|
+| `local`            | `application-local.yml`            | MySQL (Docker)   | `update`        | Local dev with `docker-compose`; uses `.env` for DB credentials.    |
+| `dev`              | `application-dev.yml`              | Vendor-Specific  | `update`        | Dev/staging; combined with `mysql` or `postgresql` profile.         |
 | `test`             | `application-test.yml`             | H2 (In-Memory)   | `create-drop`   | **(Tests only)** Unit and fast integration tests in an IDE. Used by default. |
-| `integration-test` | `application-integration-test.yml` | MySQL (Docker)   | `create-drop`   | **(Tests only)** Full integration tests requiring a real database. |
-| `ci`               | `application-ci.yml`               | H2 (In-Memory)   | `create-drop`   | GitHub Actions CI; fast & isolated builds without external DB. |
-| `prod`             | `application-prod.yml`             | Vendor-Specific  | `validate`      | Production; combined with a vendor profile. Secrets via ENV. |
-| `mysql`            | `application-mysql.yml`            | MySQL            | `validate`      | **Vendor profile.** Sets Flyway location for MySQL. |
-| `postgresql`       | `application-postgresql.yml`       | PostgreSQL       | `validate`      | **Vendor profile.** Sets Flyway location for PostgreSQL. |
-| `security`         | `application-security.yml`         | -                | -               | Activates or overrides security-specific settings. |
+| `integration-test` | `application-integration-test.yml` | MySQL (Docker)   | `create-drop`   | **(Tests only)** Full integration tests requiring a real database.  |
+| `ci`               | `application-ci.yml`               | H2 (In-Memory)   | `create-drop`   | CI on GitHub Actions; fast & isolated builds without an external DB. |
+| `prod`             | `application-prod.yml`             | Vendor-Specific  | `validate`      | Production; combined with a vendor profile. Secrets via ENV.        |
+| `mysql`            | `application-mysql.yml`            | MySQL            | `validate`      | **Vendor profile.** Sets Flyway location for MySQL.                 |
+| `postgresql`       | `application-postgresql.yml`       | PostgreSQL       | `validate`      | **Vendor profile.** Sets Flyway location for PostgreSQL.            |
+| `security`         | `application-security.yml`         | -                | -               | Activates or overrides security-specific settings.                  |
 
 **Note**: Profiles can be combined. For example, a production environment would use `prod,mysql` or `prod,postgresql`.
 
@@ -94,7 +89,7 @@ If no profile is specified, `local` is the default for the main app, and `test` 
 
 ### Local Development (.env)
 `.env` (ignored by git) provides DB and app credentials locally.
-`.env.example` is included in the repo with placeholders.
+`.env.example` is included in the repo with placeholders (changemePass etc).
 
 Example `.env`:
 ```# MySQL credentials
@@ -115,6 +110,12 @@ SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 # Authentication credentials (Basic Auth)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=changemeAdmin
+EDITOR_USERNAME=editor
+EDITOR_PASSWORD=changemeEditor
+
+# Rate limiting (optional, defaults applied if not set)
+# PUBLIC_RATE_LIMIT=100
+# ADMIN_RATE_LIMIT=50
 ```
 **Note**: Secrets must never be committed to git. Only `.env.example` should be version-controlled.
 
@@ -122,9 +123,9 @@ ADMIN_PASSWORD=changemeAdmin
 
 ### Authentication Security
 - **Current**: Basic Auth with database-backed user credentials.
-- **Role separation**: ADMIN (full access), EDITOR (content management)
-- **Planned migration**: OAuth 2.0 + 2FA for ADMIN and EDITOR roles, replacing Basic Auth
-- **BCrypt encoding** for password security (current implementation)
+- **Role separation**: ADMIN (full access), EDITOR (content management).
+- **Planned migration**: OAuth 2.0 + 2FA for ADMIN and EDITOR roles, replacing Basic Auth.
+- **BCrypt encoding** for password security (current implementation).
 
 ### Environment Management
 - **Locally**: `.env` file (git-ignored).

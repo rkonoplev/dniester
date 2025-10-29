@@ -6,18 +6,22 @@ This document tracks the history of significant improvements, current tasks, and
 
 ## Completed Tasks and Architectural Decisions
 
-This section serves as a changelog, documenting key implemented features and refactorings based on an analysis of the current codebase.
+This section serves as a changelog, documenting key implemented features and refactorings based on an analysis
+of the current codebase.
 
 ### Architecture & Design
-- **Layered Architecture**: A clear separation between Controller, Service, and Repository layers has been implemented.
+- **Layered Architecture**: A clear separation between Controller, Service, and Repository layers has been
+  implemented.
 - **Single Responsibility Principle**: Logic is separated by domain (news, roles, authorization).
-- **DTO Pattern**: Data Transfer Objects are used for all API requests and responses, ensuring the internal model is decoupled.
+- **DTO Pattern**: Data Transfer Objects are used for all API requests and responses, ensuring the internal
+  model is decoupled.
 - **Centralized Authorization**: Access control logic has been extracted into a dedicated `AuthorizationService`.
 - **Automated Mapping**: MapStruct is integrated for automatic conversion between DTOs and entities.
 
 ### Security
 - **Authentication & Authorization**: Spring Security is integrated with Basic Authentication.
-- **Role-Based Access Control (RBAC)**: A system with roles (ADMIN, EDITOR) and granular permissions is implemented.
+- **Role-Based Access Control (RBAC)**: A system with roles (ADMIN, EDITOR) and granular permissions is
+  implemented.
 - **Endpoint Protection**: Administrative APIs are secured and require appropriate roles.
 
 ### Performance
@@ -32,14 +36,16 @@ This section serves as a changelog, documenting key implemented features and ref
 ### Code Quality & CI/CD
 - **Static Analysis**: Checkstyle and PMD are configured and integrated to maintain code quality.
 - **Test Coverage**: JaCoCo is integrated for code coverage analysis.
-- **Test Structure Refactoring**: A full separation of tests into `unit/` and `integration/` directories has been completed.
+- **Test Structure Refactoring**: A full separation of tests into `unit/` and `integration/` directories has
+  been completed.
 - **Gradle Configuration**: `build.gradle` is configured to run unit and integration tests separately.
+- **Testcontainers Integration**: Testcontainers have been implemented for robust integration testing with a
+  real DB (MySQL), ensuring an isolated and clean test environment.
 
 ---
 
 ## In Progress
 
-- **Testcontainers Integration**: Implementing Testcontainers to ensure robust integration testing with a real database (MySQL/PostgreSQL) instead of H2.
 - **API Performance**: Further query optimization for high-traffic scenarios.
 
 ---
@@ -61,5 +67,7 @@ This section outlines planned features and improvements, categorized by priority
 
 ### Reference Frontend Implementations
 
-- **Status**: Currently in a basic structure phase. Full component implementation and API integration are required.
-- **Dependency**: Full implementation of the frontends will proceed after the final backend debugging, configuration, and verification.
+- **Status**: Currently in a basic structure phase. Full component implementation and API integration are
+  required.
+- **Dependency**: Full implementation of the frontends will proceed after the final backend debugging,
+  configuration, and verification.
