@@ -8,12 +8,19 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * Test security configuration that permits all requests for testing.
- * Overrides the main security config in tests.
+ * Test-specific security configuration that overrides the main security settings.
+ * This configuration is loaded via {@code @Import(TestSecurityConfig.class)} in tests
+ * where authentication and authorization are not the primary focus.
+ * It disables security by permitting all requests, simplifying test setup.
  */
 @TestConfiguration
 public class TestSecurityConfig {
 
+    /**
+     * Creates a security filter chain that allows all HTTP requests.
+     * The {@code @Primary} annotation ensures this bean replaces the production
+     * SecurityFilterChain bean during the test context initialization.
+     */
     @Bean
     @Primary
     public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {

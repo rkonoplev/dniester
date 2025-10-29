@@ -1,46 +1,67 @@
 # Configuration Guide
 
+> For key terms and technologies, please refer to the **[Glossary](./GLOSSARY_EN.md)**.
+
 ## Table of Contents
 - [Configuration Files Location](#configuration-files-location)
+- [Test Configuration](#test-configuration)
 - [Spring Profiles Matrix](#spring-profiles-matrix)
 - [Running with Profiles](#running-with-profiles)
 - [Environment Variables & .env](#environment-variables--env)
 - [Secrets Management](#secrets-management)
-    - [Authentication Security](#authentication-security)
-    - [Environment Management](#environment-management)
 - [Best Practices](#best-practices)
 
 
-This document explains the configuration strategy for Phoebe CMS backend.  
-Spring Boot profiles, YAML configuration files, and environment variables are used to keep the system secure, portable, and consistent across environments.
+This document explains the configuration strategy for the Phoebe CMS backend. It uses Spring Boot profiles,
+YAML files, and environment variables to ensure security, portability, and consistency across different environments.
 
 ---
 
 ## Configuration Files Location
 
-All application configuration is located under:
+The application configuration is split between two main directories:
 
-`backend/src/main/resources/`
+1.  **`backend/src/main/resources/`**
+    - Contains configurations for running the main application (local, CI, production).
+    - `application.yml` is the base file, containing settings common to all environments.
+    - `application-<profile>.yml` files provide specific settings for each environment, overriding the base file.
 
-- `application.yml` — base (global defaults, no secrets)
-- `application-<profile>.yml` — profile-specific configuration overrides
+2.  **`backend/src/test/resources/`**
+    - Contains configurations **only for running tests**.
+    - Settings from this directory have a **higher priority** and override files with the same name from
+      `main/resources` during a test run.
 
-Spring Boot chooses configuration based on the active profile (`SPRING_PROFILES_ACTIVE`).
+Spring Boot selects the configuration based on the active profile (`SPRING_PROFILES_ACTIVE`).
+
+---
+
+## Test Configuration
+
+Tests use a separate set of configuration files in `src/test/resources/` to isolate the test environment.
+
+- **`application.yml`** (in `test`) is the base file for all tests. It overrides the main `application.yml` and
+  typically contains logging settings and other common test parameters.
+- **`application-test.yml`** is used by default if no active profile is specified in a test class
+  (via `@ActiveProfiles`). It is configured to use a fast, in-memory H2 database.
+- **`application-integration-test.yml`** is a special profile for integration tests that require a real
+  database connection (e.g., to a Docker container). This profile must be activated explicitly with
+  `@ActiveProfiles("integration-test")`.
 
 ---
 
 ## Spring Profiles Matrix
 
-| Profile | File | Database | Schema Strategy | Usage |
-|---|---|---|---|---|
-| `local` | `application-local.yml` | MySQL (Docker) | `update` | Local dev with `docker-compose`; uses `.env` for DB credentials. |
-| `dev` | `application-dev.yml` | Vendor-Specific | `update` | Dev/staging; combined with `mysql` or `postgresql` profile. |
-| `test` | `application-test.yml` | H2 (in-memory) | `create-drop` | Local & IDE tests; schema recreated automatically. |
-| `ci` | `application-ci.yml` | H2 (in-memory) | `create-drop` | GitHub Actions CI; fast & isolated builds without external DB. |
-| `prod` | `application-prod.yml` | Vendor-Specific | `validate` | Production; combined with a vendor profile. Secrets via ENV. |
-| `mysql` | `application-mysql.yml` | MySQL | `validate` | **Vendor profile.** Sets Flyway location for MySQL. |
-| `postgresql`|`application-postgresql.yml`| PostgreSQL | `validate` | **Vendor profile.** Sets Flyway location for PostgreSQL. |
-| `security` | `application-security.yml` | - | - | Activates or overrides security-specific settings. |
+| Profile            | File                               | Database         | Schema Strategy | Usage |
+|--------------------|------------------------------------|------------------|---------------|---|
+| `local`            | `application-local.yml`            | MySQL (Docker)   | `update`        | Local dev with `docker-compose`; uses `.env` for DB credentials. |
+| `dev`              | `application-dev.yml`              | Vendor-Specific  | `update`        | Dev/staging; combined with `mysql` or `postgresql` profile. |
+| `test`             | `application-test.yml`             | H2 (In-Memory)   | `create-drop`   | **(Tests only)** Unit and fast integration tests in an IDE. Used by default. |
+| `integration-test` | `application-integration-test.yml` | MySQL (Docker)   | `create-drop`   | **(Tests only)** Full integration tests requiring a real database. |
+| `ci`               | `application-ci.yml`               | H2 (In-Memory)   | `create-drop`   | GitHub Actions CI; fast & isolated builds without external DB. |
+| `prod`             | `application-prod.yml`             | Vendor-Specific  | `validate`      | Production; combined with a vendor profile. Secrets via ENV. |
+| `mysql`            | `application-mysql.yml`            | MySQL            | `validate`      | **Vendor profile.** Sets Flyway location for MySQL. |
+| `postgresql`       | `application-postgresql.yml`       | PostgreSQL       | `validate`      | **Vendor profile.** Sets Flyway location for PostgreSQL. |
+| `security`         | `application-security.yml`         | -                | -               | Activates or overrides security-specific settings. |
 
 **Note**: Profiles can be combined. For example, a production environment would use `prod,mysql` or `prod,postgresql`.
 
@@ -60,14 +81,15 @@ SPRING_PROFILES_ACTIVE=ci ./gradlew test
 # Example for a production Docker container
 docker run -d -e SPRING_PROFILES_ACTIVE=prod,postgresql --env-file .env.prod news-platform:latest
 ```
-If no profile is specified, `local` is typically used as the default.
+If no profile is specified, `local` is the default for the main app, and `test` is the default for tests.
 
 ## Environment Variables & .env
-Local Development (.env)
-.env (ignored by git) provides DB and app credentials locally.
-.env.example is included in the repo with placeholders (changemePass etc).
 
-Example .env:
+### Local Development (.env)
+`.env` (ignored by git) provides DB and app credentials locally.
+`.env.example` is included in the repo with placeholders.
+
+Example `.env`:
 ```# MySQL credentials
 MYSQL_ROOT_PASSWORD=rootpass
 MYSQL_DATABASE=newsdb
@@ -86,14 +108,8 @@ SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 # Authentication credentials (Basic Auth)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=changemeAdmin
-EDITOR_USERNAME=editor
-EDITOR_PASSWORD=changemeEditor
-
-# Rate limiting (optional, defaults applied if not set)
-# PUBLIC_RATE_LIMIT=100
-# ADMIN_RATE_LIMIT=50
 ```
-Note: secrets must never be committed to git. Only .env.example goes into version control.
+**Note**: Secrets must never be committed to git. Only `.env.example` should be version-controlled.
 
 ## Secrets Management
 
@@ -104,15 +120,14 @@ Note: secrets must never be committed to git. Only .env.example goes into versio
 - **BCrypt encoding** for password security (current implementation)
 
 ### Environment Management
-- Local: .env file (ignored by git).
-- CI/CD: GitHub Actions → repository Secrets.
-- Production (Render): environment variables or Secret Files mounted at runtime.
-- Passwords, tokens, and admin credentials are always injected via environment variables.
-- Never hardcode secrets in application-*.yml or commit real credentials.
+- **Locally**: `.env` file (git-ignored).
+- **CI/CD**: GitHub Actions → Repository Secrets.
+- **Production**: Environment variables or runtime-mounted secret files.
+- Passwords, tokens, and admin credentials should always be injected via environment variables.
+- Never hardcode secrets in `application-*.yml` files or commit real credentials.
 
 ## Best Practices
-- Keep application.yml as minimal defaults (no secrets).
-- Use .env only for local/staging; add .env.example to repository as template.
-- Production configs (prod profile) should only read from environment variables or secret files.
-- Align database schema management per environment: update locally, validate/none in prod.
-- Do not expose test credentials outside secure configs.
+- Keep `application.yml` for minimal, non-sensitive defaults only.
+- Use `.env` for local development only; commit `.env.example` as a template.
+- Production configurations (the `prod` profile) should read data exclusively from environment variables.
+- Align the database schema strategy for each environment: `update` locally, `validate` in production.
