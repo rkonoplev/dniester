@@ -104,6 +104,12 @@ SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 # Учетные данные для аутентификации (Basic Auth)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=changemeAdmin
+EDITOR_USERNAME=editor
+EDITOR_PASSWORD=changemeEditor
+
+# Ограничение запросов (опционально, если не задано, применяются значения по умолчанию)
+# PUBLIC_RATE_LIMIT=100
+# ADMIN_RATE_LIMIT=50
 ```
 **Примечание**: Секреты никогда не должны попадать в git. В систему контроля версий включается только `.env.example`.
 

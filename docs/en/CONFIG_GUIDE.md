@@ -49,7 +49,7 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 
 ---
 
-## Spring Profiles Matrix
+## Spring Profile Matrix
 
 | Profile            | File                               | Database         | Schema Strategy | Usage |
 |--------------------|------------------------------------|------------------|---------------|---|
@@ -108,6 +108,12 @@ SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 # Authentication credentials (Basic Auth)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=changemeAdmin
+EDITOR_USERNAME=editor
+EDITOR_PASSWORD=changemeEditor
+
+# Rate limiting (optional, defaults applied if not set)
+# PUBLIC_RATE_LIMIT=100
+# ADMIN_RATE_LIMIT=50
 ```
 **Note**: Secrets must never be committed to git. Only `.env.example` should be version-controlled.
 
