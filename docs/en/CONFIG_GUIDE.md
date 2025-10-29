@@ -33,6 +33,13 @@ The application configuration is split between two main directories:
 
 Spring Boot selects the configuration based on the active profile (`SPRING_PROFILES_ACTIVE`).
 
+`backend/src/main/resources/`
+
+- `application.yml` — base (global defaults, no secrets)
+- `application-<profile>.yml` — profile-specific configuration overrides
+
+Spring Boot chooses configuration based on the active profile (`SPRING_PROFILES_ACTIVE`).
+
 ---
 
 ## Test Configuration
@@ -108,12 +115,6 @@ SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
 # Authentication credentials (Basic Auth)
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=changemeAdmin
-EDITOR_USERNAME=editor
-EDITOR_PASSWORD=changemeEditor
-
-# Rate limiting (optional, defaults applied if not set)
-# PUBLIC_RATE_LIMIT=100
-# ADMIN_RATE_LIMIT=50
 ```
 **Note**: Secrets must never be committed to git. Only `.env.example` should be version-controlled.
 
