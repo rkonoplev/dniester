@@ -1,50 +1,61 @@
 package com.example.phoebe.entity;
 
+import com.example.phoebe.integration.AbstractIntegrationTest;
+import com.example.phoebe.repository.NewsRepository;
+import com.example.phoebe.repository.TermRepository;
+import com.example.phoebe.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.example.phoebe.PhoebeApplication;
-import jakarta.annotation.Resource;
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.regex.Pattern;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.domain.AuditorAware;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
-import org.springframework.test.context.ContextConfiguration;
-
 /**
- * Unit tests for the News entity.
- * Uses Spring Data JPA Auditing to validate createdAt and updatedAt behavior.
+ * Integration tests for the News entity, focusing on persistence, auditing, and lifecycle behaviors.
+ * This test uses the full application context with a real database via Testcontainers.
  */
-@DataJpaTest
-@Import(NewsTest.AuditingTestConfig.class)
-@ContextConfiguration(classes = PhoebeApplication.class)
-class NewsTest {
+@Transactional
+class NewsTest extends AbstractIntegrationTest {
 
-    @Resource
-    private TestEntityManager em;
+    @Autowired
+    private EntityManager entityManager;
+
+    @Autowired
+    private NewsRepository newsRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private TermRepository termRepository;
 
     private User author;
     private Term term;
 
     @BeforeEach
     void setUp() {
-        author = buildAndPersistUser("testuser", "test@example.com", "{noop}password");
+        // Clean up to ensure test isolation
+        newsRepository.deleteAll();
+        userRepository.deleteAll();
+        termRepository.deleteAll();
 
-        term = new Term();
-        term.setName("Technology");
-        term.setVocabulary("category");
-        em.persistAndFlush(term);
+        author = new User("testuser", "{noop}password", "test@example.com", true);
+        userRepository.save(author);
+
+        term = new Term("Technology", "category");
+        termRepository.save(term);
     }
 
     /**
@@ -101,10 +112,10 @@ class NewsTest {
     void persistSetsPublicationDateAndAuditingTimestamps() {
         News news = buildNews("Title A", author);
 
-        em.persistAndFlush(news);
-        em.clear();
+        newsRepository.saveAndFlush(news);
+        entityManager.clear();
 
-        News reloaded = em.find(News.class, news.getId());
+        News reloaded = newsRepository.findById(news.getId()).orElseThrow();
 
         assertNotNull(reloaded.getPublicationDate());
         assertNotNull(reloaded.getCreatedAt());
@@ -121,10 +132,10 @@ class NewsTest {
         News news = buildNews("Title B", author);
         news.setPublicationDate(existing);
 
-        em.persistAndFlush(news);
-        em.clear();
+        newsRepository.saveAndFlush(news);
+        entityManager.clear();
 
-        News reloaded = em.find(News.class, news.getId());
+        News reloaded = newsRepository.findById(news.getId()).orElseThrow();
         assertEquals(existing, reloaded.getPublicationDate());
     }
 
@@ -136,7 +147,7 @@ class NewsTest {
     @Test
     void updatedAtChangesOnUpdateAndVersionIncrements() throws InterruptedException {
         News news = buildNews("Title C", author);
-        em.persistAndFlush(news);
+        newsRepository.saveAndFlush(news);
 
         Long id = news.getId();
         Long v1 = news.getVersion();
@@ -145,12 +156,12 @@ class NewsTest {
         // Small delay to avoid same-second timestamps on some DBs
         Thread.sleep(5);
 
-        News managed = em.find(News.class, id);
+        News managed = newsRepository.findById(id).orElseThrow();
         managed.setTitle("Title C Updated");
-        em.persistAndFlush(managed);
-        em.clear();
+        newsRepository.saveAndFlush(managed);
+        entityManager.clear();
 
-        News reloaded = em.find(News.class, id);
+        News reloaded = newsRepository.findById(id).orElseThrow();
         Long v2 = reloaded.getVersion();
         LocalDateTime t2 = reloaded.getUpdatedAt();
 
@@ -238,28 +249,5 @@ class NewsTest {
         n.setTitle(title);
         n.setAuthor(authorRef);
         return n;
-    }
-
-    private User buildAndPersistUser(String username, String email, String password) {
-        User u = new User();
-        u.setUsername(username);
-        u.setEmail(email);
-        u.setPassword(password);
-        u.setActive(true);
-        em.persistAndFlush(u);
-        return u;
-    }
-
-    /**
-     * Minimal auditing configuration for tests.
-     * createdBy/lastModifiedBy are not used, so AuditorAware returns empty.
-     */
-    @Configuration
-    @EnableJpaAuditing
-    static class AuditingTestConfig implements AuditorAware<String> {
-        @Override
-        public java.util.Optional<String> getCurrentAuditor() {
-            return java.util.Optional.empty();
-        }
     }
 }
