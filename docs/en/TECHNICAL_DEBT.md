@@ -30,8 +30,9 @@ of the current codebase.
 - **Transaction Optimization**: All read-only service methods are annotated with `@Transactional(readOnly = true)`.
 
 ### Database
-- **Multi-Database Support**: The architecture supports both MySQL and H2 (for testing).
+- **Data Access**: The project currently uses the blocking **Spring Data JPA** stack for simplicity and reliability.
 - **Migration Management**: The database schema is version-controlled using Flyway.
+- **Multi-Database Support**: The architecture supports both MySQL and H2 (for testing).
 
 ### Code Quality & CI/CD
 - **Static Analysis**: Checkstyle and PMD are configured and integrated to maintain code quality.
@@ -64,6 +65,12 @@ This section outlines planned features and improvements, categorized by priority
 - **File Upload**: Implement support for uploading and managing images and other media directly through the API.
 - **Advanced Search**: Integrate a full-text search engine like Elasticsearch or Lucene.
 - **Webhooks**: Provide a system for sending event-driven notifications to external services.
+
+### Architecture & Performance (Low Priority)
+
+- **Reactive Stack Migration**: For high-traffic public endpoints, consider migrating from the blocking
+  Spring MVC/JPA stack to a non-blocking, reactive stack (Spring WebFlux + R2DBC) to maximize
+  scalability and resource efficiency.
 
 ### Reference Frontend Implementations
 
