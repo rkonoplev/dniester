@@ -1,17 +1,19 @@
-# Spring Boot configuration for integration tests
+# Spring Boot configuration for integration tests that use Testcontainers and Flyway.
 
 spring:
   jpa:
     hibernate:
-      # 'create-drop' ensures a clean schema for each test run.
-      # The database is created at the beginning and dropped at the end.
-      ddl-auto: create-drop
+      # Let Flyway manage the schema. Hibernate should only validate it.
+      ddl-auto: validate
     show-sql: false # Set to true for debugging SQL queries
 
   # Defer datasource initialization until after Testcontainers has started
   sql:
     init:
       mode: never
+
+  # Flyway will run automatically, using the locations defined in the main application.yml
+  # or profile-specific files. No specific Flyway config is needed here.
 
   # Disable H2 console for integration tests
   h2:

@@ -59,7 +59,7 @@ Spring Boot выбирает конфигурацию на основе акти
 | `local`            | `application-local.yml`            | MySQL (Docker)     | `update`        | Локальная разработка с `docker-compose`; использует `.env` для учетных данных БД. |
 | `dev`              | `application-dev.yml`              | Зависит от вендора | `update`        | Разработка/staging; комбинируется с профилем `mysql` или `postgresql`.      |
 | `test`             | `application-test.yml`             | H2 (в памяти)      | `create-drop`   | **(Только для тестов)** Юнит-тесты и быстрые интеграционные тесты в IDE. Используется по умолчанию. |
-| `integration-test` | `application-integration-test.yml` | MySQL (Docker)     | `create-drop`   | **(Только для тестов)** Полные интеграционные тесты, требующие реальной БД. |
+| `integration-test` | `application-integration-test.yml` | MySQL (Docker)     | `validate`      | **(Только для тестов)** Полные интеграционные тесты, требующие реальной БД. |
 | `ci`               | `application-ci.yml`               | H2 (в памяти)      | `create-drop`   | CI в GitHub Actions; быстрые и изолированные сборки без внешней БД.         |
 | `prod`             | `application-prod.yml`             | Облачная БД (MySQL/PG)| `validate`      | Продакшен; комбинируется с профилем вендора. Секреты через ENV.             |
 | `mysql`            | `application-mysql.yml`            | MySQL              | `validate`      | **Профиль вендора.** Устанавливает путь к миграциям Flyway для MySQL.       |

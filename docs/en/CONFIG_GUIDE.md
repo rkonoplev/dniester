@@ -58,7 +58,7 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 | `local`            | `application-local.yml`            | MySQL (Docker)   | `update`        | Local dev with `docker-compose`; uses `.env` for DB credentials.    |
 | `dev`              | `application-dev.yml`              | Vendor-Specific  | `update`        | Dev/staging; combined with `mysql` or `postgresql` profile.         |
 | `test`             | `application-test.yml`             | H2 (In-Memory)   | `create-drop`   | **(Tests only)** Unit and fast integration tests in an IDE. Used by default. |
-| `integration-test` | `application-integration-test.yml` | MySQL (Docker)   | `create-drop`   | **(Tests only)** Full integration tests requiring a real database.  |
+| `integration-test` | `application-integration-test.yml` | MySQL (Docker)   | `validate`      | **(Tests only)** Full integration tests requiring a real database.  |
 | `ci`               | `application-ci.yml`               | H2 (In-Memory)   | `create-drop`   | CI on GitHub Actions; fast & isolated builds without an external DB. |
 | `prod`             | `application-prod.yml`             | Vendor-Specific  | `validate`      | Production; combined with a vendor profile. Secrets via ENV.        |
 | `mysql`            | `application-mysql.yml`            | MySQL            | `validate`      | **Vendor profile.** Sets Flyway location for MySQL.                 |
