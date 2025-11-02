@@ -16,6 +16,11 @@ java {
     }
 }
 
+// Add compiler arguments to get detailed deprecation warnings
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add '-Xlint:deprecation'
+}
+
 ext {
     mysqlVersion = '8.3.0'
     h2Version = '2.2.224'

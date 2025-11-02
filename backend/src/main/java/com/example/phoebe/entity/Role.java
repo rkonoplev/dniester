@@ -17,6 +17,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -44,7 +45,7 @@ public class Role {
     @NotBlank(message = "Role name is required")
     @Size(max = 50)
     @Column(nullable = false, unique = true, length = 50)
-    private String name;
+    private final String name;
 
     /**
      * Optional description of the role.
@@ -79,28 +80,25 @@ public class Role {
 
     // === Constructors ===
 
+    /**
+     * Default constructor required by JPA.
+     * The final business key 'name' is initialized to null.
+     */
     public Role() {
+        this.name = null;
+        this.description = null;
     }
-
-    public Role(String name, String description) {
-        this.name = name;
-        this.description = description;
-    }
-
-    // === Normalization ===
 
     /**
-     * Normalizes role name to UPPER_CASE and trims surrounding spaces.
+     * Constructs a new Role, normalizing the business key ('name') upon creation.
      */
-    @PrePersist
-    @PreUpdate
-    private void normalize() {
+    public Role(String name, String description) {
         if (name != null) {
-            name = name.trim().toUpperCase(Locale.ROOT);
+            this.name = name.trim().toUpperCase(java.util.Locale.ROOT);
+        } else {
+            this.name = null;
         }
-        if (description != null) {
-            description = description.trim();
-        }
+        this.description = description;
     }
 
     // === Getters and Setters ===
@@ -115,10 +113,6 @@ public class Role {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Set<User> getUsers() {
@@ -184,25 +178,32 @@ public class Role {
     }
 
     // === equals & hashCode ===
-    // Proxy-friendly equals and stable hash: class-hash when id is null, id-hash after persistence.
 
+    /**
+     * Implements equality based on the business key ('name').
+     * This approach is stable across all persistence states (transient, managed, detached).
+     * It also correctly handles Hibernate proxies.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Role other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (id != null && other.id != null) {
-            return id.equals(other.id);
-        }
-        return java.util.Objects.equals(name, other.name);
+        Role role = (Role) o;
+        // The business key 'name' must not be null for equality checks.
+        return name != null && name.equals(role.name);
     }
 
+    /**
+     * Generates a hash code based on the business key ('name').
+     * This ensures the hash code is stable before and after persistence.
+     */
     @Override
     public int hashCode() {
-        return (id != null) ? id.hashCode() : java.util.Objects.hash(name);
+        return Objects.hash(name);
     }
 
     // === toString ===

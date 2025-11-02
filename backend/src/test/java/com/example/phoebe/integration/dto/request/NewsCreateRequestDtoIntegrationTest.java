@@ -1,68 +1,55 @@
-package com.example.phoebe.dto.request;
+package com.example.phoebe.integration.dto.request;
 
-import com.example.phoebe.dto.response.NewsDto;
+import com.example.phoebe.dto.request.NewsCreateRequestDto;
 import com.example.phoebe.entity.User;
+import com.example.phoebe.integration.AbstractIntegrationTest;
 import com.example.phoebe.repository.UserRepository;
-import com.example.phoebe.service.NewsService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-public class NewsCreateRequestDtoIntegrationTest {
+class NewsCreateRequestDtoIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
-    private NewsService newsService;
+    private Validator validator;
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     private User author;
 
     @BeforeEach
     void setUp() {
-        author = new User();
-        author.setUsername("creator_user");
-        author.setEmail("creator@test.com");
-        author.setPassword(passwordEncoder.encode("password"));
-        author.setActive(true);
+        userRepository.deleteAll();
+        author = new User("creator_user", "pass", "creator@test.com", true);
         userRepository.save(author);
-
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(author.getUsername(), "password", Collections.emptyList())
-        );
     }
 
     @Test
-    void whenCreateNewsWithValidDtoThenNewsIsCreated() {
-        // Given
+    void whenCreateWithValidDto_thenNoViolations() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
-        dto.setTitle("Integration Test Title");
-        dto.setContent("Integration test body content.");
+        dto.setTitle("Valid Title");
+        dto.setContent("Some content here.");
 
-        // When
-        NewsDto result = newsService.create(dto, SecurityContextHolder.getContext().getAuthentication());
+        Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
 
-        // Then
-        assertNotNull(result.getId());
-        assertEquals("Integration Test Title", result.getTitle());
-        assertEquals("Integration test body content.", result.getBody());
-        assertEquals(author.getId(), result.getAuthorId());
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void whenTitleIsBlank_thenViolation() {
+        NewsCreateRequestDto dto = new NewsCreateRequestDto();
+        dto.setContent("Some content here.");
+
+        Set<ConstraintViolation<NewsCreateRequestDto>> violations = validator.validate(dto);
+
+        assertFalse(violations.isEmpty());
     }
 }

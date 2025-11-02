@@ -38,7 +38,7 @@ public class Permission {
     @NotBlank(message = "Permission name is required")
     @Size(max = 100)
     @Column(unique = true, nullable = false, length = 100)
-    private String name;
+    private final String name;
 
     /** A human-readable description of what the permission allows. */
     @Size(max = 255)
@@ -51,21 +51,23 @@ public class Permission {
 
     // === Constructors ===
 
+    /**
+     * Default constructor required by JPA.
+     * The final business key 'name' is initialized to null.
+     */
     public Permission() {
+        this.name = null;
+        this.description = null;
     }
 
+    /**
+     * Constructs a new Permission, normalizing the business key ('name') upon creation.
+     */
     public Permission(String name) {
-        this.name = name;
-    }
-
-    // === Normalization ===
-
-    /** Normalizes the name by trimming and lowercasing (ROOT). */
-    @PrePersist
-    @PreUpdate
-    private void normalize() {
         if (name != null) {
-            name = name.trim().toLowerCase(Locale.ROOT);
+            this.name = name.trim().toLowerCase(java.util.Locale.ROOT);
+        } else {
+            this.name = null;
         }
     }
 
@@ -89,10 +91,6 @@ public class Permission {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public void setDescription(String description) {
@@ -124,27 +122,33 @@ public class Permission {
     }
 
     // === equals & hashCode ===
-    // Proxy-friendly; falls back to name when id is null.
 
+    /**
+     * Implements equality based on the business key ('name').
+     * This approach is stable across all persistence states (transient, managed, detached).
+     * It also correctly handles Hibernate proxies.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Permission other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (id != null && other.id != null) {
-            return id.equals(other.id);
-        }
-        return Objects.equals(name, other.name);
+        Permission that = (Permission) o;
+        // The business key 'name' must not be null for equality checks.
+        return name != null && name.equals(that.name);
     }
 
+    /**
+     * Generates a hash code based on the business key ('name').
+     * This ensures the hash code is stable before and after persistence.
+     */
     @Override
     public int hashCode() {
-        return (id != null) ? id.hashCode() : Objects.hash(name);
+        return Objects.hash(name);
     }
-
     // === toString ===
 
     @Override

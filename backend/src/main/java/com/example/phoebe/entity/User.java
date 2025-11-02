@@ -11,8 +11,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
@@ -20,6 +18,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -52,7 +51,7 @@ public class User {
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 64)
     @Column(unique = true, nullable = false, length = 64)
-    private String username;
+    private final String username;
 
     /**
      * Password hash (e.g., BCrypt/Argon2). Not exposed in JSON responses.
@@ -97,31 +96,34 @@ public class User {
 
     // === Constructors ===
 
+    /**
+     * Default constructor required by JPA.
+     * The final business key 'username' is initialized to null.
+     */
     public User() {
+        this.username = null;
+        this.password = null;
+        this.email = null;
     }
-
-    public User(String username, String password, String email, boolean active) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.active = active;
-    }
-
-    // === Normalization ===
 
     /**
-     * Normalizes username and email: trim and lowercase (ROOT).
-     * Helps maintain case-insensitive uniqueness across databases.
+     * Constructs a new User, normalizing the business key ('username') and email upon creation.
      */
-    @PrePersist
-    @PreUpdate
-    private void normalize() {
+    public User(String username, String password, String email, boolean active) {
         if (username != null) {
-            username = username.trim().toLowerCase(Locale.ROOT);
+            this.username = username.trim().toLowerCase(java.util.Locale.ROOT);
+        } else {
+            this.username = null;
         }
+        
         if (email != null) {
-            email = email.trim().toLowerCase(Locale.ROOT);
+            this.email = email.trim().toLowerCase(java.util.Locale.ROOT);
+        } else {
+            this.email = null;
         }
+        
+        this.password = password;
+        this.active = active;
     }
 
     // === Getters ===
@@ -154,10 +156,6 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public void setPassword(String password) {
@@ -203,25 +201,31 @@ public class User {
     }
 
     // === equals & hashCode ===
-    // Proxy-friendly equals and stable hash: class-hash when id is null, id-hash after persistence.
 
+    /**
+     * Implements equality based on the business key ('username').
+     * This approach is stable across all persistence states and handles proxies.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof User other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        if (id != null && other.id != null) {
-            return id.equals(other.id);
-        }
-        return java.util.Objects.equals(username, other.username);
+        User user = (User) o;
+        // The business key 'username' must not be null for equality checks.
+        return username != null && username.equals(user.username);
     }
 
+    /**
+     * Generates a hash code based on the business key ('username').
+     * This ensures the hash code is stable before and after persistence.
+     */
     @Override
     public int hashCode() {
-        return (id != null) ? id.hashCode() : java.util.Objects.hash(username);
+        return Objects.hash(username);
     }
 
     // === toString ===

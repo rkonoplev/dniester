@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
 import java.util.Optional;
@@ -45,9 +44,6 @@ class NewsServiceImplIntegrationTest extends AbstractIntegrationTest {
     @Autowired
     private TermRepository termRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
     private User testUser;
     private Term testTerm;
     private Authentication auth;
@@ -65,17 +61,11 @@ class NewsServiceImplIntegrationTest extends AbstractIntegrationTest {
         termRepository.deleteAll();
 
         // Create and save a test user to act as the author
-        testUser = new User();
-        testUser.setUsername("integration_user");
-        testUser.setEmail("integration@test.com");
-        testUser.setPassword(passwordEncoder.encode("password"));
-        testUser.setActive(true);
+        testUser = new User("integration_user", "password", "integration@test.com", true);
         userRepository.save(testUser);
 
         // Create and save a test term to be associated with news
-        testTerm = new Term();
-        testTerm.setName("Integration Term");
-        testTerm.setVocabulary("category"); // Set the required vocabulary field
+        testTerm = new Term("Integration Term", "category");
         termRepository.save(testTerm);
 
         // Mock the security context to simulate an authenticated user
