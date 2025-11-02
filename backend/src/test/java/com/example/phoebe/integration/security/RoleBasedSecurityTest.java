@@ -3,18 +3,15 @@ package com.example.phoebe.security;
 import com.example.phoebe.entity.News;
 import com.example.phoebe.entity.Role;
 import com.example.phoebe.entity.User;
+import com.example.phoebe.integration.AbstractIntegrationTest;
 import com.example.phoebe.repository.NewsRepository;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.repository.UserRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
@@ -26,10 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Integration tests for role-based security and content ownership verification.
  * These tests verify that ADMINs can access any content, while EDITORs can only access their own.
  */
-@SpringBootTest
-@ActiveProfiles("test") // Uses H2 in-memory database for speed and isolation
 @Transactional // Rolls back database changes after each test
-class RoleBasedSecurityTest {
+class RoleBasedSecurityTest extends AbstractIntegrationTest {
 
     @Autowired
     private NewsRepository newsRepository;
@@ -54,27 +49,17 @@ class RoleBasedSecurityTest {
      */
     @BeforeEach
     void setUp() {
-        Role adminRole = new Role();
-        adminRole.setName("ADMIN");
+        Role adminRole = new Role("ADMIN", "Admin role");
         roleRepository.save(adminRole);
 
-        Role editorRole = new Role();
-        editorRole.setName("EDITOR");
+        Role editorRole = new Role("EDITOR", "Editor role");
         roleRepository.save(editorRole);
 
-        adminUser = new User();
-        adminUser.setUsername("admin");
-        adminUser.setEmail("admin@test.com");
-        adminUser.setPassword("password");
-        adminUser.setActive(true);
+        adminUser = new User("admin", "password", "admin@test.com", true);
         adminUser.setRoles(Set.of(adminRole));
         userRepository.save(adminUser);
 
-        editorUser = new User();
-        editorUser.setUsername("editor");
-        editorUser.setEmail("editor@test.com");
-        editorUser.setPassword("password");
-        editorUser.setActive(true);
+        editorUser = new User("editor", "password", "editor@test.com", true);
         editorUser.setRoles(Set.of(editorRole));
         userRepository.save(editorUser);
 
@@ -84,7 +69,6 @@ class RoleBasedSecurityTest {
         editorsNews.setAuthor(editorUser);
         newsRepository.save(editorsNews);
 
-        // Clear context to ensure no authentication leakage between tests
         SecurityContextHolder.clearContext();
     }
 

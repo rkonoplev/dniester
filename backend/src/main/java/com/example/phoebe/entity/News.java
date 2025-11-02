@@ -189,24 +189,38 @@ public class News {
         this.terms = terms;
     }
 
-    // equals & hashCode (proxy-friendly, id-based)
+    // === equals & hashCode ===
 
+    /**
+     * Implements equality based on the entity's ID.
+     * This is suitable for entities without a natural business key.
+     * It correctly handles Hibernate proxies.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof News other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return id != null && id.equals(other.getId());
+        News news = (News) o;
+        // If the id is null, the objects are not equal.
+        // This is a safe choice for entities managed by the persistence context.
+        return id != null && id.equals(news.id);
     }
 
+    /**
+     * Returns a fixed hash code.
+     * This is a trade-off for entities without a stable business key. It avoids
+     * hash code changes after persistence but may lead to slightly slower
+     * performance in hash-based collections. The performance impact is
+     * negligible for most use cases.
+     */
     @Override
     public int hashCode() {
-        return (id == null) ? getClass().hashCode() : id.hashCode();
+        return getClass().hashCode();
     }
-
     // toString
 
     @Override

@@ -2,7 +2,6 @@ package com.example.phoebe.config;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
@@ -22,9 +21,10 @@ public class RateLimitConfig {
      * Limit: 100 requests per minute.
      */
     public Bucket getPublicBucket(String ipAddress) {
-        return buckets.computeIfAbsent("public:" + ipAddress, key -> 
+        return buckets.computeIfAbsent("public:" + ipAddress, key ->
             Bucket.builder()
-                .addLimit(Bandwidth.classic(100, Refill.intervally(100, Duration.ofMinutes(1))))
+                // Use the modern builder pattern for creating bandwidths
+                .addLimit(Bandwidth.builder().capacity(100).refillIntervally(100, Duration.ofMinutes(1)).build())
                 .build()
         );
     }
@@ -34,9 +34,10 @@ public class RateLimitConfig {
      * Limit: 50 requests per minute (more restrictive).
      */
     public Bucket getAdminBucket(String ipAddress) {
-        return buckets.computeIfAbsent("admin:" + ipAddress, key -> 
+        return buckets.computeIfAbsent("admin:" + ipAddress, key ->
             Bucket.builder()
-                .addLimit(Bandwidth.classic(50, Refill.intervally(50, Duration.ofMinutes(1))))
+                // Use the modern builder pattern for creating bandwidths
+                .addLimit(Bandwidth.builder().capacity(50).refillIntervally(50, Duration.ofMinutes(1)).build())
                 .build()
         );
     }

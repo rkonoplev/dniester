@@ -49,13 +49,13 @@ public class Term {
     @NotBlank(message = "Term name is required")
     @Size(max = 255)
     @Column(nullable = false, length = 255)
-    private String name;
+    private final String name;
 
     /** Vocabulary category that groups related terms (e.g., category, tag). */
     @NotBlank(message = "Vocabulary is required")
     @Size(max = 100)
     @Column(nullable = false, length = 100)
-    private String vocabulary;
+    private final String vocabulary;
 
     /** Articles associated with this term (inverse side). */
     @ManyToMany(mappedBy = "terms", fetch = FetchType.LAZY)
@@ -63,35 +63,35 @@ public class Term {
 
     /** Default constructor required by JPA. */
     public Term() {
+        // Business keys are null in the default constructor.
+        this.name = null;
+        this.vocabulary = null;
     }
 
-    /** Constructor without id. */
+    /** Constructor with business key. */
     public Term(String name, String vocabulary) {
-        this.name = name;
-        this.vocabulary = vocabulary;
+        // Normalize and assign final fields directly in the constructor
+        if (name != null) {
+            this.name = name.trim();
+        } else {
+            this.name = null;
+        }
+
+        if (vocabulary != null) {
+            this.vocabulary = vocabulary.trim().toLowerCase(Locale.ROOT);
+        } else {
+            this.vocabulary = null;
+        }
     }
 
-    /** Constructor with id (typically used for tests). */
+    /**
+     * Constructor with id, typically used for test data setup.
+     * Note: 'id' is normally set by the persistence provider.
+     */
     public Term(Long id, String name, String vocabulary) {
         this.id = id;
         this.name = name;
         this.vocabulary = vocabulary;
-    }
-
-    /**
-     * Normalizes textual fields for consistency.
-     * - Trims name.
-     * - Trims and lowercases vocabulary (ROOT locale).
-     */
-    @PrePersist
-    @PreUpdate
-    private void normalize() {
-        if (name != null) {
-            name = name.trim();
-        }
-        if (vocabulary != null) {
-            vocabulary = vocabulary.trim().toLowerCase(Locale.ROOT);
-        }
     }
 
     // === Getters and Setters ===
@@ -114,14 +114,6 @@ public class Term {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setVocabulary(String vocabulary) {
-        this.vocabulary = vocabulary;
     }
 
     public void setNewsArticles(Set<News> newsArticles) {
@@ -150,22 +142,33 @@ public class Term {
 
     // === equals & hashCode ===
 
+    /**
+     * Implements equality based on the composite business key ('name', 'vocabulary').
+     * This approach is stable across all persistence states.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof Term other)) {
+        if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        return id != null && id.equals(other.getId());
+        Term term = (Term) o;
+        // Business keys must not be null for equality checks.
+        return name != null && vocabulary != null &&
+                name.equals(term.name) &&
+                vocabulary.equals(term.vocabulary);
     }
 
+    /**
+     * Generates a hash code based on the composite business key ('name', 'vocabulary').
+     * This ensures the hash code is stable before and after persistence.
+     */
     @Override
     public int hashCode() {
-        return (id == null) ? getClass().hashCode() : id.hashCode();
+        return java.util.Objects.hash(name, vocabulary);
     }
-
     // === toString ===
 
     @Override

@@ -1,35 +1,30 @@
-package com.example.phoebe.security;
+package com.example.phoebe.integration.security;
 
 import com.example.phoebe.entity.Role;
 import com.example.phoebe.entity.User;
+import com.example.phoebe.integration.AbstractIntegrationTest;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.repository.UserRepository;
-import com.example.phoebe.service.NewsService;
+import com.example.phoebe.security.RoleSecurityService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.Collectors;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-public class SecurityAspectIntegrationTest {
+class SecurityAspectIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
-    private NewsService newsService;
+    private RoleSecurityService roleSecurityService;
 
     @Autowired
     private UserRepository userRepository;
@@ -41,66 +36,48 @@ public class SecurityAspectIntegrationTest {
     private User editorUser;
 
     @BeforeEach
-    void setup() {
-        Role adminRole = getOrCreateRole("ADMIN");
-        Role editorRole = getOrCreateRole("EDITOR");
+    void setUp() {
+        userRepository.deleteAll();
+        roleRepository.deleteAll();
 
-        adminUser = new User();
-        adminUser.setUsername("sec_admin");
-        adminUser.setEmail("admin@test.com");
-        adminUser.setPassword("pass");
+        Role adminRole = createAndSaveRole("ADMIN");
+        Role editorRole = createAndSaveRole("EDITOR");
+
+        adminUser = new User("sec_admin", "pass", "sec_admin@test.com", true);
         adminUser.setRoles(Set.of(adminRole));
         userRepository.save(adminUser);
 
-        editorUser = new User();
-        editorUser.setUsername("sec_editor");
-        editorUser.setEmail("editor@test.com");
-        editorUser.setPassword("pass");
+        editorUser = new User("sec_editor", "pass", "sec_editor@test.com", true);
         editorUser.setRoles(Set.of(editorRole));
         userRepository.save(editorUser);
+
+        SecurityContextHolder.clearContext();
     }
 
-    private Role getOrCreateRole(String roleName) {
-        return roleRepository.findByName(roleName).orElseGet(() -> {
-            Role newRole = new Role();
-            newRole.setName(roleName);
-            return roleRepository.save(newRole);
-        });
-    }
-
-    private Authentication createAuthentication(User user) {
-        Set<org.springframework.security.core.authority.SimpleGrantedAuthority> authorities = user.getRoles().stream()
-                .map(role -> new org.springframework.security.core.authority.SimpleGrantedAuthority("ROLE_" + role.getName()))
-                .collect(Collectors.toSet());
-        return new UsernamePasswordAuthenticationToken(user.getUsername(), "password", authorities);
+    private Role createAndSaveRole(String roleName) {
+        Role newRole = new Role(roleName, null);
+        return roleRepository.save(newRole);
     }
 
     @Test
-    void requireAnyRoleWithValidRoleShouldSucceed() {
-        Authentication auth = createAuthentication(adminUser);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        assertDoesNotThrow(() -> {
-            // This method is assumed to be annotated with @RequireAnyRole({"ADMIN", "SUPER_USER"})
-            // We are simulating a call to a secured method.
-            // Since we don't have a method with that annotation, we'll just verify the setup.
-        });
+    void adminShouldBeAbleToCallAdminMethod() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(adminUser.getUsername(), "pass", 
+                    adminUser.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                        .collect(Collectors.toList()))
+        );
+        assertDoesNotThrow(() -> roleSecurityService.adminOnlyMethod());
     }
 
     @Test
-    void requireAnyRoleWithoutValidRoleShouldFail() {
-        Authentication auth = createAuthentication(editorUser);
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
-        assertThrows(AccessDeniedException.class, () -> {
-            // This is a placeholder for a call to a method secured with @RequireAnyRole("ADMIN")
-            // For this test to be meaningful, you would need a service method like:
-            // @RequireAnyRole("ADMIN") public void adminOnlyOperation() {}
-            // newsService.adminOnlyOperation();
-            // For now, we simulate the check.
-            if (!auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-                throw new AccessDeniedException("Access is denied");
-            }
-        });
+    void editorShouldBeDeniedFromAdminMethod() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken(editorUser.getUsername(), "pass", 
+                    editorUser.getRoles().stream()
+                        .map(role -> new SimpleGrantedAuthority("ROLE_" + role.getName()))
+                        .collect(Collectors.toList()))
+        );
+        assertThrows(AccessDeniedException.class, () -> roleSecurityService.adminOnlyMethod());
     }
 }

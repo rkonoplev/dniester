@@ -50,9 +50,8 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public RoleDto createRole(RoleCreateRequestDto dto) {
-        Role role = new Role();
-        role.setName(dto.getName());
-        role.setDescription(dto.getDescription());
+        // Create Role using the constructor to set the immutable business key 'name'.
+        Role role = new Role(dto.getName(), dto.getDescription());
         role.setPermissions(resolvePermissions(dto.getPermissionIds()));
         Role savedRole = roleRepository.save(role);
         return roleMapper.toDto(savedRole);
@@ -62,10 +61,13 @@ public class RoleServiceImpl implements RoleService {
     public RoleDto updateRole(Long id, RoleUpdateRequestDto dto) {
         Role role = roleRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", id));
-        role.setName(dto.getName());
+
+        // The role name (business key) is immutable and cannot be changed.
+        // We only update the mutable fields.
         role.setDescription(dto.getDescription());
         role.setPermissions(resolvePermissions(dto.getPermissionIds()));
-        // No explicit save() needed due to @Transactional
+
+        // No explicit save() needed due to @Transactional and dirty checking.
         return roleMapper.toDto(role);
     }
 
@@ -83,7 +85,7 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleId));
         Permission permission = permissionRepository.findById(permissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Permission", "id", permissionId));
-        role.getPermissions().add(permission);
+        role.addPermission(permission);
         return roleMapper.toDto(role);
     }
 
@@ -93,7 +95,7 @@ public class RoleServiceImpl implements RoleService {
                 .orElseThrow(() -> new ResourceNotFoundException("Role", "id", roleId));
         Permission permission = permissionRepository.findById(permissionId)
                 .orElseThrow(() -> new ResourceNotFoundException("Permission", "id", permissionId));
-        role.getPermissions().remove(permission);
+        role.removePermission(permission);
         return roleMapper.toDto(role);
     }
 

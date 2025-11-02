@@ -26,13 +26,11 @@ class NewsMapperTest {
     @Test
     void shouldMapNewsToNewsDto() {
         // Given
-        User author = new User();
+        User author = new User("test_author", "pass", "email", true);
         author.setId(1L);
-        author.setUsername("test_author");
 
-        Term term = new Term();
+        Term term = new Term("Technology", "category");
         term.setId(10L);
-        term.setName("Technology");
 
         News news = new News();
         news.setId(1L);

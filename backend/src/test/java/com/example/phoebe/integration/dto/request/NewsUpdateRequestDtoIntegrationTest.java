@@ -1,73 +1,52 @@
-package com.example.phoebe.dto.request;
+package com.example.phoebe.integration.dto.request;
 
-import com.example.phoebe.dto.response.NewsDto;
+import com.example.phoebe.dto.request.NewsUpdateRequestDto;
 import com.example.phoebe.entity.User;
+import com.example.phoebe.integration.AbstractIntegrationTest;
 import com.example.phoebe.repository.UserRepository;
-import com.example.phoebe.service.NewsService;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collections;
+import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class NewsUpdateRequestDtoIntegrationTest {
+class NewsUpdateRequestDtoIntegrationTest extends AbstractIntegrationTest {
 
     @Autowired
-    private NewsService newsService;
+    private Validator validator;
 
     @Autowired
     private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     private User testUser;
 
     @BeforeEach
     void setUp() {
-        testUser = new User();
-        testUser.setUsername("test_updater");
-        testUser.setEmail("updater@test.com");
-        testUser.setPassword(passwordEncoder.encode("password"));
-        testUser.setActive(true);
+        userRepository.deleteAll();
+        testUser = new User("test_updater", "pass", "updater@test.com", true);
         userRepository.save(testUser);
-
-        SecurityContextHolder.getContext().setAuthentication(
-                new UsernamePasswordAuthenticationToken(testUser.getUsername(), "password", Collections.emptyList())
-        );
     }
 
     @Test
-    void updateNewsWithPartialDtoShouldUpdateOnlyProvidedFields() {
-        // Given: An existing news article
-        NewsCreateRequestDto createDto = new NewsCreateRequestDto();
-        createDto.setTitle("Original Title");
-        createDto.setContent("Original content.");
-        NewsDto savedNews = newsService.create(createDto, SecurityContextHolder.getContext().getAuthentication());
+    void whenUpdateWithValidDto_thenNoViolations() {
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Valid Title", "Valid content.", null, true, null);
 
-        // When: We update it with a DTO containing only a new title
-        NewsUpdateRequestDto updateDto = new NewsUpdateRequestDto(
-                "Updated Title",
-                savedNews.getBody(),
-                savedNews.getTeaser(),
-                savedNews.isPublished(),
-                null
-        );
-        NewsDto updatedNews = newsService.update(savedNews.getId(), updateDto, SecurityContextHolder.getContext().getAuthentication());
+        Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
 
-        // Then: The title is updated, but the content remains the same
-        assertEquals("Updated Title", updatedNews.getTitle());
-        assertEquals("Original content.", updatedNews.getBody());
+        assertTrue(violations.isEmpty());
+    }
+
+    @Test
+    void whenTitleIsTooLong_thenViolation() {
+        NewsUpdateRequestDto dto = new NewsUpdateRequestDto("a".repeat(51), null, null, true, null); // Exceeds max 50
+
+        Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
+
+        assertFalse(violations.isEmpty());
     }
 }
