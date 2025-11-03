@@ -92,7 +92,8 @@ npm run dev
 - **Performance**: High-performance caching with Caffeine.
 - **Rate Limiting**: IP-based protection with Bucket4j.
 - **Multi-Database Support**: Works with MySQL 8.0 and PostgreSQL 12+.
-- **CI/CD**: GitHub Actions pipeline with automated testing.
+- **Testing**: Comprehensive unit and integration test suite with docker-compose.
+- **CI/CD**: GitHub Actions pipeline with automated testing and code quality checks.
 
 ## 📚 Documentation
 
@@ -121,7 +122,7 @@ Comprehensive documentation covering installation, development, API usage, and d
 - **Caching**: Caffeine
 - **Rate Limiting**: Bucket4j
 - **Documentation**: OpenAPI/Swagger
-- **Testing**: JUnit 5, TestContainers
+- **Testing**: JUnit 5, Unified integration tests with docker-compose MySQL
 - **CI/CD**: GitHub Actions
 - **Reference Implementations**: Angular & Next.js (planned)
 

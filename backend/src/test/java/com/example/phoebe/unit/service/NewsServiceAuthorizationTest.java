@@ -62,7 +62,6 @@ class NewsServiceAuthorizationTest {
     void adminShouldHaveAccessToAnyNews() {
         // Given
         Authentication adminAuth = createAuth(adminUser, "ADMIN");
-        when(userRepository.findByUsername("admin")).thenReturn(Optional.of(adminUser));
 
         // When & Then
         assertTrue(newsService.canAccessNews(editorsNews.getId(), adminAuth));

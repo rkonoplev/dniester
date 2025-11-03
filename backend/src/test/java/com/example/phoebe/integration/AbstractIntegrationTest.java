@@ -2,45 +2,14 @@ package com.example.phoebe.integration;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.containers.wait.strategy.Wait;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import java.time.Duration;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Abstract base class for integration tests that require a real database.
- * This class uses Testcontainers to spin up a MySQL Docker container for each test run,
- * ensuring a clean, isolated environment.
+ * Abstract base class for integration tests.
+ * Uses docker-compose MySQL (requires: docker-compose up -d news-mysql)
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Testcontainers
-@ActiveProfiles("integration-test")
+@ActiveProfiles("local")
+@Transactional
 public abstract class AbstractIntegrationTest {
-
-    /**
-     * Defines the MySQL Docker container. The image version should match the one used in production.
-     * The container is static, meaning it will be started once for all tests in the class that extends this base class.
-     */
-    @Container
-    private static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.3.0")
-            .withStartupTimeout(Duration.ofSeconds(120))
-            .waitingFor(Wait.forLogMessage(".*ready for connections.*\\n", 1));
-
-    /**
-     * Dynamically configures the Spring Boot application properties to connect to the Testcontainer.
-     * This method overrides the datasource properties at runtime, pointing them to the dynamically
-     * allocated port and credentials of the Docker container.
-     *
-     * @param registry The dynamic property registry.
-     */
-    @DynamicPropertySource
-    private static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
-        registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
-        registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
-    }
 }

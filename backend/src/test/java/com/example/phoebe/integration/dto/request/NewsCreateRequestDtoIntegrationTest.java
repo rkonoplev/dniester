@@ -33,7 +33,7 @@ class NewsCreateRequestDtoIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void whenCreateWithValidDto_thenNoViolations() {
+    void createWithValidDtoShouldHaveNoViolations() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setTitle("Valid Title");
         dto.setContent("Some content here.");
@@ -44,7 +44,7 @@ class NewsCreateRequestDtoIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void whenTitleIsBlank_thenViolation() {
+    void titleBlankShouldHaveViolation() {
         NewsCreateRequestDto dto = new NewsCreateRequestDto();
         dto.setContent("Some content here.");
 
