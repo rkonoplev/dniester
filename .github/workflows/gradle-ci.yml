@@ -70,8 +70,8 @@ jobs:
       - name: Start MySQL for integration tests
         run: |
           cd backend/..
-          docker-compose up -d news-mysql
-          docker-compose ps
+          docker compose up -d news-mysql
+          docker compose ps
           # Wait for MySQL to be ready
           timeout 60s bash -c 'until docker exec news-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
 
@@ -82,7 +82,7 @@ jobs:
 
       - name: Stop MySQL
         if: always()
-        run: cd backend/.. && docker-compose down
+        run: cd backend/.. && docker compose down
 
       - name: Static Analysis (Checkstyle + PMD)
         run: cd backend && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --no-daemon --warning-mode all
