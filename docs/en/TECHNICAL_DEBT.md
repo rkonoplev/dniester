@@ -59,8 +59,51 @@ This section outlines planned features and improvements, categorized by priority
 
 ### Security (High Priority)
 
-- **OAuth 2.0 + JWT**: Replace Basic Auth with modern, token-based authentication for enhanced security.
-- **2FA for ADMIN/EDITOR**: Implement two-factor authentication for critical user roles.
+#### 1. OAuth 2.0 + JWT — Replacing Basic Auth
+- **Goal**: Transition from the outdated Basic Auth to a modern, secure, and scalable authentication system.
+- **Features**:
+  - Authorization via OAuth 2.0 (e.g., Google, GitHub, or a custom Identity Provider).
+  - Generation and validation of JWT tokens.
+  - Storing roles and permissions within the token or in the database.
+  - Updating login, endpoint protection, logout, and refresh token mechanisms.
+- **When to Implement**: After stabilizing the business logic and API, but before the public release.
+- **Recommendation**: It is advisable to implement this before deploying to Render.com to avoid changing the authorization mechanics in production.
+
+#### 2. 2FA (Two-Factor Authentication) for ADMIN/EDITOR
+- **Goal**: Add an extra layer of security for critically important roles.
+- **Features**:
+  - Generation of temporary codes (TOTP, SMS, email).
+  - Support for Google Authenticator or similar apps.
+  - UI/UX for second-factor confirmation.
+  - Storage and verification of 2FA secrets.
+- **When to Implement**: After implementing OAuth 2.0 + JWT, when the main authorization system is secure and flexible.
+- **Note**: This is an add-on that requires a stable token and role system.
+
+### Recommended Action Plan
+
+| Stage | Action | Rationale |
+| :---: | :--- | :--- |
+| 1️⃣ | Finalize current business logic and API | To avoid conflicts with authorization changes |
+| 2️⃣ | Implement OAuth 2.0 + JWT | The core authentication mechanism |
+| 3️⃣ | Update CI/CD and Render configuration | To ensure deployment works with the new auth |
+| 4️⃣ | Implement 2FA for ADMIN/EDITOR | To enhance security |
+
+### Other Potential Components
+
+| Component | Purpose | Needed? |
+| :--- | :--- | :---: |
+| Email service (SMTP, Mailgun) | Notifications, registration confirmation | ✅ Yes |
+| OAuth 2.0 + JWT | Secure authentication | ✅ Yes |
+| 2FA | Admin protection | ✅ Yes |
+| File storage (S3, MinIO) | Storing images, documents | ✅ Possibly |
+| Monitoring (Prometheus + Grafana) | Application state tracking | ✅ In the future |
+| Logging (ELK, Loki) | Centralized logs | ✅ In the future |
+
+**Recommendation for this project:**
+For an administration site or news portal:
+- **Prometheus + Grafana** for monitoring (CPU, RAM, errors, alerts).
+- **Loki + Grafana** for logging (errors, requests, user actions).
+- **ELK Stack** if powerful log search is needed, but Loki is simpler and lighter.
 
 ### Functionality (Medium Priority)
 
