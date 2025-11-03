@@ -69,7 +69,6 @@ jobs:
 
       - name: Start MySQL for integration tests
         run: |
-          cd backend/..
           docker compose up -d news-mysql
           docker compose ps
           # Wait for MySQL to be ready
@@ -82,7 +81,7 @@ jobs:
 
       - name: Stop MySQL
         if: always()
-        run: cd backend/.. && docker compose down
+        run: docker compose down
 
       - name: Static Analysis (Checkstyle + PMD)
         run: cd backend && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --no-daemon --warning-mode all
