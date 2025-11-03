@@ -33,7 +33,7 @@ class NewsUpdateRequestDtoIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void whenUpdateWithValidDto_thenNoViolations() {
+    void updateWithValidDtoShouldHaveNoViolations() {
         NewsUpdateRequestDto dto = new NewsUpdateRequestDto("Valid Title", "Valid content.", null, true, null);
 
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);
@@ -42,7 +42,7 @@ class NewsUpdateRequestDtoIntegrationTest extends AbstractIntegrationTest {
     }
 
     @Test
-    void whenTitleIsTooLong_thenViolation() {
+    void titleTooLongShouldHaveViolation() {
         NewsUpdateRequestDto dto = new NewsUpdateRequestDto("a".repeat(51), null, null, true, null); // Exceeds max 50
 
         Set<ConstraintViolation<NewsUpdateRequestDto>> violations = validator.validate(dto);

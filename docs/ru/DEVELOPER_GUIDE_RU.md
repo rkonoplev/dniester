@@ -46,13 +46,16 @@
     ```
 
 **Если нужно протестировать полное приложение (включая интеграционные тесты):**
-- Запусти Docker (например, контейнеры с БД).
+- Запусти MySQL через Docker:
+  ```bash
+  docker-compose up -d news-mysql
+  ```
 - Подними сервис:
   ```bash
-  ./gradlew bootRun
+  ./gradlew bootRun --args='--spring.profiles.active=local'
   ```
+- **Запуск интеграционных тестов:** `./gradlew integrationTest` (использует профиль `local` с docker-compose MySQL)
 - После проверки можно остановить Docker, чтобы не грузить ноутбук.
-- **Запуск интеграционных тестов:** `./gradlew integrationTest`
 
 ---
 
@@ -84,7 +87,8 @@
 **Минимум проверки перед пушем:**
 - Код компилируется (Build Project или `./gradlew build`).
 - Все юнит-тесты проходят (`./gradlew test`).
-- Проверка стиля — опционально, но желательно (`./gradlew checkstyleMain checkstyleTest`).
+- Интеграционные тесты проходят (`./gradlew integrationTest` с запущенным MySQL)
+- Проверка стиля — опционально, но желательно (`./gradlew checkstyleMain checkstyleTest pmdMain pmdTest`).
 
 ---
 

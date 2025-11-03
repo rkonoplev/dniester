@@ -67,10 +67,22 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Start MySQL for integration tests
+        run: |
+          cd backend/..
+          docker-compose up -d news-mysql
+          docker-compose ps
+          # Wait for MySQL to be ready
+          timeout 60s bash -c 'until docker exec news-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+
       - name: Build, Test, Coverage
         env:
           SPRING_PROFILES_ACTIVE: ci
-        run: cd backend && ./gradlew clean build test jacocoTestReport --no-daemon --warning-mode all
+        run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport --no-daemon --warning-mode all
+
+      - name: Stop MySQL
+        if: always()
+        run: cd backend/.. && docker-compose down
 
       - name: Static Analysis (Checkstyle + PMD)
         run: cd backend && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --no-daemon --warning-mode all

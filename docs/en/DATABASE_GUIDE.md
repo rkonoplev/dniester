@@ -263,12 +263,10 @@ Flyway's locations are configured via Spring profiles, allowing it to combine co
 | Migration | Purpose | Changes | Location |
 |-----------|---------|---------|----------|
 | V1 | Initial schema | Core tables: users, roles, content, terms | `common` |
-| V2 | Publication workflow | Added `published` column to content | `common` |
 | V3 | Sample data | **Default admin user and test content** | `common` |
 | V4 | User unification | Consolidated migrated authors | `common` |
 | V5 | Permissions system | Added permissions and role_permissions tables | `common` |
-| V6 | Setup permissions | Populated default permissions and role assignments | `mysql`, `postgresql` |
-| V7 | Add unique constraints | Added unique constraints and indexes to join tables | `mysql`, `postgresql` |
+| V6 | Permission descriptions | Added description column to permissions table | `common` |
 
 ### Migration V3 Default Data
 

@@ -40,8 +40,10 @@ of the current codebase.
 - **Test Structure Refactoring**: A full separation of tests into `unit/` and `integration/` directories has
   been completed.
 - **Gradle Configuration**: `build.gradle` is configured to run unit and integration tests separately.
-- **Testcontainers Integration**: Testcontainers have been implemented for robust integration testing with a
-  real DB (MySQL), ensuring an isolated and clean test environment.
+- **Integration Tests**: Configured to work with docker-compose MySQL using `local` profile with Hibernate
+  `create-drop` for automatic schema management.
+- **Unified Test Architecture**: Created a single `AbstractIntegrationTest` base class for all integration
+  tests, eliminating code duplication.
 
 ---
 

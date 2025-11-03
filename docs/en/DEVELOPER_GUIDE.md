@@ -50,9 +50,14 @@ static analysis, security scanning, and code coverage are performed in GitHub Ac
       ```bash
       ./gradlew test
       ```
+- **For integration tests** (requires MySQL):
+  ```bash
+  docker-compose up -d news-mysql
+  ./gradlew integrationTest
+  ```
 - **Check style/linting locally** (optional, prevents CI failures):
   ```bash
-  ./gradlew checkstyleMain checkstyleTest
+  ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest
   ```
 
 ---
@@ -86,7 +91,8 @@ All developers on the team use these identical formatting settings to ensure cod
 Before committing and pushing, check at least:
 
 - Code compiles (Build Project or `./gradlew build`)
-- All **tests pass** (`./gradlew test`)
+- All **unit tests pass** (`./gradlew test`)
+- **Integration tests pass** (`./gradlew integrationTest` with MySQL running)
 - Code style checks pass (optional but strongly recommended)
 
 ---
