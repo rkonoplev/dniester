@@ -59,63 +59,59 @@ This section outlines planned features and improvements, categorized by priority
 
 ### Security (High Priority)
 
-#### 1. OAuth 2.0 + JWT — Replacing Basic Auth
-- **Goal**: Transition from the outdated Basic Auth to a modern, secure, and scalable authentication system.
-- **Features**:
-  - Authorization via OAuth 2.0 (e.g., Google, GitHub, or a custom Identity Provider).
-  - Generation and validation of JWT tokens.
-  - Storing roles and permissions within the token or in the database.
-  - Updating login, endpoint protection, logout, and refresh token mechanisms.
-- **When to Implement**: After stabilizing the business logic and API, but before the public release.
-- **Recommendation**: It is advisable to implement this before deploying to cloud hosting platforms to avoid changing
-  the authorization mechanics in production.
+- **OAuth 2.0 + JWT**: Transition from Basic Auth to a token-based authentication system.
+  - **Purpose**: To implement a modern, secure, and scalable authentication mechanism.
+  - **Components**: OAuth 2.0 grant flows, JWT generation and validation, token-based endpoint protection,
+    refresh tokens, and updated login/logout procedures.
 
-#### 2. 2FA (Two-Factor Authentication) for ADMIN/EDITOR
-- **Goal**: Add an extra layer of security for critically important roles.
-- **Features**:
-  - Generation of temporary codes (TOTP, SMS, email).
-  - Support for Google Authenticator or similar apps.
-  - UI/UX for second-factor confirmation.
-  - Storage and verification of 2FA secrets.
-- **When to Implement**: After implementing OAuth 2.0 + JWT, when the main authorization system is secure and flexible.
-- **Note**: This is an add-on that requires a stable token and role system.
-
-### Recommended Action Plan
-
-| Stage | Action | Rationale |
-| :---: | :--- | :--- |
-| 1️⃣ | Finalize current business logic and API | To avoid conflicts with authorization changes |
-| 2️⃣ | Implement OAuth 2.0 + JWT | The core authentication mechanism |
-| 3️⃣ | Update CI/CD and deployment configuration | To ensure deployment works with the new auth |
-| 4️⃣ | Implement 2FA for ADMIN/EDITOR | To enhance security |
-
-### Other Potential Components
-
-| Component | Purpose | Needed? |
-| :--- | :--- | :---: |
-| Email service (SMTP, Mailgun) | Notifications, registration confirmation | ✅ Yes |
-| OAuth 2.0 + JWT | Secure authentication | ✅ Yes |
-| 2FA | Admin protection | ✅ Yes |
-| File storage (S3, MinIO) | Storing images, documents | ✅ Possibly |
-| **Grafana Cloud** (Prometheus + Loki) | Monitoring and centralized logging | ✅ In the future |
-
-**Recommendation for this project:**
-For an administration site or news portal, using **Grafana Cloud** is the recommended approach for monitoring and
-logging. Its free tier is generous and fully compatible with cloud hosting platforms (Free Tier), as it does not
-require a local persistent disk. The application can send metrics and logs directly to Grafana's cloud-based
-Prometheus and Loki instances.
+- **Two-Factor Authentication (2FA)**: Add a second layer of security for administrative roles.
+  - **Purpose**: To enhance security for accounts with elevated privileges (e.g., ADMIN, EDITOR).
+  - **Components**: Time-based One-Time Password (TOTP) generation and validation, integration with
+    authenticator apps, and UI/UX for 2FA setup and confirmation.
 
 ### Functionality (Medium Priority)
 
-- **File Upload**: Implement support for uploading and managing images and other media directly through the API.
-- **Advanced Search**: Integrate a full-text search engine like Elasticsearch or Lucene.
-- **Webhooks**: Provide a system for sending event-driven notifications to external services.
+- **File Uploads**: Implement support for managing images and other media.
+  - **Purpose**: To allow users to upload files directly through the API.
+  - **Components**: File storage service (e.g., local, S3, or MinIO), API endpoints for upload and retrieval.
+
+- **Advanced Search**: Integrate a full-text search engine.
+  - **Purpose**: To provide powerful and fast search capabilities across content.
+  - **Components**: Elasticsearch or a similar search engine, indexing logic, and search API endpoints.
+
+- **Webhooks**: Develop a system for event-driven notifications.
+  - **Purpose**: To notify external services of specific events within the application.
+  - **Components**: A mechanism for managing webhook subscriptions and dispatching event payloads.
+
+- **Telegram Integration**: Automatically post article previews to a Telegram channel.
+  - **Purpose**: To expand content distribution and provide timely updates to subscribers.
+  - **Components**: A Telegram Bot client, a service to listen for article creation/publication events,
+    message formatting (preview, link), and secure storage for the bot token.
 
 ### Architecture & Performance (Low Priority)
 
-- **Reactive Stack Migration**: For high-traffic public endpoints, consider migrating from the blocking
-  Spring MVC/JPA stack to a non-blocking, reactive stack (Spring WebFlux + R2DBC) to maximize
-  scalability and resource efficiency.
+- **Reactive Stack Migration**: Consider migrating public-facing, high-traffic endpoints to a non-blocking stack.
+  - **Purpose**: To maximize scalability and resource efficiency under high load.
+  - **Components**: Spring WebFlux and R2DBC for specific, performance-critical parts of the application.
+
+### Implementation Sequence
+
+1.  **Finalize Business Logic and API**: Complete and stabilize core application features.
+2.  **Implement OAuth 2.0 + JWT**: Establish the primary authentication and authorization mechanism.
+3.  **Update CI/CD and Deployment Configuration**: Ensure the deployment process is compatible with the new auth system.
+4.  **Implement 2FA**: Add two-factor authentication for administrative roles as an additional security layer.
+
+### Supporting Infrastructure and Services
+
+- **Email Service (e.g., SMTP, Mailgun)**
+  - **Purpose**: Required for user notifications, registration confirmation, and 2FA/password recovery.
+- **File Storage (e.g., S3, MinIO)**
+  - **Purpose**: For storing user-uploaded content like images and documents. To be evaluated based on final
+    feature requirements.
+- **Monitoring and Logging (Grafana Cloud)**
+  - **Purpose**: Centralized application monitoring (Prometheus) and log aggregation (Loki). Recommended for
+    production environments. Compatible with free-tier cloud hosting platforms as it does not require a local
+    persistent disk.
 
 ### Reference Frontend Implementations
 
