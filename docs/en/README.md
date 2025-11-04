@@ -62,8 +62,11 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Database Guide](./DATABASE_GUIDE.md)**  
   Complete database documentation, including schema, setup, and migration scripts.
 
-- **[Migration Drupal6 → Phoebe CMS](./MIGRATION_DRUPAL6.md)**  
-  A complete guide for migrating from a legacy Drupal 6 site.
+- **[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**  
+  The modern, automated way to deploy the project with data from the Drupal 6 dump using Flyway.
+
+- **[Historical Migration Guide](./MIGRATION_DRUPAL6.md)**  
+  Describes the old, manual migration process. Preserved for historical reference.
 
 - **[Docker Data Backup & Recovery](./DOCKER_DATA_RECOVERY_GUIDE.md)**  
   Inventory and backup of all project databases from Docker volumes.

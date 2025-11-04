@@ -1,3 +1,12 @@
+> **⚠️ Исторический документ**
+> 
+> Это руководство описывает ручные процессы резервного копирования и восстановления, которые были актуальны на
+> ранних этапах проекта. Текущий проект использует **автоматические миграции Flyway** для создания схемы БД, а
+> данные для разработки вносятся через эти же миграции.
+> 
+> Этот документ сохранен для исторической справки. Следование ему может привести к конфликтам с автоматическими
+> миграциями.
+
 # Руководство по резервному копированию и восстановлению данных Docker
 
 Этот документ описывает полный процесс инвентаризации, резервного копирования (дампа) и восстановления
@@ -75,14 +84,14 @@ docker run --rm -it -v <имя_вольюма>:/data ubuntu:latest bash
 Замените `<имя_вольюма>` на ваше (например, `news-platform_mysql_data_drupal6`).
 
 ```bash
-docker run --rm -v <имя_вольюма>:/var/lib/mysql -v $(pwd)/db_dumps:/backup mysql:5.7 \
+docker run --rm -v <имя_вольюма>:/var/lib/mysql -v $(pwd)/legacy/original_drupal_dump:/backup mysql:5.7 \
 sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases > /backup/drupal6_migration_backup_FULL.sql'
 ```
 
 - `mysqld --daemonize`: Запускает сервер MySQL в фоновом режиме внутри контейнера.
 - `sleep 30`: Пауза в 30 секунд, чтобы дать серверу время полностью запуститься.
 - `mysqldump ...`: Создает дамп всех баз данных и сохраняет его в файл `drupal6_migration_backup_FULL.sql`
-  в вашей директории `db_dumps` на хост-машине.
+  в вашей директории `legacy/original_drupal_dump` на хост-машине.
 
 После выполнения этой команды у вас будет полный и корректный бэкап вашей самой первой базы данных.
 
@@ -100,7 +109,7 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 
 2. **Создайте дамп**:
    ```bash
-   docker run --rm -v phoebe_mysql_data:/var/lib/mysql -v $(pwd)/db_dumps:/backup mysql:8.0 \
+   docker run --rm -v phoebe_mysql_data:/var/lib/mysql -v $(pwd)/legacy/original_drupal_dump:/backup mysql:8.0 \
    sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases > /backup/phoebe_new_db_backup.sql'
    ```
 
@@ -124,7 +133,7 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 
 2. **Импортируйте дамп**:
    ```bash
-   docker exec -i <имя_контейнера> mysql -uroot -proot < phoebe_new_db_backup.sql
+   docker exec -i <имя_контейнера> mysql -uroot -proot < legacy/original_drupal_dump/phoebe_new_db_backup.sql
    ```
 
 Эта процедура гарантирует полный и безопасный перенос всей вашей работы.

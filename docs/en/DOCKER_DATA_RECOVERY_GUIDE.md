@@ -1,3 +1,12 @@
+> **⚠️ Historical Document**
+> 
+> This guide describes manual backup and recovery processes that were relevant in the early stages of the project.
+> The current project uses **automated Flyway migrations** to create the database schema, and development data is
+> populated through these same migrations.
+> 
+> This document is preserved for historical reference. Following it may lead to conflicts with the automated
+> migration system.
+
 # Docker Data Backup and Recovery Guide
 
 This document describes the full process of inventorying, backing up (dumping), and restoring
@@ -75,14 +84,14 @@ runs a temporary MySQL 5.7 container, mounts your volume to it, and executes `my
 Replace `<volume_name>` with yours (e.g., `news-platform_mysql_data_drupal6`).
 
 ```bash
-docker run --rm -v <volume_name>:/var/lib/mysql -v $(pwd)/db_dumps:/backup mysql:5.7 \
+docker run --rm -v <volume_name>:/var/lib/mysql -v $(pwd)/legacy/original_drupal_dump:/backup mysql:5.7 \
 sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases > /backup/drupal6_migration_backup_FULL.sql'
 ```
 
 - `mysqld --daemonize`: Starts the MySQL server in the background inside the container.
 - `sleep 30`: A 30-second pause to give the server time to fully initialize.
 - `mysqldump ...`: Creates a dump of all databases and saves it to the `drupal6_migration_backup_FULL.sql`
-  file in your `db_dumps` directory on the host machine.
+  file in your `legacy/original_drupal_dump` directory on the host machine.
 
 After running this command, you will have a complete and correct backup of your very first database.
 
@@ -100,7 +109,7 @@ to avoid file lock errors (`Unable to lock ./ibdata1`).
 
 2. **Create the dump**:
    ```bash
-   docker run --rm -v phoebe_mysql_data:/var/lib/mysql -v $(pwd)/db_dumps:/backup mysql:8.0 \
+   docker run --rm -v phoebe_mysql_data:/var/lib/mysql -v $(pwd)/legacy/original_drupal_dump:/backup mysql:8.0 \
    sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases > /backup/phoebe_new_db_backup.sql'
    ```
 
@@ -124,7 +133,7 @@ After you have copied the required `.sql` files to a new computer, you can resto
 
 2. **Import the dump**:
    ```bash
-   docker exec -i <container_name> mysql -uroot -proot < phoebe_new_db_backup.sql
+   docker exec -i <container_name> mysql -uroot -proot < legacy/original_drupal_dump/phoebe_new_db_backup.sql
    ```
 
 This procedure ensures a complete and safe transfer of all your work.
