@@ -87,18 +87,10 @@ backend/out/
 secrets.env
 config-local.yml
 
-# Ignore any SQL dump files
-/db_dumps/*
-!db_dumps/README.md      # allow a readme with description
-
-# Database files - exclude large data files, allow migration scripts
-/db_data/clean_schema.sql
-/db_data/drupal6_fixed.sql
-# Allow small migration scripts and README
-!/db_data/README.md
-!/db_data/detect_custom_fields.sql
-!/db_data/migrate_cck_fields.sql
-!/db_data/migrate_from_drupal6_universal.sql
+# Ignore archived database dumps and large SQL files
+legacy/original_drupal_dump/*.sql
+legacy/archived_migration_scripts/drupal6_fixed.sql
+legacy/archived_migration_scripts/clean_schema.sql
 
 # Ignore application log files
 /backend/logs/

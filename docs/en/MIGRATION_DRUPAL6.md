@@ -1,5 +1,13 @@
 # Migration Guide: Drupal 6 → Phoebe CMS
 
+> **⚠️ Historical Document**
+> 
+> This guide describes the **one-time manual migration process** that was used for the initial data transfer. The current
+> project uses **automated Flyway migrations** to create and update the database schema.
+> 
+> This document is preserved for historical reference and to understand how the data was transformed. It is not
+> necessary to follow this guide for current development.
+
 This detailed step-by-step guide describes the content migration process from a legacy Drupal 6
 system to the modern headless Phoebe CMS architecture using Docker and MySQL.
 
@@ -40,7 +48,7 @@ This section is for those who already have a ready `clean_schema.sql` file.
 docker compose -f docker-compose.yml up -d mysql
 
 # 2. Import the cleaned schema and data into the 'dniester' database
-docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 
 # 3. Verify that the data is in place (e.g., check the number of articles)
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
@@ -59,7 +67,7 @@ Therefore, we use a temporary MySQL 5.7 container to ensure compatibility.
 ```bash
 # Launch the container in the background. The docker-compose.drupal.yml file is specifically
 # configured for this task.
-docker compose -f docker-compose.drupal.yml up -d
+docker compose -f legacy/docker-compose.drupal.yml up -d
 ```
 
 **Logs:**
@@ -90,13 +98,13 @@ transform it.
 ```bash
 # Export the original dump (e.g., drupal6_fixed.sql) from the a264971_dniester database
 # inside our temporary container.
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > legacy/archived_migration_scripts/drupal6_fixed.sql
 ```
 
 **Import into Clean `dniester` Database:**
 ```bash
 # Import the original dump into the 'dniester' database inside our temporary container.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
 ```
 
 **Verify Imported Tables:**
@@ -108,11 +116,11 @@ SHOW TABLES;
 ```bash
 # Apply the main normalization script. It creates new tables and transfers cleaned
 # data from old Drupal tables.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
 
 # If your Drupal site used the CCK module for custom fields,
 # apply this additional script for their migration.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_cck_fields.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
 ```
 
 ### Step 3: Export Cleaned Schema (`clean_schema.sql`)
@@ -122,7 +130,7 @@ artifact of the entire migration process.
 
 ```bash
 # Create a dump of the 'dniester' database from the temporary container and save it to a file.
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
 ```
 
 ### Step 4: Prepare and Launch Target Environment (MySQL 8.0)
@@ -132,7 +140,7 @@ The temporary environment is no longer needed. We stop it and launch the project
 **Stop Temporary Environment:**
 ```bash
 # Stop and completely remove the temporary container and its volume.
-docker compose -f docker-compose.drupal.yml down -v
+docker compose -f legacy/docker-compose.drupal.yml down -v
 ```
 
 **Launch Target MySQL 8.0:**
@@ -152,7 +160,7 @@ docker logs news-mysql
 Load our `clean_schema.sql` into the new, main database.
 
 ```bash
-docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 ```
 
 ### Step 6: Verify the Result
@@ -182,26 +190,26 @@ For a full end-to-end migration from a Drupal 6 dump to a clean MySQL 8.0 Phoebe
 
 ```bash
 # 1. Start Drupal 6 migration environment (MySQL 5.7 container)
-docker compose -f docker-compose.drupal.yml up -d
+docker compose -f legacy/docker-compose.drupal.yml up -d
 
 # 2. Export original Drupal 6 data, import into a clean database, and run normalization scripts
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > db_data/drupal6_fixed.sql
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/drupal6_fixed.sql
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_from_drupal6_universal.sql
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
 # Optional: If you had CCK fields in Drupal 6, uncomment and run the following line:
-# docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < db_data/migrate_cck_fields.sql
+# docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
 
 # 3. Export the cleaned and normalized schema to clean_schema.sql
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > db_data/clean_schema.sql
+docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
 
 # 4. Stop and remove the temporary Drupal 6 migration environment
-docker compose -f docker-compose.drupal.yml down -v
+docker compose -f legacy/docker-compose.drupal.yml down -v
 
 # 5. Start the target MySQL 8.0 container for Phoebe CMS
 docker compose -f docker-compose.yml up -d mysql
 
 # 6. Import the final cleaned schema into MySQL 8.0
-docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 
 # 7. Verify the migration (e.g., count content rows)
 docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
@@ -294,7 +302,7 @@ If you only need to verify data in MySQL without running the Spring Boot applica
 
 4.  **Import Database (if not already loaded):**
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+    docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
     ```
 
 5.  **Verify Database Content:**
@@ -327,12 +335,12 @@ To run the entire application:
 
 3.  **Import Database (if necessary):**
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < db_data/clean_schema.sql
+    docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
     ```
 
 4.  **Verify Database:**
     ```bash
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
     ```
 
 5.  **Check Application Logs:**
@@ -504,6 +512,6 @@ docker stop news-mysql-drupal6
 **Option B — Completely remove the Drupal 6 container and its volume (recommended after successful export):**
 This option frees up disk space and is recommended once you are confident the migration is complete and successful.
 ```bash
-docker compose -f docker-compose.drupal.yml down -v
+docker compose -f legacy/docker-compose.drupal.yml down -v
 ```
-After cleanup, only MySQL 8.0 (`news-mysql`) and its persistent volume (`news-platform_mysql_data`) should remain for further work with Phoebe CMS.
+After cleanup, only MySQL 8.0 (`news-mysql`) and its persistent volume (`phoebe_mysql_data`) should remain for further work with Phoebe CMS.
