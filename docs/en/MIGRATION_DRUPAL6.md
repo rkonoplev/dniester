@@ -1,12 +1,12 @@
-# Migration Guide: Drupal 6 → Phoebe CMS
-
 > **⚠️ Historical Document**
 > 
-> This guide describes the **one-time manual migration process** that was used for the initial data transfer. The current
-> project uses **automated Flyway migrations** to create and update the database schema.
+> This guide describes the **manual migration process** and is now used for **Scenario 2**
+> (migrating a new site) from the **[Setup Guide](./SETUP_GUIDE.md)**.
 > 
-> This document is preserved for historical reference and to understand how the data was transformed. It is not
-> necessary to follow this guide for current development.
+> For a quick setup of the existing project with its included data, please follow the
+> **[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**.
+
+# Migration Guide: Drupal 6 → Phoebe CMS
 
 This detailed step-by-step guide describes the content migration process from a legacy Drupal 6
 system to the modern headless Phoebe CMS architecture using Docker and MySQL.
