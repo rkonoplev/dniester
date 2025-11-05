@@ -135,16 +135,42 @@ Open your `docker-compose.yml` file and ensure only one database service is acti
 
 This process requires repeating the historical steps to convert your new dump into a Flyway script.
 
-1.  **Understand the concept** of the manual migration in the **[Historical Migration Guide](./MIGRATION_DRUPAL6.md)**.
-    This document details how to use a temporary MySQL 5.7 container and a set of transformation scripts
-    to convert a raw dump into a clean one.
+#### Step 1: Perform the Data Transformation
 
-2.  **Follow the steps** from the historical guide, using your **new** dump as the source.
+Follow the instructions in the [Historical Migration Guide](./MIGRATION_DRUPAL6.md) to convert your new
+Drupal 6 dump into a final `clean_schema.sql` file.
 
-3.  **Create a new Flyway script.**
-    - The result of the manual migration will be a "clean" SQL file with `INSERT` commands.
-    - Create a **new** file in `backend/src/main/resources/db/migration/common/` (e.g., `V7__add_data_from_new_site.sql`).
-    - Paste the resulting `INSERT` commands into it.
+#### Step 2: Configure the Environment for MySQL
+
+1.  **Docker Compose**: Ensure the `mysql` service is active in your `docker-compose.yml` file.
+
+2.  **Environment Variables**: In your `.env.dev` file, specify your MySQL credentials.
+    ```dotenv
+    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+    SPRING_DATASOURCE_USERNAME=root
+    SPRING_DATASOURCE_PASSWORD=root
+    ```
+
+#### Step 3: Run the Project with the Migrated Data
+
+1.  **Start the Docker container** with MySQL:
+    ```bash
+    docker compose up -d mysql
+    ```
+
+2.  **Import the new schema**:
+    ```bash
+    docker exec -i news-mysql mysql -uroot -proot dniester < path/to/your/new/clean_schema.sql
+    ```
+
+3.  **Run the application** with the `local` and `mysql` profiles:
+    ```bash
+    cd backend
+    ./gradlew bootRun --args='--spring.profiles.active=local,mysql'
+    ```
+
+**Result:** The application will start up using a database populated with your newly migrated data. From here,
+you should consider integrating this data into a new, versioned Flyway script.
 
 ---
 
