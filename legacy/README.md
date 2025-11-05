@@ -60,10 +60,19 @@ Legacy placeholder test file from early development. This file:
 
 ---
 
-## Usage Context
+## Migration Context
 
-These files were part of the migration and early development process. They are preserved here for reference
-and to help developers understand the migration approach and the evolution of the project.
+These files were part of the migration and early development process from a legacy Drupal 6 site to the modern Spring Boot News Platform. They include:
 
-For current development, use the main `docker-compose.yml` in the project root and standard Spring Boot
-configuration profiles.
+- **Migration-specific configurations** (Docker Compose files for Drupal 6 compatibility)
+- **Legacy development tools** (Makefile with outdated API endpoints)
+- **Migration-era Spring Boot classes** (custom database properties)
+
+They are preserved here for reference and to help developers understand the migration approach and evolution of the project.
+
+## Current Development
+
+For current development, use:
+- Main `docker-compose.yml` in the project root
+- API examples in `docs/API_REFERENCE.md`
+- Standard Spring Boot configuration profiles
