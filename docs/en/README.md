@@ -74,6 +74,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Project Codebase Transfer Guide](./PROJECT_TRANSFER_GUIDE.md)**  
   Backup and recovery of the codebase using Git.
 
+- **[Legacy Migration Archives](../../legacy/README.md)**  
+  An archive of obsolete scripts, configurations, and database dumps from the initial Drupal 6 migration.
+
 ## 🛠️ Development Tools
 
 - **[CI/CD Guide](./CI_CD_GUIDE.md)**  

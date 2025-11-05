@@ -75,9 +75,15 @@ This section outlines planned features and improvements, categorized by priority
   - **Purpose**: To allow users to upload files directly through the API.
   - **Components**: File storage service (e.g., local, S3, or MinIO), API endpoints for upload and retrieval.
 
-- **Advanced Search**: Integrate a full-text search engine.
-  - **Purpose**: To provide powerful and fast search capabilities across content.
-  - **Components**: Elasticsearch or a similar search engine, indexing logic, and search API endpoints.
+- **Search Functionality**: Develop a search system for public and administrative parts of the application.
+  - **Purpose**: To provide users with a fast and effective way to find content.
+  - **Phase 1 (Angular & Next.js)**: Implement a basic, server-side search. The backend will expose a new API
+    endpoint that uses SQL `LIKE` or `ILIKE` (for case-insensitivity in PostgreSQL) to search through
+    article titles and content.
+  - **Phase 2 (Next.js - Perspective)**: For the Next.js frontend, consider implementing a client-side
+    search using **Pagefind**. This tool creates a static search index during the build process, allowing for
+    instant, offline-capable search without any load on the backend API. This is a potential improvement
+    to be evaluated after Phase 1 is complete.
 
 - **Webhooks**: Develop a system for event-driven notifications.
   - **Purpose**: To notify external services of specific events within the application.
