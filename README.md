@@ -2,8 +2,7 @@
 
 [![Java CI with Gradle](https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml/badge.svg)](
 https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)  
-[![codecov](https://codecov.io/gh/rkonoplev/phoebe/graph/badge.svg?token=YOUR_TOKEN)](
-https://codecov.io/gh/rkonoplev/phoebe)  
+[![codecov](https://codecov.io/gh/rkonoplev/phoebe/graph/badge.svg)](https://codecov.io/gh/rkonoplev/phoebe)  
 ![GitHub](https://img.shields.io/github/license/rkonoplev/news-platform)
 
 > **Phoebe CMS** is a flexible, open-source headless content management system engineered for
@@ -92,8 +91,10 @@ npm run dev
 - **Performance**: High-performance caching with Caffeine.
 - **Rate Limiting**: IP-based protection with Bucket4j.
 - **Multi-Database Support**: Works with MySQL 8.0 and PostgreSQL 12+.
+- **Automated DB Migrations**: Database schema is managed and versioned with Flyway.
 - **Testing**: Comprehensive unit and integration test suite with docker-compose.
 - **CI/CD**: GitHub Actions pipeline with automated testing and code quality checks.
+- **Archived Migration History**: Includes legacy scripts from the original Drupal 6 migration for historical context.
 
 ## 📚 Documentation
 
@@ -119,8 +120,11 @@ Comprehensive documentation covering installation, development, API usage, and d
 
 - **Backend**: Java 21, Spring Boot 3.x, Spring Security
 - **Database**: MySQL 8.0, PostgreSQL 12+ (H2 for testing)
+- **DB Migration**: Flyway
+- **Mapping**: MapStruct
 - **Caching**: Caffeine
 - **Rate Limiting**: Bucket4j
+- **Code Quality**: Checkstyle, PMD
 - **Documentation**: OpenAPI/Swagger
 - **Testing**: JUnit 5, Unified integration tests with docker-compose MySQL
 - **CI/CD**: GitHub Actions
