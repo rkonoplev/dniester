@@ -383,7 +383,7 @@ CREATE TABLE content (
     version BIGINT,
     author_id BIGINT NOT NULL,
     FOREIGN KEY (author_id) REFERENCES users(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 ```
 
 #### Шаг 3: Повторная вставка данных
