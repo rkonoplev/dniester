@@ -32,6 +32,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Configuration Guide](./CONFIG_GUIDE.md)**  
   The Spring profiles matrix, `application-*.yml` files, and secrets management.
 
+- **[Configuration Files Overview](../../backend/src/main/resources/README.md)**  
+  A detailed description of each `application-*.yml` file and its role in the project.
+
 - **[Docker Guide](./DOCKER_GUIDE.md)**  
   Local development with `docker-compose` and production build notes.
 
