@@ -16,7 +16,7 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://rkonoplev.github.io/phoebe/index_pt.html">
     
-    <!-- Dados Estruturados (JSON-LD) для Google -->
+    <!-- Dados Estruturados (JSON-LD) para Google -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -42,13 +42,15 @@
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        h1, h2 { color: #222; }
+        h1, h2 { color: #222; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         a { color: #007BFF; text-decoration: none; }
         a:hover { text-decoration: underline; }
         .repo-link { display: inline-block; padding: 10px 15px; background-color: #24292e; color: #fff; border-radius: 6px; margin-top: 20px; }
         .repo-link:hover { background-color: #444; text-decoration: none; }
-        .author-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
-        .lang-switch { position: absolute; top: 10px; right: 20px; }
+        .author-section, .quick-start, .docs-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
+        .lang-switch { position: absolute; top: 10px; right: 20px; font-size: 14px; }
+        code { background-color: #eee; padding: 2px 6px; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+        pre { background-color: #eee; padding: 15px; border-radius: 4px; overflow-x: auto; }
         footer { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; color: #777; text-align: center; }
     </style>
 </head>
@@ -69,20 +71,40 @@
             conteúdo e programadores que necessitam de flexibilidade, desempenho e controlo total sobre o frontend.
         </p>
 
-        <h2>Funcionalidades Principais</h2>
+        <section class="quick-start">
+            <h2>🚀 Início Rápido</h2>
+            <p>Coloque o projeto a funcionar com um único comando. Requer Git e Docker.</p>
+            <pre><code>git clone https://github.com/rkonoplev/phoebe.git && cd phoebe && docker compose up --build</code></pre>
+            <p>Para mais detalhes, consulte o <a href="https://github.com/rkonoplev/phoebe/blob/main/docs/en/SETUP_GUIDE.md">Guia de Configuração</a> (em inglês).</p>
+        </section>
+
+        <h2>🔧 Funcionalidades Principais</h2>
         <ul>
-            <li><strong>API Headless:</strong> Uma API REST completa para gestão de conteúdo.</li>
-            <li><strong>Stack Tecnológico Moderno:</strong> Construído com Java 21, Spring Boot 3 e Hibernate.</li>
-            <li><strong>Flexível:</strong> Entregue conteúdo para qualquer plataforma—web (React, Angular, Vue), mobile, ou IoT.</li>
-            <li><strong>Suporte a Bases de Dados:</strong> Funciona com MySQL e PostgreSQL.</li>
-            <li><strong>Código Aberto:</strong> Licenciado sob MIT, livre para usar e modificar.</li>
+            <li><strong>API Headless</strong>: Uma API REST completa para gestão de conteúdo.</li>
+            <li><strong>Gestão de Conteúdo</strong>: Operações CRUD completas para qualquer tipo de conteúdo.</li>
+            <li><strong>Sistema de Taxonomia</strong>: Categorias e tags com filtragem flexível.</li>
+            <li><strong>Gestão de Utilizadores</strong>: Acesso baseado em funções (ADMIN, EDITOR).</li>
+            <li><strong>Segurança</strong>: Spring Security com autenticação configurável.</li>
+            <li><strong>Desempenho</strong>: Cache de alto desempenho com Caffeine.</li>
+            <li><strong>Controlo de Taxas</strong>: Proteção baseada em IP com Bucket4j.</li>
+            <li><strong>Suporte Multi-Base de Dados</strong>: Funciona com MySQL 8.0 e PostgreSQL 12+.</li>
+            <li><strong>Migrações Automatizadas de BD</strong>: O esquema da base de dados é gerido e versionado com Flyway.</li>
+            <li><strong>Testes</strong>: Conjunto abrangente de testes unitários e de integração.</li>
+            <li><strong>CI/CD</strong>: Pipeline GitHub Actions com testes automatizados e verificações de qualidade de código.</li>
         </ul>
+
+        <section class="docs-section">
+            <h2>📚 Documentação</h2>
+            <p>Explore a documentação abrangente para saber mais sobre a arquitetura, configuração e API do projeto.</p>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en" class="repo-link">Ver Documentação em Inglês</a>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/ru" class="repo-link">Ver Documentação em Russo</a>
+        </section>
 
         <section class="author-section">
             <h2>Sobre o Autor</h2>
             <p>
                 Este projeto é da autoria e manutenção de <strong>Roman Konoplev</strong>. Todo o código fonte foi
-                pessoalmente escrito и revisto. Embora ferramentas de IA possam ter auxiliado em algumas partes, todo o
+                pessoalmente escrito e revisto. Embora ferramentas de IA possam ter auxiliado em algumas partes, todo o
                 código foi verificado para cumprir as normas de licenciamento de código aberto.
             </p>
             <a href="https://github.com/rkonoplev" class="repo-link">Ver Perfil no GitHub</a>
@@ -91,12 +113,8 @@
     </main>
 
     <footer>
-        <p>
-            Para começar, por favor visite o repositório principal e consulte a
-            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en">documentação</a> (em inglês).
-        </p>
         <p>Desenvolvido em Setúbal, Portugal.</p>
-        <p>&copy; 2024 Roman Konoplev. Licenciado sob a Licença MIT.</p>
+        <p>&copy; 2025 Roman Konoplev. Licenciado sob a Licença MIT.</p>
     </footer>
 
 </body>

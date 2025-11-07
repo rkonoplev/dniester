@@ -8,7 +8,7 @@
     <title>Phoebe CMS — Headless CMS с открытым исходным кодом на Java и Spring Boot</title>
     <meta name="description" content="Phoebe CMS — это гибкая headless CMS с открытым исходным кодом, созданная на Java и Spring Boot для высокопроизводительной доставки контента и современных рабочих процессов.">
     <meta name="keywords" content="Headless CMS, Java, Spring Boot, Open Source, REST API, Управление контентом, Angular, React, Next.js">
-    <meta name="author" content="Роман Коноплёв">
+    <meta name="author" content="Роман Коноплев">
 
     <!-- Open Graph Meta Tags (для соцсетей) -->
     <meta property="og:title" content="Phoebe CMS — Headless CMS с открытым исходным кодом на Java и Spring Boot">
@@ -34,7 +34,7 @@
       "runtimePlatform": "Java, Docker",
       "author": {
         "@type": "Person",
-        "name": "Роман Коноплёв",
+        "name": "Роман Коноплев",
         "url": "https://github.com/rkonoplev"
       }
     }
@@ -42,13 +42,15 @@
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        h1, h2 { color: #222; }
+        h1, h2 { color: #222; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         a { color: #007BFF; text-decoration: none; }
         a:hover { text-decoration: underline; }
         .repo-link { display: inline-block; padding: 10px 15px; background-color: #24292e; color: #fff; border-radius: 6px; margin-top: 20px; }
         .repo-link:hover { background-color: #444; text-decoration: none; }
-        .author-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
-        .lang-switch { position: absolute; top: 10px; right: 20px; }
+        .author-section, .quick-start, .docs-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
+        .lang-switch { position: absolute; top: 10px; right: 20px; font-size: 14px; }
+        code { background-color: #eee; padding: 2px 6px; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+        pre { background-color: #eee; padding: 15px; border-radius: 4px; overflow-x: auto; }
         footer { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; color: #777; text-align: center; }
     </style>
 </head>
@@ -70,19 +72,39 @@
             контроль над фронтендом.
         </p>
 
-        <h2>Ключевые особенности</h2>
+        <section class="quick-start">
+            <h2>🚀 Быстрый старт</h2>
+            <p>Запустите проект с помощью одной команды. Требуется Git и Docker.</p>
+            <pre><code>git clone https://github.com/rkonoplev/phoebe.git && cd phoebe && docker compose up --build</code></pre>
+            <p>Для получения более подробной информации см. <a href="https://github.com/rkonoplev/phoebe/blob/main/docs/ru/SETUP_GUIDE_RU.md">Руководство по установке</a>.</p>
+        </section>
+
+        <h2>🔧 Ключевые особенности</h2>
         <ul>
-            <li><strong>Headless API:</strong> Полноценный REST API для управления контентом.</li>
-            <li><strong>Современный стек:</strong> Создан на Java 21, Spring Boot 3 и Hibernate.</li>
-            <li><strong>Гибкость:</strong> Доставка контента на любую платформу — веб (React, Angular, Vue), мобильные приложения или IoT.</li>
-            <li><strong>Поддержка БД:</strong> Работает с MySQL и PostgreSQL.</li>
-            <li><strong>Open Source:</strong> Лицензия MIT, проект можно свободно использовать и изменять.</li>
+            <li><strong>Headless API</strong>: Полноценный REST API для управления контентом.</li>
+            <li><strong>Управление контентом</strong>: Полные операции CRUD для любого типа контента.</li>
+            <li><strong>Система таксономии</strong>: Категории и теги с гибкой фильтрацией.</li>
+            <li><strong>Управление пользователями</strong>: Ролевой доступ (ADMIN, EDITOR).</li>
+            <li><strong>Безопасность</strong>: Spring Security с настраиваемой аутентификацией.</li>
+            <li><strong>Производительность</strong>: Высокопроизводительное кэширование с Caffeine.</li>
+            <li><strong>Ограничение запросов</strong>: Защита на основе IP с Bucket4j.</li>
+            <li><strong>Поддержка нескольких БД</strong>: Работает с MySQL 8.0 и PostgreSQL 12+.</li>
+            <li><strong>Автоматические миграции БД</strong>: Схема базы данных управляется и версионируется с Flyway.</li>
+            <li><strong>Тестирование</strong>: Комплексный набор модульных и интеграционных тестов.</li>
+            <li><strong>CI/CD</strong>: Конвейер GitHub Actions с автоматическим тестированием и проверками качества кода.</li>
         </ul>
+
+        <section class="docs-section">
+            <h2>📚 Документация</h2>
+            <p>Изучите подробную документацию, чтобы узнать больше об архитектуре проекта, настройке и API.</p>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en" class="repo-link">Документация на английском</a>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/ru" class="repo-link">Документация на русском</a>
+        </section>
 
         <section class="author-section">
             <h2>Об авторе</h2>
             <p>
-                Этот проект разработан и поддерживается <strong>Романом Коноплёвым</strong>. Весь исходный код был
+                Этот проект разработан и поддерживается <strong>Романом Коноплев</strong>. Весь исходный код был
                 написан и проверен лично. Хотя в некоторых частях могли использоваться инструменты ИИ, весь код
                 был верифицирован на соответствие стандартам лицензирования с открытым исходным кодом.
             </p>
@@ -92,10 +114,6 @@
     </main>
 
     <footer>
-        <p>
-            Для начала работы, пожалуйста, посетите основной репозиторий и ознакомьтесь с
-            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/ru">документацией</a>.
-        </p>
         <p>Разработано в г. Сетубал, Португалия.</p>
         <p>&copy; 2025 Роман Коноплев. Лицензировано под MIT License.</p>
     </footer>

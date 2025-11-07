@@ -42,13 +42,15 @@
 
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; }
-        h1, h2 { color: #222; }
+        h1, h2 { color: #222; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         a { color: #007BFF; text-decoration: none; }
         a:hover { text-decoration: underline; }
         .repo-link { display: inline-block; padding: 10px 15px; background-color: #24292e; color: #fff; border-radius: 6px; margin-top: 20px; }
         .repo-link:hover { background-color: #444; text-decoration: none; }
-        .author-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
-        .lang-switch { position: absolute; top: 10px; right: 20px; }
+        .author-section, .quick-start, .docs-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
+        .lang-switch { position: absolute; top: 10px; right: 20px; font-size: 14px; }
+        code { background-color: #eee; padding: 2px 6px; border-radius: 4px; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace; }
+        pre { background-color: #eee; padding: 15px; border-radius: 4px; overflow-x: auto; }
         footer { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; color: #777; text-align: center; }
     </style>
 </head>
@@ -69,14 +71,34 @@
             creators who need flexibility, performance, and full control over the frontend.
         </p>
 
-        <h2>Key Features</h2>
+        <section class="quick-start">
+            <h2>🚀 Quick Start</h2>
+            <p>Get the project up and running with a single command. Requires Git and Docker.</p>
+            <pre><code>git clone https://github.com/rkonoplev/phoebe.git && cd phoebe && docker compose up --build</code></pre>
+            <p>For more details, see the <a href="https://github.com/rkonoplev/phoebe/blob/main/docs/en/SETUP_GUIDE.md">Setup Guide</a>.</p>
+        </section>
+
+        <h2>🔧 Key Features</h2>
         <ul>
-            <li><strong>Headless API:</strong> A complete REST API for content management.</li>
-            <li><strong>Modern Tech Stack:</strong> Built with Java 21, Spring Boot 3, and Hibernate.</li>
-            <li><strong>Flexible:</strong> Deliver content to any platform—web (React, Angular, Vue), mobile, or IoT.</li>
-            <li><strong>Database Support:</strong> Works with MySQL and PostgreSQL.</li>
-            <li><strong>Open Source:</strong> MIT Licensed, free to use and modify.</li>
+            <li><strong>Headless API</strong>: Complete REST API for content management.</li>
+            <li><strong>Content Management</strong>: Full CRUD operations for any content type.</li>
+            <li><strong>Taxonomy System</strong>: Categories and tags with flexible filtering.</li>
+            <li><strong>User Management</strong>: Role-based access (ADMIN, EDITOR).</li>
+            <li><strong>Security</strong>: Spring Security with configurable authentication.</li>
+            <li><strong>Performance</strong>: High-performance caching with Caffeine.</li>
+            <li><strong>Rate Limiting</strong>: IP-based protection with Bucket4j.</li>
+            <li><strong>Multi-Database Support</strong>: Works with MySQL 8.0 and PostgreSQL 12+.</li>
+            <li><strong>Automated DB Migrations</strong>: Database schema is managed and versioned with Flyway.</li>
+            <li><strong>Testing</strong>: Comprehensive unit and integration test suite.</li>
+            <li><strong>CI/CD</strong>: GitHub Actions pipeline with automated testing and code quality checks.</li>
         </ul>
+
+        <section class="docs-section">
+            <h2>📚 Documentation</h2>
+            <p>Explore the comprehensive documentation to learn more about the project's architecture, setup, and API.</p>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en" class="repo-link">View English Docs</a>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/ru" class="repo-link">View Russian Docs</a>
+        </section>
 
         <section class="author-section">
             <h2>About the Author</h2>
