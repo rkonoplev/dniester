@@ -18,16 +18,21 @@ This directory contains all English project documentation for **Phoebe CMS**.
   A list of known issues, planned improvements, and future work for the project.
 
 - **[Setup Guide](./SETUP_GUIDE.md)**  
-  Step-by-step instructions for the initial project setup, covering both migration from
-  Drupal and a clean installation with MySQL or PostgreSQL, including system requirements.
+  Step-by-step instructions for the initial project setup, covering all deployment scenarios.
 
 - **[Developer Guide](./DEVELOPER_GUIDE.md)**  
-  The daily workflow for developers, local commands, CI/CD expectations, code formatting, and troubleshooting common issues.
+  The daily workflow for developers, local commands, CI/CD expectations, and code formatting.
 
 - **[API Reference](./API_REFERENCE.md)**  
-  Complete REST API documentation with `curl` examples for frontend integration.
+  A comprehensive guide with endpoint descriptions, `curl` examples, and field specifications.
 
 ## 🏗️ Architecture & Setup
+
+- **[Design Principles (SOLID, KISS)](./PRINCIPLES.md)**  
+  A description of the fundamental design principles applied in the project.
+
+- **[Design Patterns](./DESIGN_PATTERNS.md)**  
+  A description of the classic and architectural design patterns used in the project.
 
 - **[Configuration Guide](./CONFIG_GUIDE.md)**  
   The Spring profiles matrix, `application-*.yml` files, and secrets management.
