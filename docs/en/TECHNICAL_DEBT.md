@@ -49,7 +49,8 @@ of the current codebase.
 
 ## In Progress
 
-- **API Performance**: Further query optimization for high-traffic scenarios.
+- **API Performance**: Analyze and optimize queries for high-traffic scenarios. SQL logging is now enabled
+  in the `local` profile to facilitate diagnostics (e.g., finding N+1 problems).
 
 ---
 
