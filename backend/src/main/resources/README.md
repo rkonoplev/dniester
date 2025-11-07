@@ -1,37 +1,52 @@
-# Main Application Configuration
+# Application Configuration Files
 
-This directory contains the primary configuration files for the Spring Boot application. These files define how the
-application behaves when it runs in a development or production environment.
-
-Spring Boot uses a profile-based system to manage configurations. The base configuration is in `application.yml`,
-and profile-specific properties (e.g., for `dev` or `prod`) are defined in `application-{profile}.yml` files.
+This directory contains the configuration files for the Spring Boot application. The setup uses a profile-based
+system to manage different environments, ensuring flexibility and separation of concerns.
 
 ---
 
-## `application.yml` (Base Configuration)
+## Configuration Strategy
 
-This is the main, default configuration file for the Phoebe CMS backend. It contains properties that are common
-across all environments and are used by default during local development.
+The configuration is split across multiple files, loaded based on the active Spring profile.
 
-### Key Properties:
+1.  **`application.yml` (Base)**: Contains common properties that apply to all environments, such as API paths,
+    port numbers, and default JPA settings.
 
-- **`spring.jpa.hibernate.ddl-auto: create-drop`**: This setting instructs Hibernate to automatically create the
-  database schema when the application starts and drop it when it shuts down. This is useful for development,
-  as it ensures a clean database on every restart.
+2.  **`application-{profile}.yml` (Specific Overrides)**: Contains properties that override the base configuration
+    for a specific profile. For example, `application-mysql.yml` provides settings specific to MySQL.
 
-- **`spring.datasource.*`**: These properties configure the connection to the primary MySQL database. The URL,
-  username, and password point to the database instance (e.g., a local Docker container) that the application
-  uses for its data persistence.
+3.  **`application-security.yml`**: A dedicated file for security-related properties (e.g., JWT secrets, CORS),
+    which is always included.
+
+The active profiles are enabled via the `spring.profiles.active` property, typically passed as a command-line
+argument or in an environment variable.
 
 ---
 
-## `application-prod.yml` (Production Profile Example)
+## File Descriptions
 
-A file like this would contain overrides for the production environment. When the application is run with the `prod`
-profile active (e.g., via `-Dspring.profiles.active=prod`), properties in this file take precedence.
+-   **`application.yml`**
+    -   **Purpose**: The main, default configuration file. It defines the base for all other profiles.
+    -   **Key Settings**: Default server port, application name, base JPA configurations (like open-in-view),
+        and includes the `security` profile by default.
 
-### Example Overrides:
+-   **`application-local.yml`**
+    -   **Purpose**: The primary profile for **local development**. It enables features useful for debugging.
+    -   **Key Settings**:
+        -   Enables Flyway (`flyway.enabled: true`).
+        -   Disables automatic schema generation (`ddl-auto: none`), giving control to Flyway.
+        -   Enables detailed SQL logging (`show-sql: true`, `format_sql: true`) for performance analysis.
 
-- **`spring.jpa.hibernate.ddl-auto: validate`**: In production, this would be set to `validate` or `none` to
-  prevent accidental data loss.
-- **`spring.datasource.url`**: The URL would be updated to point to the production database instance.
+-   **`application-ci.yml`**
+    -   **Purpose**: Used exclusively during Continuous Integration (CI) builds, like on GitHub Actions.
+    -   **Key Settings**: Configured to connect to the database provided by the CI environment (e.g., a
+        Testcontainers or Docker Compose service).
+
+-   **`application-mysql.yml`** & **`application-postgresql.yml`**
+    -   **Purpose**: Database-specific profiles. They provide the correct JDBC driver and Hibernate dialect
+        for either MySQL or PostgreSQL. One of these should be activated alongside another profile (like `local`).
+
+-   **`application-security.yml`**
+    -   **Purpose**: Centralizes all security-related configurations.
+    -   **Key Settings**: JWT token expiration times, secret keys (often externalized), CORS policies, and
+        paths excluded from security filters. It is automatically included by `application.yml`.

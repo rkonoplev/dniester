@@ -7,7 +7,7 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: none # Flyway will manage the schema
     show-sql: true
     properties:
       hibernate:
@@ -15,4 +15,4 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
   
   flyway:
-    enabled: false
+    enabled: true
