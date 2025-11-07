@@ -1,4 +1,4 @@
-# Phoebe — Open Source Headless CMS
+# Phoebe CMS — Open Source Headless CMS on Java & Spring Boot
 
 [![Java CI with Gradle](https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml/badge.svg)](
 https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)  
@@ -8,8 +8,9 @@ https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)
 > **Phoebe CMS** is a flexible, open-source headless content management system engineered for
 > high-performance content delivery and modern development workflows.
 
-**Phoebe CMS** is a modern, API-first content management system designed for developers and content
-creators who need flexibility and performance.
+**Phoebe CMS** is a modern, API-first headless CMS built with **Java** and the **Spring Boot 3** framework.
+It provides a flexible REST API for content delivery, making it an ideal backend for **Angular, React, Vue**,
+or any other frontend technology.
 
 ## 🎯 Why Headless?
 
@@ -118,17 +119,17 @@ Comprehensive documentation covering installation, development, API usage, and d
 
 ## 🛠️ Technology Stack
 
-- **Backend**: Java 21, Spring Boot 3.x, Spring Security
-- **Database**: MySQL 8.0, PostgreSQL 12+ (H2 for testing)
-- **DB Migration**: Flyway
-- **Mapping**: MapStruct
-- **Caching**: Caffeine
-- **Rate Limiting**: Bucket4j
-- **Code Quality**: Checkstyle, PMD
-- **Documentation**: OpenAPI/Swagger
-- **Testing**: JUnit 5, Unified integration tests with docker-compose MySQL
-- **CI/CD**: GitHub Actions
-- **Reference Implementations**: Angular & Next.js (planned)
+- **Backend**: [Java 21](https://www.oracle.com/java/technologies/javase/21-relnote-issues.html), [Spring Boot 3.x](https://spring.io/projects/spring-boot), [Spring Security](https://spring.io/projects/spring-security)
+- **Database**: [MySQL 8.0](https://www.mysql.com/), [PostgreSQL 12+](https://www.postgresql.org/) (H2 for testing)
+- **DB Migration**: [Flyway](https://flywaydb.org/)
+- **Mapping**: [MapStruct](https://mapstruct.org/)
+- **Caching**: [Caffeine](https://github.com/ben-manes/caffeine)
+- **Rate Limiting**: [Bucket4j](https://github.com/bucket4j/bucket4j)
+- **Code Quality**: [Checkstyle](https://checkstyle.sourceforge.io/), [PMD](https://pmd.github.io/)
+- **Documentation**: [OpenAPI/Swagger](https://swagger.io/)
+- **Testing**: [JUnit 5](https://junit.org/junit5/), Testcontainers, Docker Compose
+- **CI/CD**: [GitHub Actions](https://github.com/features/actions)
+- **Reference Implementations**: [Angular](https://angular.io/) & [Next.js](https://nextjs.org/) (planned)
 
 ## 📄 License
 
