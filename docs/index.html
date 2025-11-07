@@ -47,7 +47,8 @@
         a:hover { text-decoration: underline; }
         .repo-link { display: inline-block; padding: 10px 15px; background-color: #24292e; color: #fff; border-radius: 6px; margin-top: 20px; }
         .repo-link:hover { background-color: #444; text-decoration: none; }
-        footer { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; color: #777; }
+        .author-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
+        footer { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; color: #777; text-align: center; }
     </style>
 </head>
 <body>
@@ -72,7 +73,16 @@
             <li><strong>Open Source:</strong> MIT Licensed, free to use and modify.</li>
         </ul>
 
-        <a href="https://github.com/rkonoplev/phoebe" class="repo-link">View on GitHub</a>
+        <section class="author-section">
+            <h2>About the Author</h2>
+            <p>
+                This project is authored and maintained by <strong>Roman Konoplev</strong>. All source code has been
+                personally written and reviewed. While AI tools may have assisted in some parts, all code has been
+                verified to comply with open-source licensing standards.
+            </p>
+            <a href="https://github.com/rkonoplev" class="repo-link">View Profile on GitHub</a>
+        </section>
+        
     </main>
 
     <footer>
@@ -80,6 +90,7 @@
             To get started, please visit the main repository and consult the
             <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en">documentation</a>.
         </p>
+        <p>&copy; 2024 Roman Konoplev. Licensed under the MIT License.</p>
     </footer>
 
 </body>
