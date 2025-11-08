@@ -138,8 +138,9 @@ MIT License - see [LICENSE](LICENSE) for details.
 ## Legal Notice
 
 This project is distributed under the MIT License.  
-All source code is authored and reviewed by Roman Konoplev. Some parts may have been assisted by AI tools,
-but all code has been verified to comply with open-source licensing standards.
+All source code is authored and reviewed by [Roman Konoplev](https://en.wikipedia.org/wiki/Roman_Konoplev).
+Some parts may have been assisted by AI tools, but all code has been verified to comply with open-source
+licensing standards.
 
 ---
 
