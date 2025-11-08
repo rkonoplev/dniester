@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Phoebe CMS — CMS Headless de Código Abierto en Java & Spring Boot</title>
+    <meta name="description" content="Phoebe CMS es un CMS headless flexible y de código abierto, construido con Java y Spring Boot, diseñado para la entrega de contenido de alto rendimiento y flujos de trabajo de desarrollo modernos.">
+    <meta name="keywords" content="Headless CMS, Java, Spring Boot, Código Abierto, REST API, Gestión de Contenidos, Angular, React, Next.js">
+    <meta name="author" content="Roman Konoplev">
+
+    <meta property="og:title" content="Phoebe CMS — CMS Headless de Código Abierto en Java & Spring Boot">
+    <meta property="og:description" content="Un sistema de gestión de contenidos flexible, API-first, para desarrolladores que necesitan rendimiento y control.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rkonoplev.github.io/phoebe/index_es.html">
+    
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Phoebe CMS",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Cross-platform",
+      "description": "Un CMS headless de código abierto, API-first, construido con Java y el framework Spring Boot, que proporciona una API REST flexible para la entrega de contenido a cualquier frontend.",
+      "license": "https://github.com/rkonoplev/phoebe/blob/main/LICENSE",
+      "codeRepository": "https://github.com/rkonoplev/phoebe",
+      "programmingLanguage": {
+        "@type": "ComputerLanguage",
+        "name": "Java"
+      },
+      "runtimePlatform": "Java, Docker",
+      "author": {
+        "@type": "Person",
+        "name": "Roman Konoplev",
+        "url": "https://github.com/rkonoplev"
+      }
+    }
+    </script>
+
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        h1, h2 { color: #222; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        a { color: #007BFF; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .repo-link { display: inline-block; padding: 10px 15px; background-color: #24292e; color: #fff; border-radius: 6px; margin-top: 20px; }
+        .repo-link:hover { background-color: #444; text-decoration: none; }
+        .author-section, .docs-section { margin-top: 40px; padding: 20px; background-color: #f9f9f9; border-radius: 8px; }
+        .lang-switch { position: absolute; top: 20px; right: 20px; }
+        .lang-switch details { position: relative; }
+        .lang-switch summary { cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; border-radius: 4px; list-style: none; }
+        .lang-switch summary::-webkit-details-marker { display: none; }
+        .lang-switch ul { position: absolute; top: 100%; right: 0; background: white; border: 1px solid #ccc; border-radius: 4px; list-style: none; padding: 5px 0; margin: 5px 0 0; min-width: 120px; z-index: 10; }
+        .lang-switch li a { display: block; padding: 5px 15px; }
+        footer { margin-top: 40px; border-top: 1px solid #eee; padding-top: 20px; color: #777; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div class="lang-switch">
+        <details>
+            <summary>Español</summary>
+            <ul>
+                <li><a href="index.html">English</a></li>
+                <li><a href="index_ru.html">Русский</a></li>
+                <li><a href="index_pt.html">Português</a></li>
+                <li><a href="index_de.html">Deutsch</a></li>
+                <li><a href="index_fr.html">Français</a></li>
+                <li><a href="index_ro.html">Română</a></li>
+            </ul>
+        </details>
+    </div>
+
+    <header>
+        <h1>Phoebe CMS</h1>
+        <p><strong>Un CMS Headless de Código Abierto en Java & Spring Boot.</strong></p>
+    </header>
+
+    <main>
+        <p>
+            Phoebe CMS es un sistema de gestión de contenidos moderno, API-first, diseñado para creadores de
+            contenido y desarrolladores que necesitan flexibilidad, rendimiento y control total sobre el frontend.
+            ¿Listo para empezar? Consulta la <a href="https://github.com/rkonoplev/phoebe/blob/main/docs/en/SETUP_GUIDE.md">Guía de Inicio Rápido</a> (en inglés).
+        </p>
+
+        <h2>🔧 Características Principales</h2>
+        <ul>
+            <li><strong>API Headless</strong>: Una API REST completa para la gestión de contenidos.</li>
+            <li><strong>Gestión de Contenidos</strong>: Operaciones CRUD completas para cualquier tipo de contenido.</li>
+            <li><strong>Sistema de Taxonomía</strong>: Categorías y etiquetas con filtrado flexible.</li>
+            <li><strong>Gestión de Usuarios</strong>: Acceso basado en roles (ADMIN, EDITOR).</li>
+            <li><strong>Seguridad</strong>: Spring Security con autenticación configurable.</li>
+            <li><strong>Rendimiento</strong>: Caché de alto rendimiento con Caffeine.</li>
+            <li><strong>Limitación de Tasa</strong>: Protección basada en IP con Bucket4j.</li>
+            <li><strong>Migraciones de BD Automatizadas</strong>: El esquema de la base de datos es gestionado y versionado con Flyway.</li>
+            <li><strong>Pruebas</strong>: Suite completa de pruebas unitarias y de integración.</li>
+            <li><strong>CI/CD</strong>: Pipeline de GitHub Actions con pruebas automatizadas y controles de calidad de código.</li>
+        </ul>
+
+        <section class="docs-section">
+            <h2>📚 Documentación</h2>
+            <p>Explora la documentación completa para aprender más sobre la arquitectura, configuración y API del proyecto.</p>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en" class="repo-link">Ver Documentación en Inglés</a>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/ru" class="repo-link">Ver Documentación en Ruso</a>
+        </section>
+
+        <section class="author-section">
+            <h2>Sobre el Autor</h2>
+            <p>
+                Este proyecto es de autoría y mantenimiento de <strong>Roman Konoplev</strong>. Todo el código fuente ha sido
+                escrito y revisado personalmente. Aunque herramientas de IA pueden haber ayudado en algunas partes, todo el
+                código ha sido verificado para cumplir con los estándares de licencias de código abierto.
+            </p>
+            <a href="https://github.com/rkonoplev" class="repo-link">Ver Perfil en GitHub</a>
+        </section>
+        
+    </main>
+
+    <footer>
+        <p>Desarrollado en Setúbal, Portugal.</p>
+        <p>&copy; 2025 Roman Konoplev. Licenciado bajo la Licencia MIT.</p>
+    </footer>
+
+</body>
+</html>
