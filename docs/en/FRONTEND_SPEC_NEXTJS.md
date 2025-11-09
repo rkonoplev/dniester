@@ -1,5 +1,9 @@
 # Frontend Technical Specification (Next.js)
 
+> **Current Implementation Details**: For a detailed overview of the implemented features,
+> setup instructions, and further development plans, please refer to the
+> **[Next.js Frontend README](../../frontends/nextjs/README.md)**.
+
 ## 1. General Objectives
 - Develop a **modern, responsive news portal frontend**.
 - Follow **Google News–inspired design principles**: clean, spacious, mobile-first, highly readable.
