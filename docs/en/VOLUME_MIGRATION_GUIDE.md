@@ -90,12 +90,24 @@ docker compose up -d news-mysql
 docker exec -i news-mysql mysql -uroot -proot < backup_before_migration.sql
 ```
 
+## Automated Migration Scripts
+
+For convenience, use the provided scripts:
+
+```bash
+# Run migration (creates backup in db_dumps/)
+./migrate_volumes.sh
+
+# If something goes wrong, rollback
+./rollback_migration.sh
+```
+
 ## Clean Up
 After successful migration:
 ```bash
-# Remove backup file
-rm backup_before_migration.sql
+# Remove backup files (optional)
+rm db_dumps/backup_before_migration_*.sql
 
-# Update documentation references
-# (Already done in previous commits)
+# Remove docker-compose backup
+rm docker-compose.yml.bak
 ```

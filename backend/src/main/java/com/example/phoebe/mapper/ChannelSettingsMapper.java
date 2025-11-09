@@ -5,6 +5,7 @@ import com.example.phoebe.dto.response.ChannelSettingsDto;
 import com.example.phoebe.entity.ChannelSettings;
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
@@ -25,5 +26,6 @@ public interface ChannelSettingsMapper {
      * Ignores null values to support partial updates.
      */
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
     void updateEntity(@MappingTarget ChannelSettings entity, ChannelSettingsUpdateDto dto);
 }

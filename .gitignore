@@ -94,3 +94,4 @@ legacy/archived_migration_scripts/clean_schema.sql
 
 # Ignore application log files
 /backend/logs/
+/db_dumps/backup_before_migration_20251109_231831.sql

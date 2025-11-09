@@ -17,7 +17,7 @@ services:
       timeout: 5s
       retries: 5
 
-  news-app:
+  phoebe-app:
     build:
       context: .
       dockerfile: Dockerfile.dev
