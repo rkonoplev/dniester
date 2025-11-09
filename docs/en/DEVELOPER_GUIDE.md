@@ -310,3 +310,36 @@ docker exec -i phoebe-mysql mysqldump -uroot -proot phoebe_db > db_data/exported
 ```bash
 docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < db_data/exported_dump.sql
 ```
+
+---
+
+## Useful Bash Commands for Development
+
+### Command Chaining with Validation
+```bash
+# Check file, make executable, and run integration tests
+ls -la gradlew && chmod +x gradlew && ./gradlew integrationTest
+```
+
+**Command Breakdown:**
+- `ls -la gradlew` - checks if gradlew file exists and shows its permissions
+- `&&` - logical AND operator (executes next command only if previous succeeded)
+- `chmod +x gradlew` - makes gradlew file executable (adds execution permissions)
+- `./gradlew integrationTest` - runs integration tests via Gradle Wrapper
+
+**Why this is needed:**
+- Sometimes after cloning repository, gradlew file loses execution permissions
+- Command automatically checks and fixes this issue
+- If any step fails, execution stops
+
+### Other Useful Command Chains
+```bash
+# Stop containers, clean up, and restart
+docker compose down && docker system prune -f && docker compose up -d
+
+# Check status and connect to database
+docker ps && docker exec -it phoebe-mysql mysql -uroot -proot
+
+# Build application and run all tests
+./gradlew clean && ./gradlew build && ./gradlew test integrationTest
+```
