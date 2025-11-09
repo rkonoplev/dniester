@@ -26,7 +26,7 @@ docker compose --env-file .env.dev up -d
 
 ### 2. Проверка статуса
 
-- **Проверить контейнеры**: `docker ps` → должны быть `news-app` и `news-mysql`
+- **Проверить контейнеры**: `docker ps` → должны быть `phoebe-app` и `phoebe-mysql`
 - **API**: http://localhost:8080
 - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
 - **Админка**: логин `admin`, пароль `admin`

@@ -48,10 +48,10 @@ This section is for those who already have a ready `clean_schema.sql` file.
 docker compose -f docker-compose.yml up -d mysql
 
 # 2. Import the cleaned schema and data into the 'dniester' database
-docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 
 # 3. Verify that the data is in place (e.g., check the number of articles)
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 
 ---
@@ -73,19 +73,19 @@ docker compose -f legacy/docker-compose.drupal.yml up -d
 **Logs:**
 ```bash
 # Monitor logs to ensure the server has started successfully
-docker logs -f news-mysql-drupal6
+docker logs -f phoebe-mysql-drupal6
 ```
 
 **Connect (for verification):**
 ```bash
-docker exec -it news-mysql-drupal6 mysql -u root -p
+docker exec -it phoebe-mysql-drupal6 mysql -u root -p
 # password: root
 ```
 
 **Check Source Drupal 6 Database:**
 ```sql
 SHOW DATABASES;
-USE a264971_dniester;
+USE drupal6_legacy;
 SHOW TABLES;
 ```
 
@@ -96,15 +96,15 @@ transform it.
 
 **Export Original Dump:**
 ```bash
-# Export the original dump (e.g., drupal6_fixed.sql) from the a264971_dniester database
+# Export the original dump (e.g., drupal6_fixed.sql) from the drupal6_legacy database
 # inside our temporary container.
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot drupal6_legacy > legacy/archived_migration_scripts/drupal6_fixed.sql
 ```
 
 **Import into Clean `dniester` Database:**
 ```bash
 # Import the original dump into the 'dniester' database inside our temporary container.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
 ```
 
 **Verify Imported Tables:**
@@ -116,11 +116,11 @@ SHOW TABLES;
 ```bash
 # Apply the main normalization script. It creates new tables and transfers cleaned
 # data from old Drupal tables.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
 
 # If your Drupal site used the CCK module for custom fields,
 # apply this additional script for their migration.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
 ```
 
 ### Step 3: Export Cleaned Schema (`clean_schema.sql`)
@@ -130,7 +130,7 @@ artifact of the entire migration process.
 
 ```bash
 # Create a dump of the 'dniester' database from the temporary container and save it to a file.
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
 ```
 
 ### Step 4: Prepare and Launch Target Environment (MySQL 8.0)
@@ -151,7 +151,7 @@ docker compose -f docker-compose.yml up -d mysql
 
 **Check MySQL 8.0 Logs:**
 ```bash
-docker logs news-mysql
+docker logs phoebe-mysql
 # You should see something like: [Entrypoint]: Creating database dniester
 ```
 
@@ -160,7 +160,7 @@ docker logs news-mysql
 Load our `clean_schema.sql` into the new, main database.
 
 ```bash
-docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 ```
 
 ### Step 6: Verify the Result
@@ -169,16 +169,16 @@ The final step is to ensure that all data has been successfully transferred to t
 
 **Verify Tables:**
 ```bash
-docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "USE phoebe_db; SHOW TABLES;" dniester
 ```
 
 **Verify Record Counts:**
 ```bash
 # Check the number of articles in the content table
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 
 # Check the number of users
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM users;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM users;" dniester
 # Expected: ~12186 rows (12172 story + 14 book) for content.
 ```
 
@@ -193,14 +193,14 @@ For a full end-to-end migration from a Drupal 6 dump to a clean MySQL 8.0 Phoebe
 docker compose -f legacy/docker-compose.drupal.yml up -d
 
 # 2. Export original Drupal 6 data, import into a clean database, and run normalization scripts
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > legacy/archived_migration_scripts/drupal6_fixed.sql
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot drupal6_legacy > legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
 # Optional: If you had CCK fields in Drupal 6, uncomment and run the following line:
-# docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
+# docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
 
 # 3. Export the cleaned and normalized schema to clean_schema.sql
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
 
 # 4. Stop and remove the temporary Drupal 6 migration environment
 docker compose -f legacy/docker-compose.drupal.yml down -v
@@ -209,10 +209,10 @@ docker compose -f legacy/docker-compose.drupal.yml down -v
 docker compose -f docker-compose.yml up -d mysql
 
 # 6. Import the final cleaned schema into MySQL 8.0
-docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 
 # 7. Verify the migration (e.g., count content rows)
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 
 ---
@@ -297,18 +297,18 @@ If you only need to verify data in MySQL without running the Spring Boot applica
 
 3.  **Check MySQL Logs:**
     ```bash
-    docker logs -f news-mysql
+    docker logs -f phoebe-mysql
     ```
 
 4.  **Import Database (if not already loaded):**
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
     ```
 
 5.  **Verify Database Content:**
     ```bash
-    docker exec -it news-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
-    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
     ```
 
 ### Option B — Full Environment (MySQL + Spring Boot Backend)
@@ -320,7 +320,7 @@ To run the entire application:
     MYSQL_ROOT_PASSWORD=root
     MYSQL_DATABASE=dniester
     SPRING_LOCAL_PORT=8080
-    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
     SPRING_DATASOURCE_USERNAME=root
     SPRING_DATASOURCE_PASSWORD=root
     ```
@@ -330,22 +330,22 @@ To run the entire application:
     docker compose --env-file .env.dev up -d
     ```
     This will launch:
-    - `news-mysql`: MySQL 8 database with data
-    - `news-app`: Spring Boot application
+    - `phoebe-mysql`: MySQL 8 database with data
+    - `phoebe-app`: Spring Boot application
 
 3.  **Import Database (if necessary):**
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
     ```
 
 4.  **Verify Database:**
     ```bash
-    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
     ```
 
 5.  **Check Application Logs:**
     ```bash
-    docker logs -f news-app
+    docker logs -f phoebe-app
     ```
 
 ---
@@ -357,9 +357,9 @@ To run the entire application:
 If you encounter errors like `ERROR 1366 (HY000): Incorrect string value: '\xD0\x98\xD0\xBD...' for column 'title'`, it means that your database created the target table with an incorrect default collation (e.g., `latin1`). By default, MySQL 5.7 (and sometimes 8.0, depending on configuration) might use `latin1` unless explicitly specified.
 
 #### Step 1: Check Table Encoding
-Inside your MySQL container (e.g., `news-mysql-drupal6` or `news-mysql`):
+Inside your MySQL container (e.g., `phoebe-mysql-drupal6` or `phoebe-mysql`):
 ```sql
-SHOW CREATE TABLE a264971_dniester.node \G
+SHOW CREATE TABLE drupal6_legacy.node \G
 ```
 Typically, Drupal 6 tables have `DEFAULT CHARSET=utf8`. Now, check your new `content` table (it likely has `DEFAULT CHARSET=latin1`).
 
@@ -393,7 +393,7 @@ Sometimes, after container initialization, authentication issues with the `root`
 
 #### Step 1: Stop the MySQL Container
 ```bash
-docker stop news-mysql
+docker stop phoebe-mysql
 ```
 
 #### Step 2: Start a Temporary Container with `--skip-grant-tables`
@@ -401,7 +401,7 @@ This allows you to connect to MySQL without password authentication.
 ```bash
 docker run -it --rm \
 --name mysql-fix \
--v news-platform_mysql_data:/var/lib/mysql \
+-v phoebe_mysql_data:/var/lib/mysql \
 mysql:8.0 \
 --skip-grant-tables --skip-networking
 ```
@@ -421,7 +421,7 @@ ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
 ```
 
 #### Step 5: Stop the Temporary Container and Restart Main MySQL
-Exit the MySQL prompt, then stop the `mysql-fix` container (Ctrl+C in the first terminal or `docker stop mysql-fix`). Finally, restart your main `news-mysql` container:
+Exit the MySQL prompt, then stop the `mysql-fix` container (Ctrl+C in the first terminal or `docker stop mysql-fix`). Finally, restart your main `phoebe-mysql` container:
 ```bash
 docker compose -f docker-compose.yml up -d mysql
 ```
@@ -451,7 +451,7 @@ During the migration process, several SQL scripts have been created and used. Ea
 For detailed information about all migration scripts and files, see [Database Migration Scripts](../db_data/README.md).
 
 - **`drupal6_fixed.sql`**:
-  Cleaned snapshot of the original Drupal 6 database (`a264971_dniester`) imported into the
+  Cleaned snapshot of the original Drupal 6 database (`drupal6_legacy`) imported into the
   temporary MySQL 5.7 instance. Purpose: normalize database name and ensure compatibility.
 
 - **`migrate_from_drupal6_universal.sql`**:
@@ -498,15 +498,15 @@ After completing the migration and successfully importing `clean_schema.sql` int
 
 #### Docker Volumes
 
-- **`news-platform_mysql_data`**: **Keep this volume**. It is used by your main MySQL 8.0 container (`news-mysql`) for Phoebe CMS data.
-- **`news-platform_mysql_data_drupal6`**: **This can be safely removed**. It's a leftover from the Drupal 6 migration process and is no longer needed.
+- **`phoebe_mysql_data`**: **Keep this volume**. It is used by your main MySQL 8.0 container (`phoebe-mysql`) for Phoebe CMS data.
+- **`phoebe_mysql_data_drupal6`**: **This can be safely removed**. It's a leftover from the Drupal 6 migration process and is no longer needed.
 
 #### Cleanup Options
 
 **Option A — Just stop the Drupal 6 container (keep volume just in case):**
 This is a softer approach, keeping the volume in case you need to re-examine it later.
 ```bash
-docker stop news-mysql-drupal6
+docker stop phoebe-mysql-drupal6
 ```
 
 **Option B — Completely remove the Drupal 6 container and its volume (recommended after successful export):**
@@ -514,4 +514,4 @@ This option frees up disk space and is recommended once you are confident the mi
 ```bash
 docker compose -f legacy/docker-compose.drupal.yml down -v
 ```
-After cleanup, only MySQL 8.0 (`news-mysql`) and its persistent volume (`phoebe_mysql_data`) should remain for further work with Phoebe CMS.
+After cleanup, only MySQL 8.0 (`phoebe-mysql`) and its persistent volume (`phoebe_mysql_data`) should remain for further work with Phoebe CMS.

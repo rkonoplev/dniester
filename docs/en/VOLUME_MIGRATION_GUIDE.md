@@ -1,11 +1,11 @@
 # Docker Volume Migration Guide
 
-This guide explains how to safely migrate Docker volumes when renaming containers from `news-mysql` to `phoebe-mysql`.
+This guide explains how to safely migrate Docker volumes when renaming containers from `phoebe-mysql` to `phoebe-mysql`.
 
 ## Current State
-- Container: `news-mysql`
+- Container: `phoebe-mysql`
 - Volume: `mysql_data` (or `phoebe_mysql_data`)
-- Database: `dniester` or `phoebe_db`
+- Database: `phoebe_db` (formerly `dniester`)
 
 ## Migration Steps
 
@@ -15,28 +15,28 @@ This guide explains how to safely migrate Docker volumes when renaming container
 docker compose down
 
 # Start only MySQL to create backup
-docker compose up -d news-mysql
+docker compose up -d phoebe-mysql
 
 # Wait for MySQL to be ready
-docker exec news-mysql mysqladmin ping -h localhost --silent
+docker exec phoebe-mysql mysqladmin ping -h localhost --silent
 
 # Create backup
-docker exec news-mysql mysqldump -uroot -proot --all-databases > backup_before_migration.sql
+docker exec phoebe-mysql mysqldump -uroot -proot --all-databases > backup_before_migration.sql
 ```
 
 ### Step 2: Update docker-compose.yml
 ```bash
 # Update container name in docker-compose.yml
-sed -i 's/news-mysql:/phoebe-mysql:/g' docker-compose.yml
-sed -i 's/container_name: news-mysql/container_name: phoebe-mysql/g' docker-compose.yml
-sed -i 's/news-mysql:/phoebe-mysql:/g' docker-compose.yml
+sed -i 's/phoebe-mysql:/phoebe-mysql:/g' docker-compose.yml
+sed -i 's/container_name: phoebe-mysql/container_name: phoebe-mysql/g' docker-compose.yml
+sed -i 's/phoebe-mysql:/phoebe-mysql:/g' docker-compose.yml
 ```
 
 ### Step 3: Migrate Volume Data
 ```bash
 # Stop old container
-docker stop news-mysql
-docker rm news-mysql
+docker stop phoebe-mysql
+docker rm phoebe-mysql
 
 # Start new container with same volume
 docker compose up -d phoebe-mysql
@@ -86,21 +86,75 @@ docker compose down
 git checkout docker-compose.yml
 
 # Restore from backup
-docker compose up -d news-mysql
-docker exec -i news-mysql mysql -uroot -proot < backup_before_migration.sql
+docker compose up -d phoebe-mysql
+docker exec -i phoebe-mysql mysql -uroot -proot < backup_before_migration.sql
 ```
 
-## Automated Migration Scripts
+## Automated Migration Scripts (Completed)
 
-For convenience, use the provided scripts:
+**Note**: Migration scripts have been moved to `legacy/` folder after successful completion.
+
+The migration was completed using these scripts:
 
 ```bash
-# Run migration (creates backup in db_dumps/)
+# Migration script (now in legacy/migrate_volumes.sh)
 ./migrate_volumes.sh
 
-# If something goes wrong, rollback
+# Rollback script (now in legacy/rollback_migration.sh) 
 ./rollback_migration.sh
 ```
+
+For details about these scripts, see [legacy/README.md](../../legacy/README.md).
+
+## Complete Migration Process (Completed)
+
+### What was done:
+
+1. **Fixed MapStruct warning** in ChannelSettingsMapper:
+   ```java
+   @Mapping(target = "id", ignore = true)
+   void updateEntity(@MappingTarget ChannelSettings entity, ChannelSettingsUpdateDto dto);
+   ```
+
+2. **Fixed docker-compose.yml** - changed build context:
+   ```yaml
+   phoebe-app:
+     build:
+       context: ./backend  # was: context: .
+       dockerfile: Dockerfile.dev
+   ```
+
+3. **Completed volume migration**:
+   - Created backup in `db_dumps/backup_before_migration_*.sql`
+   - Renamed all containers: `news-*` → `phoebe-*`
+   - Database: `dniester` → `phoebe_db`
+   - All data preserved
+
+### Commands for startup after migration:
+
+```bash
+# Build application
+docker compose build phoebe-app
+
+# Start all services
+docker compose up -d
+
+# Or only needed services (without Next.js)
+docker compose up -d phoebe-mysql phoebe-app
+
+# Check status
+docker ps
+
+# Test API
+curl http://localhost:8080/actuator/health
+```
+
+### Migration results:
+- ✅ Containers renamed to `phoebe-*`
+- ✅ Database works with new names
+- ✅ Application builds without warnings
+- ✅ Backup created for safety
+- ✅ All configurations updated
 
 ## Clean Up
 After successful migration:

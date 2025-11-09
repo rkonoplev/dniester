@@ -42,13 +42,13 @@ docker compose up --build
 ### What Happens Automatically?
 
 1.  **Build and Run Containers:** `docker-compose` will build the image for your Spring Boot application and start
-    two containers: `news-app` (the application) and `news-mysql` (the MySQL 8.0 database).
+    two containers: `phoebe-app` (the application) and `phoebe-mysql` (the MySQL 8.0 database).
 
-2.  **Create an Empty Database:** On its first run, the `news-mysql` container will create an empty database
+2.  **Create an Empty Database:** On its first run, the `phoebe-mysql` container will create an empty database
     named `dniester`.
 
 3.  **Automated Flyway Migrations:**
-    - Your Spring Boot application (`news-app`) will start and connect to the empty database.
+    - Your Spring Boot application (`phoebe-app`) will start and connect to the empty database.
     - **Flyway**, which is integrated into the application, will detect that the database is empty.
     - Flyway will sequentially execute all SQL scripts from migration folders:
       - `V1__initial_schema.sql`: Will create the entire table structure (`users`, `content`, etc.).
@@ -64,7 +64,7 @@ You can verify this by connecting to the database:
 
 ```bash
 # Connect to the database container
-docker exec -it news-mysql mysql -uroot -proot
+docker exec -it phoebe-mysql mysql -uroot -proot
 
 # Inside MySQL, run the commands
 USE phoebe_db;

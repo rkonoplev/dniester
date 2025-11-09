@@ -86,14 +86,14 @@ Open your `docker-compose.yml` file and ensure only one database service is acti
 
 - **For MySQL**:
   ```yaml
-  mysql:
+  phoebe-mysql:
     image: mysql:8.0
     # ... rest of the configuration
   ```
 
 - **For PostgreSQL**:
   ```yaml
-  postgres:
+  phoebe-postgres:
     image: postgres:13
     # ... rest of the configuration
   ```
@@ -102,14 +102,14 @@ Open your `docker-compose.yml` file and ensure only one database service is acti
 
 - **For MySQL**:
   ```dotenv
-  SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+  SPRING_DATASOURCE_URL=jdbc:mysql://phoebe-mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
   SPRING_DATASOURCE_USERNAME=root
   SPRING_DATASOURCE_PASSWORD=root
   ```
 
 - **For PostgreSQL**:
   ```dotenv
-  SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/dniester
+  SPRING_DATASOURCE_URL=jdbc:postgresql://phoebe-postgres:5432/phoebe_db
   SPRING_DATASOURCE_USERNAME=user
   SPRING_DATASOURCE_PASSWORD=password
   ```
@@ -118,7 +118,7 @@ Open your `docker-compose.yml` file and ensure only one database service is acti
 
 1.  **Start the Docker container** with your chosen database:
     ```bash
-    docker compose up -d mysql # or postgres
+    docker compose up -d phoebe-mysql # or phoebe-postgres
     ```
 
 2.  **Run the application**, specifying the corresponding database profile:
@@ -146,7 +146,7 @@ Drupal 6 dump into a final `clean_schema.sql` file.
 
 2.  **Environment Variables**: In your `.env.dev` file, specify your MySQL credentials.
     ```dotenv
-    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+    SPRING_DATASOURCE_URL=jdbc:mysql://phoebe-mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
     SPRING_DATASOURCE_USERNAME=root
     SPRING_DATASOURCE_PASSWORD=root
     ```
@@ -155,12 +155,12 @@ Drupal 6 dump into a final `clean_schema.sql` file.
 
 1.  **Start the Docker container** with MySQL:
     ```bash
-    docker compose up -d mysql
+    docker compose up -d phoebe-mysql
     ```
 
 2.  **Import the new schema**:
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < path/to/your/new/clean_schema.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < path/to/your/new/clean_schema.sql
     ```
 
 3.  **Run the application** with the `local` and `mysql` profiles:

@@ -108,7 +108,7 @@ git push
 
 4.  **Восстановите базу данных из дампа**:
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot < db_dumps/phoebe_new_db_backup.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot < db_dumps/phoebe_new_db_backup.sql
     ```
 
 5.  **Запустите приложение**:

@@ -70,6 +70,18 @@ These files were part of the migration and early development process from a lega
 
 They are preserved here for reference and to help developers understand the migration approach and evolution of the project.
 
+### `migrate_volumes.sh` and `rollback_migration.sh`
+Docker volume migration scripts used during the news-platform → phoebe renaming. These files:
+- **Original location**: Project root directory
+- Automated the migration from `news-mysql` to `phoebe-mysql` containers
+- Created database backups in `db_dumps/` before migration
+- Updated `docker-compose.yml` with new container names
+- Fixed MapStruct warnings and Docker build contexts
+- **Status**: COMPLETED - Migration successfully executed, containers renamed to phoebe-*
+- **Backup created**: `db_dumps/backup_before_migration_*.sql`
+
+---
+
 ## Current Development
 
 For current development, use:

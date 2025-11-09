@@ -51,13 +51,13 @@ To start the backend and database together for local development, run:
 ```bash
 docker-compose up --build
 ```
-- **App container (news-app)**
+- **App container (phoebe-app)**
   - Based on Dockerfile.dev
   - Source code is mounted (-v .:/app), so changes in IDE take effect after recompilation
   - Runs Spring Boot with local profile
   - Includes rate limiting (100 req/min public, 50 req/min admin)
 
-- **Database container (news-mysql)**
+- **Database container (phoebe-mysql)**
   - MySQL 8
   - Credentials & schema name from .env
   - Can preload Drupal dump from ./db-dumps/

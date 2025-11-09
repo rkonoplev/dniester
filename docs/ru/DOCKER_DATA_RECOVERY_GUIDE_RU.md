@@ -27,14 +27,14 @@
 ### 1.1 Анализ проектов и их назначение
 
 - **Проект `phoebe` (основной)**
-  - **Контейнер**: `news-mysql` (MySQL 8.0)
+  - **Контейнер**: `phoebe-mysql` (MySQL 8.0)
   - **Вольюм**: `phoebe_mysql_data`
   - **Назначение**: Ваш основной, текущий проект. В нем работает Spring Boot приложение и используется
     современная база данных, в которую были мигрированы данные. Именно с ним ведется ежедневная работа.
 
 - **Проект `legacy` (вспомогательный для миграции)**
-  - **Контейнер**: `news-mysql-drupal6` (MySQL 5.7)
-  - **Вольюм**: `news-platform_mysql_data_drupal6`
+  - **Контейнер**: `phoebe-mysql-drupal6` (MySQL 5.7)
+  - **Вольюм**: `phoebe_mysql_data_drupal6`
   - **Назначение**: Этот проект был создан только для одной цели — для процесса миграции. Старый дамп
     Drupal 6 требовал старой версии MySQL для совместимости. Окружение `legacy` является инструментом
     для воспроизведения миграции и не требуется для ежедневной работы. Его следует держать остановленным.
@@ -43,7 +43,7 @@
 
 Команда `docker volume ls` покажет все хранилища данных. На основе анализа выше, ключевыми являются:
 - `phoebe_mysql_data` (актуальная БД)
-- `news-platform_mysql_data_drupal6` (исходная БД для миграции)
+- `phoebe_mysql_data_drupal6` (исходная БД для миграции)
 
 ---
 
@@ -58,11 +58,11 @@
 Чтобы быть на 100% уверенным, какой вольюм был привязан к вашему самому старому контейнеру, выполните:
 
 ```bash
-docker inspect news-mysql-drupal6
+docker inspect phoebe-mysql-drupal6
 ```
 
 В выводе найдите секцию `Mounts`. Поле `Name` укажет на точное имя вольюма, который вам нужен
-(например, `news-platform_mysql_data_drupal6`).
+(например, `phoebe_mysql_data_drupal6`).
 
 ### Шаг 2.2 (Опционально): Исследование вольюма
 
@@ -81,7 +81,7 @@ docker run --rm -it -v <имя_вольюма>:/data ubuntu:latest bash
 Теперь, зная точное имя "золотого" вольюма, мы можем создать его полный дамп. Эта команда запускает
 временный контейнер с MySQL 5.7, монтирует к нему ваш вольюм и выполняет `mysqldump`.
 
-Замените `<имя_вольюма>` на ваше (например, `news-platform_mysql_data_drupal6`).
+Замените `<имя_вольюма>` на ваше (например, `phoebe_mysql_data_drupal6`).
 
 ```bash
 docker run --rm -v <имя_вольюма>:/var/lib/mysql -v $(pwd)/legacy/original_drupal_dump:/backup mysql:5.7 \
@@ -99,12 +99,12 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 
 ## Часть 3: Создание дампа актуальной БД проекта (MySQL 8.0)
 
-**Важно**: Перед созданием дампа убедитесь, что основной контейнер `news-mysql` остановлен,
+**Важно**: Перед созданием дампа убедитесь, что основной контейнер `phoebe-mysql` остановлен,
 чтобы избежать ошибок блокировки файлов (`Unable to lock ./ibdata1`).
 
 1. **Остановите контейнер**:
    ```bash
-   docker stop news-mysql
+   docker stop phoebe-mysql
    ```
 
 2. **Создайте дамп**:
@@ -115,7 +115,7 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 
 3. **Перезапустите контейнер**:
    ```bash
-   docker start news-mysql
+   docker start phoebe-mysql
    ```
 
 - **Результат**: Файл `phoebe_new_db_backup.sql` с полным бэкапом актуальной БД.
@@ -151,10 +151,10 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 
 | Проект | Имя контейнера | Образ (Версия) | Назначение |
 | :--- | :--- | :--- | :--- |
-| **`legacy`** | `news-mysql-drupal6` | `mysql:5.7` | **Вспомогательный**. Для миграции со старого Drupal. |
-| **`phoebe`** | `news-mysql` | `mysql:8.0` | **Основной**. Актуальная БД для вашего приложения. |
+| **`legacy`** | `phoebe-mysql-drupal6` | `mysql:5.7` | **Вспомогательный**. Для миграции со старого Drupal. |
+| **`phoebe`** | `phoebe-mysql` | `mysql:8.0` | **Основной**. Актуальная БД для вашего приложения. |
 
-Для ежедневной работы вам **не нужно**, чтобы `legacy` (`news-mysql-drupal6`) был запущен. Его можно
+Для ежедневной работы вам **не нужно**, чтобы `legacy` (`phoebe-mysql-drupal6`) был запущен. Его можно
 безопасно остановить командой `docker compose -f legacy/docker-compose.drupal.yml down`.
 
 ### 5.2 Исследование баз данных
@@ -163,17 +163,17 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 
 1. **Подключитесь к контейнеру**:
    ```bash
-   docker exec -it news-mysql-drupal6 mysql -uroot -proot
+   docker exec -it phoebe-mysql-drupal6 mysql -uroot -proot
    ```
 2. **Посмотрите базы данных**:
    ```sql
    SHOW DATABASES;
    ```
-   Вы, скорее всего, увидите базу `a264971_dniester` (старое имя) и `dniester` (куда мы импортировали для очистки).
+   Вы, скорее всего, увидите базу `drupal6_legacy` (старое имя) и `dniester` (куда мы импортировали для очистки).
 
 3. **Посмотрите старые таблицы Drupal**:
    ```sql
-   USE a264971_dniester;
+   USE drupal6_legacy;
    SHOW TABLES;
    ```
    Вы увидите таблицы, такие как `node`, `node_revisions`, `term_data`, `users`.
@@ -182,11 +182,11 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 
 1. **Подключитесь к контейнеру**:
    ```bash
-   docker exec -it news-mysql mysql -uroot -proot
+   docker exec -it phoebe-mysql mysql -uroot -proot
    ```
 2. **Посмотрите таблицы**:
    ```sql
-   USE dniester;
+   USE phoebe_db;
    SHOW TABLES;
    ```
    Вы увидите таблицы с новыми именами: `content`, `users`, `roles`, `permissions`, `terms`.
@@ -196,8 +196,8 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
 | Имя вольюма | Размер | Статус | Назначение |
 | :--- | :--- | :--- | :--- |
 | **`phoebe_mysql_data`** | **201 MB** | **in use** | **Ваша новая, актуальная база данных (MySQL 8.0).** |
-| **`news-platform_mysql_data_drupal6`** | **982.7 MB** | - | **"Золотой" архив. Самый первый, полный дамп Drupal 6.** |
-| `news-platform_mysql_data` | 628.8 MB | - | Архив старого проекта. Менее важен, чем "золотой" архив. |
+| **`phoebe_mysql_data_drupal6`** | **982.7 MB** | - | **"Золотой" архив. Самый первый, полный дамп Drupal 6.** |
+| `phoebe_mysql_data` | 628.8 MB | - | Архив старого проекта. Менее важен, чем "золотой" архив. |
 | `legacy_mysql_data_drupal6` | 210 MB | in use | Промежуточная база миграции. Можно удалить. |
 
 ### 5.4 Итог и рекомендации
@@ -206,9 +206,9 @@ sh -c 'mysqld --daemonize && sleep 30 && mysqldump -uroot -proot --all-databases
   - `phoebe_new_db_backup.sql` (ваша актуальная работа)
   - `drupal6_migration_backup_FULL.sql` (исторический архив)
 
-- Вольюмы `news-platform_mysql_data` и `legacy_mysql_data_drupal6` можно удалить для освобождения места,
+- Вольюмы `phoebe_mysql_data` и `legacy_mysql_data_drupal6` можно удалить для освобождения места,
   так как их бэкапы у вас уже есть.
   ```bash
   docker volume rm legacy_mysql_data_drupal6
-  docker volume rm news-platform_mysql_data
+  docker volume rm phoebe_mysql_data
   ```
