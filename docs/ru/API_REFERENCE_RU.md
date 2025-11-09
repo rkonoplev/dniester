@@ -129,6 +129,51 @@ curl -u admin:password \
 ```bash
 curl -u admin:password -X DELETE "http://localhost:8080/api/admin/news/1"
 ```
+
+---
+
+## API настроек канала
+
+### 1. Получить настройки канала (публично)
+```bash
+curl -i "http://localhost:8080/api/public/channel-settings"
+```
+
+### 2. Получить настройки канала (администратор)
+```bash
+curl -u admin:password -i "http://localhost:8080/api/admin/channel-settings"
+```
+
+### 3. Обновить настройки канала (только администратор)
+
+- **Эндпоинт**: `PUT /api/admin/channel-settings`
+- **Описание**: Обновляет общесайтовые настройки конфигурации.
+
+**Поля тела запроса:**
+| Поле               | Тип      | Описание                                           | Обязательно |
+|--------------------|----------|----------------------------------------------------|-------------|
+| `siteTitle`        | `String` | Заголовок сайта для вкладки браузера. Макс. 255 символов. | Нет         |
+| `metaDescription`  | `String` | Мета-описание. Макс. 500 символов.                 | Нет         |
+| `metaKeywords`     | `String` | Мета-ключевые слова. Макс. 500 символов.           | Нет         |
+| `headerHtml`       | `String` | HTML-код для шапки сайта (проверяется SafeHtml)   | Нет         |
+| `logoUrl`          | `String` | URL логотипа сайта. Макс. 500 символов.            | Нет         |
+| `footerHtml`       | `String` | HTML-код для подвала сайта (проверяется SafeHtml) | Нет         |
+| `mainMenuTermIds`  | `String` | JSON-массив ID терминов для главного меню          | Нет         |
+
+**Пример запроса:**
+```bash
+curl -u admin:password \
+  -H "Content-Type: application/json" \
+  -X PUT http://localhost:8080/api/admin/channel-settings \
+  -d '{
+    "siteTitle": "Мой новостной сайт",
+    "metaDescription": "Последние новости и обновления",
+    "metaKeywords": "новости, обновления, срочные",
+    "logoUrl": "/assets/logo.png",
+    "mainMenuTermIds": "[1,2,3]"
+  }'
+```
+
 ---
 
 ## Параметры пагинации

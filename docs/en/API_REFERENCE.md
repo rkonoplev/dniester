@@ -128,6 +128,51 @@ curl -u admin:password \
 ```bash
 curl -u admin:password -X DELETE "http://localhost:8080/api/admin/news/1"
 ```
+
+---
+
+## Channel Settings API
+
+### 1. Get Channel Settings (Public)
+```bash
+curl -i "http://localhost:8080/api/public/channel-settings"
+```
+
+### 2. Get Channel Settings (Admin)
+```bash
+curl -u admin:password -i "http://localhost:8080/api/admin/channel-settings"
+```
+
+### 3. Update Channel Settings (Admin Only)
+
+- **Endpoint**: `PUT /api/admin/channel-settings`
+- **Description**: Updates site-wide configuration settings.
+
+**Request Body Fields:**
+| Field              | Type     | Description                                    | Required |
+|--------------------|----------|------------------------------------------------|----------|
+| `siteTitle`        | `String` | Site title for browser tab. Max 255 chars.   | No       |
+| `metaDescription`  | `String` | Meta description tag. Max 500 chars.          | No       |
+| `metaKeywords`     | `String` | Meta keywords tag. Max 500 chars.             | No       |
+| `headerHtml`       | `String` | HTML code for site header (SafeHtml validated)| No       |
+| `logoUrl`          | `String` | URL to site logo. Max 500 chars.              | No       |
+| `footerHtml`       | `String` | HTML code for site footer (SafeHtml validated)| No       |
+| `mainMenuTermIds`  | `String` | JSON array of term IDs for main menu          | No       |
+
+**Example Request:**
+```bash
+curl -u admin:password \
+  -H "Content-Type: application/json" \
+  -X PUT http://localhost:8080/api/admin/channel-settings \
+  -d '{
+    "siteTitle": "My News Site",
+    "metaDescription": "Latest news and updates",
+    "metaKeywords": "news, updates, breaking",
+    "logoUrl": "/assets/logo.png",
+    "mainMenuTermIds": "[1,2,3]"
+  }'
+```
+
 ---
 
 ## Pagination Parameters
