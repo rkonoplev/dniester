@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="hu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Phoebe CMS — CMS Headless de Código Aberto em Java & Spring Boot</title>
-    <meta name="description" content="Phoebe CMS é um CMS headless flexível e de código aberto, construído com Java e Spring Boot, projetado para entrega de conteúdo de alto desempenho e fluxos de trabalho de desenvolvimento modernos.">
-    <meta name="keywords" content="Headless CMS, Java, Spring Boot, Código Aberto, REST API, Gestão de Conteúdo, Angular, React, Next.js">
+    <title>Phoebe CMS — Nyílt forráskódú Headless CMS Java & Spring Boot alapon</title>
+    <meta name="description" content="A Phoebe CMS egy rugalmas, nyílt forráskódú headless CMS, amely Java és Spring Boot technológiákkal készült, nagy teljesítményű tartalom-szolgáltatásra és modern fejlesztési munkafolyamatokra tervezve.">
+    <meta name="keywords" content="Headless CMS, Java, Spring Boot, Open Source, REST API, Tartalomkezelés, Angular, React, Next.js">
     <meta name="author" content="Roman Konoplev">
 
-    <meta property="og:title" content="Phoebe CMS — CMS Headless de Código Aberto em Java & Spring Boot">
-    <meta property="og:description" content="Um sistema de gestão de conteúdo flexível, API-first, para programadores que precisam de desempenho e controlo.">
+    <meta property="og:title" content="Phoebe CMS — Nyílt forráskódú Headless CMS Java & Spring Boot alapon">
+    <meta property="og:description" content="Egy rugalmas, API-first tartalomkezelő rendszer fejlesztőknek, akiknek teljesítményre és kontrollra van szükségük.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rkonoplev.github.io/phoebe/index_pt.html">
+    <meta property="og:url" content="https://rkonoplev.github.io/phoebe/index_hu.html">
     
     <script type="application/ld+json">
     {
@@ -21,7 +21,7 @@
       "name": "Phoebe CMS",
       "applicationCategory": "DeveloperApplication",
       "operatingSystem": "Cross-platform",
-      "description": "Um CMS headless de código aberto, API-first, construído com Java e o framework Spring Boot, que fornece uma API REST flexível para entrega de conteúdo a qualquer frontend.",
+      "description": "Egy nyílt forráskódú, API-first headless CMS, amely Java és a Spring Boot keretrendszerrel készült, és rugalmas REST API-t biztosít a tartalom bármilyen frontendre történő szállításához.",
       "license": "https://github.com/rkonoplev/phoebe/blob/main/LICENSE",
       "codeRepository": "https://github.com/rkonoplev/phoebe",
       "programmingLanguage": {
@@ -58,10 +58,11 @@
 
     <div class="lang-switch">
         <details>
-            <summary>Português</summary>
+            <summary>Magyar</summary>
             <ul>
                 <li><a href="index.html">English</a></li>
                 <li><a href="index_ru.html">Русский</a></li>
+                <li><a href="index_pt.html">Português</a></li>
                 <li><a href="index_es.html">Español</a></li>
                 <li><a href="index_de.html">Deutsch</a></li>
                 <li><a href="index_fr.html">Français</a></li>
@@ -72,7 +73,6 @@
                 <li><a href="index_tr.html">Türkçe</a></li>
                 <li><a href="index_ca.html">Català</a></li>
                 <li><a href="index_fa.html">فارسی</a></li>
-                <li><a href="index_hu.html">Magyar</a></li>
                 <li><a href="index_sr.html">Srpski</a></li>
                 <li><a href="index_bg.html">Български</a></li>
                 <li><a href="index_el.html">Ελληνικά</a></li>
@@ -82,51 +82,50 @@
 
     <header>
         <h1>Phoebe CMS</h1>
-        <p><strong>Um CMS Headless de Código Aberto em Java & Spring Boot.</strong></p>
+        <p><strong>Nyílt forráskódú Headless CMS Java & Spring Boot alapon.</strong></p>
     </header>
 
     <main>
         <p>
-            Phoebe CMS é um sistema de gestão de conteúdo moderno, API-first, desenhado para criadores de
-            conteúdo e programadores que necessitam de flexibilidade, desempenho e controlo total sobre o frontend.
-            Pronto para começar? Consulte o <a href="https://github.com/rkonoplev/phoebe/blob/main/docs/en/SETUP_GUIDE.md">Guia de Início Rápido</a>.
+            A Phoebe CMS egy modern, API-first tartalomkezelő rendszer, amelyet tartalomkészítőknek és
+            fejlesztőknek terveztek, akiknek rugalmasságra, teljesítményre és a frontend feletti teljes kontrollra
+            van szükségük.
+            Készen áll a kezdésre? Tekintse meg a <a href="https://github.com/rkonoplev/phoebe/blob/main/docs/en/SETUP_GUIDE.md">Gyors Kezdési Útmutatót</a> (angolul).
         </p>
 
-        <h2>🔧 Funcionalidades Principais</h2>
+        <h2>🔧 Főbb Jellemzők</h2>
         <ul>
-            <li><strong>API Headless</strong>: Uma API REST completa para gestão de conteúdo.</li>
-            <li><strong>Gestão de Conteúdo</strong>: Operações CRUD completas para qualquer tipo de conteúdo.</li>
-            <li><strong>Sistema de Taxonomia</strong>: Categorias e tags com filtragem flexível.</li>
-            <li><strong>Gestão de Utilizadores</strong>: Acesso baseado em funções (ADMIN, EDITOR).</li>
-            <li><strong>Segurança</strong>: Spring Security com autenticação configurável.</li>
-            <li><strong>Desempenho</strong>: Cache de alto desempenho com Caffeine.</li>
-            <li><strong>Controlo de Taxas</strong>: Proteção baseada em IP com Bucket4j.</li>
-            <li><strong>Migrações Automatizadas de BD</strong>: O esquema da base de dados é gerido e versionado com Flyway.</li>
-            <li><strong>Testes</strong>: Conjunto abrangente de testes unitários e de integração.</li>
-            <li><strong>CI/CD</strong>: Pipeline GitHub Actions com testes automatizados e verificações de qualidade de código.</li>
+            <li><strong>Headless API</strong>: Teljes körű REST API a tartalomkezeléshez.</li>
+            <li><strong>Tartalomkezelés</strong>: Teljes CRUD műveletek bármilyen tartalomtípushoz.</li>
+            <li><strong>Taxonómia Rendszer</strong>: Kategóriák és címkék rugalmas szűréssel.</li>
+            <li><strong>Felhasználókezelés</strong>: Szerepkör alapú hozzáférés (ADMIN, EDITOR).</li>
+            <li><strong>Biztonság</strong>: Spring Security konfigurálható hitelesítéssel.</li>
+            <li><strong>Teljesítmény</strong>: Nagy teljesítményű gyorsítótárazás a Caffeine segítségével.</li>
+            <li><strong>Rate Limiting</strong>: IP-alapú védelem a Bucket4j segítségével.</li>
+            <li><strong>Automatizált DB Migrációk</strong>: Az adatbázis sémáját a Flyway kezeli és verziózza.</li>
         </ul>
 
         <section class="docs-section">
-            <h2>📚 Documentação</h2>
-            <p>Explore a documentação abrangente para saber mais sobre a arquitetura, configuração e API do projeto.</p>
-            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en" class="repo-link">Ver Documentação em Inglês</a>
-            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/ru" class="repo-link">Ver Documentação em Russo</a>
+            <h2>📚 Dokumentáció</h2>
+            <p>Fedezze fel a részletes dokumentációt, hogy többet tudjon meg a projekt architektúrájáról, beállításáról és API-járól.</p>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/en" class="repo-link">Angol Dokumentáció</a>
+            <a href="https://github.com/rkonoplev/phoebe/tree/main/docs/ru" class="repo-link">Orosz Dokumentáció</a>
         </section>
 
         <section class="author-section">
-            <h2>Sobre o Autor</h2>
+            <h2>A Szerzőről</h2>
             <p>
-                Este projeto é da autoria e manutenção de <strong><a href="https://en.wikipedia.org/wiki/Roman_Konoplev">Roman Konoplev</a></strong>.
-                O código do projeto foi verificado para cumprir os padrões de licenciamento de código aberto.
+                A projekt szerzője és karbantartója <strong><a href="https://en.wikipedia.org/wiki/Roman_Konoplev">Roman Konoplev</a></strong>.
+                A projekt kódját ellenőrizték, hogy megfelel-e a nyílt forráskódú licencelési szabványoknak.
             </p>
-            <a href="https://github.com/rkonoplev" class="repo-link">Ver Perfil no GitHub</a>
+            <a href="https://github.com/rkonoplev" class="repo-link">Profil megtekintése a GitHubon</a>
         </section>
         
     </main>
 
     <footer>
-        <p>Desenvolvido em Setúbal, Portugal.</p>
-        <p>&copy; 2025 <a href="https://en.wikipedia.org/wiki/Roman_Konoplev">Roman Konoplev</a>. Licenciado sob a Licença MIT.</p>
+        <p>Fejlesztve Setúbalban, Portugáliában.</p>
+        <p>&copy; 2025 <a href="https://en.wikipedia.org/wiki/Roman_Konoplev">Roman Konoplev</a>. MIT Licenc alatt.</p>
     </footer>
 
 </body>
