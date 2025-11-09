@@ -2,7 +2,7 @@
         "https://checkstyle.sourceforge.io/dtds/configuration_1_3.dtd">
 
 <!--
-    Checkstyle configuration for news-platform project.
+    Checkstyle configuration for phoebe project.
     Focuses on code quality checks that IntelliJ cannot auto-fix.
     Line length and formatting are handled by IntelliJ IDEA.
 -->

@@ -26,7 +26,7 @@ The schema supports both **clean installations** and **migrated data from Drupal
 - **Publication Workflow**: Draft/published states with audit trails
 - **Migration Support**: Handles legacy Drupal 6 data transformation
 
-### Current Database Schema (After All Migrations V1-V6)
+### Current Database Schema (After All Migrations V1-V9)
 
 ```sql
 -- ======================================
@@ -267,6 +267,9 @@ Flyway's locations are configured via Spring profiles, allowing it to combine co
 | V4 | User unification | Consolidated migrated authors | `common` |
 | V5 | Permissions system | Added permissions and role_permissions tables | `common` |
 | V6 | Permission descriptions | Added description column to permissions table | `common` |
+| V7 | Channel settings | Added channel_settings table for site configuration | `common` |
+| V8 | Setup permissions | Populate permissions and assign to roles | `mysql/postgresql` |
+| V9 | Add indexes | Performance indexes and unique constraints | `mysql/postgresql` |
 
 ### Migration V3 Default Data
 
@@ -278,7 +281,14 @@ Flyway's locations are configured via Spring profiles, allowing it to combine co
 
 **Default User Created:**
 - Username: `admin`
-- Password: `admin` (BCrypt hashed)
+- Password: `admin` (BCrypt hash)
+- Email: `admin@example.com`
+- Role: `ADMIN`
+
+**Test Data:**
+- Sample news article
+- General category
+- Content relationshipsCrypt hashed)
 - Email: `admin@example.com`
 - Role: `ADMIN`
 

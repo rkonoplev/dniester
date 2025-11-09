@@ -48,7 +48,7 @@
 **Если нужно протестировать полное приложение (включая интеграционные тесты):**
 - Запусти MySQL через Docker:
   ```bash
-  docker-compose up -d news-mysql
+  docker-compose up -d phoebe-mysql
   ```
 - Подними сервис:
   ```bash
@@ -153,7 +153,7 @@ spring:
 
 ### Подключение в интерактивный режим:
 ```bash
-docker exec -it news-mysql mysql -uroot -proot
+docker exec -it phoebe-mysql mysql -uroot -proot
 ```
 
 ### Внутри MySQL (появляется mysql>):
@@ -165,7 +165,7 @@ SHOW DATABASES;
 
 **Переключиться в базу:**
 ```sql
-USE dniester;
+USE phoebe_db;
 ```
 
 **Посмотреть таблицы:**
@@ -187,17 +187,17 @@ EXIT;
 
 **Дамп всей базы dniester:**
 ```bash
-docker exec -i news-mysql mysqldump -uroot -proot dniester > db_data/exported_dump.sql
+docker exec -i phoebe-mysql mysqldump -uroot -proot phoebe_db > db_data/exported_dump.sql
 ```
 
 **Дамп конкретной таблицы (например users):**
 ```bash
-docker exec -i news-mysql mysqldump -uroot -proot dniester users > db_data/users_dump.sql
+docker exec -i phoebe-mysql mysqldump -uroot -proot phoebe_db users > db_data/users_dump.sql
 ```
 
 ### Импорт (залить дамп обратно):
 ```bash
-docker exec -i news-mysql mysql -uroot -proot dniester < db_data/exported_dump.sql
+docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < db_data/exported_dump.sql
 ```
 
 ### Примечания:

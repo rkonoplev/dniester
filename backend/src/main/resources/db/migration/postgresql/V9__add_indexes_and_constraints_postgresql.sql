@@ -1,3 +1,4 @@
+-- V9: Add indexes and constraints with deduplication
 -- [Deduplication] Clean up potential duplicates before adding unique constraints.
 
 -- Deduplication for content_terms

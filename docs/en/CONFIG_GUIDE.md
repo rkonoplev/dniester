@@ -81,7 +81,7 @@ SPRING_PROFILES_ACTIVE=dev,mysql ./gradlew bootRun
 SPRING_PROFILES_ACTIVE=ci ./gradlew test
 
 # Example for a production Docker container
-docker run -d -e SPRING_PROFILES_ACTIVE=prod,postgresql --env-file .env.prod news-platform:latest
+docker run -d -e SPRING_PROFILES_ACTIVE=prod,postgresql --env-file .env.prod phoebe:latest
 ```
 If no profile is specified, `local` is the default for the main app, and `test` is the default for tests.
 

@@ -1,12 +1,12 @@
 version: '3.8'
 services:
-  news-mysql:
+  phoebe-mysql:
     image: mysql:8.0
-    container_name: news-mysql
+    container_name: phoebe-mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-dniester}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-phoebe_db}
     ports:
       - "3306:3306"
     volumes:
@@ -21,14 +21,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.dev
-    container_name: news-app
+    container_name: phoebe-app
     restart: always
     depends_on:
-      news-mysql:
+      phoebe-mysql:
         condition: service_healthy
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:mysql://news-mysql:3306/${MYSQL_DATABASE:-dniester}?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://phoebe-mysql:3306/${MYSQL_DATABASE:-phoebe_db}?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     ports:
@@ -45,10 +45,10 @@ services:
     build:
       context: ./frontends/nextjs
       dockerfile: Dockerfile
-    container_name: nextjs-app
+    container_name: phoebe-nextjs
     restart: always
     depends_on:
-      news-app:
+      phoebe-app:
         condition: service_healthy
     ports:
       - "3000:3000"
