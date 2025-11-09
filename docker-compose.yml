@@ -41,5 +41,21 @@ services:
       timeout: 10s
       retries: 5
 
+  nextjs-app:
+    build:
+      context: ./frontends/nextjs
+      dockerfile: Dockerfile
+    container_name: nextjs-app
+    restart: always
+    depends_on:
+      news-app:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontends/nextjs:/app
+      - /app/node_modules
+      - /app/.next
+
 volumes:
   mysql_data:

@@ -1,0 +1,69 @@
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// --- Public API ---
+
+export const getNews = (page = 0, size = 10) => {
+  return api.get(`/news?page=${page}&size=${size}`);
+};
+
+export const getNewsById = (id) => {
+  return api.get(`/news/${id}`);
+};
+
+export const getNewsByTerm = (termId, page = 0, size = 10) => {
+  return api.get(`/news/term/${termId}?page=${page}&size=${size}`);
+};
+
+export const searchPublicNews = (query) => {
+  return api.get(`/news/search?q=${encodeURIComponent(query)}`);
+};
+
+
+// --- Admin API ---
+
+// Interceptor to add auth token to every admin request
+api.interceptors.request.use(config => {
+    if (typeof window !== 'undefined') {
+        const token = localStorage.getItem('authToken');
+        // Check if the URL is an admin URL
+        if (token && config.url.startsWith('/admin')) {
+            config.headers.Authorization = `Basic ${token}`;
+        }
+    }
+    return config;
+});
+
+
+export const admin = {
+  // Auth
+  getMe: () => api.get('/admin/auth/me'), // Get current user info
+
+  // News
+  getNews: (page = 0, size = 20) => api.get(`/admin/news?page=${page}&size=${size}`),
+  getNewsById: (id) => api.get(`/admin/news/${id}`),
+  createNews: (data) => api.post('/admin/news', data),
+  updateNews: (id, data) => api.put(`/admin/news/${id}`, data),
+  deleteNews: (id) => api.delete(`/admin/news/${id}`),
+
+  // Taxonomy
+  getTerms: () => api.get('/admin/terms'),
+  getTermById: (id) => api.get(`/admin/terms/${id}`),
+  createTerm: (data) => api.post('/admin/terms', data),
+  updateTerm: (id, data) => api.put(`/admin/terms/${id}`, data),
+  deleteTerm: (id) => api.delete(`/admin/terms/${id}`),
+
+  // Users
+  getUsers: () => api.get('/admin/users'),
+  getUserById: (id) => api.get(`/admin/users/${id}`),
+  updateUser: (id, data) => api.put(`/admin/users/${id}`, data),
+};
+
+
+export default api;
