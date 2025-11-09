@@ -2,6 +2,8 @@
 
 This document outlines the technical requirements for Phoebe CMS admin panel interface.
 
+**[Detailed Next.js Frontend Implementation Description here](../../frontends/nextjs/README.md).**
+
 ---
 
 ## 1. Roles and Permissions
