@@ -4,8 +4,6 @@
 
 > **English Documentation**: См. [../en/](../en/) для английской документации.
 
-> **Документация по фронтенду Next.js**: См. [../../frontends/nextjs/README_RU.md](../../frontends/nextjs/README_RU.md) для подробной информации о реализации фронтенда на Next.js.
-
 
 ---
 
