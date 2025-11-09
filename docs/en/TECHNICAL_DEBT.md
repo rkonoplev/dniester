@@ -2,6 +2,8 @@
 
 This document tracks the history of significant improvements, current tasks, and future plans for the project.
 
+**[Detailed Next.js Frontend Implementation Description here](../../frontends/nextjs/README.md).**
+
 ---
 
 ## Completed Tasks and Architectural Decisions
@@ -124,5 +126,6 @@ This section outlines planned features and improvements, categorized by priority
 
 - **Status**: Currently in a basic structure phase. Full component implementation and API integration are
   required.
+- **Next.js Frontend**: Implemented and ready for use.
 - **Dependency**: Full implementation of the frontends will proceed after the final backend debugging,
-  configuration, and verification.
+  configuration, and verification. **Next.js frontend successfully integrated and tested with the backend.**

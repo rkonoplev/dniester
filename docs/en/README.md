@@ -4,6 +4,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 
 > **Русская документация**: See [../ru/](../ru/) for Russian documentation.
 
+> **Next.js Frontend Documentation**: See [../../frontends/nextjs/README.md](../../frontends/nextjs/README.md) for detailed information about the Next.js frontend implementation.
+
+
 ---
 
 ## 📖 Core Documentation
