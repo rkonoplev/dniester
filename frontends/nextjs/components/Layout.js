@@ -96,13 +96,14 @@ const Layout = ({ children }) => {
               </Typography>
             </Grid>
             <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '0.5rem 1rem' }}>
-              <FooterLink href="/technical-sheet">Technical Sheet</FooterLink>
+              {/* These links will now point to news nodes with a specific taxonomy term */}
+              <FooterLink href="/node/1">About Us</FooterLink> {/* Example: node ID 1 for About Us */}
               <Typography>|</Typography>
-              <FooterLink href="/editorial-statute">Editorial Statute</FooterLink>
+              <FooterLink href="/node/2">Terms of Service</FooterLink> {/* Example: node ID 2 */}
               <Typography>|</Typography>
-              <FooterLink href="/community-rules">Community Rules</FooterLink>
+              <FooterLink href="/node/3">Privacy Policy</FooterLink> {/* Example: node ID 3 */}
               <Typography>|</Typography>
-              <FooterLink href="/advertising">Advertising</FooterLink>
+              <FooterLink href="/node/4">Advertise</FooterLink> {/* Example: node ID 4 */}
               <Typography>|</Typography>
               <Button onClick={toggleTheme} sx={{ color: 'white', p: 0, minWidth: 0, textTransform: 'none' }}>
                 <Typography variant="body2" sx={{ textDecoration: 'underline' }}>
@@ -110,7 +111,7 @@ const Layout = ({ children }) => {
                 </Typography>
               </Button>
               <Typography>|</Typography>
-              <FooterLink href="/contact">Contact</FooterLink>
+              <FooterLink href="/node/5">Contact</FooterLink> {/* Example: node ID 5 */}
             </Grid>
             <Grid item xs={12} sx={{ mt: 2 }}>
               <Typography variant="body2">
