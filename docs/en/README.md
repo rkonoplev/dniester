@@ -80,6 +80,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Docker Data Backup & Recovery](./DOCKER_DATA_RECOVERY_GUIDE.md)**  
   Inventory and backup of all project databases from Docker volumes.
 
+- **[Volume Migration Guide](./VOLUME_MIGRATION_GUIDE.md)**  
+  Safe migration of Docker volumes when renaming containers from news-mysql to phoebe-mysql.
+
 - **[Project Codebase Transfer Guide](./PROJECT_TRANSFER_GUIDE.md)**  
   Backup and recovery of the codebase using Git.
 

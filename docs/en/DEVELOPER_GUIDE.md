@@ -52,7 +52,7 @@ static analysis, security scanning, and code coverage are performed in GitHub Ac
       ```
 - **For integration tests** (requires MySQL):
   ```bash
-  docker-compose up -d news-mysql
+  docker-compose up -d phoebe-mysql
   ./gradlew integrationTest
   ```
 - **Check style/linting locally** (optional, prevents CI failures):
@@ -296,17 +296,17 @@ docker compose up -d    # This will create a clean database
 ### 1. Connect to MySQL container (interactive shell)
 
 ```bash
-docker exec -it news-mysql mysql -uroot -proot
+docker exec -it phoebe-mysql mysql -uroot -proot
 ```
 
 ### 2. Dumping databases (export)
 
 ```bash
-docker exec -i news-mysql mysqldump -uroot -proot dniester > db_data/exported_dump.sql
+docker exec -i phoebe-mysql mysqldump -uroot -proot phoebe_db > db_data/exported_dump.sql
 ```
 
 ### 3. Importing dumps
 
 ```bash
-docker exec -i news-mysql mysql -uroot -proot dniester < db_data/exported_dump.sql
+docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < db_data/exported_dump.sql
 ```

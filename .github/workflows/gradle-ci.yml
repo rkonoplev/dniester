@@ -59,10 +59,10 @@ jobs:
 
       - name: Start MySQL for integration tests
         run: |
-          docker compose -f ./docker-compose.yml up -d news-mysql
+          docker compose -f ./docker-compose.yml up -d phoebe-mysql
           docker compose -f ./docker-compose.yml ps
           # Wait for MySQL to be ready
-          timeout 60s bash -c 'until docker exec news-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+          timeout 60s bash -c 'until docker exec phoebe-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
 
       - name: Build, Test, Coverage
         env:
@@ -100,7 +100,7 @@ jobs:
         with:
           file: backend/build/reports/jacoco/test/jacocoTestReport.xml
           flags: unittests
-          name: codecov-news-platform
+          name: codecov-phoebe
 
   # ===================================================================
   # JOB 3: Security scan with GitLeaks

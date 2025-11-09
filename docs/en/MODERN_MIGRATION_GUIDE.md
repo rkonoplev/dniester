@@ -50,11 +50,11 @@ docker compose up --build
 3.  **Automated Flyway Migrations:**
     - Your Spring Boot application (`news-app`) will start and connect to the empty database.
     - **Flyway**, which is integrated into the application, will detect that the database is empty.
-    - Flyway will sequentially execute all SQL scripts from the `backend/src/main/resources/db/migration/common` folder:
+    - Flyway will sequentially execute all SQL scripts from migration folders:
       - `V1__initial_schema.sql`: Will create the entire table structure (`users`, `content`, etc.).
-      - `V3__insert_sample_data.sql`: Will **populate these tables with data**, including users, roles, and content
-        that was converted from the original Drupal 6 dump.
-      - Subsequent scripts (`V4`, `V5`, etc.) will apply all further schema changes.
+      - `V3__insert_sample_data.sql`: Will **populate these tables with data**, including users, roles, and content.
+      - `V4-V7`: Apply schema changes (author unification, permissions system, channel settings).
+      - `V8-V9`: Setup permissions and add performance indexes.
 
 ### Step 3: Verify the Result
 
@@ -67,9 +67,10 @@ You can verify this by connecting to the database:
 docker exec -it news-mysql mysql -uroot -proot
 
 # Inside MySQL, run the commands
-USE dniester;
-SELECT COUNT(*) FROM content; -- Should show ~12186 records
-SELECT COUNT(*) FROM users;   -- Should show ~400+ users
+USE phoebe_db;
+SELECT COUNT(*) FROM content; -- Should show test records
+SELECT COUNT(*) FROM users;   -- Should show users
+SELECT COUNT(*) FROM permissions; -- Should show configured permissions
 ```
 
 ## Conclusion
