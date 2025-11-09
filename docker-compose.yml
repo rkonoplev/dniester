@@ -19,7 +19,7 @@ services:
 
   phoebe-app:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile.dev
     container_name: phoebe-app
     restart: always

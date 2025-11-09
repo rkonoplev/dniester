@@ -108,7 +108,7 @@ Transfer the following artifacts to the new computer:
 
 4.  **Restore the database from the dump**:
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot < db_dumps/phoebe_new_db_backup.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot < db_dumps/phoebe_new_db_backup.sql
     ```
 
 5.  **Run the application**:

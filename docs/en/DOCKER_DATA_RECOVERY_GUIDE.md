@@ -27,14 +27,14 @@ which one is which.
 ### 1.1 Analysis of Projects and Their Purpose
 
 - **`phoebe` Project (Main)**
-  - **Container**: `news-mysql` (MySQL 8.0)
+  - **Container**: `phoebe-mysql` (MySQL 8.0)
   - **Volume**: `phoebe_mysql_data`
   - **Purpose**: Your main, current project. It runs the Spring Boot application and uses the modern
     database into which the data was migrated. This is the one used for daily work.
 
 - **`legacy` Project (Migration Helper)**
-  - **Container**: `news-mysql-drupal6` (MySQL 5.7)
-  - **Volume**: `news-platform_mysql_data_drupal6`
+  - **Container**: `phoebe-mysql-drupal6` (MySQL 5.7)
+  - **Volume**: `phoebe_mysql_data_drupal6`
   - **Purpose**: This project was created for one purpose only: the migration process. The old Drupal 6
     dump required an old version of MySQL for compatibility. The `legacy` environment is a tool
     for reproducing the migration and is not required for daily work. It should be kept stopped.
@@ -43,7 +43,7 @@ which one is which.
 
 The `docker volume ls` command will show all data stores. Based on the analysis above, the key volumes are:
 - `phoebe_mysql_data` (current DB)
-- `news-platform_mysql_data_drupal6` (original DB for migration)
+- `phoebe_mysql_data_drupal6` (original DB for migration)
 
 ---
 
@@ -58,11 +58,11 @@ creates a new, empty volume instead of attaching to an existing one.
 To be 100% sure which volume was attached to your oldest container, run:
 
 ```bash
-docker inspect news-mysql-drupal6
+docker inspect phoebe-mysql-drupal6
 ```
 
 In the output, find the `Mounts` section. The `Name` field will give you the exact volume name you need
-(e.g., `news-platform_mysql_data_drupal6`).
+(e.g., `phoebe_mysql_data_drupal6`).
 
 ### Step 2.2 (Optional): Investigate the Volume
 
@@ -81,7 +81,7 @@ After checking, exit the container with the `exit` command.
 Now that we know the exact name of the "golden" volume, we can create a full dump of it. This command
 runs a temporary MySQL 5.7 container, mounts your volume to it, and executes `mysqldump`.
 
-Replace `<volume_name>` with yours (e.g., `news-platform_mysql_data_drupal6`).
+Replace `<volume_name>` with yours (e.g., `phoebe_mysql_data_drupal6`).
 
 ```bash
 docker run --rm -v <volume_name>:/var/lib/mysql -v $(pwd)/legacy/original_drupal_dump:/backup mysql:5.7 \
@@ -99,12 +99,12 @@ After running this command, you will have a complete and correct backup of your 
 
 ## Part 3: Creating a Dump of the Current Project DB (MySQL 8.0)
 
-**Important**: Before creating a dump, ensure that the main container `news-mysql` is stopped
+**Important**: Before creating a dump, ensure that the main container `phoebe-mysql` is stopped
 to avoid file lock errors (`Unable to lock ./ibdata1`).
 
 1. **Stop the container**:
    ```bash
-   docker stop news-mysql
+   docker stop phoebe-mysql
    ```
 
 2. **Create the dump**:
@@ -115,7 +115,7 @@ to avoid file lock errors (`Unable to lock ./ibdata1`).
 
 3. **Restart the container**:
    ```bash
-   docker start news-mysql
+   docker start phoebe-mysql
    ```
 
 - **Result**: A `phoebe_new_db_backup.sql` file with a full backup of the current DB.
@@ -151,10 +151,10 @@ The output of `docker ps` shows two running "projects", each with its own MySQL 
 
 | Project | Container Name | Image (Version) | Purpose |
 | :--- | :--- | :--- | :--- |
-| **`legacy`** | `news-mysql-drupal6` | `mysql:5.7` | **Helper**. For migrating from old Drupal. |
-| **`phoebe`** | `news-mysql` | `mysql:8.0` | **Main**. The current database for your application. |
+| **`legacy`** | `phoebe-mysql-drupal6` | `mysql:5.7` | **Helper**. For migrating from old Drupal. |
+| **`phoebe`** | `phoebe-mysql` | `mysql:8.0` | **Main**. The current database for your application. |
 
-For daily work, you do **not** need the `legacy` (`news-mysql-drupal6`) project to be running. You can
+For daily work, you do **not** need the `legacy` (`phoebe-mysql-drupal6`) project to be running. You can
 safely stop it with `docker compose -f legacy/docker-compose.drupal.yml down`.
 
 ### 5.2 Database Exploration
@@ -163,17 +163,17 @@ safely stop it with `docker compose -f legacy/docker-compose.drupal.yml down`.
 
 1. **Connect to the container**:
    ```bash
-   docker exec -it news-mysql-drupal6 mysql -uroot -proot
+   docker exec -it phoebe-mysql-drupal6 mysql -uroot -proot
    ```
 2. **Show databases**:
    ```sql
    SHOW DATABASES;
    ```
-   You will likely see the `a264971_dniester` (old name) and `dniester` (where it was imported for cleaning) databases.
+   You will likely see the `drupal6_legacy` (old name) and `dniester` (where it was imported for cleaning) databases.
 
 3. **Show old Drupal tables**:
    ```sql
-   USE a264971_dniester;
+   USE drupal6_legacy;
    SHOW TABLES;
    ```
    You will see tables like `node`, `node_revisions`, `term_data`, `users`.
@@ -182,11 +182,11 @@ safely stop it with `docker compose -f legacy/docker-compose.drupal.yml down`.
 
 1. **Connect to the container**:
    ```bash
-   docker exec -it news-mysql mysql -uroot -proot
+   docker exec -it phoebe-mysql mysql -uroot -proot
    ```
 2. **Show tables**:
    ```sql
-   USE dniester;
+   USE phoebe_db;
    SHOW TABLES;
    ```
    You will see tables with new names: `content`, `users`, `roles`, `permissions`, `terms`.
@@ -196,8 +196,8 @@ safely stop it with `docker compose -f legacy/docker-compose.drupal.yml down`.
 | Volume Name | Size | Status | Purpose |
 | :--- | :--- | :--- | :--- |
 | **`phoebe_mysql_data`** | **201 MB** | **in use** | **Your new, current database (MySQL 8.0).** |
-| **`news-platform_mysql_data_drupal6`** | **982.7 MB** | - | **"Golden" archive. The very first, full Drupal 6 dump.** |
-| `news-platform_mysql_data` | 628.8 MB | - | Archive of an old project. Less important. |
+| **`phoebe_mysql_data_drupal6`** | **982.7 MB** | - | **"Golden" archive. The very first, full Drupal 6 dump.** |
+| `phoebe_mysql_data` | 628.8 MB | - | Archive of an old project. Less important. |
 | `legacy_mysql_data_drupal6` | 210 MB | in use | Intermediate migration database. Can be deleted. |
 
 ### 5.4 Summary and Recommendations
@@ -206,9 +206,9 @@ safely stop it with `docker compose -f legacy/docker-compose.drupal.yml down`.
   - `phoebe_new_db_backup.sql` (your current work)
   - `drupal6_migration_backup_FULL.sql` (the historical archive)
 
-- The `news-platform_mysql_data` and `legacy_mysql_data_drupal6` volumes can be deleted to free up space,
+- The `phoebe_mysql_data` and `legacy_mysql_data_drupal6` volumes can be deleted to free up space,
   as you already have backups of their contents.
   ```bash
   docker volume rm legacy_mysql_data_drupal6
-  docker volume rm news-platform_mysql_data
+  docker volume rm phoebe_mysql_data
   ```

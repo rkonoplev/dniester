@@ -102,7 +102,7 @@
 
 - **Для MySQL**:
   ```dotenv
-  SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+  SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
   SPRING_DATASOURCE_USERNAME=root
   SPRING_DATASOURCE_PASSWORD=root
   ```
@@ -146,7 +146,7 @@
 
 2.  **Переменные окружения**: В файле `.env.dev` укажите ваши учетные данные для MySQL.
     ```dotenv
-    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
     SPRING_DATASOURCE_USERNAME=root
     SPRING_DATASOURCE_PASSWORD=root
     ```
@@ -160,7 +160,7 @@
 
 2.  **Импортируйте новую схему**:
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < путь/к/вашему/новому/clean_schema.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot dniester < путь/к/вашему/новому/clean_schema.sql
     ```
 
 3.  **Запустите приложение** с профилями `local` и `mysql`:

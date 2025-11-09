@@ -49,10 +49,10 @@
 docker compose -f docker-compose.yml up -d mysql
 
 # 2. Импортируйте очищенную схему и данные в базу 'dniester'
-docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 
 # 3. Убедитесь, что данные на месте (например, проверьте количество статей)
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 
 ---
@@ -74,19 +74,19 @@ docker compose -f legacy/docker-compose.drupal.yml up -d
 **Логи:**
 ```bash
 # Наблюдаем за логами, чтобы убедиться, что сервер успешно стартовал
-docker logs -f news-mysql-drupal6
+docker logs -f phoebe-mysql-drupal6
 ```
 
 **Подключение (для проверки):**
 ```bash
-docker exec -it news-mysql-drupal6 mysql -u root -p
+docker exec -it phoebe-mysql-drupal6 mysql -u root -p
 # пароль: root
 ```
 
 **Проверка исходной базы данных Drupal 6:**
 ```sql
 SHOW DATABASES;
-USE a264971_dniester;
+USE drupal6_legacy;
 SHOW TABLES;
 ```
 
@@ -97,15 +97,15 @@ SHOW TABLES;
 
 **Экспорт исходного дампа:**
 ```bash
-# Экспортируем исходный дамп (например, drupal6_fixed.sql) из базы a264971_dniester
+# Экспортируем исходный дамп (например, drupal6_fixed.sql) из базы drupal6_legacy
 # внутри нашего временного контейнера.
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot drupal6_legacy > legacy/archived_migration_scripts/drupal6_fixed.sql
 ```
 
 **Импорт в чистую базу `dniester`:**
 ```bash
 # Импортируем исходный дамп в базу 'dniester' внутри нашего временного контейнера.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
 ```
 
 **Проверка импортированных таблиц:**
@@ -117,11 +117,11 @@ SHOW TABLES;
 ```bash
 # Применяем основной скрипт нормализации. Он создает новые таблицы и переносит в них
 # очищенные данные из старых таблиц Drupal.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
 
 # Если в вашем Drupal-сайте использовался модуль CCK для создания кастомных полей,
 # примените этот дополнительный скрипт для их миграции.
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
 ```
 
 ### Шаг 3: Экспорт очищенной схемы (`clean_schema.sql`)
@@ -131,7 +131,7 @@ docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived
 
 ```bash
 # Создаем дамп базы 'dniester' из временного контейнера и сохраняем его в файл.
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
 ```
 
 ### Шаг 4: Подготовка и запуск целевой среды (MySQL 8.0)
@@ -152,7 +152,7 @@ docker compose -f docker-compose.yml up -d mysql
 
 **Проверка логов MySQL 8.0:**
 ```bash
-docker logs news-mysql
+docker logs phoebe-mysql
 # В логах должно быть что-то вроде: [Entrypoint]: Creating database dniester
 ```
 
@@ -161,7 +161,7 @@ docker logs news-mysql
 Загружаем наш `clean_schema.sql` в новую, основную базу данных.
 
 ```bash
-docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 ```
 
 ### Шаг 6: Проверка результата
@@ -170,16 +170,16 @@ docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migrati
 
 **Проверка таблиц:**
 ```bash
-docker exec -it news-mysql mysql -uroot -proot -e "USE dniester; SHOW TABLES;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "USE phoebe_db; SHOW TABLES;" dniester
 ```
 
 **Проверка количества записей:**
 ```bash
 # Проверяем количество статей в таблице content
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 
 # Проверяем количество пользователей
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM users;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM users;" dniester
 # Ожидается ~12186 строк (12172 story + 14 book) для контента.
 ```
 
@@ -195,14 +195,14 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM users;" 
 docker compose -f legacy/docker-compose.drupal.yml up -d
 
 # 2. Экспорт исходных данных Drupal 6, импорт в чистую базу и запуск скриптов нормализации
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot a264971_dniester > legacy/archived_migration_scripts/drupal6_fixed.sql
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
-docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot drupal6_legacy > legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/drupal6_fixed.sql
+docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_from_drupal6_universal.sql
 # Опционально: Если у вас были CCK-поля в Drupal 6, раскомментируйте и выполните следующую строку:
-# docker exec -i news-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
+# docker exec -i phoebe-mysql-drupal6 mysql -uroot -proot dniester < legacy/archived_migration_scripts/migrate_cck_fields.sql
 
 # 3. Экспорт очищенной и нормализованной схемы в clean_schema.sql
-docker exec -i news-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql-drupal6 mysqldump -uroot -proot dniester > legacy/archived_migration_scripts/clean_schema.sql
 
 # 4. Остановка и удаление временного окружения для миграции Drupal 6
 docker compose -f legacy/docker-compose.drupal.yml down -v
@@ -211,10 +211,10 @@ docker compose -f legacy/docker-compose.drupal.yml down -v
 docker compose -f docker-compose.yml up -d mysql
 
 # 6. Импорт финальной очищенной схемы в MySQL 8.0
-docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
 
 # 7. Проверка миграции (например, подсчет строк контента)
-docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
 ```
 
 ---
@@ -299,18 +299,18 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 
 3.  **Проверить логи MySQL:**
     ```bash
-    docker logs -f news-mysql
+    docker logs -f phoebe-mysql
     ```
 
 4.  **Импортировать базу (если еще не залита):**
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
     ```
 
 5.  **Проверить содержимое базы данных:**
     ```bash
-    docker exec -it news-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
-    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "SHOW TABLES;" dniester
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
     ```
 
 ### Вариант Б — Полное окружение (MySQL + Backend Spring Boot)
@@ -322,7 +322,7 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
     MYSQL_ROOT_PASSWORD=root
     MYSQL_DATABASE=dniester
     SPRING_LOCAL_PORT=8080
-    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/dniester?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
+    SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
     SPRING_DATASOURCE_USERNAME=root
     SPRING_DATASOURCE_PASSWORD=root
     ```
@@ -332,22 +332,22 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
     docker compose --env-file .env.dev up -d
     ```
     В результате будут запущены:
-    - `news-mysql`: база MySQL 8 с данными
-    - `news-app`: приложение Spring Boot
+    - `phoebe-mysql`: база MySQL 8 с данными
+    - `phoebe-app`: приложение Spring Boot
 
 3.  **При необходимости импортировать базу:**
     ```bash
-    docker exec -i news-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot dniester < legacy/archived_migration_scripts/clean_schema.sql
     ```
 
 4.  **Проверить базу данных:**
     ```bash
-    docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;" dniester
     ```
 
 5.  **Проверить логи приложения:**
     ```bash
-    docker logs -f news-app
+    docker logs -f phoebe-app
     ```
 
 ---
@@ -359,9 +359,9 @@ docker exec -it news-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM content;
 Если вы сталкиваетесь с ошибками вида `ERROR 1366 (HY000): Incorrect string value: '\xD0\x98\xD0\xBD...' for column 'title'`, это означает, что ваша база данных создала целевую таблицу с неверной кодировкой по умолчанию (например, `latin1`). По умолчанию MySQL 5.7 (и иногда 8.0, в зависимости от конфигурации) может использовать `latin1`, если явно не указано иное.
 
 #### Шаг 1: Проверка кодировки таблицы
-Внутри вашего MySQL-контейнера (например, `news-mysql-drupal6` или `news-mysql`):
+Внутри вашего MySQL-контейнера (например, `phoebe-mysql-drupal6` или `phoebe-mysql`):
 ```sql
-SHOW CREATE TABLE a264971_dniester.node \G
+SHOW CREATE TABLE drupal6_legacy.node \G
 ```
 Обычно таблицы Drupal 6 имеют `DEFAULT CHARSET=utf8`. Теперь проверьте вашу новую таблицу `content` (вероятно, она имеет `DEFAULT CHARSET=latin1`).
 
@@ -395,7 +395,7 @@ CREATE TABLE content (
 
 #### Шаг 1: Остановите контейнер MySQL
 ```bash
-docker stop news-mysql
+docker stop phoebe-mysql
 ```
 
 #### Шаг 2: Запустите временный контейнер с `--skip-grant-tables`
@@ -403,7 +403,7 @@ docker stop news-mysql
 ```bash
 docker run -it --rm \
 --name mysql-fix \
--v news-platform_mysql_data:/var/lib/mysql \
+-v phoebe_mysql_data:/var/lib/mysql \
 mysql:8.0 \
 --skip-grant-tables --skip-networking
 ```
@@ -423,7 +423,7 @@ ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'root';
 ```
 
 #### Шаг 5: Остановите временный контейнер и перезапустите основной MySQL
-Выйдите из командной строки MySQL, затем остановите контейнер `mysql-fix` (Ctrl+C в первом терминале или `docker stop mysql-fix`). Наконец, перезапустите ваш основной контейнер `news-mysql`:
+Выйдите из командной строки MySQL, затем остановите контейнер `mysql-fix` (Ctrl+C в первом терминале или `docker stop mysql-fix`). Наконец, перезапустите ваш основной контейнер `phoebe-mysql`:
 ```bash
 docker compose -f docker-compose.yml up -d mysql
 ```
@@ -453,7 +453,7 @@ docker compose -f docker-compose.yml up -d mysql
 Подробную информацию о всех миграционных скриптах и файлах см. в [Database Migration Scripts](../db_data/README.md).
 
 - **`drupal6_fixed.sql`**:
-  Чистый дамп исходной базы Drupal 6 (`a264971_dniester`), импортированный во временный экземпляр MySQL 5.7.
+  Чистый дамп исходной базы Drupal 6 (`drupal6_legacy`), импортированный во временный экземпляр MySQL 5.7.
   Назначение: нормализация имени базы данных и обеспечение совместимости для дальнейших шагов миграции.
 
 - **`migrate_from_drupal6_universal.sql`**:
@@ -500,15 +500,15 @@ SELECT COUNT(*) FROM custom_fields;
 
 #### Docker-тома
 
-- **`news-platform_mysql_data`**: **Сохраните этот том**. Он используется вашим основным контейнером MySQL 8.0 (`news-mysql`) для данных Phoebe CMS.
-- **`news-platform_mysql_data_drupal6`**: **Этот том можно безопасно удалить**. Это остаток от процесса миграции Drupal 6, и он больше не нужен.
+- **`phoebe_mysql_data`**: **Сохраните этот том**. Он используется вашим основным контейнером MySQL 8.0 (`phoebe-mysql`) для данных Phoebe CMS.
+- **`phoebe_mysql_data_drupal6`**: **Этот том можно безопасно удалить**. Это остаток от процесса миграции Drupal 6, и он больше не нужен.
 
 #### Варианты очистки
 
 **Вариант А — Просто остановить контейнер Drupal 6 (сохранить том на всякий случай):**
 Это более мягкий подход, сохраняющий том на случай, если вам потребуется повторно его изучить позже.
 ```bash
-docker stop news-mysql-drupal6
+docker stop phoebe-mysql-drupal6
 ```
 
 **Вариант Б — Полностью удалить контейнер Drupal 6 и его том (рекомендуется после успешного экспорта):**
@@ -516,4 +516,4 @@ docker stop news-mysql-drupal6
 ```bash
 docker compose -f legacy/docker-compose.drupal.yml down -v
 ```
-После очистки останутся только MySQL 8.0 (`news-mysql`) и его постоянный том (`phoebe_mysql_data`) для дальнейшей работы с Phoebe CMS.
+После очистки останутся только MySQL 8.0 (`phoebe-mysql`) и его постоянный том (`phoebe_mysql_data`) для дальнейшей работы с Phoebe CMS.
