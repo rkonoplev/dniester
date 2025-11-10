@@ -103,6 +103,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Input Validation Guide](./VALIDATION_GUIDE.md)**  
   A guide to content validation, including SafeHtml and XSS protection.
 
+- **[Git and Bash Commands Reference](./GIT_BASH_COMMANDS.md)**  
+  Practical Git and Bash commands for development and troubleshooting.
+
 ---
 
 ## 🌐 Headless CMS Benefits
