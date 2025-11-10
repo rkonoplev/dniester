@@ -39,8 +39,8 @@ argument or in an environment variable.
 
 -   **`application-ci.yml`**
     -   **Purpose**: Used exclusively during Continuous Integration (CI) builds, like on GitHub Actions.
-    -   **Key Settings**: Configured to connect to the database provided by the CI environment (e.g., a
-        Testcontainers or Docker Compose service).
+    -   **Key Settings**: Uses H2 in-memory database (`jdbc:h2:mem:testdb`) with `create-drop` schema
+        management. Flyway is disabled since H2 creates schema automatically. Optimized for fast CI execution.
 
 -   **`application-mysql.yml`** & **`application-postgresql.yml`**
     -   **Purpose**: Database-specific profiles. They provide the correct JDBC driver and Hibernate dialect
