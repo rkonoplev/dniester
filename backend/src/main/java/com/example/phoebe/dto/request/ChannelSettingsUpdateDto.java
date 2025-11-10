@@ -1,6 +1,8 @@
 package com.example.phoebe.dto.request;
 
 import com.example.phoebe.validation.SafeHtml;
+import com.example.phoebe.validation.ValidJsonArray;
+import com.example.phoebe.validation.ValidUrl;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -25,8 +27,10 @@ public record ChannelSettingsUpdateDto(
         @SafeHtml
         String footerHtml,
 
+        @ValidJsonArray(message = "Main menu term IDs must be a valid JSON array")
         String mainMenuTermIds,
 
         @Size(max = 255, message = "Site URL must not exceed 255 characters")
+        @ValidUrl(message = "Site URL must be a valid HTTP/HTTPS URL")
         String siteUrl
 ) {}

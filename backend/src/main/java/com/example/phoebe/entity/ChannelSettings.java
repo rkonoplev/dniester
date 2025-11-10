@@ -1,6 +1,8 @@
 package com.example.phoebe.entity;
 
 import com.example.phoebe.validation.SafeHtml;
+import com.example.phoebe.validation.ValidJsonArray;
+import com.example.phoebe.validation.ValidUrl;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,10 +47,12 @@ public class ChannelSettings {
     @Column(name = "footer_html", columnDefinition = "TEXT")
     private String footerHtml;
 
+    @ValidJsonArray(message = "Main menu term IDs must be a valid JSON array")
     @Column(name = "main_menu_term_ids", columnDefinition = "TEXT")
     private String mainMenuTermIds;
 
     @Size(max = 255, message = "Site URL must not exceed 255 characters")
+    @ValidUrl(message = "Site URL must be a valid HTTP/HTTPS URL")
     @Column(name = "site_url", length = 255)
     private String siteUrl;
 
