@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Uses docker-compose MySQL (requires: docker-compose up -d phoebe-mysql)
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("local")
+@ActiveProfiles("test")
 @Transactional
 public abstract class AbstractIntegrationTest {
 }
