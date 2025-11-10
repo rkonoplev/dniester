@@ -10,5 +10,6 @@ public record ChannelSettingsDto(
         String headerHtml,
         String logoUrl,
         String footerHtml,
-        String mainMenuTermIds
+        String mainMenuTermIds,
+        String siteUrl
 ) {}

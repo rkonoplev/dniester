@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 
 /**
  * Validates that HTML content contains only safe tags.
- * Allowed tags: img, b, i, a, u, strong, em
+ * Allowed tags: b, i, u, strong, em, p, br (no scripts, iframes, or links)
  */
 @Documented
 @Constraint(validatedBy = SafeHtmlValidator.class)

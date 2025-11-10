@@ -158,6 +158,7 @@ curl -u admin:password -i "http://localhost:8080/api/admin/channel-settings"
 | `logoUrl`          | `String` | URL to site logo. Max 500 chars.              | No       |
 | `footerHtml`       | `String` | HTML code for site footer (SafeHtml validated)| No       |
 | `mainMenuTermIds`  | `String` | JSON array of term IDs for main menu          | No       |
+| `siteUrl`          | `String` | Base URL for the site. Max 255 chars.         | No       |
 
 **Example Request:**
 ```bash
@@ -169,9 +170,21 @@ curl -u admin:password \
     "metaDescription": "Latest news and updates",
     "metaKeywords": "news, updates, breaking",
     "logoUrl": "/assets/logo.png",
-    "mainMenuTermIds": "[1,2,3]"
+    "mainMenuTermIds": "[1,2,3]",
+    "siteUrl": "https://dniester.ru"
   }'
 ```
+
+**Security Restrictions for HTML Fields:**
+
+⚠️ **HTML Content Limitations:**
+- **No JavaScript**: Script tags and JavaScript code are blocked
+- **No iframes**: Cannot embed external content or videos
+- **No links**: Anchor tags (`<a>`) are not allowed
+- **No images**: Image tags (`<img>`) are not permitted
+- **Allowed tags only**: `b`, `i`, `u`, `strong`, `em`, `p`, `br`
+
+These restrictions prevent XSS attacks and ensure content security.
 
 ---
 
