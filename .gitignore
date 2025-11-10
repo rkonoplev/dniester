@@ -95,3 +95,30 @@ legacy/archived_migration_scripts/clean_schema.sql
 # Ignore application log files
 /backend/logs/
 /db_dumps/*.sql
+
+# -------------------------------
+# Frontend / Node.js
+# -------------------------------
+
+# Node.js dependencies
+node_modules/
+**/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Package lock files (keep package.json, ignore lock files)
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment files
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
