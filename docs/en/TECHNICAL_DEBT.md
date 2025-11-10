@@ -46,6 +46,9 @@ of the current codebase.
   `create-drop` for automatic schema management.
 - **Unified Test Architecture**: Created a single `AbstractIntegrationTest` base class for all integration
   tests, eliminating code duplication.
+- **Checkstyle Violations Fixed**: Resolved import rule violations (AvoidStarImport) in test files.
+- **Database Schema Extension**: Added `site_url` field to `channel_settings` table for storing the base
+  site URL (migration V10).
 
 ---
 

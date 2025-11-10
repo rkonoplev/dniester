@@ -66,6 +66,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Admin Panel Specification](./ADMIN_PANEL_SPEC.md)**  
   Technical requirements for admin panel interfaces.
 
+- **[Frontend Frameworks Guide](./FRONTEND_FRAMEWORKS_GUIDE.md)**  
+  A comparative overview of frontend frameworks, dependency sizes, and best practices.
+
 ## 🗄️ Database & Migration
 
 - **[Database Guide](./DATABASE_GUIDE.md)**  

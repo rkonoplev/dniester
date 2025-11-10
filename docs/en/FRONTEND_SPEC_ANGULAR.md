@@ -1,122 +1,102 @@
 # Frontend Technical Specification (Angular)
 
+> **Note**: This document describes a **planned** reference implementation.
+> For details on the **existing** implementation, please refer to the
+> **[Next.js Specification](./FRONTEND_SPEC_NEXTJS.md)**.
+
 ## 1. General Objectives
-- Develop a **modern, responsive news portal frontend**.
-- Follow **Google News–inspired design principles**: clean, spacious, mobile-first, highly readable.
-- Provide a **SEO-friendly structure** with static URLs for all news articles.
+- Develop a **modern, responsive news portal frontend** using Angular.
+- Follow **Google News–inspired design principles**: clean, spacious, mobile-first,
+  and highly readable.
+- Provide an **SEO-friendly structure** through Server-Side Rendering (SSR).
 - Ensure **accessibility (WCAG 2.1 AA)** and **fast loading performance**.
 
 ---
 
 ## 2. Technology Stack
-- **Framework:** Angular with Angular Universal (supports SSR for SEO and performance).
+- **Framework:** Angular (utilizing Angular Universal for SSR).
 - **UI Library:** Angular Material.
-- **Styling:** Custom Angular Material theme (overrides for branding, typography, and colors).
+- **Styling:** Custom Angular Material theme for branding, typography, and colors.
+- **State Management:** Services with RxJS for state management and data caching.
 - **Typography:** Roboto (base) + Roboto Slab / Serif for article headlines.
 
 ---
 
-## 3. Layout & Pages
+## 3. Architecture and Structure
 
-### 3.1 Homepage
-- Clean multi-column grid layout:
-  - Desktop: 2–3 columns.
-  - Mobile: 1 column.
-- Featured article block at the top (large image, headline, excerpt).
-- Secondary articles below with medium-sized images.
-- Smaller news items listed in compact cards.
+The project will be structured using Angular's modular approach for better organization.
+
+- **`AppModule`**: The root module.
+- **`CoreModule`**: Singleton services (e.g., `ApiService`, `AuthService`).
+- **`SharedModule`**: Common components, directives, and pipes (e.g., `LayoutComponent`).
+- **`PublicModule`**: A feature module for public-facing pages (home, article, category).
+- **`AdminModule`**: A lazy-loaded feature module for the admin panel.
+
+---
+
+## 4. Layout & Pages
+
+### 4.1 Homepage
+- Clean multi-column grid layout.
+- Featured article block at the top (headline, teaser).
+- Secondary articles below in compact card format.
 - Category navigation bar at the top.
 
-### 3.2 Category Page
+### 4.2 Category Page
 - Paginated list of articles belonging to the selected category.
-- Category title highlighted with branding accent color.
+- Category title highlighted with a branding accent color.
 
-### 3.3 Article Page
-- Large headline with serif font.
-- Featured image (responsive, up to ~800px wide).
+### 4.3 Article Page
+- Large headline with a serif font.
 - Publication date, author, and category.
-- Full content with images and inline HTML elements.
-- Related articles at the bottom.
-- SEO metadata, OpenGraph, and Twitter card support.
+- Full `body` and `teaser` content rendered as HTML to support embedded images,
+  videos, and formatting.
+- SEO metadata, OpenGraph, and Twitter cards generated on the server.
 
-### 3.4 Static Pages
-- About page.
-- Archive page (filter by date/category).
-
----
-
-## 4. Functionality
-
-### 4.1 SEO & URLs
-- **Server-Side Rendering (SSR)**: Use Angular Universal to pre-render pages on the server. This ensures that
-  search engine bots receive fully-formed HTML, allowing for immediate and reliable content indexing.
-- **Static URLs**: Static, human-readable URLs for articles (format `/node/{id}`, e.g., `/node/15378`)
-  and categories (`/category/{id}`).
-- **Hydration**: After the initial server-rendered page is delivered, the client-side Angular application
-  takes over, providing a seamless, interactive user experience without a full page reload.
-- **Structured Data**: Implement JSON-LD (`NewsArticle` schema) to provide rich metadata to search engines,
-  enhancing search result appearance (rich snippets).
-- **Meta Tags**: Dynamically generate `<title>`, `<meta name="description">`, and OpenGraph tags for each page to
-  ensure optimal sharing on social media and correct indexing.
-
-### 4.2 Responsive Design
-- Mobile-first layout.
-- Adaptive typography and fluid images.
-
-### 4.3 Accessibility
-- WCAG 2.1 AA compliance.
-- ARIA attributes, proper contrast, keyboard navigation.
-
-### 4.4 Theming & Branding
-- **Base colors**:
-  - Primary: Dark Blue (#1c355e).
-  - Secondary: Deep Red (#cc0000).
-  - Background: White (#ffffff) or Off-White (#fdfcf8).
-- **Usage**:
-  - Headlines and links: Dark Blue.
-  - Category highlights: Red.
-  - Navigation bar: Dark Blue background with white text.
-- **Typography**:
-  - Headlines: Serif (Roboto Slab).
-  - Body text: Sans-serif (Roboto).
+### 4.4 Technical and Informational Pages
+- Pages like "About Us," "Contact," and "Privacy Policy" will be implemented as
+  standard "nodes" (articles) in the CMS, assigned a special taxonomy term
+  (e.g., "technical_page").
+- Links to these pages will be dynamically managed via the channel settings.
 
 ---
 
-## 5. Form Validation & User Experience
+## 5. Functionality
 
-### 5.1 Channel Settings Form
-- **URL Validation**: Add client-side validation for `siteUrl` field using Angular validators.
-- **HTML Content Warnings**: Display clear warnings about HTML restrictions before users enter content.
-- **Safe HTML Preview**: Show real-time preview of HTML content with only safe tags rendered.
-- **Taxonomy Panel**: Use `mainMenuTermIds` field for storing JSON array of term IDs with proper validation.
-- **Error Handling**: Provide user-friendly error messages for validation failures.
+### 5.1 SEO & Rendering
+- **Server-Side Rendering (SSR) with Angular Universal**: All public pages will be
+  pre-rendered on the server. This ensures maximum performance on the first load and
+  guarantees that search engine crawlers receive fully-formed HTML for indexing.
+- **Dynamic Meta Tags**: Use Angular's `Meta` and `Title` services to dynamically
+  set `<title>`, `<meta name="description">`, and OpenGraph tags on the server for
+  each page.
 
-### 5.2 Input Validation Examples
-```typescript
-// URL validation
-siteUrlControl = new FormControl('', [
-  Validators.pattern(/^https?:\/\/.+/)
-]);
+### 5.2 Global Site Settings Management
+- **"Channel Settings" Page**: A dedicated page will be created in the admin panel
+  to manage global site settings (the `ChannelSettings` entity).
+- **Editable Fields**:
+  - `siteTitle`: The site name for the `<title>` tag.
+  - `metaDescription`, `metaKeywords`: Global meta tags.
+  - `headerHtml`: An editable HTML block for the site header.
+  - `footerHtml`: An editable HTML block for the footer, allowing an admin to
+    manage links, copyright, and logo.
+  - `logoUrl`: URL for the logo.
+  - `mainMenuTermIds`: A list of term IDs to form the main menu.
+- **Integration**: The `LayoutComponent` will fetch these settings via the API and
+  dynamically render the header, footer, and menu.
 
-// JSON validation for mainMenuTermIds
-mainMenuTermIdsControl = new FormControl('', [
-  this.jsonArrayValidator
-]);
-
-jsonArrayValidator(control: AbstractControl): ValidationErrors | null {
-  try {
-    const parsed = JSON.parse(control.value);
-    return Array.isArray(parsed) ? null : { invalidJson: true };
-  } catch {
-    return { invalidJson: true };
-  }
-}
-```
+### 5.3 Admin Panel
+- Will be implemented similarly to the Next.js version, including:
+  - Role-based authentication and authorization (ADMIN/EDITOR).
+  - CRUD operations for news, terms, and users.
+  - Frontend validation for all forms.
+  - A **WYSIWYG editor** for the `body` and `teaser` fields, with the ability to
+    insert links to external media.
 
 ---
 
 ## 6. Future Enhancements (Optional)
-- Full-text search with auto-suggestions.
+- Full-text search.
 - Dark mode theme toggle.
-- Lazy loading for images and infinite scroll on category pages.
+- Lazy loading for images (`ng-lazyload-image` or similar).
 - Push notifications for breaking news.

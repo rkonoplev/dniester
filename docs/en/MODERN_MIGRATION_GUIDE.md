@@ -55,6 +55,7 @@ docker compose up --build
       - `V3__insert_sample_data.sql`: Will **populate these tables with data**, including users, roles, and content.
       - `V4-V7`: Apply schema changes (author unification, permissions system, channel settings).
       - `V8-V9`: Setup permissions and add performance indexes.
+      - `V10`: Add `site_url` field to channel settings for storing the base site URL.
 
 ### Step 3: Verify the Result
 
@@ -71,6 +72,7 @@ USE phoebe_db;
 SELECT COUNT(*) FROM content; -- Should show test records
 SELECT COUNT(*) FROM users;   -- Should show users
 SELECT COUNT(*) FROM permissions; -- Should show configured permissions
+SELECT site_url FROM channel_settings; -- Should show the base site URL
 ```
 
 ## Conclusion

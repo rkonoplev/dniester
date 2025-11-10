@@ -1,8 +1,8 @@
 # Frontend Frameworks Guide: A Comparative Overview
 
-This document provides a theoretical and practical overview of the frontend frameworks used
-and considered for the Phoebe CMS project, focusing on dependency size, project structure,
-and development best practices.
+This document provides a theoretical and practical overview of the frontend frameworks
+used and considered for the Phoebe CMS project, focusing on dependency size, project
+structure, and development best practices.
 
 ---
 
@@ -16,12 +16,13 @@ directory. This is normal and expected. Let's break down why our Next.js project
 
 The size is primarily attributed to a few key dependencies that form the core of our stack:
 
-*   **`@next` (112MB) & `next` (101MB)**: These packages contain the Next.js framework itself,
-    including its compiler (SWC), development server, server-side rendering engine,
-    static site generator, and various optimizations. The size reflects its comprehensive,
-    "batteries-included" nature.
-*   **`@mui` (27MB)**: Material-UI is a rich component library. This size includes not just
-    the components but also styling engines, theming capabilities, and utility functions.
+*   **`@next` (112MB) & `next` (101MB)**: These packages contain the Next.js framework
+    itself, including its compiler (SWC), development server, server-side rendering
+    engine, static site generator, and various optimizations. The size reflects its
+    comprehensive, "batteries-included" nature.
+*   **`@mui` (27MB)**: Material-UI is a rich component library. This size includes not
+    just the components but also styling engines, theming capabilities, and utility
+    functions.
 *   **`typescript` (23MB)**: The TypeScript compiler and its associated type definitions.
     Next.js has built-in TypeScript support, making this a standard dependency.
 *   **Other Packages**: The remaining size is distributed among 320+ smaller packages,
@@ -34,11 +35,11 @@ A smaller `node_modules` size in the past could be due to several reasons:
 *   **Incomplete Installation**: Not all dependencies were installed.
 *   **Different Package Manager**: `yarn` or `pnpm` might create a different directory
     structure or use caching more aggressively than `npm`.
-*   **Cache Clearing**: A recent cache clear (`npm cache clean --force`) could have forced
-    a fresh download of all packages.
+*   **Cache Clearing**: A recent cache clear (`npm cache clean --force`) could have
+    forced a fresh download of all packages.
 
-**Conclusion**: A `node_modules` size of 300-400MB is standard for a modern Next.js project
-with a major UI library like Material-UI.
+**Conclusion**: A `node_modules` size of 300-400MB is standard for a modern Next.js
+project with a major UI library like Material-UI.
 
 ---
 

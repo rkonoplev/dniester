@@ -15,7 +15,13 @@ These patterns are responsible for object creation.
     -   **Implementation:** Applied by the Spring Framework to all components managed by the IoC container
         (annotated with `@Service`, `@Repository`, `@Controller`, `@Component`).
     -   **Purpose:** By default, Spring creates only one instance (bean) of each component, which is reused
-        throughout the application. This ensures state consistency and resource efficiency.
+        throughout the application. This ensures state consistency and resource efficiency. However, in the
+        context of data, a Singleton pattern can also be applied to entities that represent a unique,
+        system-wide configuration.
+    -   **Example (Data Singleton):** The `ChannelSettings` entity is designed to hold global, unique settings
+        for the entire CMS (e.g., site title, meta tags, footer HTML). Conceptually, there should only ever
+        be one record of `ChannelSettings` in the database, making it a data-level Singleton. The
+        application's service layer ensures this uniqueness by always retrieving and updating this single record.
 
 -   **Factory Method / Abstract Factory**
     -   **Implementation:** Used implicitly by the Spring IoC container.
