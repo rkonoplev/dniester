@@ -46,9 +46,10 @@ Spring Boot выбирает конфигурацию на основе акти
   и обычно содержит настройки логирования и другие общие для тестов параметры.
 - **`application-test.yml`** — используется по умолчанию, если в тестовом классе не указан активный профиль
   (`@ActiveProfiles`). Настроен на использование быстрой встраиваемой базы данных H2.
-- **`application-integration-test.yml`** — специальный профиль для интеграционных тестов, которые требуют
-  подключения к реальной базе данных (например, в Docker). Этот профиль нужно активировать явно через
-  `@ActiveProfiles("integration-test")`.
+- **Интеграционные тесты** автоматически выбирают подходящий профиль:
+  - **Локальная разработка**: Использует профиль `local` (MySQL через Docker)
+  - **CI окружение**: Использует профиль `ci` (H2 в памяти) при установке `SPRING_PROFILES_ACTIVE=ci`
+  - Выбор профиля обрабатывается базовым классом `AbstractIntegrationTest`
 
 ---
 
@@ -60,7 +61,7 @@ Spring Boot выбирает конфигурацию на основе акти
 | `dev`              | `application-dev.yml`              | Зависит от вендора | `update`        | Разработка/staging; комбинируется с профилем `mysql` или `postgresql`.      |
 | `test`             | `application-test.yml`             | H2 (в памяти)      | `create-drop`   | **(Только для тестов)** Юнит-тесты и быстрые интеграционные тесты в IDE. Используется по умолчанию. |
 | `integration-test` | `application-integration-test.yml` | MySQL (Docker)     | `validate`      | **(Только для тестов)** Полные интеграционные тесты, требующие реальной БД. |
-| `ci`               | `application-ci.yml`               | H2 (в памяти)      | `create-drop`   | CI в GitHub Actions; быстрые и изолированные сборки без внешней БД.         |
+| `ci`               | `application-ci.yml`               | H2 (в памяти)      | `create-drop`   | **Только CI/CD.** GitHub Actions; H2 база в памяти с автоматическим созданием схемы. Flyway отключен. |
 | `prod`             | `application-prod.yml`             | Облачная БД (MySQL/PG)| `validate`      | Продакшен; комбинируется с профилем вендора. Секреты через ENV.             |
 | `mysql`            | `application-mysql.yml`            | MySQL              | `validate`      | **Профиль вендора.** Устанавливает путь к миграциям Flyway для MySQL.       |
 | `postgresql`       | `application-postgresql.yml`       | PostgreSQL         | `validate`      | **Профиль вендора.** Устанавливает путь к миграциям Flyway для PostgreSQL.  |

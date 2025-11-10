@@ -45,9 +45,10 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
   typically contains logging settings and other common test parameters.
 - **`application-test.yml`** is used by default if no active profile is specified in a test class
   (via `@ActiveProfiles`). It is configured to use a fast, in-memory H2 database.
-- **`application-integration-test.yml`** is a special profile for integration tests that require a real
-  database connection (e.g., to a Docker container). This profile must be activated explicitly with
-  `@ActiveProfiles("integration-test")`.
+- **Integration tests** automatically select the appropriate profile:
+  - **Local development**: Uses `local` profile (MySQL via Docker)
+  - **CI environment**: Uses `ci` profile (H2 in-memory) when `SPRING_PROFILES_ACTIVE=ci` is set
+  - Profile selection is handled by `AbstractIntegrationTest` base class
 
 ---
 
@@ -59,7 +60,7 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 | `dev`              | `application-dev.yml`              | Vendor-Specific  | `update`        | Dev/staging; combined with `mysql` or `postgresql` profile.         |
 | `test`             | `application-test.yml`             | H2 (In-Memory)   | `create-drop`   | **(Tests only)** Unit and fast integration tests in an IDE. Used by default. |
 | `integration-test` | `application-integration-test.yml` | MySQL (Docker)   | `validate`      | **(Tests only)** Full integration tests requiring a real database.  |
-| `ci`               | `application-ci.yml`               | H2 (In-Memory)   | `create-drop`   | CI on GitHub Actions; fast & isolated builds without an external DB. |
+| `ci`               | `application-ci.yml`               | H2 (In-Memory)   | `create-drop`   | **CI/CD only.** GitHub Actions; H2 in-memory database with automatic schema creation. Flyway disabled. |
 | `prod`             | `application-prod.yml`             | Vendor-Specific  | `validate`      | Production; combined with a vendor profile. Secrets via ENV.        |
 | `mysql`            | `application-mysql.yml`            | MySQL            | `validate`      | **Vendor profile.** Sets Flyway location for MySQL.                 |
 | `postgresql`       | `application-postgresql.yml`       | PostgreSQL       | `validate`      | **Vendor profile.** Sets Flyway location for PostgreSQL.            |
