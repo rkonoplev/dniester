@@ -146,6 +146,9 @@ test {
         showStackTraces = true
     }
     finalizedBy jacocoTestReport
+    
+    // Fix Gradle 9.0 deprecation warning
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
 // Create a new task for integration tests
@@ -161,6 +164,9 @@ task integrationTest(type: Test) {
         showCauses = true
         showStackTraces = true
     }
+    
+    // Fix Gradle 9.0 deprecation warning
+    systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }
 
 // Ensure integration tests run during the 'check' phase
