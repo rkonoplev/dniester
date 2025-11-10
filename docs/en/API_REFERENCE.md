@@ -186,6 +186,28 @@ curl -u admin:password \
 
 These restrictions prevent XSS attacks and ensure content security.
 
+**Backend Validation Implementation:**
+
+✅ **Server-Side Validation:**
+- `@ValidUrl` annotation validates HTTP/HTTPS URLs for `siteUrl` field
+- `@ValidJsonArray` annotation validates JSON array format for `mainMenuTermIds` field
+- `@SafeHtml` annotation restricts HTML to safe tags only
+- All validations return clear error messages on failure
+
+**Frontend Implementation Recommendations:**
+
+✅ **For Taxonomy Panel (mainMenuTermIds field):**
+- Use the `mainMenuTermIds` field to store JSON array of term IDs
+- HTML formatting is limited to safe tags only
+- Frontend should provide additional input validation
+
+✅ **Frontend Validation Guidelines:**
+- Add client-side URL validation for the `siteUrl` field
+- Warn users about HTML restrictions before they enter content
+- Show HTML preview with safe tags before saving
+- Validate JSON format for `mainMenuTermIds` field
+- Provide user-friendly error messages for validation failures
+
 ---
 
 ## Pagination Parameters

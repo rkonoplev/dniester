@@ -1,6 +1,7 @@
 package com.example.phoebe.validation;
 
 import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SafeHtmlValidatorTest {
@@ -33,8 +34,8 @@ class SafeHtmlValidatorTest {
     }
 
     @Test
-    void testIframeAllowed() {
+    void testIframeNotAllowed() {
         String content = "<iframe src=\"https://www.youtube.com/embed/test\"></iframe>";
-        assertTrue(validator.isValid(content, null));
+        assertFalse(validator.isValid(content, null));
     }
 }

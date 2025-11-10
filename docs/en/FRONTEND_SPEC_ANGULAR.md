@@ -82,7 +82,40 @@
 
 ---
 
-## 5. Future Enhancements (Optional)
+## 5. Form Validation & User Experience
+
+### 5.1 Channel Settings Form
+- **URL Validation**: Add client-side validation for `siteUrl` field using Angular validators.
+- **HTML Content Warnings**: Display clear warnings about HTML restrictions before users enter content.
+- **Safe HTML Preview**: Show real-time preview of HTML content with only safe tags rendered.
+- **Taxonomy Panel**: Use `mainMenuTermIds` field for storing JSON array of term IDs with proper validation.
+- **Error Handling**: Provide user-friendly error messages for validation failures.
+
+### 5.2 Input Validation Examples
+```typescript
+// URL validation
+siteUrlControl = new FormControl('', [
+  Validators.pattern(/^https?:\/\/.+/)
+]);
+
+// JSON validation for mainMenuTermIds
+mainMenuTermIdsControl = new FormControl('', [
+  this.jsonArrayValidator
+]);
+
+jsonArrayValidator(control: AbstractControl): ValidationErrors | null {
+  try {
+    const parsed = JSON.parse(control.value);
+    return Array.isArray(parsed) ? null : { invalidJson: true };
+  } catch {
+    return { invalidJson: true };
+  }
+}
+```
+
+---
+
+## 6. Future Enhancements (Optional)
 - Full-text search with auto-suggestions.
 - Dark mode theme toggle.
 - Lazy loading for images and infinite scroll on category pages.
