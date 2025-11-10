@@ -7,13 +7,12 @@ spring:
   
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop
     show-sql: false
     database-platform: org.hibernate.dialect.H2Dialect
   
   flyway:
-    locations: classpath:db/migration/common
-    baseline-on-migrate: true
+    enabled: false
   
   h2:
     console:
