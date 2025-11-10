@@ -48,6 +48,10 @@ public class ChannelSettings {
     @Column(name = "main_menu_term_ids", columnDefinition = "TEXT")
     private String mainMenuTermIds;
 
+    @Size(max = 255, message = "Site URL must not exceed 255 characters")
+    @Column(name = "site_url", length = 255)
+    private String siteUrl;
+
     // Constructors
     public ChannelSettings() {}
 
@@ -114,6 +118,14 @@ public class ChannelSettings {
 
     public void setMainMenuTermIds(String mainMenuTermIds) {
         this.mainMenuTermIds = mainMenuTermIds;
+    }
+
+    public String getSiteUrl() {
+        return siteUrl;
+    }
+
+    public void setSiteUrl(String siteUrl) {
+        this.siteUrl = siteUrl;
     }
 
     @Override

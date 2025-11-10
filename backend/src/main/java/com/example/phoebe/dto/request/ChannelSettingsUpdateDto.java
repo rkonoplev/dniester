@@ -25,5 +25,8 @@ public record ChannelSettingsUpdateDto(
         @SafeHtml
         String footerHtml,
 
-        String mainMenuTermIds
+        String mainMenuTermIds,
+
+        @Size(max = 255, message = "Site URL must not exceed 255 characters")
+        String siteUrl
 ) {}

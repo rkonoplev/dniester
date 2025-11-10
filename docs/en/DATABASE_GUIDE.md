@@ -26,7 +26,7 @@ The schema supports both **clean installations** and **migrated data from Drupal
 - **Publication Workflow**: Draft/published states with audit trails
 - **Migration Support**: Handles legacy Drupal 6 data transformation
 
-### Current Database Schema (After All Migrations V1-V9)
+### Current Database Schema (After All Migrations V1-V10)
 
 ```sql
 -- ======================================
@@ -270,6 +270,7 @@ Flyway's locations are configured via Spring profiles, allowing it to combine co
 | V7 | Channel settings | Added channel_settings table for site configuration | `common` |
 | V8 | Setup permissions | Populate permissions and assign to roles | `mysql/postgresql` |
 | V9 | Add indexes | Performance indexes and unique constraints | `mysql/postgresql` |
+| V10 | Site URL field | Added site_url field to channel_settings table | `common` |
 
 ### Migration V3 Default Data
 
