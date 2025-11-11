@@ -106,6 +106,12 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Git and Bash Commands Reference](./GIT_BASH_COMMANDS.md)**  
   Practical Git and Bash commands for development and troubleshooting.
 
+- **[CI/CD Improvements Implementation Summary](./CI_CD_IMPROVEMENTS.md)**  
+  Detailed summary of implemented CI/CD optimizations and production recommendations.
+
+- **[Testcontainers Evolution and Strategy](./TESTCONTAINERS_EVOLUTION.md)**  
+  Comprehensive guide on Testcontainers usage, evolution, and when to implement it.
+
 ---
 
 ## 🌐 Headless CMS Benefits
