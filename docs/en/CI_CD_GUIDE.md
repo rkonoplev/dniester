@@ -2,7 +2,8 @@
 
 This document describes the **continuous integration pipeline**, quality tools, and security practices used in Phoebe CMS project.
 
-> **Related**: [MySQL Strategy Implementation](./MYSQL_STRATEGY_IMPLEMENTATION.md) - Details about the production-first database approach and H2 removal.
+> **Related**: [MySQL Strategy Implementation](./MYSQL_STRATEGY_IMPLEMENTATION.md) - Details about the production-first database approach and H2 removal.  
+> **Related**: [Testing Strategy Guide](./TESTING_STRATEGY.md) - Complete testing architecture overview including hybrid integration testing approach.
 
 ---
 

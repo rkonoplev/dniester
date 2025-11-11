@@ -112,6 +112,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Testcontainers Evolution and Strategy](./TESTCONTAINERS_EVOLUTION.md)**  
   Comprehensive guide on Testcontainers usage, evolution, and when to implement it.
 
+- **[Testing Strategy Guide](./TESTING_STRATEGY.md)**  
+  Complete testing architecture overview including hybrid integration testing approach.
+
 ---
 
 ## 🌐 Headless CMS Benefits
