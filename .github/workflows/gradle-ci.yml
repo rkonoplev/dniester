@@ -68,18 +68,12 @@ jobs:
           timeout 120s bash -c 'until [ "$(docker inspect --format="{{.State.Health.Status}}" phoebe-mysql)" = "healthy" ]; do sleep 3; done'
           # Additional wait for MySQL to be ready for connections
           timeout 60s bash -c 'until docker exec phoebe-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
-          # Create test database and user
-          docker exec phoebe-mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS phoebe_test;"
-          docker exec phoebe-mysql mysql -uroot -proot -e "CREATE USER IF NOT EXISTS 'phoebe_user'@'%' IDENTIFIED BY 'phoebe_password';"
-          docker exec phoebe-mysql mysql -uroot -proot -e "GRANT ALL PRIVILEGES ON phoebe_test.* TO 'phoebe_user'@'%';"
-          docker exec phoebe-mysql mysql -uroot -proot -e "FLUSH PRIVILEGES;"
+          # Database phoebe_db already exists, just ensure it's accessible
+          docker exec phoebe-mysql mysql -uroot -proot -e "SHOW DATABASES;"
 
       - name: Build, Test, Coverage
         env:
           SPRING_PROFILES_ACTIVE: ci
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/phoebe_test
-          SPRING_DATASOURCE_USERNAME: phoebe_user
-          SPRING_DATASOURCE_PASSWORD: phoebe_password
         run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport --no-daemon --warning-mode all
 
       - name: Stop MySQL

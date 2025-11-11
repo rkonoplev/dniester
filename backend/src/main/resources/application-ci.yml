@@ -1,6 +1,6 @@
 # =========================================================
 # application-ci.yml
-# CI/CD profile — uses MySQL for realistic testing environment.
+# CI/CD profile — uses H2 with MySQL compatibility for fast CI tests.
 # =========================================================
 
 server:
@@ -8,10 +8,10 @@ server:
 
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/phoebe_test}
+    url: jdbc:mysql://localhost:3306/phoebe_db?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:phoebe_user}
-    password: ${SPRING_DATASOURCE_PASSWORD:phoebe_password}
+    username: root
+    password: root
 
   jpa:
     hibernate:
