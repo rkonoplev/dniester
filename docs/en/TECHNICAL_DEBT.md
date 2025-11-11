@@ -4,6 +4,8 @@ This document tracks the history of significant improvements, current tasks, and
 
 **[Detailed Next.js Frontend Implementation Description here](../../frontends/nextjs/README.md).**
 
+**[CI/CD Improvements Implementation Summary](CI_CD_IMPROVEMENTS.md)** — Detailed summary of implemented CI/CD optimizations.
+
 ---
 
 ## Completed Tasks and Architectural Decisions
@@ -49,6 +51,92 @@ of the current codebase.
 - **Checkstyle Violations Fixed**: Resolved import rule violations (AvoidStarImport) in test files.
 - **Database Schema Extension**: Added `site_url` field to `channel_settings` table for storing the base
   site URL (migration V10).
+- **CI/CD Optimization**: Implemented final recommendations for stable CI/CD:
+  - Complete migration to MySQL in CI (abandoned H2)
+  - Added explicit ENV variables in GitHub Actions
+  - Integrated Flyway migration validation
+  - Added Spring profile logging
+  - Configured automatic test database creation in CI
+
+---
+
+## Final Recommendations for Stable CI/CD and Production
+
+### 1. Abandoning H2 in CI — Confirmed Correct Step
+
+✅ **Current State**: Using MySQL via Docker Compose in CI
+
+**Benefits**:
+- Realistic testing environment
+- Flyway migration validation
+- Confidence in production stability
+
+**Recommendation**: Keep H2 only for unit tests that don't depend on database schema.
+
+### 2. CI Profile Should Use MySQL
+
+✅ **Current State**: `application-ci.yml` configured for MySQL
+
+**Requirements**:
+- Does not contain H2 configuration
+- Uses `jdbc:mysql://phoebe-mysql:3306/...`
+- Reads settings from ENV variables
+
+### 3. Docker Compose — Excellently Configured
+
+✅ **phoebe-mysql**:
+- Has healthcheck
+- Uses volume for persistence
+- Reads ENV variables
+
+✅ **phoebe-app**:
+- Depends on phoebe-mysql
+- Reads ENV variables
+
+✅ **nextjs-app**:
+- Depends on phoebe-app
+
+### 4. GitHub Actions — Nearly Perfect
+
+✅ **Current Steps**:
+- `setup` → JDK + Gradle cache
+- `build_and_test` → Docker + Gradle + coverage
+- `security` → GitLeaks
+
+**Additional Recommendations**:
+- Add explicit ENV variables in `build_and_test`
+- Ensure Docker Compose ports match application.yml
+
+### 5. Flyway Migrations
+
+✅ **Current State**: Configured paths `classpath:db/migration/common` and `mysql`
+
+**Recommendations**:
+- Avoid MySQL-specific SQL for PostgreSQL support
+- Add separate Gradle task `flywayValidate` for CI
+
+### 6. Logging and Debugging
+
+**Recommended CI Improvements**:
+```yaml
+- name: Print active Spring profile
+  run: echo "SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE"
+```
+
+### 7. Production
+
+✅ **application-prod.yml**:
+- Reads everything from ENV variables
+- Contains no secrets
+- Uses `validate` strategy
+
+**Important**: Ensure `.env.prod` doesn't get into git and is mounted during deployment.
+
+### 8. Additional Improvements (Optional)
+
+- **SpotBugs or SonarQube**: Deep static code analysis
+- **Testcontainers**: Local integration tests without Docker Compose
+- **Liquibase or SchemaSpy**: Database schema visualization
 
 ---
 

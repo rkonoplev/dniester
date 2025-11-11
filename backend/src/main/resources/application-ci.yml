@@ -1,6 +1,6 @@
 # =========================================================
 # application-ci.yml
-# CI/CD profile — uses in-memory H2 for isolated fast tests.
+# CI/CD profile — uses MySQL for realistic testing environment.
 # =========================================================
 
 server:
@@ -8,22 +8,22 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE
-    driver-class-name: org.h2.Driver
-    username: sa
-    password: ""
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/phoebe_test}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${SPRING_DATASOURCE_USERNAME:phoebe_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:phoebe_password}
 
   jpa:
     hibernate:
       ddl-auto: validate
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
     show-sql: false
   
   flyway:
     enabled: true
-    locations: classpath:db/migration/common
+    locations: classpath:db/migration/common,classpath:db/migration/mysql
     baseline-on-migrate: true
 
 logging:

@@ -5,6 +5,7 @@ plugins {
     id 'org.springframework.boot' version '3.2.0'
     id 'io.spring.dependency-management' version '1.1.4'
     id 'pmd'
+    id 'org.flywaydb.flyway' version '9.22.3'
 }
 
 group = 'com.example'
@@ -172,5 +173,21 @@ task integrationTest(type: Test) {
 // Ensure integration tests run during the 'check' phase
 tasks.check.dependsOn integrationTest
 integrationTest.mustRunAfter test
+
+// Flyway configuration
+flyway {
+    url = System.getenv('SPRING_DATASOURCE_URL') ?: 'jdbc:mysql://localhost:3306/phoebe_test'
+    user = System.getenv('SPRING_DATASOURCE_USERNAME') ?: 'phoebe_user'
+    password = System.getenv('SPRING_DATASOURCE_PASSWORD') ?: 'phoebe_password'
+    locations = ['classpath:db/migration/common', 'classpath:db/migration/mysql']
+    validateMigrationNaming = true
+    outOfOrder = false
+}
+
+// Flyway validation task for CI
+task flywayValidateCI(type: org.flywaydb.gradle.task.FlywayValidateTask) {
+    group = 'verification'
+    description = 'Validates Flyway migrations for CI environment'
+}
 
 tasks.check.dependsOn 'checkstyleMain', 'pmdMain', 'checkstyleTest', 'pmdTest'

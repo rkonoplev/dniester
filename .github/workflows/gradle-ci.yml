@@ -57,16 +57,34 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Print active Spring profile
+        run: echo "SPRING_PROFILES_ACTIVE=ci"
+
       - name: Start MySQL for integration tests
         run: |
           docker compose -f ./docker-compose.yml up -d phoebe-mysql
           docker compose -f ./docker-compose.yml ps
           # Wait for MySQL to be ready
           timeout 60s bash -c 'until docker exec phoebe-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+          # Create test database and user
+          docker exec phoebe-mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS phoebe_test;"
+          docker exec phoebe-mysql mysql -uroot -proot -e "CREATE USER IF NOT EXISTS 'phoebe_user'@'%' IDENTIFIED BY 'phoebe_password';"
+          docker exec phoebe-mysql mysql -uroot -proot -e "GRANT ALL PRIVILEGES ON phoebe_test.* TO 'phoebe_user'@'%';"
+          docker exec phoebe-mysql mysql -uroot -proot -e "FLUSH PRIVILEGES;"
+
+      - name: Validate Flyway Migrations
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/phoebe_test
+          SPRING_DATASOURCE_USERNAME: phoebe_user
+          SPRING_DATASOURCE_PASSWORD: phoebe_password
+        run: cd backend && ./gradlew flywayValidateCI --no-daemon --warning-mode all
 
       - name: Build, Test, Coverage
         env:
           SPRING_PROFILES_ACTIVE: ci
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/phoebe_test
+          SPRING_DATASOURCE_USERNAME: phoebe_user
+          SPRING_DATASOURCE_PASSWORD: phoebe_password
         run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport --no-daemon --warning-mode all
 
       - name: Stop MySQL
