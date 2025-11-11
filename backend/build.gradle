@@ -171,6 +171,15 @@ task integrationTest(type: Test) {
         showStackTraces = true
     }
     
+    // Configure profile based on environment
+    if (project.hasProperty('ci')) {
+        systemProperty 'integration.test.profile', 'ci-integration'
+        systemProperty 'spring.profiles.active', 'ci-integration'
+    } else {
+        systemProperty 'integration.test.profile', 'integration-test'
+        systemProperty 'spring.profiles.active', 'integration-test'
+    }
+    
     // Fix Gradle 9.0 deprecation warning
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }

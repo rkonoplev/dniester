@@ -75,7 +75,7 @@ jobs:
         env:
           SPRING_PROFILES_ACTIVE: ci
           integration.test.profile: ci-integration
-        run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport --no-daemon --warning-mode all
+        run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport -Pci --no-daemon --warning-mode all
 
       - name: Stop MySQL
         if: always()
