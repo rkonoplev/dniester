@@ -40,12 +40,12 @@ phoebe/
 ### Backend (Production Ready)
 - **Framework**: Spring Boot 3.x
 - **Language**: Java 21
-- **Database**: MySQL 8.0, PostgreSQL 12+ (H2 for tests)
+- **Database**: MySQL 8.0, PostgreSQL 12+
 - **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned)
 - **API**: REST with OpenAPI/Swagger documentation
 - **Caching**: Caffeine (In-Memory)
 - **Build**: Gradle 8.7
-- **Testing**: JUnit 5 (unit and integration tests with H2)
+- **Testing**: JUnit 5 (unit and integration tests with Testcontainers)
 - **Rate Limiting**: Bucket4j with IP-based buckets
 
 ### Reference Frontends (Optional)

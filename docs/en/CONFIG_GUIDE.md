@@ -43,12 +43,12 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 
 - **`application.yml`** (in `test`) is the base file for all tests. It overrides the main `application.yml` and
   typically contains logging settings and other common test parameters.
-- **`application-test.yml`** is used by default if no active profile is specified in a test class
-  (via `@ActiveProfiles`). It is configured to use a fast, in-memory H2 database.
-- **Integration tests** use H2 in MySQL compatibility mode and execute Flyway migrations:
-  - **Local development**: Uses `test` profile (H2 with MySQL mode, Flyway enabled)
-  - **CI environment**: Uses `ci` profile (H2 with MySQL mode, Flyway enabled) when `SPRING_PROFILES_ACTIVE=ci` is set
-  - Both profiles use the same migrations from `common/` as production
+- **`application-test.yml`** is used by default for unit tests that don't require database access.
+- **Integration tests** use Testcontainers with real MySQL instances:
+  - **Unit tests**: Use `test` profile with mocks, no database dependencies
+  - **Integration tests**: Use `integration-test` profile with Testcontainers MySQL
+  - **CI environment**: Uses MySQL via Docker Compose for production-like testing
+  - All database tests use the same migrations from `common/` and `mysql/` as production
   - Tests have access to test data from `V3__insert_sample_data.sql`
   - Profile selection is handled by `AbstractIntegrationTest` base class
 
@@ -60,9 +60,9 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 |:-------------------|:-----------------------------------|:-----------------|:----------------|:--------------------------------------------------------------------|
 | `local`            | `application-local.yml`            | MySQL (Docker)   | `update`        | Local dev with `docker-compose`; uses `.env` for DB credentials.    |
 | `dev`              | `application-dev.yml`              | Vendor-Specific  | `update`        | Dev/staging; combined with `mysql` or `postgresql` profile.         |
-| `test`             | `application-test.yml`             | H2 (In-Memory)   | `validate`      | **(Tests only)** Unit and integration tests. H2 in MySQL mode with Flyway migrations. Used by default. |
-| `integration-test` | `application-integration-test.yml` | MySQL (Docker)   | `validate`      | **(Tests only)** Full integration tests requiring a real database.  |
-| `ci`               | `application-ci.yml`               | H2 (In-Memory)   | `validate`      | **CI/CD only.** GitHub Actions; H2 in MySQL compatibility mode with Flyway migrations from `common/`. |
+| `test`             | `application-test.yml`             | None (Mocks)     | `validate`      | **(Tests only)** Unit tests with mocks, no database dependencies. Used by default. |
+| `integration-test` | `application-integration-test.yml` | MySQL (Testcontainers) | `validate` | **(Tests only)** Integration tests with real MySQL via Testcontainers. |
+| `ci`               | `application-ci.yml`               | MySQL (Docker)   | `validate`      | **CI/CD only.** GitHub Actions; MySQL via Docker Compose for production parity. |
 | `prod`             | `application-prod.yml`             | Vendor-Specific  | `validate`      | Production; combined with a vendor profile. Secrets via ENV.        |
 | `mysql`            | `application-mysql.yml`            | MySQL            | `validate`      | **Vendor profile.** Sets Flyway location for MySQL.                 |
 | `postgresql`       | `application-postgresql.yml`       | PostgreSQL       | `validate`      | **Vendor profile.** Sets Flyway location for PostgreSQL.            |
