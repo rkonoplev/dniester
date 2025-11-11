@@ -14,13 +14,13 @@
 ### Headless Backend (Готов к продакшену)
 - **Фреймворк**: Spring Boot 3.x
 - **Язык**: Java 21
-- **База данных**: MySQL 8.0, PostgreSQL 12+ (H2 для тестов)
+- **База данных**: MySQL 8.0, PostgreSQL 12+
 - **Безопасность**: Spring Security с настраиваемой аутентификацией
 - **API**: REST с документацией OpenAPI/Swagger
 - **Кэширование**: Caffeine (In-Memory)
 - **Ограничение запросов**: Bucket4j с IP-based buckets
 - **Сборка**: Gradle 8.7
-- **Тестирование**: JUnit 5 (юнит- и интеграционные тесты с H2)
+- **Тестирование**: JUnit 5 (юнит- и интеграционные тесты с Testcontainers)
 - **Миграция**: Spring Boot миграции (V1-V6)
 
 ### Референсные Frontend-шаблоны (Опционально)
