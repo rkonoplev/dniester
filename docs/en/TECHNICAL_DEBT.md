@@ -2,12 +2,6 @@
 
 This document tracks the history of significant improvements, current tasks, and future plans for the project.
 
-**[Detailed Next.js Frontend Implementation Description here](../../frontends/nextjs/README.md).**
-
-**[CI/CD Improvements Implementation Summary](CI_CD_IMPROVEMENTS.md)** — Detailed summary of implemented CI/CD optimizations.
-
-**[Testcontainers Evolution and Strategy](TESTCONTAINERS_EVOLUTION.md)** — Comprehensive guide on Testcontainers usage, evolution, and when to implement it.
-
 ---
 
 ## Completed Tasks and Architectural Decisions
