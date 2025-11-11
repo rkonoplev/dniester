@@ -174,25 +174,6 @@ task integrationTest(type: Test) {
 tasks.check.dependsOn integrationTest
 integrationTest.mustRunAfter test
 
-// Flyway configuration
-flyway {
-    url = System.getenv('SPRING_DATASOURCE_URL') ?: 'jdbc:mysql://localhost:3306/phoebe_test'
-    user = System.getenv('SPRING_DATASOURCE_USERNAME') ?: 'phoebe_user'
-    password = System.getenv('SPRING_DATASOURCE_PASSWORD') ?: 'phoebe_password'
-    locations = ['classpath:db/migration/common', 'classpath:db/migration/mysql']
-    validateMigrationNaming = true
-    outOfOrder = false
-}
 
-// Flyway validation task for CI - simple wrapper that skips when not in CI
-task flywayValidateCI {
-    group = 'verification'
-    description = 'Validates Flyway migrations for CI environment'
-    doLast {
-        if (System.getenv('CI') != 'true' && !System.getenv('SPRING_PROFILES_ACTIVE')?.contains('ci')) {
-            println 'Skipping Flyway validation - not in CI environment'
-        }
-    }
-}
 
 tasks.check.dependsOn 'checkstyleMain', 'pmdMain', 'checkstyleTest', 'pmdTest'

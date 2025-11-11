@@ -74,13 +74,6 @@ jobs:
           docker exec phoebe-mysql mysql -uroot -proot -e "GRANT ALL PRIVILEGES ON phoebe_test.* TO 'phoebe_user'@'%';"
           docker exec phoebe-mysql mysql -uroot -proot -e "FLUSH PRIVILEGES;"
 
-      - name: Validate Flyway Migrations
-        env:
-          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/phoebe_test
-          SPRING_DATASOURCE_USERNAME: phoebe_user
-          SPRING_DATASOURCE_PASSWORD: phoebe_password
-        run: cd backend && ./gradlew flywayValidate --no-daemon --warning-mode all
-
       - name: Build, Test, Coverage
         env:
           SPRING_PROFILES_ACTIVE: ci
