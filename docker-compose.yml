@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   phoebe-mysql:
     image: mysql:8.0
