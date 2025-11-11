@@ -1,16 +1,16 @@
-# Testcontainers Evolution and Strategy
+# Testcontainers Implementation and Strategy
 
-This document explains the evolution of testing strategies in the Phoebe CMS project and provides guidance on when to use Testcontainers.
+This document explains the current implementation of Testcontainers in the Phoebe CMS project and the evolution from H2-based testing to a production-first MySQL-only approach.
 
 ---
 
-## Why Testcontainers is Mentioned in Documentation
+## Current Implementation Status
 
-**Testcontainers is mentioned as "Additional Improvements (Optional)"** in the technical debt documentation:
+**Testcontainers is now IMPLEMENTED** as part of the MySQL-only strategy:
 
-> - **Testcontainers**: Local integration tests without Docker Compose
-
-This reflects its status as a **future enhancement option** rather than a current implementation.
+- **Integration Tests**: Use Testcontainers MySQL containers via `AbstractIntegrationTest`
+- **Unit Tests**: Use mocks without database dependencies
+- **Production Consistency**: All database-dependent tests run against real MySQL instances
 
 ---
 
@@ -42,48 +42,53 @@ class IntegrationTest {
 
 ## Current Architecture Evolution
 
-### Modern Approach (Profile-Based Strategy)
+### Current MySQL-Only Approach
 
-**Local Development:**
-- **H2 Database** - Fast, in-memory for rapid development cycles
+**Unit Tests:**
+- **No Database** - Pure mocks for fast execution
 - **Profile**: `test`
-- **Benefits**: Instant startup, no external dependencies
+- **Benefits**: Instant startup, isolated testing
+
+**Integration Tests:**
+- **MySQL via Testcontainers** - Real database instances
+- **Profile**: `integration-test`
+- **Benefits**: Production parity, automatic lifecycle management
 
 **CI/CD Environment:**
-- **MySQL via Docker Compose** - Realistic production environment
+- **MySQL via Docker Compose** - Consistent with integration tests
 - **Profile**: `ci`
-- **Benefits**: Production parity, Flyway migration validation
+- **Benefits**: Same database technology as production
 
 **Production:**
-- **MySQL Database** - Full production setup
+- **MySQL Database** - Identical to all test environments
 - **Profile**: `prod`
-- **Benefits**: Real-world performance and behavior
+- **Benefits**: 100% consistency across all environments
 
 ### Architecture Comparison
 
-| Aspect | Testcontainers | Current Profile Strategy |
-|--------|----------------|-------------------------|
-| **Local Speed** | Slower (container startup) | Fast (H2 in-memory) |
-| **CI Reliability** | Complex setup | Stable Docker Compose |
-| **Production Parity** | High | High (in CI) |
-| **Setup Complexity** | Medium | Low |
-| **Resource Usage** | Higher | Lower |
+| Aspect | Previous H2 Approach | Current MySQL-Only + Testcontainers |
+|--------|---------------------|-------------------------------------|
+| **Production Parity** | Low (H2 ≠ MySQL) | High (MySQL everywhere) |
+| **Test Reliability** | Medium (database differences) | High (identical databases) |
+| **CI Consistency** | Low (different databases) | High (same technology) |
+| **Setup Complexity** | Low | Medium |
+| **Resource Usage** | Lower | Higher but justified |
 
 ---
 
-## Why We Moved Away from Testcontainers
+## Why We Adopted Testcontainers
 
-### Technical Reasons
-1. **CI/CD Complexity** - Difficult to configure reliably in GitHub Actions
-2. **Performance Impact** - Slower than H2 for local development
-3. **Resource Overhead** - Each test requires container startup/teardown
-4. **Docker-in-Docker Issues** - Complications in containerized CI environments
+### Technical Benefits
+1. **Production Consistency** - Same database technology in all environments
+2. **Test Reliability** - No database compatibility issues
+3. **Isolation** - Each test suite gets clean database state
+4. **Automatic Management** - Containers start/stop automatically
 
-### Strategic Reasons
-1. **Profile-Based Flexibility** - Different databases for different environments
-2. **Simpler Maintenance** - Fewer moving parts in the test infrastructure
-3. **Better Developer Experience** - Instant local test execution
-4. **Production Confidence** - CI uses actual production database
+### Strategic Benefits
+1. **Production-First Approach** - Testing mirrors production exactly
+2. **Simplified Architecture** - No database abstraction complexity
+3. **Developer Confidence** - Tests validate real production scenarios
+4. **CI/CD Reliability** - Consistent behavior across environments
 
 ---
 
@@ -132,17 +137,15 @@ class IntegrationTest {
 
 ## Implementation Strategy
 
-### Current Recommendation: Keep Profile-Based Approach
+### Current Implementation: MySQL-Only with Testcontainers
 
-**Reasons:**
-- **Proven Stability** - Works reliably in CI/CD
-- **Performance** - Fast local development
-- **Simplicity** - Easy to understand and maintain
-- **Flexibility** - Easy to switch between databases
+**Implementation Details:**
+- **Unit Tests** - Separated into `/unit/` directory, use mocks only
+- **Integration Tests** - Located in `/integration/` directory, use Testcontainers
+- **AbstractIntegrationTest** - Base class with MySQL container configuration
+- **Gradle Configuration** - Proper sourceSets separation
 
-### Future Testcontainers Integration (Optional)
-
-If you decide to add Testcontainers in the future:
+**Current Usage:**
 
 **1. Hybrid Approach**
 ```java
@@ -177,8 +180,16 @@ spring:
 
 ## Conclusion
 
-**Current Status**: Testcontainers remains an **optional future enhancement** that could be valuable for specific testing scenarios.
+**Current Status**: Testcontainers is **actively implemented** as part of the production-first MySQL-only strategy.
 
-**Recommendation**: Continue with the current profile-based approach unless you encounter specific use cases that require Testcontainers' unique capabilities.
+**Benefits Achieved**:
+- 100% production consistency across all environments
+- Reliable integration testing with real MySQL instances
+- Simplified architecture without database abstraction
+- Developer confidence in production-ready code
 
-**Evolution Path**: The project architecture allows for easy Testcontainers integration when needed, without disrupting the existing stable testing infrastructure.
+**Usage Guidelines**:
+- Use **unit tests** for business logic with mocks
+- Use **integration tests** for database-dependent functionality
+- All database tests run against real MySQL via Testcontainers
+- CI/CD uses the same MySQL technology as production

@@ -2,6 +2,8 @@
 
 This document describes the **continuous integration pipeline**, quality tools, and security practices used in Phoebe CMS project.
 
+> **Related**: [MySQL Strategy Implementation](./MYSQL_STRATEGY_IMPLEMENTATION.md) - Details about the production-first database approach and H2 removal.
+
 ---
 
 ## CI/CD Pipeline (GitHub Actions)
@@ -16,7 +18,7 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 2. **Build**
     - Runs `./gradlew build` with `ci` profile.
-    - Springs uses `application-ci.yml` → H2 in-memory DB (fast and isolated).
+    - Spring uses `application-ci.yml` → MySQL via Docker Compose (production-like environment).
 
 3. **Test**
     - Runs unit and integration tests with coverage:
@@ -35,6 +37,11 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
     - **PMD** — detects common programming flaws, unused code, and code smells.
     - Both tools are automatically executed in the Gradle `check` task.
     - Reports (XML + HTML) are generated and can be uploaded in CI as artifacts.
+
+6. **Database Testing Strategy**
+    - **Unit Tests**: Use mocks, no database dependencies
+    - **Integration Tests**: Use Testcontainers with MySQL for production parity
+    - **CI Environment**: MySQL via Docker Compose for realistic testing
 
 ---
 
@@ -87,8 +94,8 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
     - Never commit `.env` with real secrets into repo.
 
 5. **Profiles for CI**
-    - Always run CI tests with `ci` profile (uses H2 in-memory DB).
-    - Ensures builds are independent of external databases.
+    - Always run CI tests with `ci` profile (uses MySQL via Docker Compose).
+    - Ensures builds test against production-like database environment.
 
 6. **Docker & Deploy Secrets**
     - Local dev → `.env` (ignored by git).
@@ -106,6 +113,11 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
     - IP-based rate limiting protects against API abuse.
     - Different limits for public (100/min) and admin (50/min) endpoints.
     - In-memory bucket storage (resets on application restart).
+
+9. **Database Strategy**
+    - **Production-First Approach**: MySQL used in all environments
+    - **No H2 Dependencies**: Eliminated for production consistency
+    - **Testcontainers Integration**: Real MySQL instances for integration tests
 
 ---
 
