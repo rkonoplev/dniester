@@ -76,12 +76,10 @@ jobs:
 
       - name: Validate Flyway Migrations
         env:
-          CI: true
-          SPRING_PROFILES_ACTIVE: ci
           SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/phoebe_test
           SPRING_DATASOURCE_USERNAME: phoebe_user
           SPRING_DATASOURCE_PASSWORD: phoebe_password
-        run: cd backend && ./gradlew flywayValidateCI --no-daemon --warning-mode all
+        run: cd backend && ./gradlew flywayValidate --no-daemon --warning-mode all
 
       - name: Build, Test, Coverage
         env:
