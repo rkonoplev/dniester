@@ -6,11 +6,12 @@ This document explains the current implementation of Testcontainers in the Phoeb
 
 ## Current Implementation Status
 
-**Testcontainers is now IMPLEMENTED** as part of the MySQL-only strategy:
+**Hybrid Testing Strategy** with environment-specific configurations:
 
-- **Integration Tests**: Use Testcontainers MySQL containers via `AbstractIntegrationTest`
 - **Unit Tests**: Use mocks without database dependencies
-- **Production Consistency**: All database-dependent tests run against real MySQL instances
+- **Local Integration Tests**: Use Testcontainers MySQL containers via `LocalIntegrationTest`
+- **CI Integration Tests**: Use external MySQL from Docker Compose via `AbstractIntegrationTest`
+- **Production Consistency**: All environments use real MySQL instances
 
 ---
 
@@ -49,15 +50,17 @@ class IntegrationTest {
 - **Profile**: `test`
 - **Benefits**: Instant startup, isolated testing
 
-**Integration Tests:**
-- **MySQL via Testcontainers** - Real database instances
+**Local Integration Tests:**
+- **MySQL via Testcontainers** - Real database instances for local development
 - **Profile**: `integration-test`
-- **Benefits**: Production parity, automatic lifecycle management
+- **Class**: `LocalIntegrationTest`
+- **Benefits**: No Docker Compose setup required, automatic lifecycle management
 
-**CI/CD Environment:**
-- **MySQL via Docker Compose** - Consistent with integration tests
-- **Profile**: `ci`
-- **Benefits**: Same database technology as production
+**CI Integration Tests:**
+- **MySQL via Docker Compose** - External MySQL service
+- **Profile**: `ci-integration`
+- **Class**: `AbstractIntegrationTest`
+- **Benefits**: Faster CI execution, shared database service
 
 **Production:**
 - **MySQL Database** - Identical to all test environments
@@ -147,33 +150,43 @@ class IntegrationTest {
 
 **Current Usage:**
 
-**1. Hybrid Approach**
+**1. Local Development (with Testcontainers)**
 ```java
-@ActiveProfiles("testcontainers")
+@ActiveProfiles("integration-test")
 @Testcontainers
-class DatabaseSpecificTest extends AbstractIntegrationTest {
-    @Container
-    static MySQLContainer mysql = new MySQLContainer("mysql:8.0");
-    
-    // Use only for database-specific tests
+class MyIntegrationTest extends LocalIntegrationTest {
+    // Testcontainers MySQL automatically configured
+    // No Docker Compose setup required
 }
 ```
 
-**2. Selective Usage**
-- Keep H2 for fast unit-style integration tests
-- Use Testcontainers only for database-specific scenarios
-- Maintain Docker Compose for CI/CD stability
+**2. CI Environment (with Docker Compose)**
+```java
+@ActiveProfiles("ci-integration")
+class MyIntegrationTest extends AbstractIntegrationTest {
+    // Uses external MySQL from Docker Compose
+    // Faster CI execution, no container startup overhead
+}
+```
 
 **3. Configuration Strategy**
 ```yaml
-# application-testcontainers.yml
+# application-integration-test.yml (Local)
 spring:
   datasource:
     url: # Set dynamically by Testcontainers
-    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+# application-ci-integration.yml (CI)
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/phoebe_db
+    username: root
+    password: root
 ```
 
 ---
@@ -190,6 +203,7 @@ spring:
 
 **Usage Guidelines**:
 - Use **unit tests** for business logic with mocks
-- Use **integration tests** for database-dependent functionality
-- All database tests run against real MySQL via Testcontainers
-- CI/CD uses the same MySQL technology as production
+- Use **LocalIntegrationTest** for local development (automatic Testcontainers)
+- Use **AbstractIntegrationTest** for CI environment (external Docker Compose MySQL)
+- Both approaches use real MySQL for production consistency
+- CI is optimized for speed by reusing shared MySQL service

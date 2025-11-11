@@ -40,8 +40,9 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 6. **Database Testing Strategy**
     - **Unit Tests**: Use mocks, no database dependencies
-    - **Integration Tests**: Use Testcontainers with MySQL for production parity
-    - **CI Environment**: MySQL via Docker Compose for realistic testing
+    - **Local Integration Tests**: Use Testcontainers with MySQL (`LocalIntegrationTest`)
+    - **CI Integration Tests**: Use external MySQL from Docker Compose (`AbstractIntegrationTest`)
+    - **Profile Selection**: Automatic based on environment (`ci-integration` for CI, `integration-test` for local)
 
 ---
 
@@ -117,7 +118,8 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 9. **Database Strategy**
     - **Production-First Approach**: MySQL used in all environments
     - **No H2 Dependencies**: Eliminated for production consistency
-    - **Testcontainers Integration**: Real MySQL instances for integration tests
+    - **Hybrid Testing**: Testcontainers for local development, Docker Compose for CI
+    - **Environment Optimization**: CI uses shared MySQL service for faster execution
 
 ---
 
