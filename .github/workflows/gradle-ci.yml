@@ -64,7 +64,9 @@ jobs:
         run: |
           docker compose -f ./docker-compose.yml up -d phoebe-mysql
           docker compose -f ./docker-compose.yml ps
-          # Wait for MySQL to be ready
+          # Wait for MySQL container to be healthy
+          timeout 120s bash -c 'until [ "$(docker inspect --format="{{.State.Health.Status}}" phoebe-mysql)" = "healthy" ]; do sleep 3; done'
+          # Additional wait for MySQL to be ready for connections
           timeout 60s bash -c 'until docker exec phoebe-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
           # Create test database and user
           docker exec phoebe-mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS phoebe_test;"
