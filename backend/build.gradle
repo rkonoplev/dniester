@@ -3,7 +3,7 @@ plugins {
     id 'checkstyle'
     id 'jacoco'
     id 'org.springframework.boot' version '3.2.0'
-    id 'io.spring.dependency-management' version '1.1.4'
+    id 'io.spring.dependency-management' version '1.1.6'
     id 'pmd'
     id 'org.flywaydb.flyway' version '9.22.3'
 }
@@ -24,7 +24,6 @@ tasks.withType(JavaCompile).configureEach {
 
 ext {
     mysqlVersion = '8.3.0'
-    h2Version = '2.2.224'
     bucket4jVersion = '8.7.0'
     mapStructVersion = '1.5.5.Final'
     testcontainersVersion = '1.19.7'
@@ -43,7 +42,11 @@ sourceSets {
         runtimeClasspath += sourceSets.main.output + sourceSets.test.output
     }
     test {
-        java.srcDir file('src/test/java/com/example/phoebe/unit')
+        java {
+            srcDir file('src/test/java/com/example/phoebe/unit')
+            // Explicitly exclude integration tests from test sourceSet
+            exclude '**/integration/**'
+        }
     }
 }
 
@@ -56,16 +59,15 @@ dependencies {
     implementation 'org.flywaydb:flyway-mysql'
 
     runtimeOnly "com.mysql:mysql-connector-j:${mysqlVersion}"
-    runtimeOnly "com.h2database:h2:${h2Version}"
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     // Core test dependencies available for all tests
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    testImplementation "com.h2database:h2:${h2Version}"
     testImplementation "org.testcontainers:junit-jupiter:${testcontainersVersion}"
     testImplementation "org.testcontainers:mysql:${testcontainersVersion}"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // Dependencies for integration tests
     integrationTestImplementation sourceSets.test.compileClasspath
@@ -147,6 +149,9 @@ test {
         showStackTraces = true
     }
     finalizedBy jacocoTestReport
+    
+    // Only run unit tests, exclude integration tests
+    exclude '**/integration/**'
     
     // Fix Gradle 9.0 deprecation warning
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'

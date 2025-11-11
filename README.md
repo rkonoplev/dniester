@@ -120,7 +120,7 @@ Comprehensive documentation covering installation, development, API usage, and d
 ## 🛠️ Technology Stack
 
 - **Backend**: [Java 21](https://www.oracle.com/java/technologies/javase/21-relnote-issues.html), [Spring Boot 3.x](https://spring.io/projects/spring-boot), [Spring Security](https://spring.io/projects/spring-security)
-- **Database**: [MySQL 8.0](https://www.mysql.com/), [PostgreSQL 12+](https://www.postgresql.org/) (H2 for testing)
+- **Database**: [MySQL 8.0](https://www.mysql.com/), [PostgreSQL 12+](https://www.postgresql.org/)
 - **DB Migration**: [Flyway](https://flywaydb.org/)
 - **Mapping**: [MapStruct](https://mapstruct.org/)
 - **Caching**: [Caffeine](https://github.com/ben-manes/caffeine)

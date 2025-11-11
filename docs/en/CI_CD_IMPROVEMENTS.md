@@ -6,7 +6,7 @@
 - **Updated**: `application-ci.yml` now uses MySQL instead of H2
 - **Benefit**: Realistic testing environment matching production
 
-### 2. Enhanced GitHub Actions Workflow
+### 2. Enhanced GitHub Actions Workflowэ
 - **Added**: Explicit ENV variables for database connection
 - **Added**: Spring profile logging step
 - **Added**: Automatic test database creation in CI

@@ -4,38 +4,35 @@ This directory contains configuration files that are used exclusively when runni
 properties from the main `src/main/resources` directory to create a controlled and isolated test environment.
 
 Spring Boot uses a profile-based system for test configurations. This allows us to have different setups for
-different types of tests (e.g., fast unit tests vs. slower integration tests).
+different types of tests (unit tests vs. integration tests).
 
 ---
 
-## `application-test.yml` (Default Test Profile)
+## `application-test.yml` (Unit Test Profile)
 
-This is the **default profile** used for most tests, especially fast unit and slice tests like `@WebMvcTest`
-and `@DataJpaTest`. It is automatically activated when no other profile is specified.
-
-Its main purpose is to use a fast, in-memory database to avoid the overhead of starting a Docker container.
+This is the **default profile** used for unit tests that don't require a database connection.
+Unit tests use mocks and don't load the full Spring context.
 
 ### Key Properties:
 
-- **`spring.datasource.url: jdbc:h2:mem:testdb;...`**: Configures an **H2 in-memory database**.
-  The `MODE=MYSQL` parameter ensures better compatibility with MySQL syntax.
-
-- **`spring.jpa.hibernate.ddl-auto: create-drop`**: Creates the schema at the start of the test run and drops it
-  at the end. This is the standard, safe approach for in-memory databases.
+- **`spring.jpa.hibernate.ddl-auto: validate`**: Validates the schema without creating or dropping tables.
+- **`spring.jpa.database-platform: org.hibernate.dialect.MySQLDialect`**: Uses MySQL dialect for consistency.
+- **`spring.flyway.enabled: true`**: Enables Flyway for schema management.
+- **`spring.flyway.locations: classpath:db/migration/common,classpath:db/migration/mysql`**: Specifies migration paths.
 
 ---
 
 ## `application-integration-test.yml` (Integration Test Profile)
 
 This profile is activated specifically for full integration tests (annotated with `@SpringBootTest` and
-`@ActiveProfiles("integration-test")`) that require a real database environment.
+`@ActiveProfiles("integration-test")`) that require a real database environment using Testcontainers.
 
 ### Key Properties:
 
-- **`spring.jpa.hibernate.ddl-auto: create`**: This setting tells Hibernate to create the schema at the start
-  of the test run but **not** to drop it at the end. This prevents `Communications link failure` errors that
-  occur when the Testcontainers database is shut down before Hibernate can act.
+- **`spring.jpa.hibernate.ddl-auto: validate`**: Validates the schema managed by Flyway.
+- **`spring.jpa.database-platform: org.hibernate.dialect.MySQLDialect`**: Uses MySQL dialect.
+- **`spring.flyway.enabled: true`**: Enables Flyway for schema management.
+- **`spring.flyway.locations: classpath:db/migration/common,classpath:db/migration/mysql`**: Specifies migration paths.
+- **`spring.sql.init.mode: never`**: Prevents Spring from initializing the database (Flyway handles this).
 
-- **`spring.datasource.url: jdbc:tc:mysql:8.0:///dniester`**: This special URL instructs Spring Boot to use
-  **Testcontainers** to automatically spin up a temporary MySQL 8.0 Docker container for the duration of the
-  test run. This ensures tests run against a clean, ephemeral, and isolated database every time.
+**Note**: Database connection is configured dynamically by Testcontainers in the `AbstractIntegrationTest` class.

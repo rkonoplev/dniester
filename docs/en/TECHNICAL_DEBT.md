@@ -38,7 +38,7 @@ of the current codebase.
 ### Database
 - **Data Access**: The project currently uses the blocking **Spring Data JPA** stack for simplicity and reliability.
 - **Migration Management**: The database schema is version-controlled using Flyway.
-- **Multi-Database Support**: The architecture supports both MySQL and H2 (for testing).
+- **MySQL as Single Database**: The project uses MySQL for all environments (development, testing, production) to ensure consistency.
 
 ### Code Quality & CI/CD
 - **Static Analysis**: Checkstyle and PMD are configured and integrated to maintain code quality.
@@ -54,11 +54,12 @@ of the current codebase.
 - **Database Schema Extension**: Added `site_url` field to `channel_settings` table for storing the base
   site URL (migration V10).
 - **CI/CD Optimization**: Implemented final recommendations for stable CI/CD:
-  - Complete migration to MySQL in CI (abandoned H2)
+  - Complete migration to MySQL in all environments (including unit tests)
   - Added explicit ENV variables in GitHub Actions
   - Integrated Flyway migration validation
   - Added Spring profile logging
   - Configured automatic test database creation in CI
+  - Removed H2 dependency for production-ready testing
 
 ---
 
@@ -73,7 +74,7 @@ of the current codebase.
 - Flyway migration validation
 - Confidence in production stability
 
-**Recommendation**: Keep H2 only for unit tests that don't depend on database schema.
+**Recommendation**: Use MySQL with Testcontainers for all database-dependent tests to ensure production consistency.
 
 ### 2. CI Profile Should Use MySQL
 
