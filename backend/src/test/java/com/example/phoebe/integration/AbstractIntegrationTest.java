@@ -10,11 +10,13 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Abstract base class for integration tests using Testcontainers MySQL.
- * Ensures production-like testing environment across all test scenarios.
+ * Abstract base class for integration tests.
+ * Automatically selects appropriate testing strategy:
+ * - CI environment: Uses MySQL from Docker Compose
+ * - Local environment: Uses Testcontainers MySQL
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("integration-test")
+@ActiveProfiles("${integration.test.profile:integration-test}")
 @Testcontainers
 @Transactional
 public abstract class AbstractIntegrationTest {
@@ -27,9 +29,13 @@ public abstract class AbstractIntegrationTest {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
-        registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
-        registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
-        registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
+        // Only configure if not in CI environment
+        String profile = System.getProperty("integration.test.profile", "integration-test");
+        if (!"ci-integration".equals(profile)) {
+            registry.add("spring.datasource.url", MYSQL_CONTAINER::getJdbcUrl);
+            registry.add("spring.datasource.username", MYSQL_CONTAINER::getUsername);
+            registry.add("spring.datasource.password", MYSQL_CONTAINER::getPassword);
+            registry.add("spring.datasource.driver-class-name", () -> "com.mysql.cj.jdbc.Driver");
+        }
     }
 }
