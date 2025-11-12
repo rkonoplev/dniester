@@ -57,28 +57,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Print active Spring profile
-        run: echo "SPRING_PROFILES_ACTIVE=ci"
-
-      - name: Start MySQL for integration tests
-        run: |
-          docker compose -f ./docker-compose.yml up -d phoebe-mysql
-          docker compose -f ./docker-compose.yml ps
-          # Wait for MySQL container to be healthy
-          timeout 120s bash -c 'until [ "$(docker inspect --format="{{.State.Health.Status}}" phoebe-mysql)" = "healthy" ]; do sleep 3; done'
-          # Additional wait for MySQL to be ready for connections
-          timeout 60s bash -c 'until docker exec phoebe-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
-          # Database phoebe_db already exists, just ensure it's accessible
-          docker exec phoebe-mysql mysql -uroot -proot -e "SHOW DATABASES;"
-
-      - name: Build, Test, Coverage
-        env:
-          SPRING_PROFILES_ACTIVE: ci
-        run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport -Pci --no-daemon --warning-mode all
-
-      - name: Stop MySQL
-        if: always()
-        run: docker compose -f ./docker-compose.yml down
+      - name: Build, Test, Coverage with Testcontainers
+        run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport --no-daemon --warning-mode all
 
       - name: Static Analysis (Checkstyle + PMD)
         run: cd backend && ./gradlew checkstyleMain checkstyleTest pmdMain pmdTest --no-daemon --warning-mode all

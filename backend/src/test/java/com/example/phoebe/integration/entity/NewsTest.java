@@ -1,6 +1,6 @@
 package com.example.phoebe.entity;
 
-import com.example.phoebe.integration.LocalIntegrationTest;
+import com.example.phoebe.integration.BaseIntegrationTest;
 import com.example.phoebe.repository.NewsRepository;
 import com.example.phoebe.repository.TermRepository;
 import com.example.phoebe.repository.UserRepository;
@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * This test uses the full application context with a real database via Testcontainers.
  */
 @Transactional
-class NewsTest extends LocalIntegrationTest {
+class NewsTest extends BaseIntegrationTest {
 
     @Autowired
     private EntityManager entityManager;

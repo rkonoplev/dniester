@@ -1,7 +1,7 @@
 package com.example.phoebe.integration.dto.request;
 
 import com.example.phoebe.dto.request.ChannelSettingsUpdateDto;
-import com.example.phoebe.integration.LocalIntegrationTest;
+import com.example.phoebe.integration.BaseIntegrationTest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ChannelSettingsValidationIntegrationTest extends LocalIntegrationTest {
+class ChannelSettingsValidationIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private Validator validator;

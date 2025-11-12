@@ -2,7 +2,7 @@ package com.example.phoebe.integration.dto.request;
 
 import com.example.phoebe.dto.request.NewsCreateRequestDto;
 import com.example.phoebe.entity.User;
-import com.example.phoebe.integration.LocalIntegrationTest;
+import com.example.phoebe.integration.BaseIntegrationTest;
 import com.example.phoebe.repository.UserRepository;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
@@ -15,7 +15,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class NewsCreateRequestDtoIntegrationTest extends LocalIntegrationTest {
+class NewsCreateRequestDtoIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private Validator validator;

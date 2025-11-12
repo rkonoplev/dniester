@@ -3,7 +3,7 @@ package com.example.phoebe.security;
 import com.example.phoebe.entity.News;
 import com.example.phoebe.entity.Role;
 import com.example.phoebe.entity.User;
-import com.example.phoebe.integration.LocalIntegrationTest;
+import com.example.phoebe.integration.BaseIntegrationTest;
 import com.example.phoebe.repository.NewsRepository;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.repository.UserRepository;
@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * These tests verify that ADMINs can access any content, while EDITORs can only access their own.
  */
 @Transactional // Rolls back database changes after each test
-class RoleBasedSecurityTest extends LocalIntegrationTest {
+class RoleBasedSecurityTest extends BaseIntegrationTest {
 
     @Autowired
     private NewsRepository newsRepository;

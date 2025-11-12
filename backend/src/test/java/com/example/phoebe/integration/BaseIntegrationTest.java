@@ -10,20 +10,22 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Abstract base class for local integration tests using Testcontainers.
- * Use this for local development when you don't want to run Docker Compose.
+ * Universal base class for all integration tests using Testcontainers.
+ * Works identically in local development and CI environments.
+ * Automatically manages MySQL container lifecycle.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("integration-test")
 @Testcontainers
 @Transactional
-public abstract class LocalIntegrationTest {
+public abstract class BaseIntegrationTest {
 
     @Container
     static final MySQLContainer<?> MYSQL_CONTAINER = new MySQLContainer<>("mysql:8.0")
             .withDatabaseName("phoebe_test")
             .withUsername("test")
-            .withPassword("test");
+            .withPassword("test")
+            .withReuse(false); // Each test run gets fresh container
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
