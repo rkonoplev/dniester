@@ -74,7 +74,6 @@ jobs:
       - name: Build, Test, Coverage
         env:
           SPRING_PROFILES_ACTIVE: ci
-          integration.test.profile: ci-integration
         run: cd backend && ./gradlew clean build test integrationTest jacocoTestReport -Pci --no-daemon --warning-mode all
 
       - name: Stop MySQL

@@ -173,8 +173,8 @@ task integrationTest(type: Test) {
     
     // Configure profile based on environment
     if (project.hasProperty('ci')) {
-        systemProperty 'integration.test.profile', 'ci-integration'
-        systemProperty 'spring.profiles.active', 'ci-integration'
+        systemProperty 'integration.test.profile', 'ci'
+        systemProperty 'spring.profiles.active', 'ci'
     } else {
         systemProperty 'integration.test.profile', 'integration-test'
         systemProperty 'spring.profiles.active', 'integration-test'

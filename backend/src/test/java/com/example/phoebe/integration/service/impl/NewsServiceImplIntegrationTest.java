@@ -5,7 +5,7 @@ import com.example.phoebe.dto.response.NewsDto;
 import com.example.phoebe.entity.News;
 import com.example.phoebe.entity.Term;
 import com.example.phoebe.entity.User;
-import com.example.phoebe.integration.AbstractIntegrationTest;
+import com.example.phoebe.integration.LocalIntegrationTest;
 import com.example.phoebe.repository.NewsRepository;
 import com.example.phoebe.repository.TermRepository;
 import com.example.phoebe.repository.UserRepository;
@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Integration tests for {@link NewsServiceImpl}, focusing on database interactions
  * and security context integration for create, delete, and read operations.
  */
-class NewsServiceImplIntegrationTest extends AbstractIntegrationTest {
+class NewsServiceImplIntegrationTest extends LocalIntegrationTest {
 
     @Autowired
     private NewsService newsService;

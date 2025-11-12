@@ -3,8 +3,8 @@
 spring:
   jpa:
     hibernate:
-      # Let Flyway manage the schema. Hibernate should only validate it.
-      ddl-auto: validate
+      # For Testcontainers, let Hibernate create the schema
+      ddl-auto: create-drop
     show-sql: false # Set to true for debugging SQL queries
     database-platform: org.hibernate.dialect.MySQLDialect
 
@@ -13,8 +13,6 @@ spring:
     init:
       mode: never
 
-  # Flyway configuration for integration tests
+  # Flyway disabled for Testcontainers - Hibernate creates schema
   flyway:
-    enabled: true
-    locations: classpath:db/migration/common,classpath:db/migration/mysql
-    baseline-on-migrate: true
+    enabled: false

@@ -1,6 +1,6 @@
 # =========================================================
 # application-ci.yml
-# CI/CD profile — uses H2 with MySQL compatibility for fast CI tests.
+# CI/CD profile — uses MySQL for CI tests.
 # =========================================================
 
 server:

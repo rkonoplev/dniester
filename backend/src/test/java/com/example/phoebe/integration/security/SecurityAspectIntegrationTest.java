@@ -2,7 +2,7 @@ package com.example.phoebe.integration.security;
 
 import com.example.phoebe.entity.Role;
 import com.example.phoebe.entity.User;
-import com.example.phoebe.integration.AbstractIntegrationTest;
+import com.example.phoebe.integration.LocalIntegrationTest;
 import com.example.phoebe.repository.RoleRepository;
 import com.example.phoebe.repository.UserRepository;
 import com.example.phoebe.security.RoleSecurityService;
@@ -21,7 +21,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class SecurityAspectIntegrationTest extends AbstractIntegrationTest {
+class SecurityAspectIntegrationTest extends LocalIntegrationTest {
 
     @Autowired
     private RoleSecurityService roleSecurityService;

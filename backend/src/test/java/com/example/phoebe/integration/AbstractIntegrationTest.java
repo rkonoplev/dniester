@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
  * For local development with Testcontainers, extend LocalIntegrationTest instead.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("${integration.test.profile:ci-integration}")
+@ActiveProfiles("${integration.test.profile:ci}")
 @Transactional
 public abstract class AbstractIntegrationTest {
     // Uses external MySQL from Docker Compose
