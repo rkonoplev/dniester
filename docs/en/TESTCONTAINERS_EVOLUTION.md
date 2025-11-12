@@ -6,11 +6,12 @@ This document explains the current implementation of Testcontainers in the Phoeb
 
 ## Current Implementation Status
 
-**Hybrid Testing Strategy** with environment-specific configurations:
+**Unified Testcontainers Strategy** across all environments:
 
 - **Unit Tests**: Use mocks without database dependencies
-- **Local Integration Tests**: Use Testcontainers MySQL containers via `LocalIntegrationTest`
-- **CI Integration Tests**: Use external MySQL from Docker Compose via `AbstractIntegrationTest`
+- **Integration Tests**: Use Testcontainers MySQL containers via `BaseIntegrationTest` (everywhere)
+- **Local Development**: Testcontainers MySQL (automatic lifecycle management)
+- **CI Environment**: Testcontainers MySQL (no Docker Compose needed)
 - **Production Consistency**: All environments use real MySQL instances
 
 ---
@@ -43,24 +44,18 @@ class IntegrationTest {
 
 ## Current Architecture Evolution
 
-### Current MySQL-Only Approach
+### Current Unified Testcontainers Approach
 
 **Unit Tests:**
 - **No Database** - Pure mocks for fast execution
 - **Profile**: `test`
 - **Benefits**: Instant startup, isolated testing
 
-**Local Integration Tests:**
-- **MySQL via Testcontainers** - Real database instances for local development
+**Integration Tests (All Environments):**
+- **MySQL via Testcontainers** - Real database instances everywhere
 - **Profile**: `integration-test`
-- **Class**: `LocalIntegrationTest`
-- **Benefits**: No Docker Compose setup required, automatic lifecycle management
-
-**CI Integration Tests:**
-- **MySQL via Docker Compose** - External MySQL service
-- **Profile**: `ci-integration`
-- **Class**: `AbstractIntegrationTest`
-- **Benefits**: Faster CI execution, shared database service
+- **Class**: `BaseIntegrationTest`
+- **Benefits**: Identical environments, automatic lifecycle management, no manual setup
 
 **Production:**
 - **MySQL Database** - Identical to all test environments
@@ -69,13 +64,13 @@ class IntegrationTest {
 
 ### Architecture Comparison
 
-| Aspect | Previous H2 Approach | Current MySQL-Only + Testcontainers |
-|--------|---------------------|-------------------------------------|
-| **Production Parity** | Low (H2 ≠ MySQL) | High (MySQL everywhere) |
-| **Test Reliability** | Medium (database differences) | High (identical databases) |
-| **CI Consistency** | Low (different databases) | High (same technology) |
-| **Setup Complexity** | Low | Medium |
-| **Resource Usage** | Lower | Higher but justified |
+| Aspect | Previous Hybrid Approach | Current Unified Testcontainers |
+|--------|-------------------------|--------------------------------|
+| **Production Parity** | High (MySQL everywhere) | High (MySQL everywhere) |
+| **Test Reliability** | Medium (environment differences) | High (identical environments) |
+| **CI Consistency** | Medium (Docker Compose vs Testcontainers) | High (Testcontainers everywhere) |
+| **Setup Complexity** | High (multiple configurations) | Low (single approach) |
+| **Resource Usage** | Medium | Optimized (automatic management) |
 
 ---
 
@@ -148,62 +143,51 @@ class IntegrationTest {
 - **AbstractIntegrationTest** - Base class with MySQL container configuration
 - **Gradle Configuration** - Proper sourceSets separation
 
-**Current Usage:**
+**Current Usage (Unified Approach):**
 
-**1. Local Development (with Testcontainers)**
+**All Environments (Local & CI)**
 ```java
 @ActiveProfiles("integration-test")
 @Testcontainers
-class MyIntegrationTest extends LocalIntegrationTest {
-    // Testcontainers MySQL automatically configured
-    // No Docker Compose setup required
+class MyIntegrationTest extends BaseIntegrationTest {
+    // Testcontainers MySQL automatically configured everywhere
+    // Identical behavior in local development and CI
+    // No manual Docker setup required
 }
 ```
 
-**2. CI Environment (with Docker Compose)**
-```java
-@ActiveProfiles("ci-integration")
-class MyIntegrationTest extends AbstractIntegrationTest {
-    // Uses external MySQL from Docker Compose
-    // Faster CI execution, no container startup overhead
-}
-```
-
-**3. Configuration Strategy**
+**Configuration Strategy (Simplified)**
 ```yaml
-# application-integration-test.yml (Local)
+# application-integration-test.yml (Universal)
 spring:
   datasource:
     url: # Set dynamically by Testcontainers
+    username: # Set dynamically by Testcontainers  
+    password: # Set dynamically by Testcontainers
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: create-drop  # Hibernate manages schema
   flyway:
-    enabled: true
-
-# application-ci-integration.yml (CI)
-spring:
-  datasource:
-    url: jdbc:mysql://localhost:3306/phoebe_db
-    username: root
-    password: root
+    enabled: false  # Disabled for Testcontainers
 ```
 
 ---
 
 ## Conclusion
 
-**Current Status**: Testcontainers is **actively implemented** as part of the production-first MySQL-only strategy.
+**Current Status**: Testcontainers is **fully implemented** as the unified testing strategy across all environments.
 
 **Benefits Achieved**:
 - 100% production consistency across all environments
-- Reliable integration testing with real MySQL instances
-- Simplified architecture without database abstraction
-- Developer confidence in production-ready code
+- Identical test behavior in local development and CI
+- Simplified architecture with single testing approach
+- Automatic container lifecycle management
+- No manual Docker Compose setup required
+- Faster CI execution without external dependencies
 
 **Usage Guidelines**:
 - Use **unit tests** for business logic with mocks
-- Use **LocalIntegrationTest** for local development (automatic Testcontainers)
-- Use **AbstractIntegrationTest** for CI environment (external Docker Compose MySQL)
-- Both approaches use real MySQL for production consistency
-- CI is optimized for speed by reusing shared MySQL service
+- Use **BaseIntegrationTest** for all integration tests (local and CI)
+- All integration tests use real MySQL via Testcontainers
+- No environment-specific configuration needed
+- Tests are fully isolated and reproducible

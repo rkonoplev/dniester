@@ -7,10 +7,11 @@
 - **Removed**: H2 dependency completely from project
 - **Benefit**: 100% production consistency in testing
 
-### 2. Testcontainers Integration
-- **Added**: MySQL Testcontainers for integration tests
-- **Configured**: AbstractIntegrationTest with automatic MySQL container
-- **Benefit**: Isolated, reproducible integration testing
+### 2. Unified Testcontainers Strategy
+- **Implemented**: MySQL Testcontainers everywhere (local and CI)
+- **Configured**: BaseIntegrationTest with automatic MySQL container
+- **Removed**: Docker Compose dependency from CI
+- **Benefit**: Identical test environments across all platforms
 
 ### 3. Enhanced Test Architecture
 - **Separated**: Unit tests (mocks only) from integration tests (real database)
@@ -35,10 +36,10 @@
    - `application-integration-test.yml`: MySQL with Testcontainers
    - Removed duplicate files: `application-ci.yml`, `application-local.yml`, `application.yml`
 
-3. **`AbstractIntegrationTest.java`**
-   - Added Testcontainers MySQL container
+3. **`BaseIntegrationTest.java`**
+   - Unified Testcontainers MySQL container for all environments
    - Dynamic datasource configuration
-   - Proper test isolation
+   - Proper test isolation with create-drop schema strategy
 
 4. **Documentation**
    - Updated all references from H2 to MySQL-only
@@ -55,8 +56,9 @@
 
 ## 🚀 Current Status
 
-The project now follows a production-first strategy:
-- **Unit Tests**: ✅ Fast execution with mocks (125 tests passing)
-- **Integration Tests**: ✅ Real MySQL via Testcontainers
-- **CI/CD**: ✅ MySQL in all environments
-- **Production**: ✅ Same database technology as testing
+The project now follows a unified Testcontainers strategy:
+- **Unit Tests**: ✅ Fast execution with mocks
+- **Integration Tests**: ✅ Real MySQL via Testcontainers everywhere
+- **Local Development**: ✅ Testcontainers MySQL (no Docker Compose needed)
+- **CI/CD**: ✅ Testcontainers MySQL (simplified pipeline)
+- **Production**: ✅ Same database technology as all test environments

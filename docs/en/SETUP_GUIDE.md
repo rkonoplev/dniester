@@ -10,8 +10,10 @@ start for a new developer to migrating data from a new Drupal 6 site.
 To successfully set up and run the Phoebe CMS project, you will need the following software installed on your system:
 
 -   **JDK 21+**: The Java Development Kit, version 21 or newer.
--   **Docker & Docker Compose**: These tools are essential for managing the local development environment.
+-   **Docker**: Required for Testcontainers (integration tests) and optional for local development database.
 -   **Git**: For cloning the project repository.
+
+**Note**: Docker Compose is optional - only needed if you want to run the full application stack locally. Integration tests use Testcontainers and don't require Docker Compose.
 
 ---
 

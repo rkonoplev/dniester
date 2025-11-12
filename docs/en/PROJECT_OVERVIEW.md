@@ -45,7 +45,7 @@ phoebe/
 - **API**: REST with OpenAPI/Swagger documentation
 - **Caching**: Caffeine (In-Memory)
 - **Build**: Gradle 8.7
-- **Testing**: JUnit 5 (unit and integration tests with Testcontainers)
+- **Testing**: JUnit 5 (unit tests with mocks, integration tests with Testcontainers MySQL)
 - **Rate Limiting**: Bucket4j with IP-based buckets
 
 ### Reference Frontends (Optional)
@@ -56,10 +56,10 @@ phoebe/
 - **Features**: Search, dark mode, push notifications (planned).
 
 ### Infrastructure
-- **Containerization**: Docker + Docker Compose
-- **CI/CD**: GitHub Actions
+- **Containerization**: Docker (Testcontainers for tests, optional Docker Compose for local development)
+- **CI/CD**: GitHub Actions with unified Testcontainers approach
 - **Code Quality**: Checkstyle, PMD, JaCoCo coverage
-- **Database**: MySQL or PostgreSQL with Docker
+- **Database**: MySQL or PostgreSQL (Testcontainers for testing, Docker for local development)
 
 ## Configuration Profiles
 

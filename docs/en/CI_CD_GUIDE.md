@@ -18,8 +18,8 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
     - Caches Gradle dependencies.
 
 2. **Build**
-    - Runs `./gradlew build` with `ci` profile.
-    - Spring uses `application-ci.yml` → MySQL via Docker Compose (production-like environment).
+    - Runs `./gradlew build` with unified Testcontainers approach.
+    - All integration tests use Testcontainers MySQL (identical to local development).
 
 3. **Test**
     - Runs unit and integration tests with coverage:
@@ -41,9 +41,10 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 
 6. **Database Testing Strategy**
     - **Unit Tests**: Use mocks, no database dependencies
-    - **Local Integration Tests**: Use Testcontainers with MySQL (`LocalIntegrationTest`)
-    - **CI Integration Tests**: Use external MySQL from Docker Compose (`AbstractIntegrationTest`)
-    - **Profile Selection**: Automatic based on environment (`ci-integration` for CI, `integration-test` for local)
+    - **Integration Tests**: Use Testcontainers with MySQL (`BaseIntegrationTest`) everywhere
+    - **Unified Approach**: Identical test environments in local development and CI
+    - **Profile**: Single `integration-test` profile for all integration tests
+    - **No Docker Compose**: CI no longer requires external database services
 
 ---
 
@@ -96,8 +97,8 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
     - Never commit `.env` with real secrets into repo.
 
 5. **Profiles for CI**
-    - Always run CI tests with `ci` profile (uses MySQL via Docker Compose).
-    - Ensures builds test against production-like database environment.
+    - CI tests use `integration-test` profile with Testcontainers MySQL.
+    - Ensures identical test environments between local development and CI.
 
 6. **Docker & Deploy Secrets**
     - Local dev → `.env` (ignored by git).
@@ -119,8 +120,9 @@ The project uses **GitHub Actions** via the `gradle-ci.yml` workflow.
 9. **Database Strategy**
     - **Production-First Approach**: MySQL used in all environments
     - **No H2 Dependencies**: Eliminated for production consistency
-    - **Hybrid Testing**: Testcontainers for local development, Docker Compose for CI
-    - **Environment Optimization**: CI uses shared MySQL service for faster execution
+    - **Unified Testing**: Testcontainers MySQL everywhere (local and CI)
+    - **Environment Consistency**: Identical test behavior across all platforms
+    - **Simplified CI**: No external database dependencies or Docker Compose setup
 
 ---
 

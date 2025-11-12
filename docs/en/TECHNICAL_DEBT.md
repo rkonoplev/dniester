@@ -40,35 +40,35 @@ of the current codebase.
 - **Test Structure Refactoring**: A full separation of tests into `unit/` and `integration/` directories has
   been completed.
 - **Gradle Configuration**: `build.gradle` is configured to run unit and integration tests separately.
-- **Integration Tests**: Configured to work with docker-compose MySQL using `local` profile with Hibernate
-  `create-drop` for automatic schema management.
-- **Unified Test Architecture**: Created a single `AbstractIntegrationTest` base class for all integration
-  tests, eliminating code duplication.
+- **Unified Testcontainers Architecture**: Migrated to single `BaseIntegrationTest` class using Testcontainers
+  MySQL for all environments (local and CI).
+- **Simplified CI Pipeline**: Removed Docker Compose dependency from CI, using Testcontainers everywhere.
+- **Consistent Test Environments**: Achieved identical test behavior across all platforms.
 - **Checkstyle Violations Fixed**: Resolved import rule violations (AvoidStarImport) in test files.
 - **Database Schema Extension**: Added `site_url` field to `channel_settings` table for storing the base
   site URL (migration V10).
-- **CI/CD Optimization**: Implemented final recommendations for stable CI/CD:
-  - Complete migration to MySQL in all environments (including unit tests)
-  - Added explicit ENV variables in GitHub Actions
-  - Integrated Flyway migration validation
-  - Added Spring profile logging
-  - Configured automatic test database creation in CI
-  - Removed H2 dependency for production-ready testing
+- **CI/CD Optimization**: Implemented unified Testcontainers strategy:
+  - Complete migration to MySQL in all environments
+  - Unified integration testing with Testcontainers everywhere
+  - Simplified CI pipeline without Docker Compose dependencies
+  - Removed environment-specific test configurations
+  - Achieved production parity in all test environments
 
 ---
 
 ## Final Recommendations for Stable CI/CD and Production
 
-### 1. Abandoning H2 in CI — Confirmed Correct Step
+### 1. Unified Testcontainers Strategy — Implemented
 
-✅ **Current State**: Using MySQL via Docker Compose in CI
+✅ **Current State**: Using MySQL via Testcontainers everywhere (local and CI)
 
 **Benefits**:
-- Realistic testing environment
-- Flyway migration validation
-- Confidence in production stability
+- Identical test environments across all platforms
+- No manual Docker setup required
+- Automatic container lifecycle management
+- Production parity in all tests
 
-**Recommendation**: Use MySQL with Testcontainers for all database-dependent tests to ensure production consistency.
+**Achievement**: Complete elimination of environment-specific test configurations.
 
 ### 2. CI Profile Should Use MySQL
 
@@ -93,16 +93,17 @@ of the current codebase.
 ✅ **nextjs-app**:
 - Depends on phoebe-app
 
-### 4. GitHub Actions — Nearly Perfect
+### 4. GitHub Actions — Optimized
 
 ✅ **Current Steps**:
 - `setup` → JDK + Gradle cache
-- `build_and_test` → Docker + Gradle + coverage
+- `build_and_test` → Testcontainers + Gradle + coverage (no Docker Compose)
 - `security` → GitLeaks
 
-**Additional Recommendations**:
-- Add explicit ENV variables in `build_and_test`
-- Ensure Docker Compose ports match application.yml
+**Achievements**:
+- Simplified pipeline without external dependencies
+- Faster execution with automatic container management
+- Consistent with local development environment
 
 ### 5. Flyway Migrations
 
@@ -132,8 +133,8 @@ of the current codebase.
 ### 8. Additional Improvements (Optional)
 
 - **SpotBugs or SonarQube**: Deep static code analysis
-- **Testcontainers**: Local integration tests without Docker Compose
 - **Liquibase or SchemaSpy**: Database schema visualization
+- **Test Parallelization**: Optimize Testcontainers for parallel test execution
 
 ---
 

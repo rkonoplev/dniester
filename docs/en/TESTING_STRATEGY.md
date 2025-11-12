@@ -1,6 +1,6 @@
 # Testing Strategy Guide
 
-This document explains the comprehensive testing strategy used in Phoebe CMS, including the hybrid approach for integration testing.
+This document explains the unified testing strategy used in Phoebe CMS with Testcontainers everywhere.
 
 ---
 
@@ -11,31 +11,21 @@ This document explains the comprehensive testing strategy used in Phoebe CMS, in
 | Test Type | Environment | Database | Base Class | Profile |
 |-----------|-------------|----------|------------|---------|
 | **Unit Tests** | Any | Mocks only | N/A | `test` |
-| **Local Integration** | Local Dev | Testcontainers MySQL | `LocalIntegrationTest` | `integration-test` |
-| **CI Integration** | GitHub Actions | Docker Compose MySQL | `AbstractIntegrationTest` | `ci-integration` |
+| **Integration Tests** | All (Local & CI) | Testcontainers MySQL | `BaseIntegrationTest` | `integration-test` |
 
 ---
 
-## Integration Test Strategy
+## Unified Integration Test Strategy
 
-### Local Development
+### All Environments (Local & CI)
 ```java
-// For local development - automatic Testcontainers
+// Unified approach - works identically everywhere
 @ActiveProfiles("integration-test")
 @Testcontainers
-class NewsServiceTest extends LocalIntegrationTest {
+class NewsServiceTest extends BaseIntegrationTest {
     // MySQL container automatically started/stopped
-    // No Docker Compose setup required
-}
-```
-
-### CI Environment
-```java
-// For CI - uses external Docker Compose MySQL
-@ActiveProfiles("ci-integration") 
-class NewsServiceTest extends AbstractIntegrationTest {
-    // Uses shared MySQL service from Docker Compose
-    // Faster execution, no container startup overhead
+    // Identical behavior in local development and CI
+    // No manual Docker setup required anywhere
 }
 ```
 
@@ -45,83 +35,87 @@ class NewsServiceTest extends AbstractIntegrationTest {
 
 ### Gradle Task Configuration
 ```bash
-# Local development
+# Works identically in all environments
 ./gradlew integrationTest
-# Uses LocalIntegrationTest with Testcontainers
-
-# CI environment  
-./gradlew integrationTest -Pci
-# Uses AbstractIntegrationTest with Docker Compose MySQL
+# Uses BaseIntegrationTest with Testcontainers everywhere
 ```
 
 ### Profile Selection Logic
-- **Default**: `integration-test` profile → Testcontainers
-- **CI Parameter**: `-Pci` → `ci-integration` profile → Docker Compose
-- **Automatic**: Tests extend appropriate base class based on environment
+- **Single Profile**: `integration-test` for all integration tests
+- **Automatic**: All tests extend `BaseIntegrationTest`
+- **Consistent**: Identical behavior across all platforms
 
 ---
 
-## Benefits of Hybrid Approach
+## Benefits of Unified Approach
+
+### Universal Benefits
+- **Zero Setup**: No Docker Compose required anywhere
+- **Consistency**: Identical test environments everywhere
+- **Isolation**: Each test run gets fresh database
+- **Simplicity**: Single approach for all environments
+- **Reliability**: No environment-specific configuration issues
 
 ### Local Development Benefits
-- **Zero Setup**: No Docker Compose required
-- **Isolation**: Each test run gets fresh database
-- **Debugging**: Easy to debug with container logs
-- **Flexibility**: Different MySQL versions per test if needed
+- **No Manual Setup**: Testcontainers handles everything
+- **Easy Debugging**: Container logs available
+- **Fast Iteration**: Quick test cycles
 
 ### CI Environment Benefits  
-- **Speed**: Reuses shared MySQL service
-- **Resource Efficiency**: No container startup overhead
-- **Reliability**: Consistent with production deployment
-- **Simplicity**: Single MySQL service for all tests
+- **Simplified Pipeline**: No Docker Compose setup
+- **Resource Efficiency**: Automatic container management
+- **Reliability**: No external dependencies
+- **Faster Execution**: No manual service coordination
 
 ---
 
 ## Migration Guide
 
-### From Old Approach
+### From Hybrid Approach
 ```java
-// OLD: Single AbstractIntegrationTest with complex logic
-@Testcontainers
-class MyTest extends AbstractIntegrationTest {
-    // Complex conditional Testcontainers logic
-}
+// OLD: Multiple base classes for different environments
+class MyTest extends LocalIntegrationTest {     // Local only
+class MyTest extends AbstractIntegrationTest { // CI only
 ```
 
-### To New Approach
+### To Unified Approach
 ```java
-// NEW: Choose appropriate base class
-class MyTest extends LocalIntegrationTest {     // For local development
-class MyTest extends AbstractIntegrationTest { // For CI environment
+// NEW: Single base class for all environments
+class MyTest extends BaseIntegrationTest {
+    // Works identically everywhere
+}
 ```
 
 ---
 
 ## Best Practices
 
-1. **Use LocalIntegrationTest** for local development and debugging
-2. **Use AbstractIntegrationTest** for CI-compatible tests
-3. **Keep unit tests fast** with mocks only
-4. **Test database migrations** in integration tests
-5. **Verify production parity** with real MySQL in all integration tests
+1. **Use BaseIntegrationTest** for all integration tests
+2. **Keep unit tests fast** with mocks only
+3. **Test database migrations** in integration tests
+4. **Verify production parity** with real MySQL in all tests
+5. **Let Testcontainers manage lifecycle** - no manual container management
 
 ---
 
 ## Troubleshooting
 
 ### Common Issues
-- **Testcontainers not starting**: Check Docker daemon is running locally
-- **CI tests failing**: Ensure Docker Compose MySQL is healthy before tests
-- **Profile conflicts**: Verify correct base class and profile combination
+- **Testcontainers not starting**: Check Docker daemon is running
+- **Tests hanging**: Kill hanging processes and containers (see Git Bash Commands guide)
+- **Memory issues**: Ensure sufficient Docker memory allocation
 
 ### Debug Commands
 ```bash
-# Check CI MySQL status
-docker compose ps phoebe-mysql
-
-# Run specific test locally
+# Run specific test
 ./gradlew integrationTest --tests "NewsServiceTest"
 
-# Run with CI profile locally
-./gradlew integrationTest -Pci --tests "NewsServiceTest"
+# Check Docker containers
+docker ps
+
+# Clean up hanging containers
+docker stop $(docker ps -q --filter "label=org.testcontainers")
+
+# Check test logs
+./gradlew integrationTest --info
 ```

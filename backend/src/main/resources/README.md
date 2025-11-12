@@ -37,10 +37,11 @@ argument or in an environment variable.
         -   Disables automatic schema generation (`ddl-auto: none`), giving control to Flyway.
         -   Enables detailed SQL logging (`show-sql: true`, `format_sql: true`) for performance analysis.
 
--   **`application-ci.yml`**
-    -   **Purpose**: Used exclusively during Continuous Integration (CI) builds, like on GitHub Actions.
-    -   **Key Settings**: Uses H2 in-memory database (`jdbc:h2:mem:testdb`) with `create-drop` schema
-        management. Flyway is disabled since H2 creates schema automatically. Optimized for fast CI execution.
+-   **`application-integration-test.yml`**
+    -   **Purpose**: Used for integration tests in all environments (local development and CI).
+    -   **Key Settings**: Configured for Testcontainers MySQL with dynamic connection properties.
+        Uses `create-drop` schema management and disables Flyway since Hibernate manages the schema.
+        Provides identical test environments across all platforms.
 
 -   **`application-mysql.yml`** & **`application-postgresql.yml`**
     -   **Purpose**: Database-specific profiles. They provide the correct JDBC driver and Hibernate dialect

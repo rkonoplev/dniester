@@ -44,13 +44,13 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 - **`application.yml`** (in `test`) is the base file for all tests. It overrides the main `application.yml` and
   typically contains logging settings and other common test parameters.
 - **`application-test.yml`** is used by default for unit tests that don't require database access.
-- **Integration tests** use Testcontainers with real MySQL instances:
+- **Integration tests** use unified Testcontainers approach:
   - **Unit tests**: Use `test` profile with mocks, no database dependencies
-  - **Integration tests**: Use `integration-test` profile with Testcontainers MySQL
-  - **CI environment**: Uses MySQL via Docker Compose for production-like testing
-  - All database tests use the same migrations from `common/` and `mysql/` as production
-  - Tests have access to test data from `V3__insert_sample_data.sql`
-  - Profile selection is handled by `AbstractIntegrationTest` base class
+  - **Integration tests**: Use `integration-test` profile with Testcontainers MySQL everywhere
+  - **Unified environment**: Identical test behavior in local development and CI
+  - All integration tests extend `BaseIntegrationTest` for consistent configuration
+  - Hibernate manages schema with `create-drop` strategy for test isolation
+  - Flyway disabled in tests to avoid conflicts with Testcontainers
 
 ---
 
@@ -61,8 +61,7 @@ Tests use a separate set of configuration files in `src/test/resources/` to isol
 | `local`            | `application-local.yml`            | MySQL (Docker)   | `update`        | Local dev with `docker-compose`; uses `.env` for DB credentials.    |
 | `dev`              | `application-dev.yml`              | Vendor-Specific  | `update`        | Dev/staging; combined with `mysql` or `postgresql` profile.         |
 | `test`             | `application-test.yml`             | None (Mocks)     | `validate`      | **(Tests only)** Unit tests with mocks, no database dependencies. Used by default. |
-| `integration-test` | `application-integration-test.yml` | MySQL (Testcontainers) | `validate` | **(Tests only)** Integration tests with real MySQL via Testcontainers. |
-| `ci`               | `application-ci.yml`               | MySQL (Docker)   | `validate`      | **CI/CD only.** GitHub Actions; MySQL via Docker Compose for production parity. |
+| `integration-test` | `application-integration-test.yml` | MySQL (Testcontainers) | `create-drop` | **(Tests only)** Integration tests with real MySQL via Testcontainers everywhere. |
 | `prod`             | `application-prod.yml`             | Vendor-Specific  | `validate`      | Production; combined with a vendor profile. Secrets via ENV.        |
 | `mysql`            | `application-mysql.yml`            | MySQL            | `validate`      | **Vendor profile.** Sets Flyway location for MySQL.                 |
 | `postgresql`       | `application-postgresql.yml`       | PostgreSQL       | `validate`      | **Vendor profile.** Sets Flyway location for PostgreSQL.            |
