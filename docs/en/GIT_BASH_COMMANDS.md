@@ -255,6 +255,199 @@ tar -tzf archive.tar.gz
 
 ---
 
+## Rollback and Recovery
+
+### Rollback All Changes to Last Push State
+```bash
+# Discard all uncommitted changes
+git checkout .
+git clean -fd
+
+# Reset to last commit state (removes all local changes)
+git reset --hard HEAD
+
+# Reset to remote repository state
+git fetch origin
+git reset --hard origin/main
+
+# Rollback specific file
+git checkout HEAD -- filename.txt
+
+# Undo last commit (keeping changes in working directory)
+git reset --soft HEAD~1
+
+# Undo last commit (removing all changes)
+git reset --hard HEAD~1
+```
+
+### Editing Last Commit with vim
+```bash
+# Amend last commit message
+git commit --amend
+
+# vim commands for editing:
+# i          - enter insert mode
+# Esc        - exit insert mode
+# :w         - save file
+# :q         - quit vim
+# :wq        - save and quit
+# :q!        - quit without saving
+# dd         - delete line
+# x          - delete character
+# u          - undo last action
+```
+
+### Resolving Version Conflicts
+```bash
+# When remote version is newer than local
+# 1. Fetch changes from remote
+git fetch origin
+
+# 2. View differences
+git log HEAD..origin/main --oneline
+
+# 3. Merge changes (may cause conflicts)
+git merge origin/main
+
+# 4. If conflicts exist, resolve them:
+# - Edit files with conflicts
+# - Remove conflict markers (<<<<<<, ======, >>>>>>)
+# - Add resolved files
+git add .
+git commit -m "Resolve merge conflicts"
+
+# Alternative: Force take remote version
+git reset --hard origin/main
+
+# Alternative: Use rebase instead of merge
+git rebase origin/main
+```
+
+---
+
+## Managing Hanging Testcontainers and Docker
+
+### Diagnosing Hanging Processes
+```bash
+# Check running Docker containers
+docker ps
+docker ps -a  # Including stopped ones
+
+# Check hanging Java processes
+ps aux | grep java | grep -v grep
+
+# Check Gradle processes
+ps aux | grep gradle | grep -v grep
+
+# Check test processes
+ps aux | grep "Test Executor" | grep -v grep
+```
+
+### Stopping Hanging Testcontainers
+```bash
+# Stop all running containers
+docker stop $(docker ps -q)
+
+# Stop specific containers
+docker stop container_id_1 container_id_2
+
+# Force kill containers
+docker kill $(docker ps -q)
+
+# Remove stopped containers
+docker rm $(docker ps -aq)
+
+# Stop and remove Testcontainers specifically
+docker stop $(docker ps -q --filter "label=org.testcontainers")
+docker rm $(docker ps -aq --filter "label=org.testcontainers")
+
+# Stop Ryuk container (Testcontainers cleanup)
+docker stop $(docker ps -q --filter "name=testcontainers-ryuk")
+```
+
+### Stopping Hanging Java Processes
+```bash
+# Find process PID
+ps aux | grep "Test Executor" | grep -v grep
+ps aux | grep "gradlew" | grep -v grep
+
+# Kill process by PID (replace XXXX with actual PID)
+kill -9 XXXX
+
+# Kill all Gradle processes
+pkill -f gradle
+
+# Kill all Java processes (DANGEROUS!)
+# pkill -f java
+
+# Stop Gradle daemon
+./gradlew --stop
+```
+
+### Docker Resource Cleanup
+```bash
+# Remove unused images
+docker image prune -f
+
+# Remove unused volumes
+docker volume prune -f
+
+# Remove unused networks
+docker network prune -f
+
+# Full Docker cleanup (DANGEROUS!)
+docker system prune -af --volumes
+
+# Check Docker disk usage
+docker system df
+```
+
+### Test Diagnostics
+```bash
+# Check Docker container logs
+docker logs container_name
+
+# Follow logs in real-time
+docker logs -f container_name
+
+# Check MySQL health status
+docker exec phoebe-mysql mysqladmin ping -h localhost --silent
+
+# Check database connection
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SHOW DATABASES;"
+
+# Check ports
+netstat -an | grep :3306
+lsof -i :3306
+```
+
+### Step-by-Step Process for Hanging Tests
+```bash
+# 1. Stop test execution (Ctrl+C in terminal)
+
+# 2. Find and kill hanging processes
+ps aux | grep java | grep -v grep
+kill -9 PROCESS_PID
+
+# 3. Stop Gradle daemon
+./gradlew --stop
+
+# 4. Stop all Docker containers
+docker stop $(docker ps -q)
+
+# 5. Remove stopped containers
+docker rm $(docker ps -aq --filter "label=org.testcontainers")
+
+# 6. Verify cleanup
+docker ps
+ps aux | grep java | grep -v grep
+
+# 7. Restart tests
+./gradlew integrationTest --no-daemon
+```
+
+---
+
 ## Troubleshooting
 
 ### Common Issues and Solutions

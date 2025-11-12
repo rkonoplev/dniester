@@ -255,6 +255,199 @@ tar -tzf archive.tar.gz
 
 ---
 
+## Откат изменений и восстановление
+
+### Откат всех правок до последнего пуша
+```bash
+# Откат всех незафиксированных изменений
+git checkout .
+git clean -fd
+
+# Откат до состояния последнего коммита (удаляет все локальные изменения)
+git reset --hard HEAD
+
+# Откат до состояния удаленного репозитория
+git fetch origin
+git reset --hard origin/main
+
+# Откат конкретного файла
+git checkout HEAD -- filename.txt
+
+# Откат последнего коммита (сохраняя изменения в рабочей директории)
+git reset --soft HEAD~1
+
+# Откат последнего коммита (удаляя все изменения)
+git reset --hard HEAD~1
+```
+
+### Редактирование последнего коммита с помощью vim
+```bash
+# Изменить сообщение последнего коммита
+git commit --amend
+
+# Команды vim для редактирования:
+# i          - войти в режим вставки
+# Esc        - выйти из режима вставки
+# :w         - сохранить файл
+# :q         - выйти из vim
+# :wq        - сохранить и выйти
+# :q!        - выйти без сохранения
+# dd         - удалить строку
+# x          - удалить символ
+# u          - отменить последнее действие
+```
+
+### Разрешение конфликтов версий
+```bash
+# Когда удаленная версия новее локальной
+# 1. Получить изменения с удаленного репозитория
+git fetch origin
+
+# 2. Посмотреть различия
+git log HEAD..origin/main --oneline
+
+# 3. Слить изменения (может вызвать конфликты)
+git merge origin/main
+
+# 4. Если есть конфликты, разрешить их:
+# - Отредактировать файлы с конфликтами
+# - Удалить маркеры конфликтов (<<<<<<, ======, >>>>>>)
+# - Добавить разрешенные файлы
+git add .
+git commit -m "Resolve merge conflicts"
+
+# Альтернативный способ - принудительно взять удаленную версию
+git reset --hard origin/main
+
+# Альтернативный способ - rebase вместо merge
+git rebase origin/main
+```
+
+---
+
+## Управление зависшими Testcontainers и Docker
+
+### Диагностика зависших процессов
+```bash
+# Проверить запущенные Docker контейнеры
+docker ps
+docker ps -a  # Включая остановленные
+
+# Проверить зависшие Java процессы
+ps aux | grep java | grep -v grep
+
+# Проверить процессы Gradle
+ps aux | grep gradle | grep -v grep
+
+# Проверить процессы тестов
+ps aux | grep "Test Executor" | grep -v grep
+```
+
+### Остановка зависших Testcontainers
+```bash
+# Остановить все запущенные контейнеры
+docker stop $(docker ps -q)
+
+# Остановить конкретные контейнеры
+docker stop container_id_1 container_id_2
+
+# Принудительно убить контейнеры
+docker kill $(docker ps -q)
+
+# Удалить остановленные контейнеры
+docker rm $(docker ps -aq)
+
+# Остановить и удалить контейнеры Testcontainers
+docker stop $(docker ps -q --filter "label=org.testcontainers")
+docker rm $(docker ps -aq --filter "label=org.testcontainers")
+
+# Остановить Ryuk контейнер (Testcontainers cleanup)
+docker stop $(docker ps -q --filter "name=testcontainers-ryuk")
+```
+
+### Остановка зависших Java процессов
+```bash
+# Найти PID процесса
+ps aux | grep "Test Executor" | grep -v grep
+ps aux | grep "gradlew" | grep -v grep
+
+# Остановить процесс по PID (замените XXXX на реальный PID)
+kill -9 XXXX
+
+# Остановить все процессы Gradle
+pkill -f gradle
+
+# Остановить все процессы Java (ОСТОРОЖНО!)
+# pkill -f java
+
+# Остановить Gradle daemon
+./gradlew --stop
+```
+
+### Очистка Docker ресурсов
+```bash
+# Удалить неиспользуемые образы
+docker image prune -f
+
+# Удалить неиспользуемые тома
+docker volume prune -f
+
+# Удалить неиспользуемые сети
+docker network prune -f
+
+# Полная очистка Docker (ОСТОРОЖНО!)
+docker system prune -af --volumes
+
+# Проверить использование места Docker
+docker system df
+```
+
+### Диагностика проблем с тестами
+```bash
+# Проверить логи Docker контейнера
+docker logs container_name
+
+# Проверить логи в реальном времени
+docker logs -f container_name
+
+# Проверить статус здоровья MySQL
+docker exec phoebe-mysql mysqladmin ping -h localhost --silent
+
+# Проверить подключение к базе данных
+docker exec -it phoebe-mysql mysql -uroot -proot -e "SHOW DATABASES;"
+
+# Проверить порты
+netstat -an | grep :3306
+lsof -i :3306
+```
+
+### Последовательность действий при зависании тестов
+```bash
+# 1. Остановить выполнение тестов (Ctrl+C в терминале)
+
+# 2. Найти и убить зависшие процессы
+ps aux | grep java | grep -v grep
+kill -9 PID_ПРОЦЕССА
+
+# 3. Остановить Gradle daemon
+./gradlew --stop
+
+# 4. Остановить все Docker контейнеры
+docker stop $(docker ps -q)
+
+# 5. Удалить остановленные контейнеры
+docker rm $(docker ps -aq --filter "label=org.testcontainers")
+
+# 6. Проверить, что все очищено
+docker ps
+ps aux | grep java | grep -v grep
+
+# 7. Перезапустить тесты
+./gradlew integrationTest --no-daemon
+```
+
+---
+
 ## Устранение проблем
 
 ### Распространенные проблемы и решения
