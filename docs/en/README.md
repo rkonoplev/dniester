@@ -21,6 +21,9 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Setup Guide](./SETUP_GUIDE.md)**  
   Step-by-step instructions for the initial project setup, covering all deployment scenarios.
 
+- **[Quick Start Guide](./QUICK_START.md)**  
+  Quick instructions for developers for daily work with an already configured project.
+
 - **[Developer Guide](./DEVELOPER_GUIDE.md)**  
   The daily workflow for developers, local commands, CI/CD expectations, and code formatting.
 
@@ -105,9 +108,6 @@ This directory contains all English project documentation for **Phoebe CMS**.
 
 - **[Git and Bash Commands Reference](./GIT_BASH_COMMANDS.md)**  
   Practical Git and Bash commands for development and troubleshooting.
-
-- **[CI/CD Improvements Implementation Summary](./CI_CD_IMPROVEMENTS.md)**  
-  Detailed summary of implemented CI/CD optimizations and production recommendations.
 
 - **[Testcontainers Evolution and Strategy](./TESTCONTAINERS_EVOLUTION.md)**  
   Comprehensive guide on Testcontainers usage, evolution, and when to implement it.

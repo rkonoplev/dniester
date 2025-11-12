@@ -20,7 +20,7 @@
 - **Кэширование**: Caffeine (In-Memory)
 - **Ограничение запросов**: Bucket4j с IP-based buckets
 - **Сборка**: Gradle 8.7
-- **Тестирование**: JUnit 5 (юнит- и интеграционные тесты с Testcontainers)
+- **Тестирование**: JUnit 5 (unit тесты с моками, интеграционные тесты с Testcontainers MySQL)
 - **Миграция**: Spring Boot миграции (V1-V6)
 
 ### Референсные Frontend-шаблоны (Опционально)
@@ -32,10 +32,10 @@
 - **Функции**: Поиск, темная тема, push-уведомления (планируется)
 
 ### Инфраструктура
-- **Контейнеризация**: Docker + Docker Compose
-- **CI/CD**: GitHub Actions
+- **Контейнеризация**: Docker (Testcontainers для тестов, опциональный Docker Compose для локальной разработки)
+- **CI/CD**: GitHub Actions с унифицированным подходом Testcontainers
 - **Качество кода**: Checkstyle, PMD, JaCoCo coverage
-- **База данных**: MySQL или PostgreSQL с Docker
+- **База данных**: MySQL или PostgreSQL (Testcontainers для тестирования, Docker для локальной разработки)
 - **Безопасность**: GitLeaks сканирование секретов
 
 ## Гибридная Headless архитектура

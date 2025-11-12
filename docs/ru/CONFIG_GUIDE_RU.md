@@ -46,12 +46,13 @@ Spring Boot выбирает конфигурацию на основе акти
   и обычно содержит настройки логирования и другие общие для тестов параметры.
 - **`application-test.yml`** — используется по умолчанию, если в тестовом классе не указан активный профиль
   (`@ActiveProfiles`). Настроен на использование быстрой встраиваемой базы данных H2.
-- **Интеграционные тесты** используют H2 в режиме совместимости с MySQL и выполняют Flyway миграции:
-  - **Локальная разработка**: Использует профиль `test` (H2 с режимом MySQL, Flyway включен)
-  - **CI окружение**: Использует профиль `ci` (H2 с режимом MySQL, Flyway включен) при установке `SPRING_PROFILES_ACTIVE=ci`
-  - Оба профиля используют те же миграции из `common/`, что и продакшен
-  - Тесты получают доступ к тестовым данным из `V3__insert_sample_data.sql`
-  - Выбор профиля обрабатывается базовым классом `AbstractIntegrationTest`
+- **Интеграционные тесты** используют унифицированный подход Testcontainers:
+  - **Unit тесты**: Используют профиль `test` с моками, без зависимостей от базы данных
+  - **Интеграционные тесты**: Используют профиль `integration-test` с Testcontainers MySQL везде
+  - **Унифицированная среда**: Идентичное поведение тестов в локальной разработке и CI
+  - Все интеграционные тесты наследуют `BaseIntegrationTest` для единообразной конфигурации
+  - Hibernate управляет схемой со стратегией `create-drop` для изоляции тестов
+  - Flyway отключен в тестах для избежания конфликтов с Testcontainers
 
 ---
 
@@ -62,8 +63,7 @@ Spring Boot выбирает конфигурацию на основе акти
 | `local`            | `application-local.yml`            | MySQL (Docker)     | `update`        | Локальная разработка с `docker-compose`; использует `.env` для учетных данных БД. |
 | `dev`              | `application-dev.yml`              | Зависит от вендора | `update`        | Разработка/staging; комбинируется с профилем `mysql` или `postgresql`.      |
 | `test`             | `application-test.yml`             | H2 (в памяти)      | `validate`      | **(Только для тестов)** Юнит- и интеграционные тесты. H2 в режиме MySQL с Flyway миграциями. Используется по умолчанию. |
-| `integration-test` | `application-integration-test.yml` | MySQL (Docker)     | `validate`      | **(Только для тестов)** Полные интеграционные тесты, требующие реальной БД. |
-| `ci`               | `application-ci.yml`               | H2 (в памяти)      | `validate`      | **Только CI/CD.** GitHub Actions; H2 в режиме совместимости с MySQL с Flyway миграциями из `common/`. |
+| `integration-test` | `application-integration-test.yml` | MySQL (Testcontainers) | `create-drop` | **(Только для тестов)** Интеграционные тесты с реальным MySQL через Testcontainers везде. |
 | `prod`             | `application-prod.yml`             | Облачная БД (MySQL/PG)| `validate`      | Продакшен; комбинируется с профилем вендора. Секреты через ENV.             |
 | `mysql`            | `application-mysql.yml`            | MySQL              | `validate`      | **Профиль вендора.** Устанавливает путь к миграциям Flyway для MySQL.       |
 | `postgresql`       | `application-postgresql.yml`       | PostgreSQL         | `validate`      | **Профиль вендора.** Устанавливает путь к миграциям Flyway для PostgreSQL.  |
