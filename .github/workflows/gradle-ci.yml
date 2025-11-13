@@ -17,8 +17,14 @@ jobs:
           distribution: 'temurin'
       - name: Enable Docker
         run: sudo service docker start
+      - name: Wait for Docker to be fully ready
+        run: |
+          echo "Waiting for Docker..."
+          sleep 10s # Даем Docker 10 секунд на полную инициализацию
+          docker info # Проверяем статус Docker
+          docker ps -a # Показываем все контейнеры (если есть)
       - name: Run tests
-        run: cd backend && ./gradlew clean build integrationTest jacocoTestReport --no-daemon
+        run: cd backend && ./gradlew clean build integrationTest jacocoTestReport --no-daemon --stacktrace --debug
 
       - name: Upload coverage to Codecov
         if: success()
