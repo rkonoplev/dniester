@@ -1,12 +1,15 @@
-# CI/CD Guide
+# CI/CD and Security Guide
 
-This document describes the continuous integration (CI) pipeline used in the project.
+This document describes the **continuous integration pipeline**, quality tools, and security practices
+used in the Phoebe CMS project.
 
-> For information on local testing and development, see [Testing and Development with Makefile](./TESTING_WITH_MAKEFILE.md).
+> **Related**: [ADR: MySQL-first Strategy Implementation](./MYSQL_STRATEGY_IMPLEMENTATION.md) - Details about the production-first database approach and H2 removal.  
+> **Related**: [ADR: Unifying the Testing Strategy with Testcontainers](./TESTCONTAINERS_EVOLUTION.md) - Complete testing architecture overview.  
+> **Related**: [Testing and Development with Makefile](./TESTING_WITH_MAKEFILE.md) - Practical guide for running tests.
 
 ---
 
-## Pipeline Overview (GitHub Actions)
+## CI/CD Pipeline Overview (GitHub Actions)
 
 The CI/CD process is built on **GitHub Actions** and defined in the `.github/workflows/gradle-ci.yml` file. It runs on every `push` or `pull request` to the `main`, `master`, and `develop` branches.
 
@@ -32,30 +35,50 @@ The CI/CD process is built on **GitHub Actions** and defined in the `.github/wor
 
 ---
 
-## Tools and Code Quality
-
-Code quality is enforced at multiple levels, integrated into the Gradle build:
+## Tools Integrated in CI
 
 - **Testcontainers**: Ensures that integration tests run in a production-like environment (MySQL), both locally and in CI.
 - **JaCoCo**: Measures code coverage by tests.
 - **Codecov**: Provides visualization for coverage reports.
 - **Checkstyle & PMD**: Static analysis tools that enforce code style and detect potential issues. They are automatically run during the `build` task.
+- **Bucket4j**: Rate limiting dependency for API protection.
 
 ---
 
-## Security
+## Security Best Practices
 
-- **Secret Management**: The CI pipeline uses **GitHub Actions Secrets** to securely store credentials. Locally, a `.env` file is used, which is excluded from Git.
-- **Secret Scanning**: Although GitLeaks is no longer part of the automated CI pipeline, it is recommended to use it locally before pushing changes to prevent accidental leaks of keys and passwords.
-  ```bash
-  gitleaks detect --source .
-  ```
+1.  **Authentication Architecture**
+    - **Basic Auth** with environment-based credentials (no database storage).
+    - **Two-role system**: ADMIN (full access) and EDITOR (own content only).
+    - **BCrypt password encoding** for secure credential storage.
+    - Implementation details: See [Role Security Implementation Guide](./SECURITY_ROLES.md).
+
+2.  **Secrets in CI**
+    - Use GitHub **Repository Secrets** (Settings → Secrets → Actions).
+    - Examples: `DEV_DB_URL`, `DEV_DB_USER`, `ADMIN_PASSWORD`.
+    - Never commit `.env` with real secrets into repo.
+
+3.  **Profiles for CI**
+    - CI tests use `integration-test` profile with Testcontainers MySQL.
+    - Ensures identical test environments between local development and CI.
+
+4.  **Docker & Deploy Secrets**
+    - Local dev → `.env` (ignored by git).
+    - CI → GitHub Secrets.
+    - Production (e.g., Render) → environment variables or Secret Files.
+
+5.  **Secret Scanning (GitLeaks)**
+    - Although GitLeaks is no longer part of the automated CI pipeline, it is recommended to use it locally before pushing changes to prevent accidental leaks of keys and passwords.
+      ```bash
+      gitleaks detect --source .
+      ```
 
 ---
 
 ## Summary
 
-- The CI pipeline is fully automated and unified.
-- The command executed in CI is equivalent to running `make all-tests` locally.
-- Testcontainers ensures reliable and isolated testing in a production-like environment.
-- Code quality and security are monitored at every stage.
+- The CI/CD pipeline is **fully automated**: build → test → quality → security.
+- Code quality is controlled with **Checkstyle**, **PMD**, **JaCoCo**, and **Codecov**.
+- Secrets are strictly managed through environment variables/secrets.
+- Security scanning (GitLeaks) protects the repository against secret leaks.
+- **Rate limiting** provides API protection against abuse and DoS attacks.
