@@ -13,10 +13,7 @@ The configuration is split across multiple files, loaded based on the active Spr
     port numbers, and default JPA settings.
 
 2.  **`application-{profile}.yml` (Specific Overrides)**: Contains properties that override the base configuration
-    for a specific profile. For example, `application-mysql.yml` provides settings specific to MySQL.
-
-3.  **`application-security.yml`**: A dedicated file for security-related properties (e.g., JWT secrets, CORS),
-    which is always included.
+    for a specific profile. For example, `application-local.yml` provides settings for local development.
 
 The active profiles are enabled via the `spring.profiles.active` property, typically passed as a command-line
 argument or in an environment variable.
@@ -27,27 +24,22 @@ argument or in an environment variable.
 
 -   **`application.yml`**
     -   **Purpose**: The main, default configuration file. It defines the base for all other profiles.
-    -   **Key Settings**: Default server port, application name, base JPA configurations (like open-in-view),
-        and includes the `security` profile by default.
+    -   **Key Settings**: Default server port, application name, base JPA configurations.
 
 -   **`application-local.yml`**
-    -   **Purpose**: The primary profile for **local development**. It enables features useful for debugging.
-    -   **Key Settings**:
-        -   Enables Flyway (`flyway.enabled: true`).
-        -   Disables automatic schema generation (`ddl-auto: none`), giving control to Flyway.
-        -   Enables detailed SQL logging (`show-sql: true`, `format_sql: true`) for performance analysis.
+    -   **Purpose**: The primary profile for **local development**, activated by `make run`.
+    -   **Key Settings**: Configures the datasource for the Docker Compose MySQL container, enables Flyway, sets `ddl-auto` to `update`, and enables detailed SQL logging.
 
 -   **`application-integration-test.yml`**
-    -   **Purpose**: Used for integration tests in all environments (local development and CI).
-    -   **Key Settings**: Configured for Testcontainers MySQL with dynamic connection properties.
-        Uses `create-drop` schema management and disables Flyway since Hibernate manages the schema.
-        Provides identical test environments across all platforms.
+    -   **Purpose**: Used for all integration tests in all environments (local and CI), activated by `make test`.
+    -   **Key Settings**: Configured for Testcontainers MySQL. Uses `create-drop` schema management and disables Flyway, as Hibernate manages the schema directly for tests.
+
+-   **`application-prod.yml`**
+    -   **Purpose**: The profile for **production** environments.
+    -   **Key Settings**: Disables detailed SQL logging and sets `ddl-auto` to `validate`. Relies on environment variables for all sensitive data.
 
 -   **`application-mysql.yml`** & **`application-postgresql.yml`**
-    -   **Purpose**: Database-specific profiles. They provide the correct JDBC driver and Hibernate dialect
-        for either MySQL or PostgreSQL. One of these should be activated alongside another profile (like `local`).
+    -   **Purpose**: Database-specific profiles that provide the correct JDBC driver, Hibernate dialect, and Flyway migration paths.
 
 -   **`application-security.yml`**
-    -   **Purpose**: Centralizes all security-related configurations.
-    -   **Key Settings**: JWT token expiration times, secret keys (often externalized), CORS policies, and
-        paths excluded from security filters. It is automatically included by `application.yml`.
+    -   **Purpose**: Centralizes all security-related configurations (Basic Auth, rate limiting). It is automatically included by `application.yml`.

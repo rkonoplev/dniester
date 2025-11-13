@@ -43,44 +43,26 @@ phoebe/
 
 ## 🚀 Quick Start
 
-To get started quickly with Phoebe CMS, follow these high-level steps. For detailed instructions,
-refer to the dedicated guides.
-
 **Requirements:**
 - JDK 21+
 - Docker & Docker Compose
-- Git (for cloning the repository)
+- Git
 
-### 1. Initial Setup (First Time)
-For cloning the repository, setting up environment variables, and running the project for the very
-first time (including migration or clean installation), please see the comprehensive
-**[Setup Guide](docs/en/SETUP_GUIDE.md)**.
-
-### 2. Daily Development Workflow
-For daily development tasks, including starting/stopping services, running the Spring Boot
-application, executing tests, and troubleshooting, refer to the
-**[Developer Guide](docs/en/DEVELOPER_GUIDE.md)**.
-
-**Key endpoints after starting services:**
-- **API entrypoint**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
-
-### 3. Optional: Start a Reference Frontend
-Choose one of the provided reference implementations and run it from its directory:
-
-**For Angular:**
+The fastest way to get the application running:
 ```bash
-cd frontends/angular
-npm install
-npm start
-```
+# 1. Clone the repository
+git clone https://github.com/rkonoplev/phoebe.git
+cd phoebe
 
-**For Next.js:**
-```bash
-cd frontends/nextjs
-npm install
-npm run dev
+# 2. Create the environment file (defaults are fine)
+cp .env.example .env
+
+# 3. Run everything!
+make run
 ```
+The API is now available at `http://localhost:8080` and Swagger UI at `http://localhost:8080/swagger-ui/index.html`.
+
+For more detailed instructions on setup, migration, and daily development, please see the comprehensive **[Setup Guide](docs/en/SETUP_GUIDE.md)** and the **[Developer Guide](docs/en/DEVELOPER_GUIDE.md)**.
 
 ## 🔧 Key Features
 
@@ -93,7 +75,7 @@ npm run dev
 - **Rate Limiting**: IP-based protection with Bucket4j.
 - **Multi-Database Support**: Works with MySQL 8.0 and PostgreSQL 12+.
 - **Automated DB Migrations**: Database schema is managed and versioned with Flyway.
-- **Testing**: Comprehensive unit and integration test suite with docker-compose.
+- **Modern Testing**: Comprehensive test suite using **Testcontainers** for reliable, isolated testing.
 - **CI/CD**: GitHub Actions pipeline with automated testing and code quality checks.
 - **Archived Migration History**: Includes legacy scripts from the original Drupal 6 migration for historical context.
 
@@ -127,9 +109,9 @@ Comprehensive documentation covering installation, development, API usage, and d
 - **Rate Limiting**: [Bucket4j](https://github.com/bucket4j/bucket4j)
 - **Code Quality**: [Checkstyle](https://checkstyle.sourceforge.io/), [PMD](https://pmd.github.io/)
 - **Documentation**: [OpenAPI/Swagger](https://swagger.io/)
-- **Testing**: [JUnit 5](https://junit.org/junit5/), Testcontainers, Docker Compose
+- **Testing**: [JUnit 5](https://junit.org/junit5/), **[Testcontainers](https://testcontainers.com/)**, Mockito
 - **CI/CD**: [GitHub Actions](https://github.com/features/actions)
-- **Reference Implementations**: [Angular](https://angular.io/) & [Next.js](https://nextjs.org/) (planned)
+- **Reference Implementations**: [Angular](https://angular.io/) & [Next.js](https://nextjs.org/)
 
 ## 📄 License
 

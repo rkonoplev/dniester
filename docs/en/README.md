@@ -10,120 +10,86 @@ This directory contains all English project documentation for **Phoebe CMS**.
 ## 📖 Core Documentation
 
 - **[Project Overview](./PROJECT_OVERVIEW.md)**  
-  A comprehensive overview of the project, its architecture, technology stack, and goals.
-
+  A comprehensive overview of the project for new developers.
 - **[Glossary](./GLOSSARY.md)**  
-  Definitions of key terms and technologies used throughout the documentation.
-
+  Definitions of key terms and technologies.
 - **[Technical Debt](./TECHNICAL_DEBT.md)**  
-  A list of known issues, planned improvements, and future work for the project.
-
+  A list of known issues and planned improvements.
 - **[Setup Guide](./SETUP_GUIDE.md)**  
-  Step-by-step instructions for the initial project setup, covering all deployment scenarios.
-
+  Step-by-step instructions for the initial project setup.
 - **[Quick Start Guide](./QUICK_START.md)**  
-  Quick instructions for developers for daily work with an already configured project.
-
+  Quick instructions for daily work.
 - **[Developer Guide](./DEVELOPER_GUIDE.md)**  
-  The daily workflow for developers, local commands, CI/CD expectations, and code formatting.
-
+  The daily workflow for developers.
 - **[API Reference](./API_REFERENCE.md)**  
-  A comprehensive guide with endpoint descriptions, `curl` examples, and field specifications.
+  Endpoint descriptions, `curl` examples, and specifications.
 
 ## 🏗️ Architecture & Setup
 
-- **[Design Principles (SOLID, KISS)](./PRINCIPLES.md)**  
-  A description of the fundamental design principles applied in the project.
-
+- **[Design Principles](./PRINCIPLES.md)**  
+  Fundamental design principles (SOLID, KISS).
 - **[Design Patterns](./DESIGN_PATTERNS.md)**  
-  A description of the classic and architectural design patterns used in the project.
-
+  Architectural patterns used in the project.
 - **[Configuration Guide](./CONFIG_GUIDE.md)**  
-  The Spring profiles matrix, `application-*.yml` files, and secrets management.
-
+  Spring profiles matrix, `application-*.yml` files, `.env`, and secrets.
 - **[Configuration Files Overview](../../backend/src/main/resources/README.md)**  
-  A detailed description of each `application-*.yml` file and its role in the project.
-
+  A detailed description of each `application-*.yml` file.
 - **[Docker Guide](./DOCKER_GUIDE.md)**  
-  Local development with `docker-compose` and production build notes.
+  Local development with `docker-compose` and production builds.
+- **[ADR: Unifying the Testing Strategy with Testcontainers](./TESTCONTAINERS_EVOLUTION.md)**  
+  The Architectural Decision Record for the migration to Testcontainers.
+- **[ADR: MySQL-first Strategy Implementation](./MYSQL_STRATEGY_IMPLEMENTATION.md)**  
+  The Architectural Decision Record for dropping H2 in favor of MySQL.
+
+## 🧪 Testing
+
+- **[Testing with Makefile](./TESTING_WITH_MAKEFILE.md)**  
+  **(Start here)** A practical guide for running all types of tests.
+- **[CI/CD Guide](./CI_CD_GUIDE.md)**  
+  Describes how tests are executed in the GitHub Actions pipeline.
+- **[Input Validation Guide](./VALIDATION_GUIDE.md)**  
+  A guide to content validation and sanitization.
 
 ## 🔐 Security & Authentication
 
 - **[Authentication Guide](./AUTHENTICATION_GUIDE.md)**  
-  Security implementation for the headless API and authentication methods.
-
+  Security implementation for the headless API.
 - **[Security & Roles](./SECURITY_ROLES.md)**  
-  A guide for implementing ADMIN and EDITOR role restrictions.
-
+  A guide for implementing role-based restrictions.
 - **[Rate Limiting Guide](./RATE_LIMITING.md)**  
-  IP-based rate limiting implementation with Bucket4j.
+  IP-based rate limiting implementation.
 
 ## 🎨 Frontend Integration
 
 - **[Frontend Specification (Angular)](./FRONTEND_SPEC_ANGULAR.md)**  
-  Technical specification for the Angular-based reference implementation.
-
+  Technical specification for the Angular implementation.
 - **[Frontend Specification (Next.js)](./FRONTEND_SPEC_NEXTJS.md)**  
-  Technical specification for the Next.js (React)-based reference implementation.
-
+  Technical specification for the Next.js implementation.
 - **[Admin Panel Specification](./ADMIN_PANEL_SPEC.md)**  
-  Technical requirements for admin panel interfaces.
-
+  Technical requirements for the admin panel UI.
 - **[Frontend Frameworks Guide](./FRONTEND_FRAMEWORKS_GUIDE.md)**  
-  A comparative overview of frontend frameworks, dependency sizes, and best practices.
+  A comparative overview of frontend frameworks.
 
 ## 🗄️ Database & Migration
 
 - **[Database Guide](./DATABASE_GUIDE.md)**  
-  Complete database documentation, including schema, setup, and migration scripts.
-
+  Complete database documentation, including schema and migrations.
 - **[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**  
-  The modern, automated way to deploy the project with data from the Drupal 6 dump using Flyway.
-
+  The modern way to deploy the project with data from a Drupal 6 dump.
 - **[Historical Migration Guide](./MIGRATION_DRUPAL6.md)**  
-  Describes the old, manual migration process. Preserved for historical reference.
-
+  Describes the old, manual migration process.
 - **[Docker Data Backup & Recovery](./DOCKER_DATA_RECOVERY_GUIDE.md)**  
-  Inventory and backup of all project databases from Docker volumes.
-
+  Backup of all project databases from Docker volumes.
 - **[Volume Migration Guide](./VOLUME_MIGRATION_GUIDE.md)**  
-  Safe migration of Docker volumes when renaming containers.
-
-- **[Project Codebase Transfer Guide](./PROJECT_TRANSFER_GUIDE.md)**  
-  Backup and recovery of the codebase using Git.
-
-- **[Legacy Migration Archives](../../legacy/README.md)**  
-  An archive of obsolete scripts, configurations, and database dumps from the initial Drupal 6 migration.
+  Safe migration of Docker volumes.
 
 ## 🛠️ Development Tools
 
-- **[CI/CD Guide](./CI_CD_GUIDE.md)**  
-  The GitHub Actions workflow, automated unit and integration testing, and code quality tools.
-
 - **[Code Style Setup](./CODE_STYLE_SETUP.md)**  
   A guide for automatic code formatting in IntelliJ IDEA.
-
-- **[Input Validation Guide](./VALIDATION_GUIDE.md)**  
-  A guide to content validation, including SafeHtml and XSS protection.
-
 - **[Git and Bash Commands Reference](./GIT_BASH_COMMANDS.md)**  
-  Practical Git and Bash commands for development and troubleshooting.
-
-- **[Testcontainers Evolution and Strategy](./TESTCONTAINERS_EVOLUTION.md)**  
-  Comprehensive guide on Testcontainers usage, evolution, and when to implement it.
-
-- **[Testing Strategy Guide](./TESTING_STRATEGY.md)**  
-  Complete testing architecture overview including hybrid integration testing approach.
-
----
-
-## 🌐 Headless CMS Benefits
-
-This documentation supports **Phoebe's hybrid headless approach**:
-
-- **API-First**: Complete REST API documentation for custom frontend development.
-- **Reference Implementations**: Guides for using the provided Angular and Next.js applications.
-- **Flexibility**: Choose between headless-only or full-stack deployment.
-- **Professional Grade**: Enterprise-ready features for any organization.
-
-For Russian documentation, visit [../ru/](../ru/).
+  Practical Git and Bash commands.
+- **[Project Codebase Transfer Guide](./PROJECT_TRANSFER_GUIDE.md)**  
+  Backup and recovery of the codebase using Git.
+- **[Legacy Migration Archives](../../legacy/README.md)**  
+  An archive of obsolete scripts and configurations.

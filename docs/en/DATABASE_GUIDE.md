@@ -1,6 +1,6 @@
 # Database Guide – Phoebe CMS
 
-This comprehensive guide covers database schema, setup, migration, and troubleshooting for Phoebe CMS.  
+This comprehensive guide covers the database schema, setup, migration, and troubleshooting for Phoebe CMS.
 The schema supports both **clean installations** and **migrated data from Drupal 6**.
 
 ## Table of Contents
@@ -150,26 +150,22 @@ WHERE t.name = 'Technology';
 ## Quick Setup
 
 ### New Installation (Clean Database)
-
-**Automatic Setup via Spring Boot:**
+The easiest way to run the project for local development is to use the Makefile.
 ```bash
-# Start MySQL
-docker compose up -d
+# Run the entire project (DB + Backend)
+make run
+```
+On the first run, Flyway will automatically apply all necessary migrations. The default credentials are `admin` / `admin`.
 
-# Run application (auto-applies migrations V1-V6)
-cd backend
-./gradlew bootRun --args='--spring.profiles.active=local'
+### For Running Tests
+**No manual database setup is required.** Integration tests are fully automated with Testcontainers.
+```bash
+# Run only integration tests
+make test
 ```
 
-**Default Admin Credentials:**
-- Username: `admin`
-- Password: `admin`
-- **⚠️ Change immediately in production!**
-
 ### Manual Admin User Creation
-
-If you need to create admin user manually:
-
+If you need to create an admin user manually:
 ```bash
 mysql phoebe_db < db_data/create_admin_user.sql
 ```
@@ -180,25 +176,10 @@ mysql phoebe_db < db_data/create_admin_user.sql
 
 ### Migration Workflow
 
-1. **Analysis Phase**
-   ```sql
-   mysql drupal6_db < db_data/detect_custom_fields.sql
-   ```
-
-2. **Main Migration**
-   ```sql
-   mysql clean_db < db_data/migrate_from_drupal6_universal.sql
-   ```
-
-3. **Custom Fields Migration**
-   ```sql
-   mysql clean_db < db_data/migrate_cck_fields.sql
-   ```
-
-4. **User Data Cleanup**
-   ```sql
-   mysql clean_db < db_data/update_migrated_users.sql
-   ```
+1.  **Analysis**: `mysql drupal6_db < db_data/detect_custom_fields.sql`
+2.  **Main Migration**: `mysql clean_db < db_data/migrate_from_drupal6_universal.sql`
+3.  **Fields Migration**: `mysql clean_db < db_data/migrate_cck_fields.sql`
+4.  **Cleanup**: `mysql clean_db < db_data/update_migrated_users.sql`
 
 ### Post-Migration Credentials
 
@@ -215,7 +196,6 @@ After migration, users will have:
 - ✅ **Archive integrity**: All existing news-term relationships maintained
 - ✅ **Vocabulary preservation**: Original Drupal 6 vocabulary names ("category", "tags", etc.) kept
 - ✅ **No data loss**: Complete taxonomy structure migrated
-- ✅ **Future flexibility**: New terms can use existing or new vocabulary groupings
 
 ---
 
@@ -223,27 +203,20 @@ After migration, users will have:
 
 ### Core Scripts
 
-#### `migrate_from_drupal6_universal.sql` (3.2K)
-- Main migration from Drupal 6 to modern schema
-- Creates UTF8 tables and migrates core data
-- Unifies all node types into single `content` table
+#### `migrate_from_drupal6_universal.sql`
+- Main migration from Drupal 6 to the modern schema. Creates UTF8 tables and migrates core data.
 
-#### `migrate_cck_fields.sql` (1.7K)
-- Handles Drupal 6 CCK custom fields
-- Preserves field data in normalized format
+#### `migrate_cck_fields.sql`
+- Handles Drupal 6 CCK custom fields.
 
-#### `update_migrated_users.sql` (1.2K)
-- Post-migration user cleanup
-- Sets temporary passwords requiring reset
-- Creates admin user with proper credentials
+#### `update_migrated_users.sql`
+- Post-migration user cleanup, sets temporary passwords.
 
-#### `detect_custom_fields.sql` (212B)
-- Discovery script for Drupal 6 CCK fields
-- Database introspection for migration planning
+#### `detect_custom_fields.sql`
+- A discovery script for introspecting the Drupal 6 database.
 
 #### `create_admin_user.sql`
-- Creates default admin user for local development
-- **For development only** - password is `admin`
+- Creates a default admin user for local development.
 
 ---
 
@@ -251,17 +224,10 @@ After migration, users will have:
 
 ### Automatic Migrations (Flyway)
 
-The application uses Flyway to automatically manage schema evolution. To support multiple database systems, scripts
-are organized into common and vendor-specific directories.
-
-- `db/migration/common`: Scripts compatible with all supported databases.
-- `db/migration/mysql`: Scripts for MySQL only.
-- `db/migration/postgresql`: Scripts for PostgreSQL only.
-
-Flyway's locations are configured via Spring profiles, allowing it to combine common and DB-specific migrations.
+The application uses Flyway to automatically manage the schema.
 
 | Migration | Purpose | Changes | Location |
-|-----------|---------|---------|----------|
+|---|---|---|---|
 | V1 | Initial schema | Core tables: users, roles, content, terms | `common` |
 | V3 | Sample data | **Default admin user and test content** | `common` |
 | V4 | User unification | Consolidated migrated authors | `common` |
@@ -274,29 +240,10 @@ Flyway's locations are configured via Spring profiles, allowing it to combine co
 
 ### Migration V3 Default Data
 
-**⚠️ Important**: Migration V3 creates default login credentials for the CMS web interface:
-
-**Roles Created:**
-- `ADMIN` - Full system access
-- `EDITOR` - Content management access
-
-**Default User Created:**
-- Username: `admin`
-- Password: `admin` (BCrypt hash)
-- Email: `admin@example.com`
-- Role: `ADMIN`
-
-**Test Data:**
-- Sample news article
-- General category
-- Content relationshipsCrypt hashed)
-- Email: `admin@example.com`
-- Role: `ADMIN`
-
-**Test Data:**
-- Sample news article
-- General category
-- Content relationships
+**⚠️ Important**: Migration V3 creates default login credentials:
+- **Roles Created**: `ADMIN`, `EDITOR`
+- **Default User Created**: `admin` / `admin` (Role: `ADMIN`)
+- **Test Data**: A sample news article and category.
 
 ---
 
@@ -304,35 +251,30 @@ Flyway's locations are configured via Spring profiles, allowing it to combine co
 
 ### Default Users & Passwords
 
-**⚠️ Important**: These are passwords for logging into the website (CMS web interface), not MySQL database 
-passwords.
+**⚠️ Important**: These are passwords for the CMS web interface, not the database.
 
 #### For Clean Database (New Installation)
-After running migrations V1-V6 on a fresh database:
-
 | Username | Password | Role | Email | Purpose |
-|----------|----------|------|-------|---------|
+|---|---|---|---|---|
 | `admin` | `admin` | ADMIN | admin@example.com | System administrator |
 
 #### For Migrated Database (From Drupal 6)
-After running migration scripts + `update_migrated_users.sql`:
-
 | Username | Password | Role | Email | Purpose |
-|----------|----------|------|-------|---------|
+|---|---|---|---|---|
 | `admin` | `admin` | ADMIN | admin@phoebe.local | System administrator |
 | All migrated users | `changeme123` | - | user{id}@migrated.local | Legacy users (must reset) |
 
 ### Password Security
-- All passwords are stored as **BCrypt hashes** (strength 10-12)
-- Migrated users **must change password** on first login
-- Admin password should be changed immediately in production
+- All passwords are stored as **BCrypt hashes**.
+- Migrated users **must change password** on first login.
+- Admin password should be changed immediately in production.
 
 ### Permission System
 
 The system uses **resource:action** permission naming:
 
 | Permission | Description |
-|------------|-------------|
+|---|---|
 | `news:read` | View news articles |
 | `news:create` | Create new articles |
 | `news:update` | Edit existing articles |
@@ -370,9 +312,6 @@ ALTER DATABASE phoebe_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```sql
 -- Check existing users
 SELECT * FROM users WHERE username = 'admin';
--- Update password if needed
-UPDATE users SET password = '$2a$12$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P8jF4l3q4R4J8C' 
-WHERE username = 'admin';
 ```
 
 **Verify migration success:**
@@ -385,36 +324,21 @@ SELECT COUNT(*) FROM terms;     -- Check taxonomy migrated
 ### Database Setup Instructions
 
 #### For New Installation (Clean Database)
-
-1. **Start MySQL 8.0**:
-   ```bash
-   docker compose up -d
-   ```
-
-2. **Run Spring Boot** (auto-applies migrations V1-V6):
-   ```bash
-   cd backend
-   ./gradlew bootRun --args='--spring.profiles.active=local'
-   ```
-
-3. **First Login**:
-   - Username: `admin`
-   - Password: `admin`
-   - **⚠️ Change password immediately!**
+The easiest way to run the project for local development is to use the Makefile.
+```bash
+# Run the entire project (DB + Backend)
+make run
+```
+On the first run, Flyway will automatically apply all necessary migrations. The default credentials are `admin` / `admin`.
 
 #### For Migrated Database (From Drupal 6)
-
-1. **Import Drupal 6 data** (if available)
-2. **Run migration scripts**:
-   ```bash
-   mysql phoebe_db < db_data/migrate_from_drupal6_universal.sql
-   mysql phoebe_db < db_data/update_migrated_users.sql
-   ```
-
-3. **Start application** (applies remaining migrations)
-4. **First Login Options**:
-   - Admin: username `admin`, password `admin`
-   - Migrated users: their original username, password `changeme123`
+1.  **Import Drupal 6 data** (if available)
+2.  **Run migration scripts**:
+    ```bash
+    mysql phoebe_db < db_data/migrate_from_drupal6_universal.sql
+    mysql phoebe_db < db_data/update_migrated_users.sql
+    ```
+3.  **Start the application** (`make run`), which will apply the remaining Flyway migrations.
 
 ### Security Checklist
 
@@ -431,5 +355,5 @@ SELECT COUNT(*) FROM terms;     -- Check taxonomy migrated
 
 - [Project Overview](./PROJECT_OVERVIEW.md) - Complete project information
 - [Migration Drupal6 Guide](./MIGRATION_DRUPAL6.md) - Detailed migration process
-- [Configuration Guide](./CONFIG_GUIDE.md) - Database configuration
 - [Developer Guide](./DEVELOPER_GUIDE.md) - Local development setup
+- [Quick Start](./QUICK_START.md) - Brief instructions to get started
