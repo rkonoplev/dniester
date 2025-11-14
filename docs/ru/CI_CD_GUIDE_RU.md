@@ -75,6 +75,29 @@
 
 ---
 
+## Устранение неполадок в CI
+
+### Проблема: `ConnectException` или `Communications link failure` при подключении к базе данных в тестах
+
+**Описание**: Интеграционные тесты, использующие Testcontainers, могут завершаться с ошибками типа `java.net.ConnectException` или `Communications link failure` при попытке подключения к базе данных MySQL. Это происходит, если Docker-демон не успевает полностью инициализироваться до того, как Testcontainers попытается запустить контейнер или Spring Boot приложение попытается к нему подключиться.
+
+**Решение**: Добавление небольшой задержки после запуска Docker-демона в файле `.github/workflows/gradle-ci.yml` позволяет Docker полностью подготовиться.
+
+**Пример изменения в `gradle-ci.yml`**:
+```yaml
+      - name: Enable Docker
+        run: sudo service docker start
+      - name: Wait for Docker to be fully ready
+        run: |
+          echo "Waiting for Docker..."
+          sleep 10s # Даем Docker 10 секунд на полную инициализацию
+          docker info # Проверяем статус Docker
+          docker ps -a # Показываем все контейнеры (если есть)
+```
+Эта задержка в 10 секунд дает Docker достаточно времени для инициализации всех своих компонентов, повышая стабильность запуска Testcontainers.
+
+---
+
 ## Итог
 
 - Конвейер CI/CD **полностью автоматизирован**: сборка → тесты → качество → безопасность.
