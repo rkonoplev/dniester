@@ -24,7 +24,7 @@ jobs:
           docker info # Проверяем статус Docker
           docker ps -a # Показываем все контейнеры (если есть)
       - name: Run tests
-        run: cd backend && ./gradlew clean build integrationTest jacocoTestReport --no-daemon --stacktrace --debug
+        run: cd backend && ./gradlew clean build integrationTest jacocoTestReport --no-daemon --stacktrace --debug --console=plain
 
       - name: Upload coverage to Codecov
         if: success()
