@@ -26,16 +26,17 @@ services:
       phoebe-mysql:
         condition: service_healthy
     environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_URL: jdbc:mysql://phoebe-mysql:3306/${MYSQL_DATABASE:-phoebe_db}?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      SPRING_PROFILES_ACTIVE: local
+      DB_HOST: phoebe-mysql
     ports:
       - "8080:8080"
     volumes:
       - ./backend:/app/backend
     healthcheck:
-      disable: true
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   nextjs-app:
     build:
