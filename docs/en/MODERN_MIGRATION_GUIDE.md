@@ -1,6 +1,6 @@
 # Modern Guide to Migrating Data from Drupal 6
 
-> **🎯 Goal:** To quickly set up the project from scratch, using data from the original Drupal 6 dump,
+> **Goal:** To quickly set up the project from scratch, using data from the original Drupal 6 dump,
 > with a modern architecture based on **Flyway** automated migrations.
 
 ---
@@ -29,7 +29,7 @@ now extremely simple.
     cd phoebe
     ```
 
-2.  **Ensure Docker is running.**
+2.  **Ensure Docker and Docker Compose are installed and running.**
 
 ### Step 2: Launch the Project
 
@@ -45,9 +45,9 @@ docker compose up --build
     two containers: `phoebe-app` (the application) and `phoebe-mysql` (the MySQL 8.0 database).
 
 2.  **Create an Empty Database:** On its first run, the `phoebe-mysql` container will create an empty database
-    named `dniester`.
+    named `phoebe_db`.
 
-3.  **Automated Flyway Migrations:**
+3.  **Automated Flyway Migrations (version 9.22.3):**
     - Your Spring Boot application (`phoebe-app`) will start and connect to the empty database.
     - **Flyway**, which is integrated into the application, will detect that the database is empty.
     - Flyway will sequentially execute all SQL scripts from migration folders:

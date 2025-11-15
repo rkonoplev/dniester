@@ -4,7 +4,7 @@
 > setup instructions, and further development plans, please refer to the
 > **[Next.js Frontend README](../../frontends/nextjs/README.md)**.
 >
-> **Implementation Status**: ✅ **COMPLETED** - Frontend is fully implemented and ready for use.
+> **Implementation Status**: 🚧 **IN ACTIVE DEVELOPMENT** - The frontend is currently under active development.
 
 ## 1. General Objectives
 - Develop a **modern, responsive news portal frontend**.
@@ -62,8 +62,8 @@
   - **Incremental Static Regeneration (ISR)**: Optionally use ISR to rebuild static
     pages in the background at a set interval, combining the speed of static with the
     freshness of dynamic content.
-- **Static URLs**: Static, human-readable URLs for articles (format `/node/{id}`,
-  e.g., `/node/15378`) and categories (`/category/{id}`).
+- **Static URLs**: Static, human-readable URLs for articles (format `/news/{slug}-{id}`,
+  e.g., `/news/article-title-15378`) and categories (`/category/{slug}-{id}`).
 - **Structured Data**: Implement JSON-LD (`NewsArticle` schema) to provide rich
   metadata to search engines, enhancing search result appearance (rich snippets).
 - **Meta Tags**: Dynamically generate `<title>`, `<meta name="description">`, and
@@ -73,7 +73,7 @@
 ### 4.2 Responsive Design
 - Mobile-first layout.
 - Adaptive typography and fluid images.
-- Featured images:
+- Recommended image sizes:
   - Top article: ~600–800px width.
   - Standard articles: ~320–400px width.
   - Thumbnails: ~160–200px width.
@@ -95,8 +95,6 @@
 - **Typography**:
   - Headlines: Serif (Roboto Slab).
   - Body text: Sans-serif (Roboto).
-
----
 
 ---
 
@@ -129,11 +127,11 @@
 ### 5.5 Admin Panel (CRUD Operations)
 - **News Management**: List, create, edit, and delete articles.
 - **Taxonomy Management**: Full CRUD for terms and categories.
-- **User Management**: View and edit user roles.
+- **User Management**: View and edit user roles (ADMIN only).
 - **Frontend Validation**: Comprehensive form validation according to VALIDATION_GUIDE.md.
 
 ### 5.6 Content Handling
-- **HTML Rendering**: Support for HTML content and YouTube embeds in teaser and body fields.
+- **HTML Rendering**: Support for HTML content (allowed tags only) and YouTube embeds in teaser and body fields.
 - **Safe Processing**: Using backend's SafeHtml processing.
 
 ---
@@ -143,4 +141,36 @@
 - Lazy loading for images and infinite scroll on category pages.
 - Push notifications for breaking news.
 - OAuth 2.0 + JWT integration for enhanced authentication security.
-- File upload capabilities for images and other media.
+- **File upload capabilities for images and other media**: This is directly related to secure media embedding. Implementing this functionality will require backend updates for secure handling and storage of uploaded files, as well as updates to HTML sanitization rules.
+
+---
+
+## Running the Next.js Frontend Locally
+
+To run the Next.js frontend on your local machine:
+
+1.  **Ensure the backend is running**:
+    ```bash
+    cd phoebe # Project root directory
+    make run # This will start the backend and database
+    ```
+    Verify that the backend is accessible at `http://localhost:8080`.
+
+2.  **Navigate to the Next.js frontend directory**:
+    ```bash
+    cd frontends/nextjs
+    ```
+
+3.  **Install dependencies**:
+    ```bash
+    npm install
+    ```
+
+4.  **Start the Next.js application**:
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:3000`.
+
+5.  **View in browser**: Open `http://localhost:3000` in your web browser.
+    You should see the Next.js frontend homepage displaying content from the locally running backend.

@@ -60,7 +60,6 @@ Phoebe CMS uses a two-role system: **ADMIN** (full access) and **EDITOR** (own c
 - **System-wide operations** with confirmation dialogs
 - **Bulk selection by term** - Select content matching specific taxonomy term
 - **Bulk selection by author** - Select content by specific author
-- **Bulk selection by IDs** - Select specific articles by ID list
 
 ### 4.2 EDITOR Bulk Operations (RESTRICTED)
 - **NO BULK OPERATIONS ALLOWED** - EDITOR role is restricted to single article operations only
@@ -78,7 +77,7 @@ Phoebe CMS uses a two-role system: **ADMIN** (full access) and **EDITOR** (own c
 - **Teaser** - Textarea for article preview
 - **News Body** - Rich text editor (WYSIWYG)
 - **Term Selection** - Dropdown menu for single term assignment
-- **Publication Date** - Auto-assigned on creation, format: "Publication Date: Thu 7 Sep 2017"
+- **Publication Date** - Auto-assigned on creation but can be modified. Date format should conform to ISO-8601 (e.g., `2024-01-15T10:30:00`).
 
 ### 5.2 Rich Text Editor (WYSIWYG) Features
 - **Text formatting buttons:**
@@ -88,7 +87,8 @@ Phoebe CMS uses a two-role system: **ADMIN** (full access) and **EDITOR** (own c
   - Increase font size
   - Decrease font size
 - **Hyperlink insertion** button
-- **Media embedding** button for external images and videos
+- **Media embedding** button for external images and videos.
+*   **Important**: The backend **does not allow** embedding `<img>` and `<iframe>` tags in content fields due to security (XSS) concerns. The frontend should either not provide such functionality or warn the user that these tags will be removed upon saving.
 
 ---
 
@@ -99,18 +99,19 @@ Phoebe CMS uses a two-role system: **ADMIN** (full access) and **EDITOR** (own c
 - **Prevention of hacking techniques:**
   - SQL injection protection
   - XSS (Cross-Site Scripting) prevention
-  - CSRF protection
+- **CSRF Protection**: Disabled on the backend for the API (standard practice for RESTful APIs). The frontend should be designed with this in mind.
 
 ### 6.2 Rich Text Editor Security
-- **Allowed content:** Text formatting and external media embedding only
-- **Content sanitization:** Strip or sanitize all HTML/script tags except allowed formatting
-- **Whitelist approach** for permitted HTML tags and attributes
+- **Allowed content:** Text formatting and hyperlink insertion only.
+- **Content sanitization:** Strip or sanitize all HTML/script tags except allowed formatting.
+- **Whitelist approach** for permitted HTML tags and attributes.
+*   **Note**: `<img>` and `<iframe>` tags are not included in the whitelist of allowed tags.
 
 ### 6.3 Authentication Security
 - **Current authentication:** Spring Security with Basic Auth
 - **Planned migration:** OAuth 2.0 + 2FA for all roles (ADMIN, EDITOR)
-- **Password management:** Managed separately from user profile data
-- **Admin access:** Controlled through application configuration, not user self-registration
+- **Password management:** Passwords are stored in the database in hashed form.
+- **Admin access:** Controlled through application configuration (e.g., via Flyway migrations or manual creation), not user self-registration.
 
 ---
 
@@ -118,7 +119,7 @@ Phoebe CMS uses a two-role system: **ADMIN** (full access) and **EDITOR** (own c
 
 ### 7.1 Pagination
 - **All list pages** must include pagination functionality
-- **Configurable page sizes** (10, 25, 50, 100 items per page)
+- **Configurable page sizes** (10, 25, 50, 100 items per page) for selection in the UI. The backend supports a page size up to 100 items.
 - **Navigation controls** (Previous, Next, Page numbers)
 
 ### 7.2 User Experience

@@ -13,10 +13,10 @@ These patterns are responsible for object creation.
 
 -   **Singleton**
     -   **Implementation:** Applied by the Spring Framework to all components managed by the IoC container
-        (annotated with `@Service`, `@Repository`, `@Controller`, `@Component`).
-    -   **Purpose:** By default, Spring creates only one instance (bean) of each component, which is reused
-        throughout the application. This ensures state consistency and resource efficiency. However, in the
-        context of data, a Singleton pattern can also be applied to entities that represent a unique,
+        (annotated with `@Service`, `@Repository`, `@Controller`, `@Component`). Spring by default
+        creates only one instance (bean) of each component, which is reused throughout the application.
+    -   **Purpose:** Ensures state consistency and resource efficiency. In the context of data,
+        a Singleton pattern can also be applied to entities that represent a unique,
         system-wide configuration.
     -   **Example (Data Singleton):** The `ChannelSettings` entity is designed to hold global, unique settings
         for the entire CMS (e.g., site title, meta tags, footer HTML). Conceptually, there should only ever
@@ -31,8 +31,8 @@ These patterns are responsible for object creation.
 
 -   **Builder**
     -   **Implementation:** Recommended for use when creating complex objects, especially DTOs and entities
-        in unit and integration tests.
-    -   **Purpose:** Allows for the step-by-step construction of objects, making the code more readable
+        in unit and integration tests. For example, using Lombok `@Builder`.
+    -   **Purpose:** Allows for the step-by-step construction of objects, making the code more readable and safer
         compared to constructors with a large number of parameters.
 
 ---
@@ -49,9 +49,10 @@ These patterns deal with object and class composition.
         (caching), and Spring Security mechanisms.
 
 -   **Adapter**
-    -   **Implementation:** Partially realized through the use of DTOs (Data Transfer Objects).
+    -   **Implementation:** Partially realized through the use of DTOs (Data Transfer Objects) and mappers (e.g., MapStruct).
     -   **Purpose:** DTOs adapt the internal data structure (JPA entities) to the format required by
-        external clients (API responses), hiding internal details and preventing their leakage.
+        external clients (API responses), hiding internal details and preventing their leakage. Mappers
+        help automate this adaptation process.
 
 ---
 
@@ -60,7 +61,8 @@ These patterns deal with object and class composition.
 These patterns are concerned with communication between objects.
 
 -   **Strategy**
-    -   **Implementation:** Forms the basis of many Spring components, especially Spring Security.
+    -   **Implementation:** Forms the basis of many Spring components, especially Spring Security, and
+        can also be implemented for selecting different data processing algorithms.
     -   **Purpose:** Allows for defining a family of algorithms, encapsulating each one, and making them
         interchangeable. For example, the authentication mechanism can be easily switched from Basic Auth
         to OAuth 2.0 by substituting one "strategy" for another.

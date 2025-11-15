@@ -38,7 +38,7 @@ The project will be structured using Angular's modular approach for better organ
 
 ### 4.1 Homepage
 - Clean multi-column grid layout.
-- Featured article block at the top (headline, teaser).
+- Featured article block at the top (large image, headline, teaser).
 - Secondary articles below in compact card format.
 - Category navigation bar at the top.
 
@@ -48,9 +48,11 @@ The project will be structured using Angular's modular approach for better organ
 
 ### 4.3 Article Page
 - Large headline with a serif font.
+- Featured image (responsive, up to ~800px wide).
 - Publication date, author, and category.
-- Full `body` and `teaser` content rendered as HTML to support embedded images,
-  videos, and formatting.
+- Full `body` and `teaser` content rendered as HTML to support
+  *allowed* embedded HTML elements (without direct image and video embedding).
+- Related articles at the bottom.
 - SEO metadata, OpenGraph, and Twitter cards generated on the server.
 
 ### 4.4 Technical and Informational Pages
@@ -70,6 +72,8 @@ The project will be structured using Angular's modular approach for better organ
 - **Dynamic Meta Tags**: Use Angular's `Meta` and `Title` services to dynamically
   set `<title>`, `<meta name="description">`, and OpenGraph tags on the server for
   each page.
+- **Static URLs**: Static, human-readable URLs for articles (format `/news/{slug}-{id}`,
+  e.g., `/news/article-title-15378`) and categories (`/category/{slug}-{id}`).
 
 ### 5.2 Global Site Settings Management
 - **"Channel Settings" Page**: A dedicated page will be created in the admin panel
@@ -88,10 +92,10 @@ The project will be structured using Angular's modular approach for better organ
 ### 5.3 Admin Panel
 - Will be implemented similarly to the Next.js version, including:
   - Role-based authentication and authorization (ADMIN/EDITOR).
-  - CRUD operations for news, terms, and users.
+  - CRUD operations for news, terms, and users (user management for ADMIN only).
   - Frontend validation for all forms.
   - A **WYSIWYG editor** for the `body` and `teaser` fields, with the ability to
-    insert links to external media.
+    insert links and *a limited* set of HTML tags (without direct image and video embedding).
 
 ---
 
@@ -100,3 +104,10 @@ The project will be structured using Angular's modular approach for better organ
 - Dark mode theme toggle.
 - Lazy loading for images (`ng-lazyload-image` or similar).
 - Push notifications for breaking news.
+- **File upload capabilities for images and other media**: This is directly related to secure media embedding. Implementing this functionality will require backend updates for secure handling and storage of uploaded files, as well as updates to HTML sanitization rules.
+
+---
+
+## Implementation Status
+
+**🚧 NOT STARTED** - Development of the Angular frontend version has not yet begun. This document is a specification for future implementation.

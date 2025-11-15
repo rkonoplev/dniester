@@ -1,6 +1,6 @@
 # Git and Bash Commands Reference
 
-This document contains practical Git and Bash commands used during development and troubleshooting of the Phoebe CMS project.
+This document contains practical Git and Bash commands used during development and troubleshooting in the Phoebe CMS project.
 
 ## Table of Contents
 - [Git Commands](#git-commands)
@@ -8,7 +8,10 @@ This document contains practical Git and Bash commands used during development a
 - [Gradle Commands](#gradle-commands)
 - [Docker Commands](#docker-commands)
 - [File Operations](#file-operations)
+- [Reverting Changes and Recovery](#reverting-changes-and-recovery)
+- [Managing Stuck Testcontainers and Docker](#managing-stuck-testcontainers-and-docker)
 - [Troubleshooting](#troubleshooting)
+- [Best Practices](#best-practices)
 
 ---
 
@@ -19,7 +22,7 @@ This document contains practical Git and Bash commands used during development a
 # Check repository status
 git status
 
-# Add files to staging
+# Add files to the index
 git add .
 git add specific-file.txt
 
@@ -30,32 +33,32 @@ git commit -m "Your commit message"
 git push origin main
 git push -u origin main  # Set upstream and push
 
-# Pull latest changes
+# Get latest changes
 git pull origin main
 ```
 
 ### Handling Merge Conflicts
 ```bash
-# Pull with merge strategy
+# Get changes with merge strategy
 git pull origin main --no-rebase
 
-# Resolve conflicts by keeping local changes
+# Resolve conflicts, keeping local changes
 git checkout --ours .
 git add .
 git commit -m "Resolve merge conflicts by keeping local changes"
 
-# Resolve conflicts by keeping remote changes
+# Resolve conflicts, keeping remote changes
 git checkout --theirs .
 git add .
 git commit -m "Resolve merge conflicts by keeping remote changes"
 ```
 
-### Force Push (Use with Caution)
+### Force Push (use with caution)
 ```bash
-# Force push (overwrites remote)
+# Force push (overwrites remote repository)
 git push --force origin main
 
-# Safer force push (checks if someone else pushed)
+# Safer force push (checks if someone else has pushed)
 git push --force-with-lease origin main
 ```
 
@@ -71,7 +74,7 @@ git config core.compression 1
 git config pull.rebase false  # Use merge
 git config pull.rebase true   # Use rebase
 
-# Auto-setup remote tracking
+# Automatic setup of remote tracking branches
 git config --global push.autoSetupRemote true
 ```
 
@@ -100,7 +103,7 @@ du -sh .git
 # List directory contents with details
 ls -la
 
-# Check file modification times
+# Check file modification time
 stat -f "%Sm %N" -t "%Y-%m-%d %H:%M:%S" filename
 
 # Find files by size
@@ -110,19 +113,19 @@ find . -size +50M -not -path "./.git/*" -not -path "./node_modules/*"
 du -sh folder_name
 du -sh node_modules
 
-# Count files in directory
+# Count files in a directory
 ls directory_name | wc -l
 ```
 
 ### Text Processing
 ```bash
-# View specific lines from file
+# View specific lines from a file
 sed -n '10,15p' filename.txt
 sed -n '12p' filename.txt  # View line 12
 
-# Search for patterns
+# Search by patterns
 grep -r "pattern" /path/to/search/
-grep -l "pattern" *.java  # List files containing pattern
+grep -l "pattern" *.java  # List files containing the pattern
 
 # Search with exclusions
 find /path -name "*.java" -exec grep -l "pattern" {} \;
@@ -142,6 +145,33 @@ netstat -an | grep :8080
 lsof -i :8080
 ```
 
+### Useful Command Chains
+```bash
+# Check file, make executable, and run tests
+ls -la gradlew && chmod +x gradlew && ./gradlew integrationTest
+
+# Command breakdown:
+# - `ls -la gradlew` - checks for the existence of gradlew and shows its permissions
+# - `&&` - logical "AND" operator (executes the next command only if the previous one is successful)
+# - `chmod +x gradlew` - makes the gradlew file executable (adds execute permissions)
+# - `./gradlew integrationTest` - runs integration tests via Gradle Wrapper
+
+# Why this is needed:
+# - Sometimes after cloning a repository, the gradlew file loses its execute permissions
+# - The command automatically checks and fixes this
+# - If any step fails, execution stops
+
+# Other useful command chains
+# Stop containers, clean up, and restart
+docker compose down && docker system prune -f && docker compose up -d
+
+# Check status and connect to the database
+docker ps && docker exec -it phoebe-mysql mysql -uroot -proot
+
+# Build the application and run all tests
+./gradlew clean && ./gradlew build && ./gradlew test integrationTest
+```
+
 ---
 
 ## Gradle Commands
@@ -158,7 +188,7 @@ chmod +x gradlew
 ./gradlew test
 ./gradlew integrationTest
 
-# Run with specific profile
+# Run with a specific profile
 SPRING_PROFILES_ACTIVE=ci ./gradlew test
 
 # Run with debugging
@@ -198,7 +228,7 @@ docker ps
 docker logs container_name
 docker compose logs service_name
 
-# Execute commands in container
+# Execute commands in a container
 docker exec -it container_name bash
 docker exec -it phoebe-mysql mysql -uroot -proot
 ```
@@ -221,13 +251,13 @@ docker exec phoebe-mysql mysqladmin ping -h localhost --silent
 
 ### Search and Replace
 ```bash
-# Search for files containing text
+# Find files containing text
 grep -r "search_text" /path/to/directory/
 
 # Find files by name pattern
 find . -name "*.yml" -type f
 
-# Search in specific file types
+# Find in specific file types
 find . -name "*.java" -exec grep -l "pattern" {} \;
 ```
 
@@ -255,37 +285,37 @@ tar -tzf archive.tar.gz
 
 ---
 
-## Rollback and Recovery
+## Reverting Changes and Recovery
 
-### Rollback All Changes to Last Push State
+### Revert all edits to the last push
 ```bash
-# Discard all uncommitted changes
+# Revert all uncommitted changes
 git checkout .
 git clean -fd
 
-# Reset to last commit state (removes all local changes)
+# Revert to the state of the last commit (discards all local changes)
 git reset --hard HEAD
 
-# Reset to remote repository state
+# Revert to the state of the remote repository
 git fetch origin
 git reset --hard origin/main
 
-# Rollback specific file
+# Revert a specific file
 git checkout HEAD -- filename.txt
 
-# Undo last commit (keeping changes in working directory)
+# Revert the last commit (keeping changes in the working directory)
 git reset --soft HEAD~1
 
-# Undo last commit (removing all changes)
+# Revert the last commit (discarding all changes)
 git reset --hard HEAD~1
 ```
 
-### Editing Last Commit with vim
+### Editing the last commit with vim
 ```bash
-# Amend last commit message
+# Change the last commit message
 git commit --amend
 
-# vim commands for editing:
+# Vim commands for editing:
 # i          - enter insert mode
 # Esc        - exit insert mode
 # :w         - save file
@@ -299,8 +329,8 @@ git commit --amend
 
 ### Resolving Version Conflicts
 ```bash
-# When remote version is newer than local
-# 1. Fetch changes from remote
+# When the remote version is newer than local
+# 1. Fetch changes from the remote repository
 git fetch origin
 
 # 2. View differences
@@ -309,31 +339,31 @@ git log HEAD..origin/main --oneline
 # 3. Merge changes (may cause conflicts)
 git merge origin/main
 
-# 4. If conflicts exist, resolve them:
+# 4. If there are conflicts, resolve them:
 # - Edit files with conflicts
 # - Remove conflict markers (<<<<<<, ======, >>>>>>)
 # - Add resolved files
 git add .
 git commit -m "Resolve merge conflicts"
 
-# Alternative: Force take remote version
+# Alternative: force take remote version
 git reset --hard origin/main
 
-# Alternative: Use rebase instead of merge
+# Alternative: rebase instead of merge
 git rebase origin/main
 ```
 
 ---
 
-## Managing Hanging Testcontainers and Docker
+## Managing Stuck Testcontainers and Docker
 
-### Diagnosing Hanging Processes
+### Diagnosing Stuck Processes
 ```bash
 # Check running Docker containers
 docker ps
 docker ps -a  # Including stopped ones
 
-# Check hanging Java processes
+# Check stuck Java processes
 ps aux | grep java | grep -v grep
 
 # Check Gradle processes
@@ -343,7 +373,7 @@ ps aux | grep gradle | grep -v grep
 ps aux | grep "Test Executor" | grep -v grep
 ```
 
-### Stopping Hanging Testcontainers
+### Stopping Stuck Testcontainers
 ```bash
 # Stop all running containers
 docker stop $(docker ps -q)
@@ -357,7 +387,7 @@ docker kill $(docker ps -q)
 # Remove stopped containers
 docker rm $(docker ps -aq)
 
-# Stop and remove Testcontainers specifically
+# Stop and remove Testcontainers
 docker stop $(docker ps -q --filter "label=org.testcontainers")
 docker rm $(docker ps -aq --filter "label=org.testcontainers")
 
@@ -365,26 +395,26 @@ docker rm $(docker ps -aq --filter "label=org.testcontainers")
 docker stop $(docker ps -q --filter "name=testcontainers-ryuk")
 ```
 
-### Stopping Hanging Java Processes
+### Stopping Stuck Java Processes
 ```bash
 # Find process PID
 ps aux | grep "Test Executor" | grep -v grep
 ps aux | grep "gradlew" | grep -v grep
 
-# Kill process by PID (replace XXXX with actual PID)
+# Stop process by PID (replace XXXX with actual PID)
 kill -9 XXXX
 
-# Kill all Gradle processes
+# Stop all Gradle processes
 pkill -f gradle
 
-# Kill all Java processes (DANGEROUS!)
+# Stop all Java processes (CAUTION!)
 # pkill -f java
 
 # Stop Gradle daemon
 ./gradlew --stop
 ```
 
-### Docker Resource Cleanup
+### Cleaning Docker Resources
 ```bash
 # Remove unused images
 docker image prune -f
@@ -395,19 +425,19 @@ docker volume prune -f
 # Remove unused networks
 docker network prune -f
 
-# Full Docker cleanup (DANGEROUS!)
+# Full Docker cleanup (CAUTION!)
 docker system prune -af --volumes
 
 # Check Docker disk usage
 docker system df
 ```
 
-### Test Diagnostics
+### Diagnosing Test Problems
 ```bash
 # Check Docker container logs
 docker logs container_name
 
-# Follow logs in real-time
+# Check real-time logs
 docker logs -f container_name
 
 # Check MySQL health status
@@ -421,11 +451,11 @@ netstat -an | grep :3306
 lsof -i :3306
 ```
 
-### Step-by-Step Process for Hanging Tests
+### Sequence of Actions for Stuck Tests
 ```bash
 # 1. Stop test execution (Ctrl+C in terminal)
 
-# 2. Find and kill hanging processes
+# 2. Find and kill stuck processes
 ps aux | grep java | grep -v grep
 kill -9 PROCESS_PID
 
@@ -438,7 +468,7 @@ docker stop $(docker ps -q)
 # 5. Remove stopped containers
 docker rm $(docker ps -aq --filter "label=org.testcontainers")
 
-# 6. Verify cleanup
+# 6. Verify everything is clean
 docker ps
 ps aux | grep java | grep -v grep
 
@@ -450,16 +480,16 @@ ps aux | grep java | grep -v grep
 
 ## Troubleshooting
 
-### Common Issues and Solutions
+### Common Problems and Solutions
 
-#### Git Push Failures
+#### Git Push Errors
 ```bash
-# Issue: HTTP 400 error during push
+# Problem: HTTP 400 error on push
 # Solution: Increase Git buffers
 git config http.postBuffer 1048576000
 
-# Issue: Repository rule violations (no merge commits)
-# Solution: Use rebase or disable rule in GitHub settings
+# Problem: Repository rule violations (e.g., disallowing merge commits)
+# Solution: Use rebase or disable the rule in GitHub settings
 git rebase -i HEAD~3  # Interactive rebase to squash commits
 ```
 
@@ -480,7 +510,7 @@ git gc --aggressive --prune=now
 # Check node_modules size
 du -sh node_modules
 
-# Clean npm cache
+# Clear npm cache
 npm cache clean --force
 
 # Reinstall dependencies
@@ -488,15 +518,15 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-#### Test Failures
+#### Failing Tests
 ```bash
-# Run tests with verbose output
+# Run tests with detailed output
 ./gradlew test --info
 
-# Run specific test class
+# Run a specific test class
 ./gradlew test --tests "ClassName"
 
-# Run tests with specific profile
+# Run tests with a specific profile
 SPRING_PROFILES_ACTIVE=test ./gradlew test
 ```
 
@@ -522,15 +552,15 @@ docker compose version
 ### Git Workflow
 1. Always check status before committing: `git status`
 2. Use descriptive commit messages
-3. Pull before pushing: `git pull origin main`
-4. Use `--force-with-lease` instead of `--force` when needed
-5. Keep commits atomic and focused
+3. Pull changes before pushing: `git pull origin main`
+4. Use `--force-with-lease` instead of `--force` when necessary
+5. Make commits atomic and focused
 
 ### File Management
 1. Use `.gitignore` for generated files (`node_modules`, `build/`, `.env`)
 2. Check file sizes before committing large files
 3. Use relative paths in documentation
-4. Keep configuration files synchronized between languages
+4. Maintain synchronization of configuration files between languages
 
 ### Development Workflow
 1. Test locally before pushing: `./gradlew test`
@@ -538,4 +568,4 @@ docker compose version
 3. Use appropriate Spring profiles for different environments
 4. Monitor resource usage during development
 
-This reference should help developers quickly find and use the right commands for common development tasks.
+This reference will help developers quickly find and use the correct commands for common development tasks.

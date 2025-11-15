@@ -35,6 +35,17 @@ project documentation.
     to another. Extract (read data from source), Transform (convert data to fit target system),
     Load (write data to target system).
 
+-   **Makefile**: A utility that automates the compilation and building of software from source
+    code. It uses a `Makefile` to define rules and dependencies between files, simplifying the
+    execution of complex command sequences.
+
+-   **DTO (Data Transfer Object)**: An object used to transfer data between application layers
+    or between an application and a client. It is designed to encapsulate data and reduce the
+    number of calls to remote interfaces.
+
+-   **XSS (Cross-Site Scripting)**: A type of web security vulnerability that enables attackers
+    to inject malicious client-side scripts into web pages viewed by other users.
+
 ---
 
 ## Backend & Java Specific Terms
@@ -43,15 +54,23 @@ project documentation.
     production-grade Spring applications with minimal configuration. It simplifies the setup
     and development of Spring-based applications.
 
--   **Gradle**: A build automation tool used for multi-language software development. It controls
+-   **Spring Security**: A powerful and customizable authentication and access-control framework
+    for Spring-based applications. It provides comprehensive security solutions for enterprise-level
+    applications.
+
+-   **Spring Profiles**: A feature in Spring Framework that allows you to register different beans
+    for different environments (e.g., `dev`, `test`, `prod`). Configurations for profiles are
+    typically defined in `application-{profile}.yml` files.
+
+-   **Gradle**: A build automation tool used for multi-language language software development. It controls
     the development process in terms of compilation, packaging, and testing.
 
 -   **Flyway**: An open-source database migration tool. It helps you manage database schema changes
     by versioning your database and applying migrations in a structured way.
 
--   **Spring Profiles**: A feature in Spring Framework that allows you to register different beans
-    for different environments (e.g., `dev`, `test`, `prod`). This enables environment-specific
-    configurations.
+-   **Flyway Migrations (V-scripts)**: SQL scripts used by Flyway to version and apply changes
+    to the database schema. They are named with a `V` prefix and a version number
+    (e.g., `V1__initial_schema.sql`).
 
 -   **JPA (Java Persistence API)**: A Java API specification for managing relational data in
     applications using Java Platform, Standard Edition (Java SE) and Java Platform, Enterprise
@@ -64,6 +83,17 @@ project documentation.
 -   **Swagger / OpenAPI**: A set of tools and specifications for describing, producing, consuming,
     and visualizing RESTful web services. OpenAPI Specification (OAS) is a standard, language-agnostic
     interface for REST APIs.
+
+-   **BCrypt**: A password-hashing function designed to slow down brute-force attacks. It is used
+    to securely store passwords by adding a salt and performing multiple rounds of hashing.
+
+---
+
+## Testing Specific Terms
+
+-   **Testcontainers**: A Java library that allows you to run real services (databases, message
+    brokers, web browsers) in Docker containers for integration tests. It provides an isolated
+    and reproducible testing environment.
 
 ---
 
@@ -89,3 +119,6 @@ project documentation.
 
 -   **GitLeaks**: A tool that scans Git history (commits and repositories) for secrets and sensitive
     information (e.g., API keys, passwords, tokens) that might have been accidentally committed.
+
+-   **Bucket4j**: A Java library for implementing rate limiting using the "Token Bucket" algorithm.
+    It allows controlling the number of requests a client can send within a defined period.

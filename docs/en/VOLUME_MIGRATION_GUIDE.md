@@ -1,167 +1,168 @@
-# Docker Volume Migration Guide
+# Docker Volume Migration Guide for MySQL Data
 
-This guide explains how to safely migrate Docker volumes when renaming containers from `phoebe-mysql` to `phoebe-mysql`.
+This guide describes the process of transferring a Docker Volume containing MySQL data (the `phoebe_db` database) from one working machine to another, as well as steps for data recovery. This is useful when changing computers, recovering from a failure, or synchronizing development environments.
 
-## Current State
-- Container: `phoebe-mysql`
-- Volume: `mysql_data` (or `phoebe_mysql_data`)
-- Database: `phoebe_db` (formerly `dniester`)
+---
 
-## Migration Steps
+## Transfer Concept
 
-### Step 1: Create Database Backup
+Transferring Docker Volume data involves the following stages:
+
+1.  **Exporting Data** from the source machine (creating a database dump).
+2.  **Transferring the Dump and Codebase** to the target machine.
+3.  **Importing Data** on the target machine.
+
+---
+
+## Part 1: On the Source Machine (Export Data)
+
+These steps are performed on the computer from which you want to transfer the data.
+
+### Step 1: Preparation and Database Dump Creation
+
+Ensure all current changes in the project are committed and pushed to GitHub.
+
+1.  **Stop all Docker Compose services** for the Phoebe project:
+    ```bash
+    docker compose down
+    ```
+
+2.  **Start only the MySQL container** for the Phoebe project:
+    ```bash
+    docker compose up -d phoebe-mysql
+    ```
+
+3.  **Wait for MySQL to be ready**. This may take a few seconds:
+    ```bash
+    timeout 60s bash -c 'until docker exec phoebe-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+    ```
+
+4.  **Create a dump of the `phoebe_db` database**. The dump will be saved in the `db_dumps/` folder in the project root. If the folder does not exist, create it:
+    ```bash
+    mkdir -p db_dumps
+    docker exec phoebe-mysql mysqldump -uroot -proot phoebe_db > db_dumps/phoebe_db_backup_$(date +%Y%m%d_%H%M%S).sql
+    ```
+    *   **Note**: Use `phoebe_db` in the `mysqldump` command to dump only this database. If you want to dump all databases, use `--all-databases` instead of `phoebe_db`.
+
+5.  **Stop the MySQL container**:
+    ```bash
+    docker compose down
+    ```
+
+### Step 2: Prepare Codebase and Dump for Transfer
+
+1.  **Ensure your `.gitignore` file is up-to-date**. It should include `db_dumps/` so that dumps are not committed to Git.
+2.  **Copy the created database dump file** (`db_dumps/phoebe_db_backup_*.sql`) to a secure location that will be transferred to the target machine (e.g., external drive, cloud storage, or via `scp`).
+3.  **Ensure the entire project codebase is synchronized with the Git repository**.
+
+---
+
+## Part 2: On the Target Machine (Import Data)
+
+These steps are performed on the computer to which you want to transfer the data.
+
+### Step 3: Clone Project and Preparation
+
+1.  **Clone the Phoebe project repository** to the target machine (if not already cloned):
+    ```bash
+    git clone <your_repository_URL>
+    cd phoebe
+    ```
+
+2.  **Ensure the `gradlew` script is executable**:
+    ```bash
+    chmod +x gradlew
+    ```
+
+3.  **Create the `db_dumps/` folder** in the project root if it doesn't exist:
+    ```bash
+    mkdir -p db_dumps
+    ```
+
+4.  **Place the database dump file** (`phoebe_db_backup_*.sql`), created in Step 1, into the `db_dumps/` folder on the target machine.
+
+### Step 4: Start MySQL and Import Data
+
+1.  **Start only the MySQL container** for the Phoebe project:
+    ```bash
+    docker compose up -d phoebe-mysql
+    ```
+
+2.  **Wait for MySQL to be ready**:
+    ```bash
+    timeout 60s bash -c 'until docker exec phoebe-mysql mysqladmin ping -h localhost --silent; do sleep 2; done'
+    ```
+
+3.  **Create the `phoebe_db` database** inside the MySQL container if it doesn't already exist:
+    ```bash
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS phoebe_db;"
+    ```
+
+4.  **Import data from the dump** into the `phoebe_db` database:
+    ```bash
+    # Replace 'phoebe_db_backup_YYYYMMDD_HHMMSS.sql' with the actual name of your dump file
+    docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < db_dumps/phoebe_db_backup_YYYYMMDD_HHMMSS.sql
+    ```
+
+5.  **Stop the MySQL container** (it will be restarted with all services in the next step):
+    ```bash
+    docker compose down
+    ```
+
+### Step 5: Start Project and Verification
+
+1.  **Start all Docker Compose services** for the Phoebe project:
+    ```bash
+    docker compose up -d
+    ```
+
+2.  **Check the status of running containers**:
+    ```bash
+    docker ps
+    ```
+
+3.  **Verify application connection to the database** (e.g., via Health Check):
+    ```bash
+    curl http://localhost:8080/actuator/health
+    ```
+
+4.  **Verify data integrity** in the `phoebe_db` database:
+    ```bash
+    docker exec phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM phoebe_db.content;"
+    ```
+
+Your Phoebe CMS development environment with MySQL data is now successfully transferred and ready to work on the target machine.
+
+---
+
+## Rollback Plan (if something goes wrong)
+
+If problems occur during the data import process, you can revert to a clean state:
+
+1.  **Stop all Docker Compose services**:
+    ```bash
+    docker compose down
+    ```
+
+2.  **Remove the Docker Volume associated with MySQL** to start fresh. **WARNING: This will delete all data in this Volume!**
+    ```bash
+    docker volume rm phoebe_mysql_data # Ensure this is the correct Volume name
+    ```
+
+3.  **Remove the created `phoebe_db` database** (if it was created but the import failed):
+    ```bash
+    docker exec -it phoebe-mysql mysql -uroot -proot -e "DROP DATABASE IF EXISTS phoebe_db;"
+    ```
+
+After this, you can repeat the data import process from Step 3.
+
+---
+
+## Cleanup (after successful transfer)
+
+After a successful transfer, you can delete the database dump file if it is no longer needed:
+
 ```bash
-# Stop current services
-docker compose down
-
-# Start only MySQL to create backup
-docker compose up -d phoebe-mysql
-
-# Wait for MySQL to be ready
-docker exec phoebe-mysql mysqladmin ping -h localhost --silent
-
-# Create backup
-docker exec phoebe-mysql mysqldump -uroot -proot --all-databases > backup_before_migration.sql
+rm db_dumps/phoebe_db_backup_YYYYMMDD_HHMMSS.sql
 ```
-
-### Step 2: Update docker-compose.yml
-```bash
-# Update container name in docker-compose.yml
-sed -i 's/phoebe-mysql:/phoebe-mysql:/g' docker-compose.yml
-sed -i 's/container_name: phoebe-mysql/container_name: phoebe-mysql/g' docker-compose.yml
-sed -i 's/phoebe-mysql:/phoebe-mysql:/g' docker-compose.yml
-```
-
-### Step 3: Migrate Volume Data
-```bash
-# Stop old container
-docker stop phoebe-mysql
-docker rm phoebe-mysql
-
-# Start new container with same volume
-docker compose up -d phoebe-mysql
-
-# Wait for MySQL to be ready
-docker exec phoebe-mysql mysqladmin ping -h localhost --silent
-
-# Verify data integrity
-docker exec phoebe-mysql mysql -uroot -proot -e "SHOW DATABASES;"
-```
-
-### Step 4: Update Environment Variables (if needed)
-```bash
-# Update database name if migrating from dniester to phoebe_db
-docker exec -it phoebe-mysql mysql -uroot -proot -e "CREATE DATABASE IF NOT EXISTS phoebe_db;"
-docker exec -it phoebe-mysql mysql -uroot -proot -e "RENAME TABLE dniester.* TO phoebe_db.*;" # MySQL 8.0+
-# OR use mysqldump approach:
-docker exec phoebe-mysql mysqldump -uroot -proot dniester > temp_db.sql
-docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < temp_db.sql
-```
-
-### Step 5: Update Application Configuration
-Update `docker-compose.yml` database URL:
-```yaml
-SPRING_DATASOURCE_URL: jdbc:mysql://phoebe-mysql:3306/${MYSQL_DATABASE:-phoebe_db}
-```
-
-### Step 6: Test Migration
-```bash
-# Start all services
-docker compose up -d
-
-# Verify application connects
-curl http://localhost:8080/health
-
-# Check database content
-docker exec phoebe-mysql mysql -uroot -proot -e "SELECT COUNT(*) FROM phoebe_db.content;"
-```
-
-## Rollback Plan
-If migration fails:
-```bash
-# Stop new services
-docker compose down
-
-# Restore old container name in docker-compose.yml
-git checkout docker-compose.yml
-
-# Restore from backup
-docker compose up -d phoebe-mysql
-docker exec -i phoebe-mysql mysql -uroot -proot < backup_before_migration.sql
-```
-
-## Automated Migration Scripts (Completed)
-
-**Note**: Migration scripts have been moved to `legacy/` folder after successful completion.
-
-The migration was completed using these scripts:
-
-```bash
-# Migration script (now in legacy/migrate_volumes.sh)
-./migrate_volumes.sh
-
-# Rollback script (now in legacy/rollback_migration.sh) 
-./rollback_migration.sh
-```
-
-For details about these scripts, see [legacy/README.md](../../legacy/README.md).
-
-## Complete Migration Process (Completed)
-
-### What was done:
-
-1. **Fixed MapStruct warning** in ChannelSettingsMapper:
-   ```java
-   @Mapping(target = "id", ignore = true)
-   void updateEntity(@MappingTarget ChannelSettings entity, ChannelSettingsUpdateDto dto);
-   ```
-
-2. **Fixed docker-compose.yml** - changed build context:
-   ```yaml
-   phoebe-app:
-     build:
-       context: ./backend  # was: context: .
-       dockerfile: Dockerfile.dev
-   ```
-
-3. **Completed volume migration**:
-   - Created backup in `db_dumps/backup_before_migration_*.sql`
-   - Renamed all containers: `news-*` → `phoebe-*`
-   - Database: `dniester` → `phoebe_db`
-   - All data preserved
-
-### Commands for startup after migration:
-
-```bash
-# Build application
-docker compose build phoebe-app
-
-# Start all services
-docker compose up -d
-
-# Or only needed services (without Next.js)
-docker compose up -d phoebe-mysql phoebe-app
-
-# Check status
-docker ps
-
-# Test API
-curl http://localhost:8080/actuator/health
-```
-
-### Migration results:
-- ✅ Containers renamed to `phoebe-*`
-- ✅ Database works with new names
-- ✅ Application builds without warnings
-- ✅ Backup created for safety
-- ✅ All configurations updated
-
-## Clean Up
-After successful migration:
-```bash
-# Remove backup files (optional)
-rm db_dumps/backup_before_migration_*.sql
-
-# Remove docker-compose backup
-rm docker-compose.yml.bak
-```
+*   **Note**: Replace `phoebe_db_backup_YYYYMMDD_HHMMSS.sql` with the actual name of your dump file.

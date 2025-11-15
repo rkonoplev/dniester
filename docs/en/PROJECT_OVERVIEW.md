@@ -4,14 +4,14 @@
 
 **Name**: Phoebe — Open Source Headless CMS
 **Type**: Open Source Headless Content Management System (Hybrid Architecture)
-**Migration**: Drupal 6 → Modern Headless Spring Boot + Optional Frontend Templates
-**Status**: Headless Backend production-ready, Reference Frontend Templates planned
+**Migration Context**: The project was developed to facilitate migration from legacy systems, such as Drupal 6, to a modern Headless Spring Boot with optional Frontend Templates.
+**Status**: Headless Backend production-ready. Reference Frontend Templates are in active development.
 **License**: MIT (Open Source)
 
 ## Business Goals
 
 1. Replace outdated legacy backends with a modern headless architecture.
-2. Provide an intuitive and flexible content management experience.
+2. Provide an an intuitive and flexible content management experience.
 3. Optimize performance for high-traffic scenarios.
 4. Enable future integrations with any digital platform or service.
 5. Provide a robust, API-first foundation for custom development.
@@ -41,7 +41,7 @@ phoebe/
 - **Framework**: Spring Boot 3.x
 - **Language**: Java 21
 - **Database**: MySQL 8.0, PostgreSQL 12+
-- **Security**: Spring Security with Basic Auth (OAuth 2.0 + 2FA planned)
+- **Security**: Spring Security with configurable authentication (planned migration to OAuth 2.0 + 2FA for all roles).
 - **API**: REST with OpenAPI/Swagger documentation
 - **Caching**: Caffeine (In-Memory)
 - **Build**: Gradle 8.7
@@ -53,13 +53,14 @@ phoebe/
 - **Purpose**: Reference implementations for rapid deployment.
 - **Design**: A clean, responsive layout.
 - **SEO**: Static URLs, SSR, JSON-LD, OpenGraph metadata.
-- **Features**: Search, dark mode, push notifications (planned).
+- **Features**: Search, dark mode, push notifications (in active development).
 
 ### Infrastructure
 - **Containerization**: Docker (Testcontainers for tests, optional Docker Compose for local development)
 - **CI/CD**: GitHub Actions with unified Testcontainers approach
 - **Code Quality**: Checkstyle, PMD, JaCoCo coverage
 - **Database**: MySQL or PostgreSQL (Testcontainers for testing, Docker for local development)
+- **Security**: GitLeaks (used as a tool for local secret scanning, not an automated step in CI).
 
 ## Configuration Profiles
 
@@ -176,7 +177,7 @@ A detailed description of all profiles and their settings is available in the [C
 5. **No Vendor Lock-in**: Freedom to choose any frontend technology.
 6. **Professional Grade**: Enterprise-ready security, caching, and rate limiting.
 7. **Migration-Friendly**: Tools for migrating from legacy CMS platforms.
-8. **Docker First**: Containerized development and deployment.
+8. **Docker-Oriented Development**: The project actively uses Docker for local development and deployment, although Docker containers are not always required for basic development (e.g., for unit tests).
 9. **Modern Stack**: Java 21, Spring Boot 3.x, MySQL 8.0, PostgreSQL 12+.
 10. **Extensible**: An architecture ready for plugins and integrations.
 

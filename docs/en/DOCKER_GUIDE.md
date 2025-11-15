@@ -4,11 +4,6 @@
 - [Local Development with Docker Compose](#local-development-with-docker-compose)
   - [Understanding `docker-compose.yml` vs. `docker-compose.override.yml`](#understanding-docker-composeyml-vs-docker-composeoverrideyml)
 - [Production Build with Docker](#production-build-with-docker)
-    - [1. Build application JAR](#1-build-application-jar)
-    - [2. Build production Docker image](#2-build-production-docker-image)
-    - [3. Run production container](#3-run-production-container)
-    - [Secrets Management in Docker](#secrets-management-in-docker)
-- [Local vs Production – Summary Table](#local-vs-production--summary-table)
 - [Best Practices](#best-practices)
 
 
@@ -25,7 +20,7 @@ from local development conveniences.
 ### Understanding `docker-compose.yml` vs. `docker-compose.override.yml`
 
 #### `docker-compose.yml` (The Architectural Blueprint)
--   **Purpose**: Defines the fundamental services that make up the application. It states that the News Platform
+-   **Purpose**: Defines the fundamental services that make up the application. It states that the platform
     consists of a `backend` service and a `database` service.
 -   **Analogy**: Think of this file as the architectural plan for a building. It describes the foundation,
     the number of floors, and the main structure. It is essential and universal for any environment.
@@ -38,9 +33,8 @@ from local development conveniences.
 -   **Analogy**: This is the temporary scaffolding used to construct the building. It's essential for the
     development process but is not part of the final structure.
 -   **Content**: It typically includes configurations that are only useful for local development, such as:
-    -   **Port Mapping**: Exposing the database port to the host machine for direct access with a GUI client.
-    -   **Volume Mounts**: Mounting local source code into the container to enable hot-reloading.
-    -   **Development-only tools**: Potentially adding extra services like a database admin tool.
+    -   **Port Mapping**: Exposing the database port to the host machine for direct access with a GUI client (e.g., `3306:3306` for MySQL).
+    -   **Volume Mounts**: Mounting local source code into the container. This allows the container to see file changes, but for application hot-reloading, additional tools (e.g., `spring-boot-devtools`) are required.
 
 This separation ensures that the base `docker-compose.yml` remains clean and representative of the production
 architecture, while developers have the flexibility to customize their local environment without affecting the
@@ -51,76 +45,39 @@ To start the backend and database together for local development, run:
 ```bash
 docker-compose up --build
 ```
-- **App container (phoebe-app)**
-  - Based on Dockerfile.dev
-  - Source code is mounted (-v .:/app), so changes in IDE take effect after recompilation
-  - Runs Spring Boot with local profile
-  - Includes rate limiting (100 req/min public, 50 req/min admin)
+*   **Note**: The recommended way to start the local development environment is to use the `make run` command, which automates this process.
 
-- **Database container (phoebe-mysql)**
-  - MySQL 8
-  - Credentials & schema name from .env
-  - Can preload Drupal dump from ./db-dumps/
-
-- After startup, the backend will be accessible at:
-http://localhost:8080
+---
 
 ## Production Build with Docker
-### 1. Build application JAR
-   ```bash
-   cd backend
-   ./gradlew bootJar
-   ```
-### 2. Build production Docker image
-```bash
-docker build -t phoebe:latest -f Dockerfile .
-```
-### 3. Run production container
-   ```bash
-   docker run -d -p 8080:8080 --env-file .env.dev phoebe:latest
-   ```
 
-   - Based on a lightweight JRE runtime image
-   - Contains only the compiled JAR (no source code, no Gradle wrapper)
-   - Configuration comes from environment variables or injected Secret Files
-   
-### Secrets Management in Docker
-   - Local .env
-   Used for local development
-   Ignored by git (.gitignore)
-   Example: DB username/password, Spring datasource URL
-   
-   - Docker Secrets in Production
-   All sensitive data (DB user/pass, admin credentials) should be passed via Docker Secrets or Render Secrets
-   docker-compose.override.yml uses _FILE pattern to read secrets injected into /run/secrets/...
-   
-   Example preparation of Secrets:
-   ```bash
-   mkdir -p secrets
-   echo "superRootPass" > secrets/mysql_root_password.txt
-   echo "newsuser" > secrets/db_user.txt
-   echo "secureDbPass" > secrets/db_password.txt
-   echo "admin" > secrets/admin_user.txt
-   echo "UltraSecure!" > secrets/admin_password.txt
-   ```
+1.  **Build application JAR**:
+    ```bash
+    cd backend
+    ./gradlew bootJar
+    ```
 
-   Note: Add secrets/ folder to .gitignore to ensure secrets are not committed.
+2.  **Build production Docker image**:
+    ```bash
+    docker build -t phoebe-cms:1.0.0 -f Dockerfile .
+    ```
+    *   **Note**: It is recommended to use specific versions (e.g., `phoebe-cms:1.0.0`) instead of the `:latest` tag for stability and reproducibility in production.
 
-# Local vs Production – Summary Table
+3.  **Run production container**:
+    ```bash
+    docker run -d -p 8080:8080 --env-file .env.prod phoebe-cms:1.0.0
+    ```
+    *   **Note**: For production deployments, it is recommended to use secret managers (e.g., Kubernetes Secrets, HashiCorp Vault, AWS Secrets Manager) instead of `--env-file` for more secure management of sensitive data. Using `--env-file` is suitable for simple deployments or testing.
 
-| Aspect                | Local Development (`local`)       | Production Deployment (`prod`)             |
-|------------------------|-----------------------------------|--------------------------------------------|
-| **Config source**      | `.env` + `application-local.yml` | ENV vars + `application-prod.yml` (secrets injected) |
-| **Build**              | `Dockerfile.dev` + mounted code  | Slim JRE image + bootJar                   |
-| **Secrets**            | Stored in local `.env` (ignored) | Docker Secrets / Render Secrets            |
-| **DB access**          | MySQL exposed on `localhost:3306`| Internal network only, not exposed         |
-| **Schema strategy**    | `ddl-auto=update`                | `ddl-auto=none` (manual migrations only)   |
-| **Rate limiting**      | 100/50 req/min (dev testing)    | 100/50 req/min (production protection)     |
-| **Logs**               | Verbose (for developers)         | Minimal (INFO/ERROR only)                  |
+   - Based on a lightweight JRE runtime image.
+   - Contains only the compiled JAR (no source code).
+   - Configuration comes from environment variables.
+
+---
 
 ## Best Practices
 - Keep Dockerfile for production minimal (no Gradle, only JAR).
-- Use Dockerfile.dev for developer productivity (mounted source, bootRun from Gradle).
-- Always load database dumps into Docker MySQL via ./db-dumps.
-- Handle all secrets via .env (local) and Secrets Manager (CI/CD/Prod).
-- Make sure secrets and .env files are excluded from git.
+- Use `Dockerfile.dev` for developer productivity (mounted source, `bootRun`).
+- **Store database dumps in the `./db_dumps` directory** for easy import/export.
+- Manage all secrets via `.env` (local) and a secret manager (CI/CD/Prod).
+- Make sure secrets and `.env` files are excluded from git.

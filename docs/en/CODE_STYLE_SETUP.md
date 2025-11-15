@@ -14,8 +14,14 @@
 
 ### 3. Checkstyle
 - **File**: `backend/config/checkstyle/checkstyle.xml`
-- **Purpose**: Code quality checks (not formatting!)
+- **Purpose**: Code quality checks for adherence to coding standards.
+- **Description**: This file contains a set of rules that the project's Java code should comply with.
 - **Usage**: `./gradlew checkstyleMain checkstyleTest`
+
+### 4. PMD
+- **File**: `backend/config/pmd/pmd.xml`
+- **Purpose**: Static code analysis to identify potential bugs, performance issues, and duplicate code.
+- **Usage**: `./gradlew pmdMain pmdTest`
 
 ## How to Enable Automatic Formatting
 
@@ -30,7 +36,7 @@
    - Enable:
      - ✅ Reformat code
      - ✅ Optimize imports  
-     - ✅ Rearrange code
+     - ✅ Rearrange code (reorders class members, such as fields, constructors, methods, in a specific order).
    - File path patterns: `**/*.java`
 
 3. **Check automatic line wrapping**:
@@ -45,22 +51,30 @@
 
 ### Code quality checks:
 ```bash
-# Check main code
+# Check main code with Checkstyle
 ./gradlew checkstyleMain
 
-# Check tests  
+# Check tests with Checkstyle
 ./gradlew checkstyleTest
 
-# Check everything
+# Check main code with PMD
+./gradlew pmdMain
+
+# Check tests with PMD
+./gradlew pmdTest
+
+# Run all code quality checks (including Checkstyle, PMD, and others)
 ./gradlew check
 ```
+*   **Note**: The `check` task in Gradle aggregates all code quality check tasks, such as `checkstyle` and `pmd`, running them sequentially.
 
 ## Responsibility Separation
 
 | Tool | Purpose | When it works |
 |------|---------|---------------|
 | **IntelliJ IDEA** | Code formatting (line length, indentation, wrapping) | On save / Ctrl+Alt+L |
-| **Checkstyle** | Code quality checks (unused imports, naming style) | During project build |
+| **Checkstyle** | Code quality checks for adherence to coding standards | During project build / `./gradlew check` |
+| **PMD** | Static code analysis to identify potential bugs and issues | During project build / `./gradlew check` |
 
 ## What's Fixed
 
@@ -76,6 +90,6 @@
 2. Check `File → Settings → Tools → Actions on Save`
 3. Ensure code scheme = "Project"
 
-### If Checkstyle shows many errors:
-- This is normal! Checkstyle checks quality, not formatting
-- Fix errors gradually or configure more lenient rules
+### If Checkstyle or PMD shows many errors:
+- This is normal! These tools check code quality and potential issues, not just formatting.
+- Fix errors gradually or configure more lenient rules in their configuration files (`checkstyle.xml`, `pmd.xml`).

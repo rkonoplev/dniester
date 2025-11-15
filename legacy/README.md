@@ -17,6 +17,21 @@ reference.
 
 ## File Descriptions
 
+### `legacy-gradle-ci.yml`
+A legacy version of the GitHub Actions workflow file.
+- **Key Differences**: Split into multiple `jobs`, manual DB management via `services`, automated `gitleaks` scan.
+- **Status**: OBSOLETE. Preserved as an example of the "classic" CI setup.
+
+### `application-ci.yml`
+A legacy Spring profile used in CI.
+- **Description**: Configured tests to use a fast, in-memory H2 database in MySQL compatibility mode.
+- **Status**: OBSOLETE. Replaced by the `integration-test` profile which uses Testcontainers.
+
+### `application-dev.yml`
+A legacy Spring profile for dev environments.
+- **Description**: Was intended for dev-staging or CI where the MySQL database was provided by an external Docker container (`mysql-dev`).
+- **Status**: OBSOLETE. Its role has been consolidated into the `local` profile for local development.
+
 ### `DatabaseProperties.java`
 Legacy Spring Boot configuration class used during Drupal 6 migration. This file:
 - **Original location**: `backend/src/main/java/com/example/phoebe/config/DatabaseProperties.java`

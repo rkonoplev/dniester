@@ -6,7 +6,7 @@ The schema supports both **clean installations** and **migrated data from Drupal
 ## Table of Contents
 - [Database Schema](#database-schema)
 - [Quick Setup](#quick-setup)
-- [Migration from Drupal 6](#migration-from-drupal-6)
+- [Migration from Drupal 6 (Historical/Manual Process)](#migration-from-drupal-6-historicalmanual-process)
 - [Migration Scripts Reference](#migration-scripts-reference)
 - [Spring Boot Migrations](#spring-boot-migrations)
 - [Authentication & Access Control](#authentication--access-control)
@@ -26,7 +26,7 @@ The schema supports both **clean installations** and **migrated data from Drupal
 - **Publication Workflow**: Draft/published states with audit trails
 - **Migration Support**: Handles legacy Drupal 6 data transformation
 
-### Current Database Schema (After All Migrations V1-V10)
+### Current Database Schema `phoebe_db` (After All Migrations V1-V10)
 
 ```sql
 -- ======================================
@@ -165,14 +165,19 @@ make test
 ```
 
 ### Manual Admin User Creation
-If you need to create an admin user manually:
+If you need to create an admin user manually (e.g., if you disabled V3 migration with test data or for debugging), you can use the script:
 ```bash
 mysql phoebe_db < db_data/create_admin_user.sql
 ```
+*   **Note**: This script creates an `admin` user with password `admin`. It is intended **for development only** and should not be used in production.
 
 ---
 
-## Migration from Drupal 6
+## Migration from Drupal 6 (Historical/Manual Process)
+
+> **Important**: This section describes the *historical and manual process* of migrating data from Drupal 6.
+> **For the current and automated deployment of the project with Drupal 6 data, please refer to the [Modern Guide to Migrating Data from Drupal 6](./MODERN_MIGRATION_GUIDE.md).**
+> This manual process may be useful for debugging or understanding how the data was transformed.
 
 ### Migration Workflow
 
@@ -193,9 +198,10 @@ After migration, users will have:
 **Important:** All archive terms from Drupal 6 are fully preserved with their vocabulary classifications.
 
 **Migration ensures:**
-- ✅ **Archive integrity**: All existing news-term relationships maintained
-- ✅ **Vocabulary preservation**: Original Drupal 6 vocabulary names ("category", "tags", etc.) kept
-- ✅ **No data loss**: Complete taxonomy structure migrated
+- Archive integrity: All existing news-term relationships maintained
+- Vocabulary preservation: Original Drupal 6 vocabulary names ("category", "tags", etc.) kept
+- No data loss: Complete taxonomy structure migrated
+- Future flexibility: New terms can use existing or new vocabulary groupings
 
 ---
 
@@ -217,14 +223,28 @@ After migration, users will have:
 
 #### `create_admin_user.sql`
 - Creates a default admin user for local development.
+- **For development only** - password `admin`
 
 ---
 
 ## Spring Boot Migrations
 
-### Automatic Migrations (Flyway)
+### Automatic Migrations (Flyway, version 9.22.3)
 
-The application uses Flyway to automatically manage the schema.
+The application uses Flyway to automatically manage the schema. For multi-DBMS support,
+scripts are organized into common and vendor-specific directories.
+
+- `db/migration/common`: Scripts compatible with all supported DBMS.
+- `db/migration/mysql`: Scripts for MySQL only.
+- `db/migration/postgresql`: Scripts for PostgreSQL only.
+
+#### `ddl-auto` Configuration in Spring JPA
+In Spring JPA configuration, the `spring.jpa.hibernate.ddl-auto` property controls Hibernate's behavior for managing the database schema.
+-   `validate`: (Recommended for production and with Flyway) Hibernate validates that the database schema matches the entities but does not make changes. If there are discrepancies, the application will not start.
+-   `update`: Hibernate attempts to update the database schema to match the entities. **Use with caution**, especially in production, as this can lead to data loss or unpredictable behavior.
+-   `none`: Hibernate performs no schema operations.
+
+When using Flyway, it is recommended to set `ddl-auto: validate` or `none`, as Flyway is solely responsible for schema evolution.
 
 | Migration | Purpose | Changes | Location |
 |---|---|---|---|
@@ -240,10 +260,22 @@ The application uses Flyway to automatically manage the schema.
 
 ### Migration V3 Default Data
 
-**⚠️ Important**: Migration V3 creates default login credentials:
-- **Roles Created**: `ADMIN`, `EDITOR`
-- **Default User Created**: `admin` / `admin` (Role: `ADMIN`)
-- **Test Data**: A sample news article and category.
+**⚠️ Important**: Migration V3 creates default login credentials for the CMS web interface:
+
+**Roles Created:**
+- `ADMIN` - Full system access
+- `EDITOR` - Content management access
+
+**Default User Created:**
+- Username: `admin`
+- Password: `admin` (BCrypt hash)
+- Email: `admin@example.com`
+- Role: `ADMIN`
+
+**Test Data:**
+- Sample news article
+- General category
+- Content relationships
 
 ---
 
@@ -251,23 +283,27 @@ The application uses Flyway to automatically manage the schema.
 
 ### Default Users & Passwords
 
-**⚠️ Important**: These are passwords for the CMS web interface, not the database.
+**⚠️ Important**: These are passwords for the CMS web interface, not the MySQL database.
 
 #### For Clean Database (New Installation)
+After executing migrations V1-V6 on a fresh database:
+
 | Username | Password | Role | Email | Purpose |
 |---|---|---|---|---|
 | `admin` | `admin` | ADMIN | admin@example.com | System administrator |
 
 #### For Migrated Database (From Drupal 6)
+After executing migration scripts + `update_migrated_users.sql`:
+
 | Username | Password | Role | Email | Purpose |
 |---|---|---|---|---|
 | `admin` | `admin` | ADMIN | admin@phoebe.local | System administrator |
 | All migrated users | `changeme123` | - | user{id}@migrated.local | Legacy users (must reset) |
 
 ### Password Security
-- All passwords are stored as **BCrypt hashes**.
-- Migrated users **must change password** on first login.
-- Admin password should be changed immediately in production.
+- All passwords are stored as **BCrypt hashes** (strength 10-12)
+- Migrated users **must change password** on first login
+- Admin password should be changed immediately in production
 
 ### Permission System
 
@@ -312,6 +348,9 @@ ALTER DATABASE phoebe_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```sql
 -- Check existing users
 SELECT * FROM users WHERE username = 'admin';
+-- Update password if necessary
+UPDATE users SET password = '$2a$12$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P8jF4l3q4R4J8C' 
+WHERE username = 'admin';
 ```
 
 **Verify migration success:**
@@ -332,8 +371,13 @@ make run
 On the first run, Flyway will automatically apply all necessary migrations. The default credentials are `admin` / `admin`.
 
 #### For Migrated Database (From Drupal 6)
+> **Important**: This section describes the *manual process* for setting up a migrated database.
+> **For the current and automated deployment of the project with Drupal 6 data, please refer to the [Modern Guide to Migrating Data from Drupal 6](./MODERN_MIGRATION_GUIDE.md).**
+> This manual process may be useful for debugging or understanding how the data was transformed.
+
 1.  **Import Drupal 6 data** (if available)
-2.  **Run migration scripts**:
+    *   **Note**: For obtaining data from an old Drupal 6 dump, see the **[Historical Docker Data Backup and Recovery Guide (Drupal 6 Migration Context)](./LEGACY_DOCKER_DATA_RECOVERY_GUIDE_EN.md)**.
+2.  **Run migration scripts** (if you are using the manual process):
     ```bash
     mysql phoebe_db < db_data/migrate_from_drupal6_universal.sql
     mysql phoebe_db < db_data/update_migrated_users.sql

@@ -1,29 +1,29 @@
-# MySQL-Only Strategy Implementation Summary
+# ADR: MySQL-Only Strategy Implementation Summary
 
-## ✅ Completed: Complete H2 Removal
+## Completed: Complete H2 Removal
 
 ### 1. Production-First Database Strategy
-- **Implemented**: MySQL-only approach across all environments
-- **Removed**: H2 dependency completely from project
-- **Benefit**: 100% production consistency in testing
+- Implemented: MySQL-only approach across all environments
+- Removed: H2 dependency completely from project
+- Benefit: 100% production consistency in testing
 
-### 2. Unified Testcontainers Strategy
-- **Implemented**: MySQL Testcontainers everywhere (local and CI)
-- **Configured**: BaseIntegrationTest with automatic MySQL container
-- **Removed**: Docker Compose dependency from CI
-- **Benefit**: Identical test environments across all platforms
+### 2. Unified Testcontainers Strategy (version 1.19.7)
+- Implemented: MySQL Testcontainers everywhere (local and CI)
+- Configured: BaseIntegrationTest with automatic MySQL container
+- Removed: Docker Compose dependency from CI
+- Benefit: Identical test environments across all platforms
 
 ### 3. Enhanced Test Architecture
-- **Separated**: Unit tests (mocks only) from integration tests (real database)
-- **Configured**: Gradle sourceSets for proper test isolation
-- **Updated**: All test configurations to use MySQL
+- Separated: Unit tests (mocks only) from integration tests (real database)
+- Configured: Gradle sourceSets for proper test isolation
+- Updated: All test configurations to use MySQL
 
 ### 4. Database Configuration Cleanup
-- **Standardized**: Database name as `phoebe_db` across all environments
-- **Removed**: Duplicate and outdated configuration files
-- **Simplified**: Test resource structure
+- Standardized: Database name as `phoebe_db` across all environments
+- Removed: Duplicate and outdated configuration files
+- Simplified: Test resource structure
 
-## 📋 Updated Files
+## Updated Files
 
 1. **`backend/build.gradle`**
    - Removed H2 dependencies completely
@@ -46,19 +46,19 @@
    - Corrected database name to `phoebe_db`
    - Removed outdated CI/CD information
 
-## 🎯 Benefits Achieved
+## Benefits Achieved
 
-- **Production Consistency**: All environments use identical database technology
-- **Test Reliability**: Integration tests run against real MySQL instances
-- **Simplified Architecture**: No database abstraction complexity
-- **CI/CD Stability**: Consistent behavior across local, CI, and production
-- **Developer Confidence**: Tests validate actual production scenarios
+- Production Consistency: All environments use identical database technology
+- Test Reliability: Integration tests run against real MySQL instances
+- Simplified Architecture: No database abstraction complexity
+- CI/CD Stability: Consistent behavior across local, CI, and production
+- Developer Confidence: Tests validate actual production scenarios
 
-## 🚀 Current Status
+## Current Status
 
 The project now follows a unified Testcontainers strategy:
-- **Unit Tests**: ✅ Fast execution with mocks
-- **Integration Tests**: ✅ Real MySQL via Testcontainers everywhere
-- **Local Development**: ✅ Testcontainers MySQL (no Docker Compose needed)
-- **CI/CD**: ✅ Testcontainers MySQL (simplified pipeline)
-- **Production**: ✅ Same database technology as all test environments
+- Unit Tests: Fast execution with mocks
+- Integration Tests: Real MySQL via Testcontainers everywhere
+- Local Development: Testcontainers MySQL for integration tests (Docker is required to run Testcontainers, but manual Docker Compose management for the test DB is not needed)
+- CI/CD: Testcontainers MySQL (simplified pipeline)
+- Production: Same database technology as all test environments

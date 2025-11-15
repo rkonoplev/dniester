@@ -27,7 +27,8 @@
 Подробные инструкции по инвентаризации и созданию дампов для всех Docker-вольюмов находятся
 в отдельном руководстве:
 
-**[→ Руководство по резервному копированию данных Docker](./DOCKER_DATA_RECOVERY_GUIDE_RU.md)**
+**[→ Историческое руководство по резервному копированию и восстановлению данных Docker (контекст миграции Drupal 6)](./LEGACY_DOCKER_DATA_RECOVERY_GUIDE_RU.md)**
+*   **Примечание**: Для актуальных задач резервного копирования данных Docker, пожалуйста, обратитесь к **[Руководству по переносу Docker Volume с данными MySQL](./VOLUME_MIGRATION_GUIDE_RU.md)**.
 
 ### 1.2 Синхронизация кодовой базы с GitHub
 
@@ -52,7 +53,15 @@ git push
 
 2.  **Очистка логов** (если они есть):
     ```bash
-    rm -rf logs/
+    # Удалите логи, если они находятся в корне проекта или в backend/logs/
+    # Пример: rm -rf logs/
+    # Пример: rm -rf backend/logs/
+    ```
+
+3.  **Очистка Docker-ресурсов** (опционально, если нужно освободить место):
+    Если на старом компьютере много неиспользуемых Docker-образов, контейнеров или томов, можно выполнить полную очистку:
+    ```bash
+    docker system prune -af --volumes
     ```
 
 ### 1.4 Архивация файлов, не входящих в Git
@@ -64,6 +73,20 @@ git push
     Эта команда найдет все файлы, которые соответствуют правилам в `.gitignore`, и запишет их в `ignored_files.txt`.
     ```bash
     git ls-files --ignored --exclude-standard > ignored_files.txt
+    ```
+    **Примечание**: Убедитесь, что ваш файл `.gitignore` актуален и содержит все файлы, которые *не* должны быть в Git, но *должны* быть перенесены (например, `.env` файлы, дампы БД, файлы конфигурации IDE, такие как `.idea/workspace.xml`). Пример содержимого `.gitignore` для таких файлов:
+    ```
+    # Environment variables
+    .env
+    .env.local
+
+    # Database dumps
+    db_dumps/
+
+    # IDE-specific files
+    .idea/workspace.xml
+    .idea/tasks.xml
+    .idea/shelf/
     ```
 
 2.  **Создайте архив**:
@@ -94,24 +117,31 @@ git push
     cd phoebe
     ```
 
-2.  **Распакуйте архив**:
+2.  **Проверьте права на исполнение `gradlew`**:
+    После клонирования репозитория файл `gradlew` может потерять права на исполнение. Убедитесь, что он исполняемый:
+    ```bash
+    chmod +x gradlew
+    ```
+
+3.  **Распакуйте архив**:
     Поместите `phoebe_transfer_archive.tar.gz` в корень проекта и выполните команду:
     ```bash
     tar -xzvf phoebe_transfer_archive.tar.gz
     ```
     Эта команда восстановит все ваши игнорируемые файлы в их исходных директориях (`db_dumps/`, `.env.dev` и т.д.).
 
-3.  **Запустите Docker-контейнеры**:
+4.  **Запустите Docker-контейнеры**:
     ```bash
-    docker compose up -d mysql
+    docker compose up -d phoebe-mysql
     ```
 
-4.  **Восстановите базу данных из дампа**:
+5.  **Восстановите базу данных из дампа**:
     ```bash
-    docker exec -i phoebe-mysql mysql -uroot -proot < db_dumps/phoebe_new_db_backup.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < db_dumps/phoebe_new_db_backup.sql
     ```
+    **Примечание**: Убедитесь, что имя файла дампа (`phoebe_new_db_backup.sql`) соответствует файлу, созданному на шаге 1.1.
 
-5.  **Запустите приложение**:
+6.  **Запустите приложение**:
     ```bash
     ./gradlew bootRun --args='--spring.profiles.active=local,mysql'
     ```

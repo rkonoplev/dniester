@@ -1,6 +1,7 @@
 # API Usage Guide
 
-This guide provides practical examples for testing Phoebe CMS API endpoints using `curl` and Postman.
+This guide provides practical examples for testing Phoebe CMS API endpoints
+with `curl` and Postman.
 
 ## Table of Contents
 - [Working with Postman](#working-with-postman)
@@ -9,6 +10,8 @@ This guide provides practical examples for testing Phoebe CMS API endpoints usin
 - [Admin API Endpoints (Authentication Required)](#admin-api-endpoints-authentication-required)
 - [Pagination Parameters](#pagination-parameters)
 - [Rate Limiting Testing](#rate-limiting-testing)
+- [HTTP Status Codes](#http-status-codes)
+- [Example Validation Error Response](#example-validation-error-response)
 - [Notes](#notes)
 - [Alternative API Documentation: Swagger UI](#alternative-api-documentation-swagger-ui)
 
@@ -71,6 +74,9 @@ curl -i "http://localhost:8080/api/public/news" | grep "X-Rate-Limit"
 ---
 
 ## Admin API Endpoints (Authentication Required)
+
+### Authentication
+Access to admin endpoints requires authentication. Examples use basic HTTP authentication (`-u admin:password`). In production, it is recommended to use more robust authentication mechanisms such as OAuth 2.0 or JWT, as described in the [Authentication Guide](./AUTHENTICATION_GUIDE.md).
 
 ### 1. Get All News (Published + Unpublished)
 ```bash
@@ -153,11 +159,11 @@ curl -u admin:password -i "http://localhost:8080/api/admin/channel-settings"
 |--------------------|----------|------------------------------------------------|----------|
 | `siteTitle`        | `String` | Site title for browser tab. Max 255 chars.   | No       |
 | `metaDescription`  | `String` | Meta description tag. Max 500 chars.          | No       |
-| `metaKeywords`     | `String` | Meta keywords tag. Max 500 chars.             | No       |
+| `metaKeywords`     | `String` | Meta keywords tag. Max 500 chars.             | No              |
 | `headerHtml`       | `String` | HTML code for site header (SafeHtml validated)| No       |
 | `logoUrl`          | `String` | URL to site logo. Max 500 chars.              | No       |
 | `footerHtml`       | `String` | HTML code for site footer (SafeHtml validated)| No       |
-| `mainMenuTermIds`  | `String` | JSON array of term IDs for main menu          | No       |
+| `mainMenuTermIds`  | `String` | String representation of a JSON array of term IDs for the main menu (e.g., `"[1,2,3]"`) | No       |
 | `siteUrl`          | `String` | Base URL for the site. Max 255 chars.         | No       |
 
 **Example Request:**
@@ -262,6 +268,51 @@ for i in {1..55}; do
 done
 ```
 *Expected: First requests return `200`, then `429` after limit exceeded.*
+
+---
+
+## HTTP Status Codes
+
+Below are the standard HTTP status codes that the API may return:
+
+| Code | Status                 | Description                                                              |
+|-----|------------------------|--------------------------------------------------------------------------|
+| `200` | `OK`                   | The request was successfully processed.                                  |
+| `201` | `Created`              | A resource was successfully created (e.g., `POST /api/admin/news`).      |
+| `204` | `No Content`           | The request was successfully processed, but there is no content to return (e.g., `DELETE`). |
+| `400` | `Bad Request`          | The request was malformed, e.g., due to validation errors.               |
+| `401` | `Unauthorized`         | Authentication is required.                                              |
+| `403` | `Forbidden`            | Authentication was successful, but the user does not have access rights. |
+| `404` | `Not Found`            | The resource was not found.                                              |
+| `429` | `Too Many Requests`    | The rate limit has been exceeded.                                        |
+| `500` | `Internal Server Error`| An internal server error occurred.                                       |
+
+---
+
+## Example Validation Error Response
+
+When validation errors occur (e.g., due to invalid data in a `POST` or `PUT` request body), the API returns a standardized JSON response:
+
+```json
+{
+  "timestamp": "2024-01-15T10:30:00.123+00:00",
+  "status": 400,
+  "error": "Bad Request",
+  "code": "VALIDATION_ERROR",
+  "message": "Input validation error",
+  "details": [
+    {
+      "field": "title",
+      "message": "must not be blank"
+    },
+    {
+      "field": "publicationDate",
+      "message": "must be a valid ISO-8601 format"
+    }
+  ],
+  "path": "/api/admin/news"
+}
+```
 
 ---
 

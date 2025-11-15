@@ -1,25 +1,23 @@
 # Setup and Deployment Guide
 
-This guide is your main entry point for deploying the project. It describes all possible scenarios, from a quick
-start for a new developer to migrating data from a new Drupal 6 site.
+This guide is your main entry point for deploying the project. It describes all possible scenarios, from migrating an existing site to a clean installation.
 
-> For definitions of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
-
-## Requirements
-
-To successfully set up and run the Phoebe CMS project, you will need the following software installed on your system:
-
--   **JDK 21+**: The Java Development Kit, version 21 or newer.
--   **Docker**: Required for Testcontainers (integration tests) and optional for local development database.
--   **Git**: For cloning the project repository.
-
-**Note**: Docker Compose is optional - only needed if you want to run the full application stack locally. Integration tests use Testcontainers and don't require Docker Compose.
+> For daily work with an already configured project, please refer to the **[Quick Start Guide](./QUICK_START.md)**.
 
 ---
 
-## Initial Project Setup
+## Requirements
 
-Before proceeding with any scenario, you need to clone the repository and set up your environment variables.
+-   **JDK 21+**: Java Development Kit, version 21 or newer.
+-   **Docker**: Required to run the environment.
+-   **Git**: For cloning the repository.
+-   **Make**: (Recommended) For executing commands from the `Makefile`.
+
+---
+
+## Initial Setup
+
+Before choosing a scenario, perform these two steps:
 
 1.  **Clone the repository**:
     ```bash
@@ -27,160 +25,114 @@ Before proceeding with any scenario, you need to clone the repository and set up
     cd phoebe
     ```
 
-2.  **Configure Environment Variables**:
-    Copy the example environment file to create your local development environment configuration:
+2.  **Create the environment file**:
     ```bash
-    cp .env.dev.example .env.dev
+    cp .env.example .env
     ```
-    You will then edit `.env.dev` to match your specific database and application settings as described in the scenarios below.
+    In most cases, you will not need to modify the `.env` file.
 
 ---
 
 ## Choosing a Deployment Scenario
 
-Choose the scenario that matches your goal and proceed to the detailed instructions below.
+- **[Scenario 1: Migrating an Existing Drupal 6 Site](#scenario-1-migrating-an-existing-drupal-6-site)**
+  - **Goal**: You have a database dump from a Drupal 6 site and want to migrate its data into Phoebe CMS.
 
-- **[Scenario A: Quick Start for a New Developer (Recommended)](#scenario-a-quick-start-for-a-new-developer-recommended)**
-  - **Goal:** To get the project running locally as quickly as possible with a full, ready-to-use database.
+- **[Scenario 2: Quick Start for a New Developer (Recommended)](#scenario-2-quick-start-for-a-new-developer-recommended)**
+  - **Goal**: To get the project running locally as quickly as possible with a full, ready-to-use database that has already been migrated.
 
-- **[Scenario B: Clean Installation (New Site)](#scenario-b-clean-installation-new-site)**
-  - **Goal:** To launch the project without historical data, to start populating a brand-new site.
+- **[Scenario 3: Clean Installation (New Site)](#scenario-3-clean-installation-new-site)**
+  - **Goal**: To launch the project without historical data to start populating a brand-new site from scratch.
 
-- **[Scenario C: Migrating a NEW Drupal 6 Site](#scenario-c-migrating-a-new-drupal-6-site)**
-  - **Goal:** You have a dump from a **different** Drupal 6 site, and you want to migrate its data.
+- **[Scenario 4: Backing Up and Transferring the Project](#scenario-4-backing-up-and-transferring-the-project)**
+  - **Goal**: To save the current state of your local database for transfer to another machine.
 
-- **[Scenario D: Backing Up and Restoring Current Work](#scenario-d-backing-up-and-restoring-current-work)**
-  - **Goal:** To save the current state of your local database for transfer or as a precaution.
+- **[Scenario 5: Deploying to Production](#scenario-5-deploying-to-production)**
+  - **Goal**: To deploy the application to a live server for public access.
 
 ---
 
-## Detailed Scenario Instructions
+### Scenario 1: Migrating an Existing Drupal 6 Site
 
-### Scenario A: Quick Start for a New Developer (Recommended)
+This scenario is for those who have a Drupal 6 database dump and want to migrate it into the new system.
+
+1.  **Perform the Data Transformation**: Follow the instructions in the **[Historical Migration Guide](./MIGRATION_DRUPAL6.md)** to convert your Drupal 6 dump into a final `clean_schema.sql` file.
+
+2.  **Configure the Environment for MySQL**: Ensure that your `docker-compose.yml` and `.env` files are set up for MySQL.
+
+3.  **Start the MySQL Container**:
+    ```bash
+    docker-compose up -d phoebe-mysql
+    ```
+
+4.  **Import the New Schema**:
+    ```bash
+    docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < /path/to/your/new/clean_schema.sql
+    ```
+
+5.  **Run the Application**:
+    ```bash
+    cd backend && ./gradlew bootRun
+    ```
+    The application will start up using the existing, populated database.
+
+---
+
+### Scenario 2: Quick Start for a New Developer (Recommended)
 
 This process is fully automated and is the standard way to get started with the project.
 
 1.  **Complete** the [Initial Project Setup](#initial-project-setup) steps.
-2.  **Run everything** with a single command: `docker compose up --build`.
+2.  **Run everything with a single command:**
+    ```bash
+    make run
+    ```
+    *Alternative command (without Makefile):* `docker compose up --build`
 
-**Result:** Flyway will automatically create the database and populate it with all data from the `V3__insert_sample_data.sql` script.
-The process is described in more detail in the **[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**.
+**Result:** Flyway will automatically create the database and populate it with all data from the `V3__insert_sample_data.sql` script. This process is described in more detail in the **[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**.
 
 ---
 
-### Scenario B: Clean Installation (New Site)
+### Scenario 3: Clean Installation (New Site)
 
-This scenario is for starting from scratch. You can choose any of the supported databases.
+This scenario is for starting from scratch.
 
 1.  **Disable the data migration.**
     - Navigate to `backend/src/main/resources/db/migration/common/`.
     - Find the script responsible for inserting data (e.g., `V3__insert_sample_data.sql`).
     - **Rename** it by changing the prefix from `V` to `_V` (e.g., `_V3__insert_sample_data.sql`).
-      This will cause Flyway to ignore it.
 
-2.  **Configure Docker and environment variables** for your chosen database (MySQL or PostgreSQL) as described below.
+2.  **(Optional) Choose a database**:
+    The project uses MySQL by default. To switch to PostgreSQL:
+    - **In `docker-compose.yml`**: comment out the `phoebe-mysql` service and uncomment `phoebe-postgres`.
+    - **In `.env`**: comment out the MySQL variables and uncomment the PostgreSQL ones.
+    - **In `build.gradle`**: comment out the `mysql-connector-j` dependency and uncomment `postgresql`.
 
-3.  **Run the application** with the corresponding profile (`mysql` or `postgresql`).
-
-#### Step 1: Configure Docker Compose
-
-Open your `docker-compose.yml` file and ensure only one database service is active:
-
-- **For MySQL**:
-  ```yaml
-  phoebe-mysql:
-    image: mysql:8.0
-    # ... rest of the configuration
-  ```
-
-- **For PostgreSQL**:
-  ```yaml
-  phoebe-postgres:
-    image: postgres:13
-    # ... rest of the configuration
-  ```
-
-#### Step 2: Configure Environment Variables (`.env.dev`)
-
-- **For MySQL**:
-  ```dotenv
-  SPRING_DATASOURCE_URL=jdbc:mysql://phoebe-mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
-  SPRING_DATASOURCE_USERNAME=root
-  SPRING_DATASOURCE_PASSWORD=root
-  ```
-
-- **For PostgreSQL**:
-  ```dotenv
-  SPRING_DATASOURCE_URL=jdbc:postgresql://phoebe-postgres:5432/phoebe_db
-  SPRING_DATASOURCE_USERNAME=user
-  SPRING_DATASOURCE_PASSWORD=password
-  ```
-
-#### Step 3: Run the Application with the Correct Profile
-
-1.  **Start the Docker container** with your chosen database:
+3.  **Run the project**:
     ```bash
-    docker compose up -d phoebe-mysql # or phoebe-postgres
+    make run
     ```
-
-2.  **Run the application**, specifying the corresponding database profile:
-    ```bash
-    cd backend
-    ./gradlew bootRun --args='--spring.profiles.active=local,mysql' # or postgresql
-    ```
+    *Alternative launch (without Makefile):*
+    1. `docker compose up -d phoebe-mysql` (or `phoebe-postgres`)
+    2. `cd backend && ./gradlew bootRun`
 
 **Result:** Flyway will create all tables but will skip the data migration. You will get a clean database.
 
 ---
 
-### Scenario C: Migrating a NEW Drupal 6 Site
+### Scenario 4: Backing Up and Transferring the Project
 
-This process requires repeating the historical steps to convert your new dump into a Flyway script.
+This process is for creating full snapshots of your local database.
 
-#### Step 1: Perform the Data Transformation
-
-Follow the instructions in the [Historical Migration Guide](./MIGRATION_DRUPAL6.md) to convert your new
-Drupal 6 dump into a final `clean_schema.sql` file.
-
-#### Step 2: Configure the Environment for MySQL
-
-1.  **Docker Compose**: Ensure the `mysql` service is active in your `docker-compose.yml` file.
-
-2.  **Environment Variables**: In your `.env.dev` file, specify your MySQL credentials.
-    ```dotenv
-    SPRING_DATASOURCE_URL=jdbc:mysql://phoebe-mysql:3306/phoebe_db?useUnicode=true&characterEncoding=utf8mb4&useSSL=false
-    SPRING_DATASOURCE_USERNAME=root
-    SPRING_DATASOURCE_PASSWORD=root
-    ```
-
-#### Step 3: Run the Project with the Migrated Data
-
-1.  **Start the Docker container** with MySQL:
-    ```bash
-    docker compose up -d phoebe-mysql
-    ```
-
-2.  **Import the new schema**:
-    ```bash
-    docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < path/to/your/new/clean_schema.sql
-    ```
-
-3.  **Run the application** with the `local` and `mysql` profiles:
-    ```bash
-    cd backend
-    ./gradlew bootRun --args='--spring.profiles.active=local,mysql'
-    ```
-
-**Result:** The application will start up using a database populated with your newly migrated data. From here,
-you should consider integrating this data into a new, versioned Flyway script.
+- All steps and commands are described in detail in the **[Docker Volume Migration Guide for MySQL Data](./VOLUME_MIGRATION_GUIDE.md)**.
+- For historical reference on manual backup and recovery processes relevant during the early stages of the project, see the **[Historical Docker Data Backup and Recovery Guide (Drupal 6 Migration Context)](./LEGACY_DOCKER_DATA_RECOVERY_GUIDE_EN.md)**.
 
 ---
 
-### Scenario D: Backing Up and Restoring Current Work
+### Scenario 5: Deploying to Production
 
-This process remains manual and is intended for creating full snapshots of your local database.
+This scenario covers moving the application from local development to a live environment. It involves server setup, secret management, and using Docker for deployment.
 
-- All steps and commands are described in detail in the **[Data Backup & Recovery Guide](./DOCKER_DATA_RECOVERY_GUIDE.md)**.
+All detailed instructions, environment requirements, and configuration examples are described in a separate guide:
 
-**Important:** Restoring from such a dump can conflict with the state of Flyway migrations, so use this
-method with caution, primarily for a full environment transfer.
+- **➡️ [Production Deployment Guide](./PRODUCTION_GUIDE.md)**

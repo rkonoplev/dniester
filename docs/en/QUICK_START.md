@@ -1,11 +1,21 @@
-# Quick Start Guide
-
 > For definitions of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
 
 Quick instructions for developers for **daily work** with an already configured project.
 
 > **Important**: For **initial project setup**, please follow the detailed
 > [Setup Guide](./SETUP_GUIDE.md).
+
+---
+
+## Recommended Quick Start (via Makefile)
+
+The entire primary workflow is built around the `Makefile` for simplicity. This is the easiest way to get started.
+
+- **Run the project**: `make run`
+- **Run all tests**: `make all-tests`
+- **Stop the project**: `make stop`
+
+> For a complete list of commands and descriptions of their functions, please refer to **[Testing and Development with Makefile](./TESTING_WITH_MAKEFILE.md)**.
 
 ---
 
@@ -16,14 +26,14 @@ Quick instructions for developers for **daily work** with an already configured 
 
 ---
 
-## Daily Workflow
+## Alternative Launch (directly via Docker and Gradle)
 
 ### 1. Start Development Environment
 
 This command starts all necessary services (database and application) defined in `docker-compose.yml`.
 
 ```bash
-docker compose --env-file .env.dev up -d
+docker compose up -d
 ```
 
 ### 2. Check Status
@@ -31,7 +41,6 @@ docker compose --env-file .env.dev up -d
 - **Check containers**: `docker ps` → should show `phoebe-app` and `phoebe-mysql`
 - **API**: http://localhost:8080
 - **Swagger UI**: http://localhost:8080/swagger-ui/index.html
-- **Admin panel**: login `admin`, password `admin`
 
 ### 3. Stop Environment
 
@@ -41,7 +50,6 @@ docker compose down
 ```
 
 > **Note**: Using `docker compose down -v` will completely remove your database data.
-> Use this command only if you want to start with a clean slate.
 
 ---
 
@@ -59,53 +67,17 @@ All commands are executed from the `backend/` directory.
 ./gradlew build
 ```
 
-### Code Quality Check
-```bash
-./gradlew checkstyleMain checkstyleTest
-```
-
 ---
 
 ## Troubleshooting
 
-### Tests Not Running (MySQL Conflict)
-- Check that `application.yml` does **not** have `spring.profiles.active: local`
-- In `application-test.yml` Flyway should be disabled
-- Run tests with clean build: `./gradlew clean test`
-
-### Reset Database
+### Resetting the Database
 ```bash
-docker compose down -v  # removes all data
-docker compose up -d    # creates clean database
+make clean-db
 ```
+Or manually: `docker compose down -v && docker compose up -d`
 
-### Port Issues
-- MySQL: port 3306 (may conflict with local MySQL)
-- Spring Boot: port 8080
-- Stop local services or change ports in `.env.dev`
-
----
-
-## Additional Documentation
-
-- **[Setup Guide](./SETUP_GUIDE.md)**: Step-by-step instructions for first-time setup.
-- **[Developer Guide](./DEVELOPER_GUIDE.md)**: Detailed IDE setup and workflow description.
-- **[Project Overview](./PROJECT_OVERVIEW.md)**: Complete information about architecture and technologies.
-- **[Docker Guide](./DOCKER_GUIDE.md)**: Advanced container operations.
-- **[Drupal 6 Migration](./MIGRATION_DRUPAL6.md)**: Migration process.
-
----
-
-## CI/CD
-
-- **GitHub Actions**: automatically runs `ci` profile with H2.
-- **Tests**: executed on every push and PR.
-- **Code Quality**: Checkstyle, JaCoCo coverage.
-
----
-
-## Production
-
-- Uses `docker-compose.override.yml` with secrets.
-- `prod` profile with real MySQL.
-- Environment variables via Docker secrets.
+### Port Conflicts
+- **MySQL**: port `3306`
+- **Spring Boot**: port `8080`
+If these ports are in use on your machine, stop the conflicting services or change the ports in the `.env` file.

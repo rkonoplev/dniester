@@ -54,7 +54,8 @@ The application configuration is split between two main directories:
 | `integration-test` | **Current (for tests)**              | `main/resources`   | MySQL (Testcontainers) | All tests (`make test`). Testcontainers manages the DB.             |
 | `prod`             | **Current**                          | `main/resources`   | External DB        | Production build.                                                   |
 | `test`             | **Legacy**                           | `test/resources`   | H2 (In-Memory)   | Previously used for H2-based tests. **No longer in use.**           |
-| `dev` / `ci`       | **Legacy**                           | -                  | -                  | Previously used in CI/CD. **No longer in use.**                     |
+| `dev`              | **Legacy**                           | `legacy`           | MySQL (Docker)     | Previously used for dev environments. **No longer in use.**         |
+| `ci`               | **Legacy**                           | `legacy`           | H2 (In-Memory)   | Previously used in CI. **No longer in use.**                        |
 | `mysql` / `postgresql` | Helper                           | `main/resources`   | -                  | Specify paths to DB-specific Flyway migrations.                     |
 | `security`         | Current (included automatically)     | `main/resources`   | -                  | Centralizes security settings.                                      |
 

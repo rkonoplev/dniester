@@ -32,6 +32,8 @@ This directory contains all English project documentation for **Phoebe CMS**.
   Architectural patterns used in the project.
 - **[Configuration Guide](./CONFIG_GUIDE.md)**  
   Spring profiles matrix, `application-*.yml` files, `.env`, and secrets.
+- **[Production Deployment Guide](./PRODUCTION_GUIDE.md)**  
+  Principles and steps for deploying to a production environment.
 - **[Configuration Files Overview](../../backend/src/main/resources/README.md)**  
   A detailed description of each `application-*.yml` file.
 - **[Docker Guide](./DOCKER_GUIDE.md)**  
@@ -74,20 +76,24 @@ This directory contains all English project documentation for **Phoebe CMS**.
 
 - **[Database Guide](./DATABASE_GUIDE.md)**  
   Complete database documentation, including schema and migrations.
+- **[MySQL Commands Guide](MYSQL_GUIDE.md)**
+  Useful commands for working with MySQL in Docker and locally.
 - **[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**  
   The modern way to deploy the project with data from a Drupal 6 dump.
 - **[Historical Migration Guide](./MIGRATION_DRUPAL6.md)**  
   Describes the old, manual migration process.
-- **[Docker Data Backup & Recovery](./DOCKER_DATA_RECOVERY_GUIDE.md)**  
-  Backup of all project databases from Docker volumes.
-- **[Volume Migration Guide](./VOLUME_MIGRATION_GUIDE.md)**  
-  Safe migration of Docker volumes.
+- **[Historical Docker Data Backup and Recovery Guide (Drupal 6 Migration Context)](./LEGACY_DOCKER_DATA_RECOVERY_GUIDE_EN.md)**  
+  A historical document describing manual backup and recovery processes relevant during the early stages of the project.
+- **[Docker Volume Migration Guide](./VOLUME_MIGRATION_GUIDE.md)**  
+  Guide to transferring Docker Volumes with MySQL data.
+- **[Development Guide with Local Database](LOCAL_DB_DEVELOPMENT_GUIDE.md)**
+  Setting up development with locally installed MySQL or PostgreSQL without Docker.
 
 ## 🛠️ Development Tools
 
 - **[Code Style Setup](./CODE_STYLE_SETUP.md)**  
   A guide for automatic code formatting in IntelliJ IDEA.
-- **[Git and Bash Commands Reference](./GIT_BASH_COMMANDS.md)**  
+- **[Git and Bash Commands Guide](./GIT_BASH_COMMANDS.md)**  
   Practical Git and Bash commands.
 - **[Project Codebase Transfer Guide](./PROJECT_TRANSFER_GUIDE.md)**  
   Backup and recovery of the codebase using Git.

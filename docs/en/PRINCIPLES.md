@@ -1,8 +1,8 @@
 # Design Principles in the Project
 
-This project is designed with fundamental software development principles like SOLID, KISS, and YAGNI in mind.
-This approach ensures a flexible, maintainable, and understandable architecture. This document describes
-how these principles are applied in the codebase.
+This project is designed with fundamental software development principles like SOLID, KISS, YAGNI, DRY,
+Fail-Fast, and Convention over Configuration in mind. This ensures a flexible, maintainable, and
+understandable architecture. This document describes how these principles are applied in the codebase.
 
 [Русская версия](./PRINCIPLES_RU.md)
 
@@ -30,6 +30,8 @@ easier to maintain and extend.
 -   **Implementation in the project:** This is evident in the use of the Spring Framework and its approaches.
     -   **Spring Security:** To add a new authentication method (e.g., OAuth 2.0), there is no need to
         modify existing code. Instead, a new configuration is created that **extends** the system.
+    -   **Strategy Pattern**: Allows for easily adding new algorithms or implementations without changing
+        existing code (e.g., different `PasswordEncoder` or `AuthenticationProvider` implementations).
     -   **Service Layer:** New functionality can be added through new methods or even new service classes
         that use existing ones without altering them.
 
@@ -91,3 +93,40 @@ deemed necessary.
         "just in case."
     -   **No Premature Optimization:** Performance optimization (e.g., migrating to a reactive stack) is
         planned only after real-world measurements reveal bottlenecks, not in advance.
+
+### DRY (Don't Repeat Yourself)
+
+This principle aims to reduce code duplication, which improves maintainability and reduces the
+likelihood of errors.
+
+-   **Implementation in the project:**
+    -   **Base Classes and Interfaces:** Using common base classes for entities (e.g., `BaseEntity` for
+        audit fields) and interfaces for repositories (Spring Data JPA) helps avoid repeating code for
+        common operations.
+    -   **Utility Methods:** Common helper methods and classes (e.g., for string manipulation, validation)
+        are extracted into separate utilities.
+    -   **MapStruct:** Using MapStruct for automatic generation of mappers between DTOs and entities
+        significantly reduces boilerplate code.
+
+### Fail-Fast
+
+This principle states that a system should detect errors as early as possible and report them,
+stopping further execution.
+
+-   **Implementation in the project:**
+    -   **Input Data Validation:** Strict validation of DTOs at the controller and service layers using
+        Bean Validation. Invalid data is rejected at the earliest stages.
+    -   **Precondition Checks:** Using assertions or explicit checks at the beginning of methods to ensure
+        the correctness of input parameters.
+
+### Convention over Configuration
+
+This principle, actively used in Spring Boot, aims to reduce the number of decisions a developer
+needs to make by providing sensible defaults.
+
+-   **Implementation in the project:**
+    -   **Spring Boot Starters:** Automatic configuration of dependencies and components (e.g.,
+        `spring-boot-starter-web` automatically configures Tomcat, Spring MVC).
+    -   **Spring Data JPA:** Automatic generation of repository implementations based on interface
+        method naming.
+    -   **Flyway:** Automatic detection and application of migrations from standard directories.

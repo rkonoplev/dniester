@@ -27,7 +27,8 @@ ensure you have fresh backups of all important databases.
 Detailed instructions on inventorying and creating dumps for all Docker volumes can be found
 in a separate guide:
 
-**[→ Docker Data Backup and Recovery Guide](./DOCKER_DATA_RECOVERY_GUIDE.md)**
+**[→ Historical Docker Data Backup and Recovery Guide (Drupal 6 Migration Context)](./LEGACY_DOCKER_DATA_RECOVERY_GUIDE_EN.md)**
+*   **Note**: For current Docker data backup and transfer tasks, please refer to the **[Docker Volume Migration Guide for MySQL Data](./VOLUME_MIGRATION_GUIDE.md)**.
 
 ### 1.2 Synchronize Codebase with GitHub
 
@@ -52,7 +53,15 @@ Before creating the archive, it is important to delete temporary files and logs 
 
 2.  **Clean up logs** (if any):
     ```bash
-    rm -rf logs/
+    # Remove logs if they are in the project root or in backend/logs/
+    # Example: rm -rf logs/
+    # Example: rm -rf backend/logs/
+    ```
+
+3.  **Clean Docker Resources** (optional, if you need to free up space):
+    If there are many unused Docker images, containers, or volumes on the old computer, you can perform a full cleanup:
+    ```bash
+    docker system prune -af --volumes
     ```
 
 ### 1.4 Archive Files Not Included in Git
@@ -64,6 +73,20 @@ ignored by Git.
     This command finds all files that match the rules in `.gitignore` and writes them to `ignored_files.txt`.
     ```bash
     git ls-files --ignored --exclude-standard > ignored_files.txt
+    ```
+    **Note**: Ensure your `.gitignore` file is up-to-date and includes all files that *should not* be in Git but *should* be transferred (e.g., `.env` files, DB dumps, IDE configuration files like `.idea/workspace.xml`). Example `.gitignore` content for such files:
+    ```
+    # Environment variables
+    .env
+    .env.local
+
+    # Database dumps
+    db_dumps/
+
+    # IDE-specific files
+    .idea/workspace.xml
+    .idea/tasks.xml
+    .idea/shelf/
     ```
 
 2.  **Create the archive**:
@@ -94,24 +117,31 @@ Transfer the following artifacts to the new computer:
     cd phoebe
     ```
 
-2.  **Extract the archive**:
+2.  **Check `gradlew` execution permissions**:
+    After cloning the repository, the `gradlew` file might lose its execution permissions. Ensure it is executable:
+    ```bash
+    chmod +x gradlew
+    ```
+
+3.  **Extract the archive**:
     Place `phoebe_transfer_archive.tar.gz` in the project root and run the command:
     ```bash
     tar -xzvf phoebe_transfer_archive.tar.gz
     ```
     This command will restore all your ignored files to their original directories (`db_dumps/`, `.env.dev`, etc.).
 
-3.  **Start the Docker containers**:
+4.  **Start the Docker containers**:
     ```bash
-    docker compose up -d mysql
+    docker compose up -d phoebe-mysql
     ```
 
-4.  **Restore the database from the dump**:
+5.  **Restore the database from the dump**:
     ```bash
-    docker exec -i phoebe-mysql mysql -uroot -proot < db_dumps/phoebe_new_db_backup.sql
+    docker exec -i phoebe-mysql mysql -uroot -proot phoebe_db < db_dumps/phoebe_new_db_backup.sql
     ```
+    **Note**: Ensure the dump file name (`phoebe_new_db_backup.sql`) matches the file created in Step 1.1.
 
-5.  **Run the application**:
+6.  **Run the application**:
     ```bash
     ./gradlew bootRun --args='--spring.profiles.active=local,mysql'
     ```

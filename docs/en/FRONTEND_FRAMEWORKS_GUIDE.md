@@ -16,13 +16,12 @@ directory. This is normal and expected. Let's break down why our Next.js project
 
 The size is primarily attributed to a few key dependencies that form the core of our stack:
 
-*   **`@next` (112MB) & `next` (101MB)**: These packages contain the Next.js framework
-    itself, including its compiler (SWC), development server, server-side rendering
-    engine, static site generator, and various optimizations. The size reflects its
-    comprehensive, "batteries-included" nature.
-*   **`@mui` (27MB)**: Material-UI is a rich component library. This size includes not
-    just the components but also styling engines, theming capabilities, and utility
-    functions.
+*   **`@next` (112MB, version 14.x)** and **`next` (101MB, version 14.x)**: These packages
+    contain the Next.js framework itself, including its compiler (SWC), development server,
+    server-side rendering engine, static site generator, and various optimizations. The size
+    reflects its comprehensive, "batteries-included" nature.
+*   **`@mui` (27MB, version 5.x)**: Material-UI is a rich component library. This size includes
+    not just the components but also styling engines, theming capabilities, and utility functions.
 *   **`typescript` (23MB)**: The TypeScript compiler and its associated type definitions.
     Next.js has built-in TypeScript support, making this a standard dependency.
 *   **Other Packages**: The remaining size is distributed among 320+ smaller packages,
@@ -80,7 +79,8 @@ A critical rule in web development is to **never commit the `node_modules` direc
 *   **✅ Commit to Git**:
     *   `package.json`: Lists all project dependencies.
     *   `package-lock.json`: "Locks" the exact versions of each dependency, ensuring
-        consistent installations across all environments.
+        consistent installations across all environments. This guarantees
+        deterministic builds.
     *   Source code (`/pages`, `/components`, `/styles`, etc.).
     *   Configuration files (`next.config.js`, `tsconfig.json`).
 
@@ -99,24 +99,33 @@ This separation allows for an efficient and secure development process:
     ```bash
     git clone <repository_url>
     ```
-2.  They navigate into the project directory.
+2.  They navigate into the frontend directory (e.g., `frontends/nextjs`).
+    ```bash
+    cd frontends/nextjs
+    ```
 3.  They install the dependencies locally based on the `package-lock.json` file. This
     recreates the `node_modules` directory on their machine.
     ```bash
     npm install
     ```
-4.  They start the development server.
+4.  **Start the backend** (if not already running):
+    ```bash
+    cd ../.. # Return to project root
+    docker compose up --build # Or make run
+    ```
+5.  They start the frontend development server.
     ```bash
     npm run dev
     ```
 
-This practice saves repository space, speeds up cloning and CI/CD processes, and avoids
-platform-specific issues.
+This practice saves repository space, speeds up cloning and CI/CD processes,
+and avoids platform-specific issues.
 
 ### 3.3. Space-Saving Techniques
 
 While `node_modules` should be large, you can manage disk space with these techniques:
-*   **`npm ci`**: For CI/CD environments, this provides a faster, cleaner installation.
+*   **`npm ci`**: For CI/CD environments, this provides a faster, cleaner installation,
+    as it installs dependencies strictly according to `package-lock.json`.
 *   **`.dockerignore`**: Ensure `node_modules` is listed here to prevent it from being
     copied into your Docker image during the build.
 *   **Multi-stage Docker Builds**: A common pattern where dependencies are installed in
