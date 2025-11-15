@@ -31,6 +31,18 @@ Before choosing a scenario, perform these two steps:
     ```
     In most cases, you will not need to modify the `.env` file.
 
+### The `docker-compose.yml` File
+
+The `docker-compose.yml` file in the project's root directory is crucial for local development,
+orchestrating multiple services within Docker containers. It defines and launches:
+
+-   **`phoebe-mysql`**: A container for the MySQL database.
+-   **`phoebe-app`**: A container for the Spring Boot backend application.
+-   **`nextjs-app`**: A container for the reference Next.js frontend application.
+
+Using `docker-compose.yml` allows you to quickly bring up all necessary project components with a single command,
+ensuring a consistent development environment.
+
 ---
 
 ## Choosing a Deployment Scenario
@@ -136,3 +148,49 @@ This scenario covers moving the application from local development to a live env
 All detailed instructions, environment requirements, and configuration examples are described in a separate guide:
 
 - **➡️ [Production Deployment Guide](./PRODUCTION_GUIDE.md)**
+
+---
+
+## Running the Frontend Locally
+
+For full project functionality, you need to run not only the backend (API) but also one of the reference frontends. The frontend will interact with the backend via its API, so it doesn't matter how the backend is launched (in Docker or directly) or which database is used (Dockerized MySQL/PostgreSQL or locally installed).
+
+### 1. Ensure the Backend is Running
+
+Before launching the frontend, make sure the backend is running and accessible at `http://localhost:8080`. You can start it using `make run` (as in Scenario 2) or `cd backend && ./gradlew bootRun`.
+
+### 2. Launch the Chosen Frontend
+
+The Phoebe CMS project provides two reference frontends: Angular and Next.js. Choose the one you want to work with.
+
+#### For the Angular Frontend:
+
+1.  Navigate to the Angular frontend directory:
+    ```bash
+    cd frontends/angular
+    ```
+2.  Install dependencies (if you haven't done so already):
+    ```bash
+    npm install
+    ```
+3.  Start the Angular application:
+    ```bash
+    npm start
+    ```
+    The application will be available at `http://localhost:4200` (or another address indicated in the console).
+
+#### For the Next.js Frontend:
+
+1.  Navigate to the Next.js frontend directory:
+    ```bash
+    cd frontends/nextjs
+    ```
+2.  Install dependencies (if you haven't done so already):
+    ```bash
+    npm install
+    ```
+3.  Start the Next.js application:
+    ```bash
+    npm run dev
+    ```
+    The application will be available at `http://localhost:3000` (or another address indicated in the console).
