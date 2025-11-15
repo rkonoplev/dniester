@@ -1,0 +1,114 @@
+Вариант A: Упрощенный Dockerfile
+
+dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Копируем package.json и устанавливаем зависимости
+COPY package.json ./
+RUN npm install
+
+# Копируем исходный код
+COPY . .
+
+# Собираем приложение
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+Вариант B: С очисткой кэша Docker
+
+bash
+# Очистите Docker кэш
+docker system prune -f
+
+# Пересоберите
+docker build -t my-nextjs-app .
+5. Быстрая проверка - запустите без Docker
+bash
+npm run dev
+Это проверит, что Next.js приложение само по себе работает корректно.
+
+Попробуйте сначала вариант с упрощенным Dockerfile (без package-lock.json),
+так как он должен точно сработать.
+
+Проблема в  Dockerfile.  упростим его до одностадийной сборки, чтобы избежать проблем с путями:
+
+Замените Dockerfile на этот:
+
+dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Копируем package файлы
+COPY package.json package-lock.json ./
+RUN npm install
+
+# Копируем исходный код
+COPY . .
+
+# Собираем приложение
+RUN npm run build
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
+
+Или если хотите сохранить многостадийность, вот исправленная версия:
+
+dockerfile
+# 1. Install dependencies only when needed
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --only=production
+
+# 2. Rebuild the source code only when needed
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN npm run build
+
+# 3. Production image, copy all the files and run next
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+
+CMD ["npm", "start"]
+Выполните:
+
+bash
+# Убедитесь, что вы в правильной директории
+
+cd /Users/rk/dev/java/phoebe/frontends/nextjs/
+
+# Пересоберите образ
+docker build -t my-nextjs-app .
+
+# Запустите контейнер
+docker run -d -p 3000:3000 --name nextjs-app my-nextjs-app
+
+# Проверьте логи
+docker logs nextjs-app
+
+Рекомендую начать с упрощенного одностадийного Dockerfile - он проще и надежнее для начала.
+

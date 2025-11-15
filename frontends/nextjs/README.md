@@ -76,7 +76,7 @@ principles and implements key features for content consumption and management.
 ### 3.2. Running the Application
 1.  Navigate to the project root directory (`phoebe/`).
 2.  Ensure your `.env.local` file in `frontends/nextjs/` is correctly configured
-    (e.g., `NEXT_PUBLIC_API_BASE_URL=http://news-app:8080/api/public`).
+    (e.g., `NEXT_PUBLIC_API_BASE_URL=http://phoebe-app:8080/api/public`).
 3.  Start all services using Docker Compose:
     ```bash
     docker-compose up --build

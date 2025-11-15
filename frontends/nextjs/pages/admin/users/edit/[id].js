@@ -103,7 +103,7 @@ const EditUserPage = () => {
 const ProtectedEditUserPage = () => (
   <AdminRoute>
     <EditUserPage />
-  </ProtectedRoute>
+  </AdminRoute>
 );
 
 export default ProtectedEditUserPage;
