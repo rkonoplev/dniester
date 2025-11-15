@@ -7,7 +7,8 @@
 # --- Stage 1: Build ---
 FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
-COPY backend/gradlew backend/gradle ./gradle/
+COPY backend/gradlew ./
+COPY backend/gradle ./gradle/
 COPY backend/build.gradle backend/settings.gradle ./
 COPY backend/src ./src/
 

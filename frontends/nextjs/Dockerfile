@@ -4,7 +4,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 COPY package.json ./
-COPY package-lock.json ./  # Добавлена эта строка для консистентности
+COPY package-lock.json ./  # Re-adding this line
 RUN npm install
 
 # 2. Build the application

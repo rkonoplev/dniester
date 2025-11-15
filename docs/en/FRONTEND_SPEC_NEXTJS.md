@@ -257,3 +257,31 @@ RUN npm install
 ```
 After this change, you will also need to run `docker compose build --no-cache nextjs-app`
 once for Docker to pick up the new layer.
+
+---
+
+## 8. Building the Docker Image
+
+For a successful build of the Next.js application Docker image, it is crucial to execute commands from the correct directory so that Docker can find all necessary files (such as `Dockerfile`, `package.json`, and `package-lock.json`).
+
+1.  **Navigate to the Next.js frontend directory**:
+    This ensures that the Docker build context will contain all files of your Next.js application.
+    ```bash
+    cd /Users/rk/dev/java/phoebe/frontends/nextjs/
+    ```
+
+2.  **Ensure `package-lock.json` exists**:
+    If you have recently cloned the project or changed dependencies, make sure the `package-lock.json` file is present. If it's not, create it:
+    ```bash
+    npm install
+    ```
+    This command will install dependencies and generate `package-lock.json`.
+
+3.  **Execute the Docker image build**:
+    Run the `docker build` command from the `frontends/nextjs/` directory. The dot (`.`) at the end of the command tells Docker to use the current directory as the build context.
+    ```bash
+    docker build -t my-nextjs-app .
+    ```
+    Replace `my-nextjs-app` with your desired image name.
+
+After performing these steps, Docker should successfully find `package-lock.json` and build the image.
