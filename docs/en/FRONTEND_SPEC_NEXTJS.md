@@ -141,7 +141,9 @@
 - Lazy loading for images and infinite scroll on category pages.
 - Push notifications for breaking news.
 - OAuth 2.0 + JWT integration for enhanced authentication security.
-- **File upload capabilities for images and other media**: This is directly related to secure media embedding. Implementing this functionality will require backend updates for secure handling and storage of uploaded files, as well as updates to HTML sanitization rules.
+- **File upload capabilities for images and other media**: This is directly related to secure
+  media embedding. Implementing this functionality will require backend updates for secure
+  handling and storage of uploaded files, as well as updates to HTML sanitization rules.
 
 ---
 
@@ -173,4 +175,85 @@ To run the Next.js frontend on your local machine:
     The application will be available at `http://localhost:3000`.
 
 5.  **View in browser**: Open `http://localhost:3000` in your web browser.
-    You should see the Next.js frontend homepage displaying content from the locally running backend.
+    You should see the Next.js frontend homepage displaying content from the locally
+    running backend.
+
+---
+
+## 7. Troubleshooting
+
+### Problem: `Module not found: Can't resolve '@mui/icons-material/Search'` (or other MUI icons)
+
+**Problem Description**: When building or running the Next.js frontend, a "Module not found"
+error occurs for Material-UI icons like `Search`, `Edit`, `Delete`, etc. This happens
+when the `@mui/icons-material` package is not installed or not available in the Docker
+build environment.
+
+**Reason**: Although you might have installed the package locally, Docker uses cached
+layers for building. If `package.json` was updated after the `RUN npm install` layer
+was cached, Docker will use the old cache, not installing the new dependency.
+
+**Solution**: Force a rebuild of the `nextjs-app` Docker image without using the cache.
+
+1.  **Ensure the package is installed locally**:
+    Navigate to the `frontends/nextjs` directory and run:
+    ```bash
+    npm install @mui/icons-material
+    ```
+    This will update `package.json` and `package-lock.json`.
+
+2.  **Check `package.json`**:
+    Verify that `@mui/icons-material` is added to the `dependencies` section in the
+    `frontends/nextjs/package.json` file. If it's missing, add it manually:
+    ```json
+    "dependencies": {
+      // ... other dependencies
+      "@mui/icons-material": "^5.15.18" // Add this line
+    },
+    ```
+    After manually adding it, run `npm install` in `frontends/nextjs` again to update
+    `package-lock.json`.
+
+3.  **Return to the project root directory**:
+    ```bash
+    cd ../..
+    ```
+
+4.  **Force rebuild the `nextjs-app` Docker image without cache**:
+    ```bash
+    docker compose build --no-cache nextjs-app
+    ```
+    This command will rebuild only the `nextjs-app` image, ignoring the cache for all
+    its layers.
+
+5.  **Run the project again**:
+    ```bash
+    make run
+    ```
+    Or, if you prefer `docker compose`:
+    ```bash
+    docker compose up
+    ```
+    The frontend should now build and run successfully.
+
+---
+
+**Recommendation for `Dockerfile` (optional, but recommended for consistency):**
+
+To ensure maximum consistency in dependency installation, it is recommended to also
+copy the `package-lock.json` file (or `yarn.lock`, if you use Yarn) into the Dockerfile.
+This guarantees that `npm install` will use the same dependency versions as on your
+local machine.
+
+You can modify the first `deps` stage in `frontends/nextjs/Dockerfile` as follows:
+
+```dockerfile
+# 1. Install dependencies
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json ./
+COPY package-lock.json ./  # Add this line
+RUN npm install
+```
+After this change, you will also need to run `docker compose build --no-cache nextjs-app`
+once for Docker to pick up the new layer.
