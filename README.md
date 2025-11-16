@@ -1,3 +1,5 @@
+[Русская версия](./README_RU.md)
+
 # Phoebe CMS — Open Source Headless CMS on Java & Spring Boot
 
 [![Java CI with Gradle](https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml/badge.svg)](
