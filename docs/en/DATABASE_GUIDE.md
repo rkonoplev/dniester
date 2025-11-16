@@ -1,4 +1,7 @@
 > [Back to Documentation Contents](./README.md)
+>
+> **[MySQL Commands Guide](./MYSQL_GUIDE.md)**: Useful commands for working with MySQL,
+> including data manipulation and user account management.
 
 # Database Guide – Phoebe CMS
 
