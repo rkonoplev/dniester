@@ -366,6 +366,7 @@ The system uses **resource:action** permission naming:
 ## Database Interaction
 
 This section describes how to interact with your MySQL database, whether it's in a Docker container or installed locally.
+For more detailed information on working with MySQL, please refer to the [MySQL Commands Guide](./MYSQL_GUIDE.md).
 
 ### For Dockerized MySQL
 
@@ -490,7 +491,7 @@ To connect to a remote MySQL database via an SSH tunnel, you will need:
 *   SSH access to the server where the database is running.
 *   A private SSH key for authentication.
 *   The IP address or domain name of the server.
-*   Credentials for the MySQL database on the remote server.
+*   Ucredentials for the MySQL database on the remote server.
 
 **Step 1: Create an SSH Tunnel**
 

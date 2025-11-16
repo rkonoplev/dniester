@@ -1,4 +1,4 @@
-> [Вернуться к содержанию документации](./README.md)
+> [Вернуться к содержанию документации](./README.md) | [Руководство по MySQL](./MYSQL_GUIDE_RU.md)
 
 # Руководство по базе данных – Phoebe CMS
 
@@ -185,25 +185,25 @@ mysql phoebe_db < db_data/create_admin_user.sql
 
 ### Рабочий процесс миграции
 
-1. **Фаза анализа**
-   ```sql
-   mysql drupal6_db < db_data/detect_custom_fields.sql
-   ```
+1.  **Фаза анализа**
+    ```sql
+    mysql drupal6_db < db_data/detect_custom_fields.sql
+    ```
 
-2. **Основная миграция**
-   ```sql
-   mysql clean_db < db_data/migrate_from_drupal6_universal.sql
-   ```
+2.  **Основная миграция**
+    ```sql
+    mysql clean_db < db_data/migrate_from_drupal6_universal.sql
+    ```
 
-3. **Миграция пользовательских полей**
-   ```sql
-   mysql clean_db < db_data/migrate_cck_fields.sql
-   ```
+3.  **Миграция пользовательских полей**
+    ```sql
+    mysql clean_db < db_data/migrate_cck_fields.sql
+    ```
 
-4. **Очистка пользовательских данных**
-   ```sql
-   mysql clean_db < db_data/update_migrated_users.sql
-   ```
+4.  **Очистка пользовательских данных**
+    ```sql
+    mysql clean_db < db_data/update_migrated_users.sql
+    ```
 
 ### Учетные данные после миграции
 
@@ -384,6 +384,7 @@ mysql phoebe_db < db_data/create_admin_user.sql
 ## Взаимодействие с базами данных
 
 Этот раздел описывает, как взаимодействовать с вашей базой данных MySQL, будь то в Docker-контейнере или установленной локально.
+Для более подробной информации о работе с MySQL, пожалуйста, обратитесь к [Руководству по MySQL](./MYSQL_GUIDE_RU.md).
 
 ### Для Dockerized MySQL
 
