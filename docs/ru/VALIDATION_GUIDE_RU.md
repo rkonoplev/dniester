@@ -1,3 +1,5 @@
+> [Вернуться к содержанию документации](./README.md)
+
 # Руководство по валидации и обработке контента
 
 ## Обзор
@@ -136,7 +138,7 @@ public class ParentDTO {
 
 ```json
 {
-  "timestamp": "2023-10-27T10:30:00.123+00:00",
+  "timestamp": "2024-01-15T10:30:00.123+00:00",
   "status": 400,
   "error": "Bad Request",
   "code": "VALIDATION_ERROR",

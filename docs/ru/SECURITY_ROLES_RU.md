@@ -1,3 +1,5 @@
+> [Вернуться к содержанию документации](./README.md)
+
 # Руководство по реализации безопасности на основе ролей
 
 > Для определения ключевых терминов и технологий, пожалуйста, обратитесь к **[Глоссарию](./GLOSSARY_RU.md)**.
@@ -152,4 +154,4 @@ void update_EditorRole_ShouldDenyUpdatingOthersNews() {
         () -> newsService.update(1L, request, editorAuth));
 }
 ```
-*   **Примечание**: В реальных тестах `createAdminAuthentication()` и `createEditorAuthentication()` должны возвращать мок-объекты `Authentication` с соответствующими ролями и `Principal` (например, `UserDetails`) для извлечения `userId`.
+*   **Примечание**: В реальных тестах `createAdminAuthentication()` и `createEditorAuthentication()` должны возвращать мок-объекты `Authentication` с соответствующими ролями и `Principal` (например, `UserDetails) для извлечения `userId`.

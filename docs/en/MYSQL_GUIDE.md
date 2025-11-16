@@ -1,3 +1,5 @@
+> [Back to Documentation Contents](./README.md)
+
 # MySQL Commands Guide
 
 This document contains useful commands for working with MySQL, both in a Docker container and with a local installation.

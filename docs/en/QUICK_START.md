@@ -45,7 +45,7 @@ When you run the project, two main services are started:
 
 ---
 
-## Important for Newcomers: How to Update Code in Docker?
+## How to Update Code in Docker?
 
 When working with Docker, it's important to understand how your code changes are applied to the container.
 
