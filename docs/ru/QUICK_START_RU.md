@@ -60,7 +60,7 @@
   - Доступен по адресу: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 - **Frontend** (`phoebe-nextjs`, порт `3000`)
-  - Это React/Next.js приложение — визуальный интерфейс, который обращается к backend через API.
+  - Это референсное фронтенд-приложение (например, на Next.js или Angular) — визуальный интерфейс, который обращается к backend через API.
   - Доступен по адресу: [http://localhost:3000](http://localhost:3000)
 
 ---

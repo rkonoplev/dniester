@@ -28,7 +28,7 @@ When you run the project, two main services are started:
   - It is accessible at: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 - **Frontend** (`phoebe-nextjs`, port `3000`)
-  - This is a React/Next.js application—a visual interface that communicates with the backend via the API.
+  - This is a reference frontend application (e.g., Next.js or Angular)—a visual interface that communicates with the backend via the API.
   - It is accessible at: [http://localhost:3000](http://localhost:3000)
 
 ---
