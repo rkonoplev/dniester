@@ -1,3 +1,8 @@
+> [Back to Documentation Contents](./README.md)
+>
+> **[Quick Start Guide](./QUICK_START.md)**: Brief instructions for getting started quickly and
+> performing daily tasks with an already configured project.
+
 # Developer Guide – Local Workflow and CI/CD
 
 This document explains how to work on the project locally (IntelliJ IDEA, Gradle, Docker)
@@ -20,7 +25,7 @@ and what will be automatically executed in GitHub Actions (CI/CD).
 
 ## Initial Project Setup
 
-For the first-time setup of the project, please refer to the **[Setup Guide](./SETUP_GUIDE.md)**.
+For the first-time setup of the project, please refer to the **[Setup Guide](./SETUP_GUIDED.md)**.
 
 ---
 
@@ -95,7 +100,8 @@ After every `push` or `pull request`, GitHub Actions will automatically perform:
 - Static code analysis: Checkstyle and PMD (as part of the `build` task).
 - Test coverage reporting (JaCoCo) and upload to Codecov.
 
-> **Note**: Secret scanning (GitLeaks) is no longer an automated step in CI and is recommended for local execution.
+> **Note**: Secret scanning (GitLeaks) is no longer an automated step in CI and is recommended
+> for local execution.
 
 ---
 

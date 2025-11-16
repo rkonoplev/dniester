@@ -18,9 +18,11 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Setup Guide](./SETUP_GUIDE.md)**  
   Step-by-step instructions for the initial project setup.
 - **[Quick Start Guide](./QUICK_START.md)**  
-  Quick instructions for daily work.
-- **[Developer Guide](./DEVELOPER_GUIDE.md)**  
-  The daily workflow for developers.
+  Brief instructions for **getting started quickly and performing daily tasks** with an already
+  configured project.
+- **[Developer Guide](./DEVELOPER.md)**  
+  A detailed description of the **full development workflow** for developers, including IDE setup,
+  testing, and CI/CD integration.
 - **[API Reference](./API_REFERENCE.md)**  
   Endpoint descriptions, `curl` examples, and specifications.
 
@@ -83,7 +85,8 @@ This directory contains all English project documentation for **Phoebe CMS**.
 - **[Historical Migration Guide](./MIGRATION_DRUPAL6.md)**  
   Describes the old, manual migration process.
 - **[Historical Docker Data Backup and Recovery Guide (Drupal 6 Migration Context)](./LEGACY_DOCKER_DATA_RECOVERY_GUIDE_EN.md)**  
-  A historical document describing manual backup and recovery processes relevant during the early stages of the project.
+  A historical document describing manual backup and recovery processes relevant during the
+  early stages of the project.
 - **[Docker Volume Migration Guide](./VOLUME_MIGRATION_GUIDE.md)**  
   Guide to transferring Docker Volumes with MySQL data.
 - **[Development Guide with Local Database](LOCAL_DB_DEVELOPMENT_GUIDE.md)**

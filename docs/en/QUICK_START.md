@@ -1,3 +1,8 @@
+> [Back to Documentation Contents](./README.md)
+>
+> **[Developer Guide](./DEVELOPER_GUIDE.md)**: A detailed description of the full development workflow
+> for developers, including IDE setup, testing, and CI/CD integration.
+
 > For definitions of key terms and technologies, please refer to the **[Glossary](./GLOSSARY.md)**.
 
 Quick instructions for developers for **daily work** with an already configured project.
@@ -15,7 +20,8 @@ The entire primary workflow is built around the `Makefile` for simplicity. This 
 - **Run all tests**: `make all-tests`
 - **Stop the project**: `make stop`
 
-> For a complete list of commands and descriptions, refer to **[Testing and Development with Makefile](./TESTING_WITH_MAKEFILE.md)**.
+> For a complete list of commands and descriptions, refer to
+> **[Testing and Development with Makefile](./TESTING_WITH_MAKEFILE.md)**.
 
 ---
 
@@ -28,7 +34,8 @@ When you run the project, two main services are started:
   - It is accessible at: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 - **Frontend** (`phoebe-nextjs`, port `3000`)
-  - This is a reference frontend application (e.g., Next.js or Angular)—a visual interface that communicates with the backend via the API.
+  - This is a reference frontend application (e.g., Next.js or Angular)—a visual interface that
+    communicates with the backend via the API.
   - It is accessible at: [http://localhost:3000](http://localhost:3000)
 
 ---
@@ -55,7 +62,8 @@ When working with Docker, it's important to understand how your code changes are
 
 - **Full Rebuild (no cache)**: `make rebuild`
   This command uses `docker compose build --no-cache`. It completely rebuilds the image from scratch.
-  Use this only if you have changed dependencies (`build.gradle`), the `Dockerfile` itself, or if the project is behaving strangely.
+  Use this only if you have changed dependencies (`build.gradle`), the `Dockerfile` itself,
+  or if the project is behaving strangely.
 
 > For a detailed explanation of all commands and scenarios, see the **[Docker Guide](./DOCKER_GUIDE.md)**.
 
@@ -82,7 +90,7 @@ docker compose up --build -d
 
 - **Check containers**: `docker ps` → should show `phoebe-app` and `phoebe-mysql`
 - **API**: http://localhost:8080
-- **Swagger UI**: http://localhost:8080/swagger-ui/index.html
+- **Swagger UI**: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
 
 ### 3. Stop Environment
 
@@ -138,7 +146,8 @@ or
 ```bash
 docker compose up
 ```
-— Docker Compose starts all containers and "attaches" their logs directly to your terminal. You will see the running logs of `phoebe-app`, `phoebe-mysql`, `phoebe-nextjs`, and so on.
+— Docker Compose starts all containers and "attaches" their logs directly to your terminal.
+You will see the running logs of `phoebe-app`, `phoebe-mysql`, `phoebe-nextjs`, and so on.
 
 This is normal and useful during debugging — you can immediately see if something went wrong.
 
@@ -152,7 +161,8 @@ There are three options:
 | 🚪 **Force stop Docker Compose** | Same as above, but guaranteed | If the terminal is "frozen", type `make stop` in a new window |
 
 ### How to start and end your workday?
-- **In the morning**: Make sure Docker Desktop (or Docker Engine) is running. Navigate to the project folder and start the project:
+- **In the morning**: Make sure Docker Desktop (or Docker Engine) is running.
+  Navigate to the project folder and start the project:
   ```bash
   cd /path/to/your/project
   make run
@@ -161,7 +171,8 @@ There are three options:
   ```bash
   docker compose up
   ```
-  ⚙️ Everything will start in the same state, the database will be preserved, as the `mysql_data` volume is not deleted.
+  ⚙️ Everything will start in the same state, the database will be preserved,
+  as the `mysql_data` volume is not deleted.
 
 - **In the evening**: Execute `make stop`. This will correctly stop the containers, preserving data.
 - **Full reset**: If you want to wipe everything, including the database, use `make reset`.
@@ -182,7 +193,8 @@ There are three options:
 | `make test` / `make all-tests` | To run tests | Testcontainers / unit+integration |
 
 ### What does a "hard rebuild" do?
-Sometimes, a simple `make rebuild` might not be enough. For those cases, there is a more radical method you can perform manually:
+Sometimes, a simple `make rebuild` might not be enough. For those cases,
+there is a more radical method you can perform manually:
 
 ```bash
 docker compose down       # 1. Stops and cleans up containers
@@ -198,4 +210,5 @@ Use this method if you have:
 - suspect that Docker is using a "dirty" cache and a normal `rebuild` is not helping.
 
 **When is this NOT necessary?**
-If you are only changing Java code, `.yml` configs, or the frontend, the lightweight `make run` command is sufficient.
+If you are only changing Java code, `.yml` configs, or the frontend,
+the lightweight `make run` command is sufficient.
