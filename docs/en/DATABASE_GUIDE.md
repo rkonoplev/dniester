@@ -12,6 +12,8 @@ The schema supports both **clean installations** and **migrated data from Drupal
 - [Migration Scripts Reference](#migration-scripts-reference)
 - [Spring Boot Migrations](#spring-boot-migrations)
 - [Authentication & Access Control](#authentication--access-control)
+- [Database Interaction](#database-interaction)
+- [Recommendations for Working with Production Databases](#recommendations-for-working-with-production-databases)
 - [Troubleshooting](#troubleshooting)
 - [Related Documentation](#related-documentation)
 
@@ -251,6 +253,7 @@ When using Flyway, it is recommended to set `ddl-auto: validate` or `none`, as F
 | Migration | Purpose | Changes | Location |
 |---|---|---|---|
 | V1 | Initial schema | Core tables: users, roles, content, terms | `common` |
+| V2 | Add `published` field | Added `published` field to `content` table | `common` |
 | V3 | Sample data | **Default admin user and test content** | `common` |
 | V4 | User unification | Consolidated migrated authors | `common` |
 | V5 | Permissions system | Added permissions and role_permissions tables | `common` |
@@ -271,7 +274,7 @@ When using Flyway, it is recommended to set `ddl-auto: validate` or `none`, as F
 **Default User Created:**
 - Username: `admin`
 - Password: `admin` (BCrypt hash)
-- Email: `admin@example.com`
+- Email: `admin@example.example.com`
 - Role: `ADMIN`
 
 **Test Data:**
@@ -283,12 +286,12 @@ When using Flyway, it is recommended to set `ddl-auto: validate` or `none`, as F
 
 ## Authentication & Access Control
 
-### Default Users & Passwords
+### Default CMS Users & Passwords
 
 **⚠️ Important**: These are passwords for the CMS web interface, not the MySQL database.
 
 #### For Clean Database (New Installation)
-After executing migrations V1-V6 on a fresh database:
+After executing migration V3 on a fresh database:
 
 | Username | Password | Role | Email | Purpose |
 |---|---|---|---|---|
@@ -302,10 +305,31 @@ After executing migration scripts + `update_migrated_users.sql`:
 | `admin` | `admin` | ADMIN | admin@phoebe.local | System administrator |
 | All migrated users | `changeme123` | - | user{id}@migrated.local | Legacy users (must reset) |
 
+### Database Connection Passwords (MySQL)
+
+#### For Dockerized MySQL
+If you are using `docker-compose` to run MySQL (recommended method):
+- **Host**: `localhost` (or `phoebe-mysql` from other Docker containers)
+- **Port**: `3306`
+- **User**: `root`
+- **Password**: `root`
+- **Database**: `phoebe_db`
+
+These credentials are defined in the `.env` file and `docker-compose.yml`.
+
+#### For Local MySQL
+If you have MySQL installed directly on your machine (not in Docker), use the credentials you configured during installation. Typically:
+- **Host**: `localhost`
+- **Port**: `3306`
+- **User**: `root`
+- **Password**: (your root password)
+- **Database**: `phoebe_db` (if you created it)
+
 ### Password Security
-- All passwords are stored as **BCrypt hashes** (strength 10-12)
+- All CMS passwords are stored as **BCrypt hashes** (strength 10-12)
 - Migrated users **must change password** on first login
-- Admin password should be changed immediately in production
+- CMS admin password should be changed immediately in production
+- Database credentials `root`/`root` are **for development only** and must be changed in production.
 
 ### Permission System
 
@@ -333,6 +357,182 @@ The system uses **resource:action** permission naming:
 **EDITOR Role:**
 - `news:read`, `news:create`, `news:update`, `news:publish`
 - `terms:read`
+
+---
+
+## Database Interaction
+
+This section describes how to interact with your MySQL database, whether it's in a Docker container or installed locally.
+
+### For Dockerized MySQL
+
+If your MySQL database is running in Docker via `docker-compose` (`phoebe-mysql` container), you can access it as follows:
+
+1.  **Connect to the MySQL container:**
+    ```bash
+    docker exec -it phoebe-mysql mysql -u root -p
+    ```
+    At the `Enter password:` prompt, type `root`.
+
+2.  **View databases:**
+    After connecting to the MySQL client inside the container:
+    ```sql
+    SHOW DATABASES;
+    ```
+    You should see `phoebe_db` among others.
+
+3.  **Select a database:**
+    ```sql
+    USE phoebe_db;
+    ```
+
+4.  **View tables:**
+    ```sql
+    SHOW TABLES;
+    ```
+
+5.  **View table schema:**
+    ```sql
+    DESCRIBE users; -- or any other table
+    ```
+
+6.  **Execute queries:**
+    ```sql
+    SELECT * FROM users;
+    SELECT COUNT(*) FROM content;
+    ```
+
+7.  **Exit the MySQL client:**
+    ```sql
+    EXIT;
+    ```
+
+### For Local MySQL
+
+If you have MySQL installed directly on your machine, you can use the standard `mysql` client:
+
+1.  **Connect to local MySQL:**
+    ```bash
+    mysql -u root -p
+    ```
+    At the `Enter password:` prompt, type the password you set for your local MySQL `root` user.
+
+2.  **View databases:**
+    ```sql
+    SHOW DATABASES;
+    ```
+
+3.  **Select a database:**
+    ```sql
+    USE phoebe_db; -- Assuming you created a database with this name
+    ```
+
+4.  **View tables:**
+    ```sql
+    SHOW TABLES;
+    ```
+
+5.  **View table schema:**
+    ```sql
+    DESCRIBE users; -- or any other table
+    ```
+
+6.  **Execute queries:**
+    ```sql
+    SELECT * FROM users;
+    SELECT COUNT(*) FROM content;
+    ```
+
+7.  **Exit the MySQL client:**
+    ```sql
+    EXIT;
+    ```
+
+---
+
+## Recommendations for Working with Production Databases
+
+Working with databases in a production environment requires special attention to security, stability, and auditing. Direct access to a production database from outside (e.g., from a local machine via terminal) is strongly discouraged for routine operations.
+
+### Why is direct access undesirable?
+
+1.  **Security Risks:**
+    *   **Credential Leakage:** Direct connection increases the risk of password compromise.
+    *   **Unauthorized Access:** Opening ports for direct access creates potential vulnerabilities.
+2.  **Human Factor:**
+    *   **Errors:** Manually executing commands in production can lead to accidental data deletion or corruption.
+    *   **Lack of Testing:** Changes made directly often do not go through standard testing and review processes.
+3.  **Lack of Auditing and Control:**
+    *   **Difficulty in Tracking:** It is difficult to track who made what changes to the database and when.
+    *   **CI/CD Violation:** Direct changes violate the "single source of truth" principle (Git) and can lead to schema desynchronization.
+
+### Recommended Practices
+
+1.  **Automated Migrations (Flyway):**
+    *   All database schema changes should be versioned and applied through a migration system (e.g., Flyway). This ensures that the schema always matches the application code version.
+    *   Develop and test migrations locally, then integrate them into your CI/CD process.
+
+2.  **Access via Application API:**
+    *   All data operations (read, write, update, delete) should be performed through your application's API. This ensures compliance with business logic, validation, and security mechanisms.
+
+3.  **Using Platform Tools:**
+    *   If your project is deployed on a cloud platform (virtual servers, PaaS), use the tools it provides for database monitoring and performing limited administrative tasks. These tools are usually more secure and integrated with the auditing system.
+
+4.  **Desktop SQL Clients via SSH Tunnel (for emergencies):**
+    *   In rare cases where direct access is required for debugging or emergency fixes, use a desktop SQL client (e.g., DataGrip, MySQL Workbench) with a connection via an **SSH tunnel**. This is significantly more secure than opening the database port directly.
+
+### Connecting to a Production Database via SSH Tunnel
+
+To connect to a remote MySQL database via an SSH tunnel, you will need:
+*   SSH access to the server where the database is running.
+*   A private SSH key for authentication.
+*   The IP address or domain name of the server.
+*   Credentials for the MySQL database on the remote server.
+
+**Step 1: Create an SSH Tunnel**
+
+Open a terminal on your local machine and execute the command:
+
+```bash
+ssh -L 3307:127.0.0.1:3306 user@your_server_ip -i /path/to/your/private_key.pem
+```
+
+*   `ssh`: Command to establish an SSH connection.
+*   `-L 3307:127.0.0.1:3306`: This option creates a local port forwarding (tunnel).
+    *   `3307`: The local port on your machine that will be used for connection (you can choose any free port).
+    *   `127.0.0.1`: The IP address that the SSH server will connect to within the remote network (usually `localhost` relative to the remote server where the DB is running).
+    *   `3306`: The MySQL port on the remote server.
+*   `user@your_server_ip`: The username and IP address/domain name of the remote server.
+*   `-i /path/to/your/private_key.pem`: Path to your private SSH key.
+
+After executing this command and successful authentication (you may need to enter a passphrase for the key), the SSH tunnel will be established. Leave this terminal open.
+
+**Step 2: Connect to the Database via the Local Port**
+
+Now that the tunnel is active, you can connect to the remote database using local port `3307` (or the one you specified) on your machine.
+
+Via the MySQL client in the terminal:
+
+```bash
+mysql -h 127.0.0.1 -P 3307 -u your_db_user -p your_db_name
+```
+
+*   `-h 127.0.0.1`: Indicates that you are connecting to the local host.
+*   `-P 3307`: Specifies the local port that forwards traffic through the tunnel.
+*   `-u your_db_user`: The database username on the remote server.
+*   `-p`: Will prompt for the database user's password.
+*   `your_db_name`: The database name on the remote server.
+
+Or via a graphical SQL client (DataGrip, MySQL Workbench):
+*   **Host**: `127.0.0.1`
+*   **Port**: `3307`
+*   **User**: `your_db_user`
+*   **Password**: `your_db_password`
+*   **Database**: `your_db_name`
+
+**Step 3: Close the SSH Tunnel**
+
+When you are finished working with the database, simply close the terminal where the SSH tunnel was opened (or press `Ctrl+C` in it).
 
 ---
 
