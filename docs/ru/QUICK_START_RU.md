@@ -359,3 +359,5 @@ docker compose up -d    # создаст чистую базу
   рабочего процесса.
 - **[Обзор проекта](./PROJECT_OVERVIEW_RU.md)**: Полная информация об архитектуре и технологиях.
 - **[Миграция с Drupal 6 (RU)](MIGRATION_DRUPAL6_RU.md)**: Процесс миграции.
+- **[Руководство по оптимизации Dockerfile](./DOCKERFILE_OPTIMIZATION_GUIDE_RU.md)**: Рекомендации по
+  написанию Dockerfile для разработки и продакшена.

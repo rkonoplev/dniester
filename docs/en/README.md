@@ -40,6 +40,8 @@ This directory contains all English project documentation for **Phoebe CMS**.
   A detailed description of each `application-*.yml` file.
 - **[Docker Guide](./DOCKER_GUIDE.md)**  
   Local development with `docker-compose` and production builds.
+- **[Dockerfile Optimization Guide](./DOCKERFILE_OPTIMIZATION_GUIDE.md)**: Recommendations for writing
+  Dockerfiles for development and production.
 - **[ADR: Unifying the Testing Strategy with Testcontainers](./TESTCONTAINERS_EVOLUTION.md)**  
   The Architectural Decision Record for the migration to Testcontainers.
 - **[ADR: MySQL-first Strategy Implementation](./MYSQL_STRATEGY_IMPLEMENTATION.md)**  

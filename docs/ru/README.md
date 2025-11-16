@@ -40,6 +40,8 @@
   Подробное описание каждого файла `application-*.yml`.
 - **[Руководство по Docker](./DOCKER_GUIDE_RU.md)**  
   Локальная разработка с `docker-compose` и сборки для продакшена.
+- **[Руководство по оптимизации Dockerfile](./DOCKERFILE_OPTIMIZATION_GUIDE_RU.md)**: Рекомендации по
+  написанию Dockerfile для разработки и продакшена.
 - **[ADR: Унификация тестирования с Testcontainers](./TESTCONTAINERS_EVOLUTION_RU.md)**  
   Запись архитектурного решения о переходе на Testcontainers.
 - **[ADR: Реализация стратегии "MySQL-first"](./MYSQL_STRATEGY_IMPLEMENTATION_RU.md)**  

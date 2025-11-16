@@ -358,3 +358,5 @@ docker compose up -d    # creates a clean database
 - **[Developer Guide](./DEVELOPER_GUIDE.md)**: Detailed IDE setup and workflow description.
 - **[Project Overview](./PROJECT_OVERVIEW.md)**: Full information about architecture and technologies.
 - **[Migration from Drupal 6 (EN)](MIGRATION_DRUPAL6.md)**: Migration process.
+- **[Dockerfile Optimization Guide](./DOCKERFILE_OPTIMIZATION_GUIDE.md)**: Recommendations for writing
+  Dockerfiles for development and production.
