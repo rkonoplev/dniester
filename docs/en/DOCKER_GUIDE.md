@@ -53,10 +53,10 @@ While `make` is the primary interface, understanding the underlying `docker comp
 
 | Goal | Commands |
 |:---|:---|
-| 🔄 **Quickly restart with updated code** | `docker compose up --build phoebe-app` |
-| 🧹 **Completely clean and recreate** | `docker compose down -v`<br>`docker compose build --no-cache phoebe-app`<br>`docker compose up` |
-| 🧪 **Test only one service** | `docker compose up phoebe-app` |
-| 🧱 **Full rebuild of all services** | `docker compose build --no-cache`<br>`docker compose up` |
+| Quickly restart with updated code | `docker compose up --build phoebe-app` |
+| Completely clean and recreate | `docker compose down -v`<br>`docker compose build --no-cache phoebe-app`<br>`docker compose up` |
+| Test only one service | `docker compose up phoebe-app` |
+| Full rebuild of all services | `docker compose build --no-cache`<br>`docker compose up` |
 
 ### `docker compose` vs. `make` Commands
 
@@ -71,11 +71,11 @@ While `make` is the primary interface, understanding the underlying `docker comp
 
 ### What's the difference: `--build` vs. `--no-cache`?
 
-- **`--build`** = Update with cache (🏎️ **fast**).
+- **`--build`** = Update with cache (fast).
   - Docker rebuilds only the image layers that have changed. Ideal for daily development.
   - Command: `docker compose up --build`
 
-- **`--no-cache`** = Rebuild from scratch (🧹 **clean, but slow**).
+- **`--no-cache`** = Rebuild from scratch (clean, but slow).
   - Docker ignores all cache and builds the image from the very beginning.
   - Use this when changing the `Dockerfile`, dependencies in `build.gradle`, or when the cache causes issues.
   - Command: `docker compose build --no-cache phoebe-app`

@@ -100,9 +100,9 @@ A detailed description of all profiles and their settings is available in the [C
 ## Migration from Drupal 6
 
 ### Completed Migration Features
-- **Schema mapping**: Drupal nodes → Content entities.
-- **User migration**: Drupal users → Spring Security users.
-- **Taxonomy**: Drupal terms → Term entities with vocabulary preservation.
+- **Schema mapping**: Drupal nodes -> Content entities.
+- **User migration**: Drupal users -> Spring Security users.
+- **Taxonomy**: Drupal terms -> Term entities with vocabulary preservation.
 - **Content**: Articles with categories and authors.
 
 ### Vocabulary System & Archive Data Handling
@@ -122,23 +122,23 @@ A detailed description of all profiles and their settings is available in the [C
 **Two Database Scenarios:**
 
 **Scenario A: Migrated from Drupal 6**
-- ✅ All archive terms have vocabulary from original Drupal 6 structure.
-- ✅ Vocabulary names like "category", "tags", "topics" preserved.
-- ✅ All news-term relationships maintained.
-- ✅ New content can use existing terms or create new ones.
+- All archive terms have vocabulary from original Drupal 6 structure.
+- Vocabulary names like "category", "tags", "topics" preserved.
+- All news-term relationships maintained.
+- New content can use existing terms or create new ones.
 
 **Scenario B: Clean Database (Fresh Installation)**
-- ✅ Spring Boot migrations (V1-V6) create basic structure.
-- ✅ Migration V3 creates sample term: "General" with vocabulary "category".
-- ✅ New terms can be created with any vocabulary grouping.
-- ✅ System supports flexible taxonomy expansion.
+- Spring Boot migrations (V1-V6) create basic structure.
+- Migration V3 creates sample term: "General" with vocabulary "category".
+- New terms can be created with any vocabulary grouping.
+- System supports flexible taxonomy expansion.
 
 ## Current Status & Roadmap
 
-### ✅ Completed (Headless Core)
+### Completed (Headless Core)
 - **Headless API**: Complete REST API with OpenAPI/Swagger documentation.
 - **Backend Core**: Spring Boot 3.x with Java 21.
-- **Database Migration**: Moved from MariaDB → MySQL 8.0 for stable schema support.
+- **Database Migration**: Moved from MariaDB -> MySQL 8.0 for stable schema support.
 - **Dockerization**: Production-ready containers with one-command startup.
 - **Profile-based Configuration**: YAML configs for local/dev/test/ci/prod environments.
 - **Security**: Spring Security with role-based authorization (/api/public/ vs /api/admin/).
@@ -151,17 +151,17 @@ A detailed description of all profiles and their settings is available in the [C
 - **Rate Limiting**: IP-based API protection with Bucket4j.
 - **CI/CD**: GitHub Actions with automated testing.
 - **Docker**: Development environment with Docker Compose.
-- **Migration**: Drupal 6 → Headless CMS migration tools with UTF-8 encoding.
+- **Migration**: Drupal 6 -> Headless CMS migration tools with UTF-8 encoding.
 - **Open Source**: MIT license for community use.
 - **Code Quality**: Eliminated code duplication in mappers with BaseMapper.
 - **Error Handling**: Consistent exception system with standardized error codes.
 
-### 🚧 In Progress
+### In Progress
 - **Documentation**: Headless API integration guides.
 - **Reference Frontend Templates**: Implementation of Angular & Next.js templates.
 - **Performance**: API optimization for high-traffic scenarios.
 
-### 🎯 Planned
+### Planned
 - **Authentication**: OAuth 2.0 + JWT for enhanced security.
 - **Advanced Features**: File uploads, advanced search, webhooks.
 - **Integrations**: Third-party service connectors.

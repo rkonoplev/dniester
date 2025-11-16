@@ -32,9 +32,11 @@ of the current codebase.
 - **Transaction Optimization**: All read-only service methods are annotated with `@Transactional(readOnly = true)`.
 
 ### Database
-- **Data Access**: The project currently uses the blocking **Spring Data JPA** stack for simplicity and reliability.
+- **Data Access**: The project currently uses the blocking **Spring Data JPA** stack for simplicity and
+  reliability.
 - **Migration Management**: The database schema is version-controlled using Flyway.
-- **MySQL as Single Database**: The project uses MySQL for all environments (development, testing, production) to ensure consistency.
+- **MySQL as Single Database**: The project uses MySQL for all environments (development, testing, production)
+  to ensure consistency.
 
 ### Code Quality & CI/CD
 - **Static Analysis**: Checkstyle and PMD are configured and integrated to maintain code quality.
@@ -116,7 +118,8 @@ This section outlines planned features and improvements, categorized by priority
 
 1.  **Finalize Business Logic and API**: Complete and stabilize core application features.
 2.  **Implement OAuth 2.0 + JWT**: Establish the primary authentication and authorization mechanism.
-3.  **Update CI/CD and Deployment Configuration**: Ensure the deployment process is compatible with the new auth system.
+3.  **Update CI/CD and Deployment Configuration**: Ensure the deployment process is compatible with the new
+    auth system.
 4.  **Implement 2FA**: Add two-factor authentication for administrative roles as an additional security layer.
 
 ### Supporting Infrastructure and Services
