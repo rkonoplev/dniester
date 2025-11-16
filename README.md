@@ -12,6 +12,13 @@ https://github.com/rkonoplev/phoebe/actions/workflows/gradle-ci.yml)
 It provides a flexible REST API for content delivery, making it an ideal backend for **Angular, React, Vue**,
 or any other frontend technology.
 
+## 📚 Documentation
+
+Comprehensive documentation covering installation, development, API usage, and deployment.
+
+- **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications.
+- **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке.
+
 ## 🎯 Why Headless?
 
 Headless architecture is the modern standard for professional organizations that need:
@@ -78,13 +85,6 @@ For more detailed instructions on setup, migration, and daily development, pleas
 - **Modern Testing**: Comprehensive test suite using **Testcontainers** for reliable, isolated testing.
 - **CI/CD**: GitHub Actions pipeline with automated testing and code quality checks.
 - **Archived Migration History**: Includes legacy scripts from the original Drupal 6 migration for historical context.
-
-## 📚 Documentation
-
-Comprehensive documentation covering installation, development, API usage, and deployment.
-
-- **[📖 English Documentation](docs/en/)** - Complete guides and technical specifications.
-- **[📖 Русская документация](docs/ru/)** - Полная документация на русском языке.
 
 ## 🌟 Use Cases
 
