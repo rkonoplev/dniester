@@ -1,4 +1,35 @@
+> [Back to Documentation Contents](./README.md) | [Quick Start Guide](./QUICK_START.md) | [Developer Guide](./DEVELOPER_GUIDE.md)
+
 # Testing and Development with Makefile
+
+## Table of Contents
+
+- [Quick Reference](#quick-reference)
+- [Development Workflows](#development-workflows)
+  - [1. Full Stack Development](#1-full-stack-development)
+  - [2. Backend-Only Development](#2-backend-only-development)
+  - [3. Testing Workflows](#3-testing-workflows)
+    - [Quick Integration Tests](#quick-integration-tests)
+    - [Full Test Suite](#full-test-suite)
+    - [Code Quality Checks](#code-quality-checks)
+- [Environment Requirements](#environment-requirements)
+  - [For `make run` and `make stop`](#for-make-run-and-make-stop)
+  - [For `make test` and `make all-tests`](#for-make-test-and-make-all-tests)
+  - [For `make boot`](#for-make-boot)
+- [Configuration Details](#configuration-details)
+  - [Docker Compose (`make run`)](#docker-compose-make-run)
+  - [Testcontainers (`make test`)](#testcontainers-make-test)
+  - [Local Development (`make boot`)](#local-development-make-boot)
+- [Troubleshooting](#troubleshooting)
+  - [Build and Cache Issues](#build-and-cache-issues)
+  - [Docker Issues](#docker-issues)
+  - [Test Issues](#test-issues)
+  - [Local MySQL Issues](#local-mysql-issues)
+- [Best Practices](#best-practices)
+- [Integration with IDEs](#integration-with-ides)
+  - [IntelliJ IDEA](#intellij-idea)
+  - [VS Code](#vs-code)
+- [CI/CD Integration](#cicd-integration)
 
 This guide explains how to use the Makefile commands for development and testing workflows.
 
