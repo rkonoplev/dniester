@@ -13,7 +13,7 @@ The configuration is split across multiple files, loaded based on the active Spr
     port numbers, and default JPA settings.
 
 2.  **`application-{profile}.yml` (Specific Overrides)**: Contains properties that override the base configuration
-    for a specific profile. For example, `application-local.yml` provides settings for local development.
+    for a specific profile.
 
 The active profiles are enabled via the `spring.profiles.active` property, typically passed as a command-line
 argument or in an environment variable.
@@ -26,9 +26,13 @@ argument or in an environment variable.
     -   **Purpose**: The main, default configuration file. It defines the base for all other profiles.
     -   **Key Settings**: Default server port, application name, base JPA configurations.
 
+-   **`application-dev.yml`**
+    -   **Purpose**: The primary profile for **Docker-based development**, activated by `make run`.
+    -   **Key Settings**: Configures the application for Docker Compose. Relies on environment variables for database credentials. Enables Flyway and sets `ddl-auto` to `none`.
+
 -   **`application-local.yml`**
-    -   **Purpose**: The primary profile for **local development**, activated by `make run`.
-    -   **Key Settings**: Configures the datasource for the Docker Compose MySQL container, enables Flyway, sets `ddl-auto` to `update`, and enables detailed SQL logging.
+    -   **Purpose**: The profile for **local development without Docker** (e.g., running from an IDE).
+    -   **Key Settings**: Configures the datasource to connect to a locally running MySQL database (on `localhost`).
 
 -   **`application-integration-test.yml`**
     -   **Purpose**: Used for all integration tests in all environments (local and CI), activated by `make test`.

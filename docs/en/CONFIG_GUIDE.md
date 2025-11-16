@@ -50,11 +50,11 @@ The application configuration is split between two main directories:
 
 | Profile            | Status                               | File Location      | Database         | Usage                                                               |
 |:-------------------|:-------------------------------------|:-------------------|:-------------------|:--------------------------------------------------------------------|
-| `local`            | **Current**                          | `main/resources`   | MySQL (Docker)     | Local development via `make run`.                                   |
+| `dev`              | **Current**                          | `main/resources`   | MySQL (Docker)     | Development with Docker Compose (`make run`). **Primary development profile.** |
+| `local`            | **Current**                          | `main/resources`   | MySQL (Local)      | Local development without Docker (e.g., running from an IDE).       |
 | `integration-test` | **Current (for tests)**              | `main/resources`   | MySQL (Testcontainers) | All tests (`make test`). Testcontainers manages the DB.             |
 | `prod`             | **Current**                          | `main/resources`   | External DB        | Production build.                                                   |
 | `test`             | **Legacy**                           | `test/resources`   | H2 (In-Memory)   | Previously used for H2-based tests. **No longer in use.**           |
-| `dev`              | **Legacy**                           | `legacy`           | MySQL (Docker)     | Previously used for dev environments. **No longer in use.**         |
 | `ci`               | **Legacy**                           | `legacy`           | H2 (In-Memory)   | Previously used in CI. **No longer in use.**                        |
 | `mysql` / `postgresql` | Helper                           | `main/resources`   | -                  | Specify paths to DB-specific Flyway migrations.                     |
 | `security`         | Current (included automatically)     | `main/resources`   | -                  | Centralizes security settings.                                      |
@@ -65,7 +65,7 @@ The application configuration is split between two main directories:
 
 **Current Methods:**
 ```bash
-# Run for local development (activates the 'local' profile)
+# Run for Docker-based development (activates the 'dev' profile)
 make run
 
 # Run all tests (activates the 'integration-test' profile)
