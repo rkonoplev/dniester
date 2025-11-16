@@ -128,20 +128,42 @@ If these ports are in use on your machine, stop the conflicting services or chan
 
 ## Managing a Running Project
 
-### What's happening in the terminal?
-When you run `make run` or `docker compose up`, Docker attaches the logs of all containers to your terminal. This is useful for debugging.
+### What happens in the terminal when you start the project?
+When you run a command, for example:
+
+```bash
+make run
+```
+or
+```bash
+docker compose up
+```
+— Docker Compose starts all containers and "attaches" their logs directly to your terminal. You will see the running logs of `phoebe-app`, `phoebe-mysql`, `phoebe-nextjs`, and so on.
+
+This is normal and useful during debugging — you can immediately see if something went wrong.
 
 ### How to exit the terminal without stopping services?
+There are three options:
 
 | Action | What it does | Command |
 |:---|:---|:---|
 | 💤 **Detach, but leave everything running** | Containers continue to run in the background | Press `Ctrl + p`, then `Ctrl + q` |
 | 🛑 **Stop everything and exit** | Containers are shut down | Press `Ctrl + C` |
-| 🚪 **Force stop** | If the terminal is frozen, open a new one and run | `make stop` |
+| 🚪 **Force stop Docker Compose** | Same as above, but guaranteed | If the terminal is "frozen", type `make stop` in a new window |
 
 ### How to start and end your workday?
-- **In the morning**: Make sure Docker is running and execute `make run`. The project will start in the same state, with database data preserved.
-- **In the evening**: Execute `make stop`. This will correctly stop the containers while preserving data.
+- **In the morning**: Make sure Docker Desktop (or Docker Engine) is running. Navigate to the project folder and start the project:
+  ```bash
+  cd /path/to/your/project
+  make run
+  ```
+  or, if you already have a build – it will be even faster to just:
+  ```bash
+  docker compose up
+  ```
+  ⚙️ Everything will start in the same state, the database will be preserved, as the `mysql_data` volume is not deleted.
+
+- **In the evening**: Execute `make stop`. This will correctly stop the containers, preserving data.
 - **Full reset**: If you want to wipe everything, including the database, use `make reset`.
 
 ---
