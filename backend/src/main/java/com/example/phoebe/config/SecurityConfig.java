@@ -28,6 +28,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/api/admin/**").hasAnyRole(RoleConstants.ADMIN, RoleConstants.EDITOR)
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()

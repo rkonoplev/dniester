@@ -33,10 +33,11 @@ services:
     volumes:
       - ./backend:/app/backend
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080/" ]
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
       interval: 30s
       timeout: 10s
-      retries: 5
+      retries: 8
+      start_period: 120s
 
   nextjs-app:
     build:
