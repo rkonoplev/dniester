@@ -1,6 +1,7 @@
 # Setup and Deployment Guide
 
-This guide is your main entry point for deploying the project. It describes all possible scenarios, from migrating an existing site to a clean installation.
+This guide is your main entry point for deploying the project.
+It describes all possible scenarios: from migrating an existing site to a clean installation.
 
 > For daily work with an already configured project, please refer to the **[Quick Start Guide](./QUICK_START.md)**.
 
@@ -99,9 +100,13 @@ This process is fully automated and is the standard way to get started with the 
     ```bash
     make run
     ```
+    This command will launch **all necessary services**: the database (`phoebe-mysql`), the backend
+    (`phoebe-app`), and the reference Next.js frontend (`nextjs-app`).
     *Alternative command (without Makefile):* `docker compose up --build`
 
-**Result:** Flyway will automatically create the database and populate it with all data from the `V3__insert_sample_data.sql` script. This process is described in more detail in the **[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**.
+**Result:** Flyway will automatically create the database and populate it with all data from the
+`V3__insert_sample_data.sql` script. This process is described in more detail in the
+**[Modern Migration Guide](./MODERN_MIGRATION_GUIDE.md)**.
 
 ---
 
@@ -143,7 +148,8 @@ This process is for creating full snapshots of your local database.
 
 ### Scenario 5: Deploying to Production
 
-This scenario covers moving the application from local development to a live environment. It involves server setup, secret management, and using Docker for deployment.
+This scenario covers moving the application from local development to a live environment.
+It involves server setup, secret management, and using Docker for deployment.
 
 All detailed instructions, environment requirements, and configuration examples are described in a separate guide:
 
@@ -151,17 +157,26 @@ All detailed instructions, environment requirements, and configuration examples 
 
 ---
 
-## Running the Frontend Locally
+## Frontend Debugging
 
-For full project functionality, you need to run not only the backend (API) but also one of the reference frontends. The frontend will interact with the backend via its API, so it doesn't matter how the backend is launched (in Docker or directly) or which database is used (Dockerized MySQL/PostgreSQL or locally installed).
+If the backend is running correctly (accessible at `http://localhost:8080`) but you are
+experiencing issues with the frontend, you can run it manually for debugging.
+This allows you to isolate the problem and test interaction with the backend.
+
+> For more detailed information on launching and troubleshooting the Next.js frontend,
+> including specific Docker-related issues, refer to the
+> **[Troubleshooting section in the Frontend Technical Specification (Next.js)](./FRONTEND_SPEC_NEXTJS.md#troubleshooting)**.
 
 ### 1. Ensure the Backend is Running
 
-Before launching the frontend, make sure the backend is running and accessible at `http://localhost:8080`. You can start it using `make run` (as in Scenario 2) or `cd backend && ./gradlew bootRun`.
+Before launching the frontend, make sure the backend is running and accessible at
+`http://localhost:8080`. You can start it using `make run` (as in Scenario 2)
+or `cd backend && ./gradlew bootRun`.
 
-### 2. Launch the Chosen Frontend
+### 2. Launch the Chosen Frontend Manually
 
-The Phoebe CMS project provides two reference frontends: Angular and Next.js. Choose the one you want to work with.
+The Phoebe CMS project provides two reference frontends: Angular and Next.js.
+Choose the one you want to work with.
 
 #### For the Angular Frontend:
 
@@ -177,7 +192,8 @@ The Phoebe CMS project provides two reference frontends: Angular and Next.js. Ch
     ```bash
     npm start
     ```
-    The application will be available at `http://localhost:4200` (or another address indicated in the console).
+    The application will be available at `http://localhost:4200` (or another address
+    indicated in the console).
 
 #### For the Next.js Frontend:
 
@@ -193,4 +209,17 @@ The Phoebe CMS project provides two reference frontends: Angular and Next.js. Ch
     ```bash
     npm run dev
     ```
-    The application will be available at `http://localhost:3000` (or another address indicated in the console).
+    The application will be available at `http://localhost:3000` (or another address
+    indicated in the console).
+
+### 3. Check Frontend Logs
+
+If the frontend is not starting or is behaving incorrectly, check its logs:
+
+-   **For Next.js (if launched via `make run` or `docker compose up`):**
+    ```bash
+    docker compose logs -f nextjs-app
+    ```
+-   **For Angular or Next.js (if launched manually):**
+    Logs will be displayed directly in the terminal where you ran
+    `npm start` or `npm run dev`.
