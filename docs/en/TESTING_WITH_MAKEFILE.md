@@ -5,9 +5,12 @@ This guide explains how to use the Makefile commands for development and testing
 ## Quick Reference
 
 | Command | Description | Use Case |
-|---------|-------------|----------|
+|:---|:---|:---|
 | `make run` | Start full project (Docker Compose) | Manual testing, frontend development |
 | `make stop` | Stop project | Clean shutdown |
+| `make rebuild` | Rebuild backend without cache and start | Fixing build cache issues |
+| `make hard-rebuild` | Stop, rebuild backend without cache, start | When `rebuild` is not enough |
+| `make reset` | **Delete all containers and DB data** | Complete environment reset |
 | `make test` | Run integration tests (Testcontainers) | Quick test feedback |
 | `make all-tests` | Run all tests (unit + integration) | Full validation |
 | `make boot` | Start backend locally | Development with local MySQL |
@@ -23,12 +26,17 @@ For developing both frontend and backend with live reload:
 ```bash
 # Start everything (MySQL + backend + frontend)
 make run
+```
 
-# Access:
-# - API: http://localhost:8080
-# - Swagger: http://localhost:8080/swagger-ui/index.html
-# - Frontend: http://localhost:3000 (if available)
+**Access Services:**
+- API: [http://localhost:8080](http://localhost:8080)
+- Swagger: [http://localhost:8080/swagger-ui/index.html](http://localhost:8080/swagger-ui/index.html)
+- Frontend: [http://localhost:3000](http://localhost:3000) (if available)
 
+> **Hint**: Login credentials (usernames and passwords) for different roles are described
+> in the **[DATABASE_GUIDE.md](./DATABASE_GUIDE.md)** file.
+
+```bash
 # Stop when done
 make stop
 ```
@@ -108,6 +116,15 @@ make coverage
 - **Speed**: No container overhead
 
 ## Troubleshooting
+
+### Build and Cache Issues
+If the application behaves unexpectedly after code changes (especially in `build.gradle`),
+try these commands in order:
+
+1.  **`make rebuild`**: Rebuilds the backend without cache. This solves most dependency-related problems.
+2.  **`make hard-rebuild`**: If `rebuild` doesn't help, this command performs a deeper clean before rebuilding.
+3.  **`make reset`**: **CAUTION!** Use as a last resort. It removes containers and **all database data**,
+    returning the environment to its initial state.
 
 ### Docker Issues
 ```bash

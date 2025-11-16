@@ -1,3 +1,5 @@
+> For full documentation, please refer to the [main README](../../../docs/en/README.md).
+
 # Application Configuration Files
 
 This directory contains the configuration files for the Spring Boot application. The setup uses a profile-based
@@ -28,7 +30,8 @@ argument or in an environment variable.
 
 -   **`application-dev.yml`**
     -   **Purpose**: The primary profile for **Docker-based development**, activated by `make run`.
-    -   **Key Settings**: Configures the application for Docker Compose. Relies on environment variables for database credentials. Enables Flyway and sets `ddl-auto` to `none`.
+    -   **Key Settings**: Configures the application for Docker Compose. Relies on environment variables for
+      database credentials. Enables Flyway and sets `ddl-auto` to `none`.
 
 -   **`application-local.yml`**
     -   **Purpose**: The profile for **local development without Docker** (e.g., running from an IDE).
@@ -36,14 +39,18 @@ argument or in an environment variable.
 
 -   **`application-integration-test.yml`**
     -   **Purpose**: Used for all integration tests in all environments (local and CI), activated by `make test`.
-    -   **Key Settings**: Configured for Testcontainers MySQL. Uses `create-drop` schema management and disables Flyway, as Hibernate manages the schema directly for tests.
+    -   **Key Settings**: Configured for Testcontainers MySQL. Uses `create-drop` schema management and disables
+      Flyway, as Hibernate manages the schema directly for tests.
 
 -   **`application-prod.yml`**
     -   **Purpose**: The profile for **production** environments.
-    -   **Key Settings**: Disables detailed SQL logging and sets `ddl-auto` to `validate`. Relies on environment variables for all sensitive data.
+    -   **Key Settings**: Disables detailed SQL logging and sets `ddl-auto` to `validate`. Relies on environment
+      variables for all sensitive data.
 
 -   **`application-mysql.yml`** & **`application-postgresql.yml`**
-    -   **Purpose**: Database-specific profiles that provide the correct JDBC driver, Hibernate dialect, and Flyway migration paths.
+    -   **Purpose**: Database-specific profiles that provide the correct JDBC driver, Hibernate dialect, and
+      Flyway migration paths.
 
 -   **`application-security.yml`**
-    -   **Purpose**: Centralizes all security-related configurations (Basic Auth, rate limiting). It is automatically included by `application.yml`.
+    -   **Purpose**: Centralizes all security-related configurations (Basic Auth, rate limiting). It is
+      automatically included by `application.yml`.
